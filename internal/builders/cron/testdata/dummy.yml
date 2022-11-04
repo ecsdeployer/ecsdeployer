@@ -1,0 +1,34 @@
+project: dummy
+image: fake:latest
+cluster: fake
+
+cron_launcher_role: fake
+
+network:
+  subnets:
+    - subnet-2222222222
+  security_groups:
+    - sg-11111111111
+  public_ip: false
+
+# - name: reaper
+#     disabled: true
+#     schedule: "cron(0 9 * * ? *)"
+#     command: ["bundle", "exec", "rake", "cron:whatever"]
+#     description: "Whatever: this does stuff"
+
+cronjobs:
+  - name: job1
+    schedule: "cron(0 9 * * ? *)"
+
+  - name: job2
+    schedule: "rate(1 hour)"
+    description: somedesc
+
+  - name: job3
+    schedule: "rate(1 hour)"
+    disabled: true
+
+  - name: job4
+    schedule: "rate(1 hour)"
+    command: something

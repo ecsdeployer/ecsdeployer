@@ -1,0 +1,57 @@
+name: Test Suite
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - .github/workflows/test.yml
+      - .go-version
+      - cmd/**
+      - internal/**
+      - go.sum
+      - main.go
+      - pkg/**
+      - scripts/**
+jobs:
+  testsuite:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # - name: Unshallow
+      #   run: git fetch
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: .go-version
+          
+      - name: Fetching Go Cache Paths
+        id: go-cache-paths
+        run: |
+          echo "go-build=$(go env GOCACHE)" >> $GITHUB_OUTPUT
+          echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
+
+      # used to speedup go test
+      - name: Go Build Cache
+        id: build-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.go-cache-paths.outputs.go-build }}
+          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+
+      # Cache go mod cache, used to speedup builds
+      - name: Go Mod Cache
+        id: mod-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.go-cache-paths.outputs.go-mod }}
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+
+      - name: Run CLI Unit Tests
+        run: |
+          go clean -testcache
+          make test

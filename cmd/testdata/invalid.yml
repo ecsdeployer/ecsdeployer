@@ -1,0 +1,6 @@
+project: dummy
+image: dummy:whatever
+cluster: dummy
+
+task_defaults:
+  cpu: blargh

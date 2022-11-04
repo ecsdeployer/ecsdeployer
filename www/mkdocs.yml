@@ -1,0 +1,141 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+site_name: ECS Deployer
+repo_name: ecsdeployer/ecsdeployer
+site_description: Easily deploy containerized applications to AWS ECS Fargate
+copyright: Copyright &copy; 2022 Mitch Dempsey
+repo_url: https://github.com/ecsdeployer/ecsdeployer
+site_url: https://ecsdeployer.com/
+# edit_uri: edit/main/www/docs/
+edit_uri: ""
+
+hooks:
+  - hooks/schema_helper.py
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  language: en
+  favicon: static/images/favicon.ico
+  include_search_page: false
+  search_index_only: true
+  icon:
+    logo: material/cloud
+    repo: fontawesome/brands/github
+  palette:
+    - # media: "(prefers-color-scheme: dark)"  # Dark mode
+      scheme: slate
+      primary: light blue
+      accent: indigo
+      toggle:
+        # icon: material/lightbulb-on
+        # icon: octicons-moon-16
+        icon: material/weather-night
+        name: Switch to light mode
+
+    - #media: "(prefers-color-scheme: light)"  # Light mode
+      scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+  features:
+    - search.suggest
+    - search.highlight
+    - search.share
+    # - navigation.indexes
+    - navigation.expand
+
+extra_css:
+  - stylesheets/extras.css
+
+extra:
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_KEY
+  # version:
+  #   provider: mike
+  #   default: latest
+
+
+# https://www.mkdocs.org/dev-guide/themes/#template-variables
+
+plugins:
+  - search
+  # https://github.com/byrnereese/mkdocs-minify-plugin
+  # pip install mkdocs-minify-plugin 
+  - minify:
+      minify_html: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+  # - redirects:
+  #     redirect_maps:
+  #       gha.md: ci/github.md
+
+nav:
+  - Home: index.md
+  - Quick Start: quick_start.md
+  - Install: install.md
+  - Configuration:
+    - About: config/index.md
+    - Basics: config/basic.md
+    - Common Task Options: config/common.md
+    - Environment Vars: config/envvars.md
+    - Task Defaults: config/defaults.md
+    - PreDeploy Tasks: config/predeploy.md
+    - Services: config/services.md
+    - CronJobs: config/cronjobs.md
+    - Remote Shell: config/console.md
+    - Networking: config/network.md
+    - Logging: config/logging.md
+    - Naming: config/naming.md
+    - Tags: config/tags.md
+    - Spot Containers: config/spot.md
+    - Settings: config/settings.md
+    - Example Configs: config/examples.md
+  
+  - CI/CD:
+    - GitHub Actions: ci/github.md
+
+  - AWS Setup:
+    - IAM Permissions: aws/iam.md
+
+  - Templating: templating.md
+
+  - Command Line Usage:
+    - ecsdeployer: cmd/ecsdeployer.md
+    - ecsdeployer check: cmd/ecsdeployer_check.md
+    - ecsdeployer clean: cmd/ecsdeployer_clean.md
+    # - ecsdeployer completion: cmd/ecsdeployer_completion.md
+    - ecsdeployer deploy: cmd/ecsdeployer_deploy.md
+    - ecsdeployer info: cmd/ecsdeployer_info.md
+    - ecsdeployer jsonschema: cmd/ecsdeployer_jsonschema.md
+
+  - Limitations: limitations.md
+
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - meta
+  - toc:
+      permalink: true
+      toc_depth: 3
+      title: On this page
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - footnotes
+  - md_in_html
+  - def_list
+  - attr_list

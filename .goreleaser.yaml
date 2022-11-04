@@ -1,0 +1,154 @@
+# This is an example .goreleaser.yml file with some sensible defaults.
+# Make sure to check the documentation at https://goreleaser.com
+
+project_name: ecsdeployer
+
+before:
+  hooks:
+    - go mod tidy
+    - ./scripts/completions.sh
+    - ./scripts/manpages.sh
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+
+    goarch:
+      - "386"
+      - amd64
+      - arm
+      - arm64
+    
+    goarm:
+      - "7"
+
+    ldflags:
+      - "-s -w -X main.buildVersion={{.Version}} -X main.buildSha={{.Commit}}"
+
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    id: homebrew
+    format_overrides:
+      - goos: linux
+        format: tar.gz
+      - goos: windows
+        format: zip
+    replacements:
+      386: i386
+      amd64: x86_64
+    files:
+      - README.md
+      - LICENSE
+      - completions/*
+      - manpages/*
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Version }}"
+
+release:
+  footer: |
+    **Full Changelog**: https://github.com/ecsdeployer/ecsdeployer/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+changelog:
+  skip: true
+
+announce:
+  skip: true
+
+universal_binaries:
+  - name_template: "{{ .ProjectName }}"
+    replace: false
+
+scoop:
+  bucket:
+    owner: ecsdeployer
+    name: scoop-bucket
+    token: "{{ .Env.HOMEBREW_SCOOP_GITHUB_TOKEN }}"
+  url_template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  commit_author:
+    name: cloud87bot
+    email: 114977785+cloud87bot@users.noreply.github.com
+  homepage:  https://ecsdeployer.com
+  description: Easily deploy containerized applications to AWS ECS Fargate
+  license: MIT
+
+brews:
+
+  - &hbgen
+    ids:
+      - homebrew
+    name: ecsdeployer
+    tap:
+      owner: ecsdeployer
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_SCOOP_GITHUB_TOKEN }}"
+    folder: Formula
+    url_template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    homepage: "https://ecsdeployer.com"
+    description: "Easily deploy containerized applications to AWS ECS Fargate"
+    skip_upload: auto
+    commit_author:
+      name: cloud87bot
+      email: 114977785+cloud87bot@users.noreply.github.com
+    license: "MIT"
+    install: |-
+      bin.install "ecsdeployer"
+      bash_completion.install "completions/ecsdeployer.bash" => "ecsdeployer"
+      fish_completion.install "completions/ecsdeployer.fish" => "ecsdeployer.fish"
+      zsh_completion.install "completions/ecsdeployer.zsh" => "_ecsdeployer"
+      man1.install "manpages/ecsdeployer.1.gz"
+    test: |-
+      system "#{bin} --version" 
+
+  - 
+    << : *hbgen
+    name: ecsdeployer@v{{ .Major }}
+
+nfpms:
+  - id: "ecsdeployer"
+    builds: ['ecsdeployer']
+    formats:
+      - deb
+      - rpm
+      - apk
+    vendor: "ecsdeployer.com"
+    homepage: "https://ecsdeployer.com/"
+    maintainer: "Mitch Dempsey <webdestroya@noreply.github.com>"
+    description: "Easily deploy containerized applications to AWS ECS Fargate"
+    file_name_template: "{{ .ConventionalFileName }}"
+    license: MIT
+    bindir: /usr/bin
+    section: utils
+    rpm:
+      summary: "Easily deploy containerized applications to AWS ECS Fargate"
+    contents:
+      - src: ./completions/ecsdeployer.bash
+        dst: /usr/share/bash-completion/completions/ecsdeployer
+        file_info:
+          mode: 0644
+      - src: ./completions/ecsdeployer.fish
+        dst: /usr/share/fish/vendor_completions.d/ecsdeployer.fish
+        file_info:
+          mode: 0644
+      - src: ./completions/ecsdeployer.zsh
+        dst:  /usr/share/zsh/vendor-completions/_ecsdeployer
+        file_info:
+          mode: 0644
+      - src: ./manpages/ecsdeployer.1.gz
+        dst: /usr/share/man/man1/ecsdeployer.1.gz
+        file_info:
+          mode: 0644
+      - src: ./LICENSE
+        dst: /usr/share/doc/ecsdeployer/copyright
+        file_info:
+          mode: 0644
+  
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=jcroql

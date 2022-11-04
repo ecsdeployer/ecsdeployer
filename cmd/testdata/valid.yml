@@ -1,0 +1,132 @@
+
+project: deployer-test
+
+# image: "alpine:latest"
+image: "webdestroya/http-placeholder:latest"
+
+cluster: cloud87
+
+role: tf-cloud87-deployer
+execution_role: cloud87-ecs-execution
+cron_launcher_role: cloud87-ecs-cron-launcher
+
+
+network:
+  subnets:
+    - tag:cloud87/network=private
+    - name: state
+      values: [available]
+    - name: tag:cloud87/subnet_class
+      value: host
+  security_groups:
+    - name: group-name
+      values: ["cloud87-ecs"]
+
+logging:
+  awslogs:
+    retention: 14
+
+  # firelens:
+  #   type: "fluentbit"
+  #   log_to_awslogs: "/some/log/group"
+
+  # firelens:
+  #   inherit_env: true
+  #   options:
+  #     enable-ecs-log-metadata: true
+      # Name: thing
+    # type: "fluentbit"
+      # whatever: {template: "{{ .Date }}"}
+
+settings:
+  ssm_import:
+    path: /something/wrong
+
+  wait_for_stable:
+    timeout: 2h
+
+tags:
+  - name: cloud87/billable
+    value: true
+  
+  - name: cloud87/application
+    value: "{{ .ProjectName }}"
+  - name: cloud87/ecs/app
+    value: "{{ .ProjectName }}"
+
+  # - name: "cloud87/{{.ProjectName}}/things"
+  #   value: "{{ .Date }}"
+
+console:
+  port: 8722
+  # stop_timeout: 2m
+  # start_timeout: "1m"
+  # storage: 35
+
+# list of tasks to run before deployment
+predeploy:
+  - name: dbmigrate
+    command: ["120"]
+    entrypoint: ["/bin/sleep"]
+    # command: ["bundle", "exec", "rake", "db:migrate"]
+
+  # - name: failwhale
+  #   command: ["/bin/false"]
+
+  # - name: goodboy
+  #   command: ["/bin/true"]
+  
+  # - command: ["bundle"]
+
+
+environment:
+  PORT: 5000
+  PLACEHOLDER_APP_NAME: DeployerTest
+  PLACEHOLDER_APP_NAME2: DeployerTestX
+  PLACEHOLDER_APP_THING: {template: "{{ .Env.USER }}"}
+  PLACEHOLDER_APP_THING2: {template: "{{ .Env.USER }}-other"}
+
+
+# Variables that are added to all tasks/cron/predeploy
+task_defaults:
+  cpu: 512
+  memory: 2048
+    # VAR2: {ssm: "blhaksdhjahsd"}
+    # VAR3: {ssm: "someotherthing"}
+
+services:
+  - name: web
+    desired: 1
+    # arch: arm64
+    command: ["nothing"]
+    load_balancer:
+      # target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/c87-deployer-test-web/xxxxxxxx
+      target_group: c87-deployer-test-web
+      port: 5000
+    rollout:
+      min: 100
+      max: 200
+
+  - name: worker
+    desired: 0
+    command: "bundle exec something --or other"
+  
+  # - name: worker2
+  #   desired: 0
+  #   command: "bundle exec something --or other"
+    
+
+# List any cronjobs
+cronjobs:
+
+  # name of task
+  - name: reaper
+    disabled: true
+    schedule: "cron(0 9 * * ? *)"
+    command: ["bundle", "exec", "rake", "cron:whatever"]
+    description: "Whatever: this does stuff"
+
+  # - name: reaper2
+  #   disabled: true
+  #   schedule: "cron(0 9 * * ? *)"
+  #   command: ["bundle", "exec", "rake", "cron:whatever"]

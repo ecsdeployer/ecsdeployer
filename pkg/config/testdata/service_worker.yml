@@ -1,0 +1,3 @@
+name: worker
+command: ["something", "fake"]
+desired: 3

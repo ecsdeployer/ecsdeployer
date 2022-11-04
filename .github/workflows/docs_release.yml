@@ -1,0 +1,19 @@
+name: Docs Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  
+jobs:
+  docs:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/docs.yml
+        
+      - name: Deploy Docs
+        working-directory: ./www
+        run: mkdocs gh-deploy --clean --remote-branch gh-pages --no-history

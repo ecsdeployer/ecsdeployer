@@ -1,0 +1,9 @@
+* text eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+
+www/data/static/schema.json linguist-generated=true
+www/data/**/*.json linguist-generated=true
+internal/**/*_gen.go linguist-generated=true

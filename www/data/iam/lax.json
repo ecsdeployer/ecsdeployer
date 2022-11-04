@@ -1,0 +1,96 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EnvInfoGathering",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeVpcs",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "logs:DescribeLogGroups",
+        "tag:GetResources"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "TaskDefinitions",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:RegisterTaskDefinition",
+        "ecs:DeregisterTaskDefinition",
+        "ecs:ListTaskDefinitionFamilies",
+        "ecs:ListTaskDefinitions",
+        "ecs:DescribeTaskDefinition"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecs:DescribeTasks",
+        "ecs:DescribeServices",
+        "ecs:UpdateService",
+        "ecs:DeleteService",
+        "ecs:CreateService",
+        "ecs:RunTask"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CronSetup",
+      "Effect": "Allow",
+      "Action": [
+        "events:PutRule",
+        "events:DeleteRule",
+        "events:RemoveTargets",
+        "events:ListTargetsByRule",
+        "events:PutTargets"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ImportSSMParams",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParametersByPath"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Logging",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:PutRetentionPolicy"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "TagManagement",
+      "Effect": "Allow",
+      "Action": [
+        "logs:TagLogGroup",
+        "ecs:TagResource",
+        "events:TagResource",
+        "events:UntagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "RolePassing",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "*",
+      "Condition": {
+        "StringLike": {
+          "iam:PassedToService": [
+            "ecs-tasks.amazonaws.com",
+            "events.amazonaws.com"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "AppMesh": {},
+  "AwsLogConfig": {
+    "disabled": "false",
+    "retention": "180"
+  },
+  "CronJob": {
+    "description": "",
+    "disabled": "false",
+    "name": "",
+    "schedule": ""
+  },
+  "DeploymentEnvVars": {
+    "ECSDEPLOYER_APP_VERSION": "{{ .Version }}",
+    "ECSDEPLOYER_DEPLOYED_AT": "{{ .Date }}",
+    "ECSDEPLOYER_IMAGE_TAG": "{{ .ImageTag }}",
+    "ECSDEPLOYER_PROJECT": "{{ .ProjectName }}",
+    "ECSDEPLOYER_STAGE": "{{ .Stage }}",
+    "ECSDEPLOYER_TASK_NAME": "{{ .Name }}"
+  },
+  "FargateDefaults": {
+    "arch": "amd64",
+    "cpu": "1024",
+    "memory": "2x",
+    "name": "",
+    "platform_version": "LATEST"
+  },
+  "FirelensConfig": {
+    "container_name": "log_router",
+    "disabled": "false",
+    "inherit_env": "false",
+    "log_to_awslogs": "false",
+    "memory": "50",
+    "type": "fluentbit"
+  },
+  "HealthCheck": {},
+  "LoggingConfig": {
+    "disabled": "false"
+  },
+  "NameTemplates": {
+    "container": "{{ .Name }}",
+    "cron_group": "ecsd:{{ .ProjectName }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}",
+    "cron_rule": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}",
+    "cron_target": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
+    "log_group": "/ecsdeployer/app/{{ .ProjectName }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}",
+    "log_stream_prefix": "{{ .Name }}",
+    "marker_tag_key": "ecsdeployer/project",
+    "marker_tag_value": "{{ .ProjectName }}{{ if .Stage }}/{{ .Stage }}{{end}}",
+    "predeploy_group": "ecsd:{{ .ProjectName }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}",
+    "predeploy_started_by": "ecsd:{{ .ProjectName }}{{ if .Stage }}:{{ .Stage }}{{end}}:deployer",
+    "service_name": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}",
+    "ssm_import__path": "/ecsdeployer/secrets/{{ .ProjectName }}{{ if .Stage }}/{{ .Stage }}{{ end }}",
+    "target_group": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
+    "task_family": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
+  },
+  "PreDeployTask": {
+    "disabled": "false",
+    "ignore_failure": "false",
+    "name": ""
+  },
+  "SSMImport": {
+    "enabled": "false",
+    "path": "/ecsdeployer/secrets/{{ .ProjectName }}{{ if .Stage }}/{{ .Stage }}{{ end }}",
+    "recursive": "true"
+  },
+  "Service": {
+    "desired": "0",
+    "name": "",
+    "skip_wait_for_stable": "false"
+  },
+  "Settings": {
+    "disable_marker_tag": "false",
+    "predeploy_parallel": "false",
+    "predeploy_timeout": "5400",
+    "skip_deployment_env_vars": "false"
+  },
+  "TplDefault": {
+    "container": "{NAME}",
+    "cron_group": "ecsd:{PROJECT}:cron:{NAME}",
+    "cron_rule": "{PROJECT}-rule-{NAME}",
+    "cron_target": "{PROJECT}-target-{NAME}",
+    "log_group": "/ecsdeployer/app/{PROJECT}/{NAME}",
+    "log_stream_prefix": "{NAME}",
+    "marker_tag_key": "ecsdeployer/project",
+    "marker_tag_value": "{PROJECT}",
+    "predeploy_group": "ecsd:{PROJECT}:pd:{NAME}",
+    "predeploy_started_by": "ecsd:{PROJECT}:deployer",
+    "service_name": "{PROJECT}-{NAME}",
+    "ssm_import__path": "/ecsdeployer/secrets/{PROJECT}",
+    "target_group": "{PROJECT}-target-{NAME}",
+    "task_family": "{PROJECT}-{NAME}"
+  },
+  "TplDefaultStage": {
+    "container": "{NAME}",
+    "cron_group": "ecsd:{PROJECT}:{STAGE}:cron:{NAME}",
+    "cron_rule": "{PROJECT}-{STAGE}-rule-{NAME}",
+    "cron_target": "{PROJECT}-{STAGE}-target-{NAME}",
+    "log_group": "/ecsdeployer/app/{PROJECT}/{STAGE}/{NAME}",
+    "log_stream_prefix": "{NAME}",
+    "marker_tag_key": "ecsdeployer/project",
+    "marker_tag_value": "{PROJECT}/{STAGE}",
+    "predeploy_group": "ecsd:{PROJECT}:{STAGE}:pd:{NAME}",
+    "predeploy_started_by": "ecsd:{PROJECT}:{STAGE}:deployer",
+    "service_name": "{PROJECT}-{STAGE}-{NAME}",
+    "ssm_import__path": "/ecsdeployer/secrets/{PROJECT}/{STAGE}",
+    "target_group": "{PROJECT}-{STAGE}-target-{NAME}",
+    "task_family": "{PROJECT}-{STAGE}-{NAME}"
+  },
+  "WaitForStable": {
+    "disabled": "false",
+    "individually": "true",
+    "timeout": "1800"
+  }
+}

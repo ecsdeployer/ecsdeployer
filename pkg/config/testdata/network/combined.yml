@@ -1,0 +1,28 @@
+network:
+
+  # Optional: List of subnets using their ID values
+  subnets:
+    - subnet-00000000000
+    - subnet-11111111111
+
+    - tag:cloud87/network=private
+    - name: state
+      values: [available]
+    - name: tag:cloud87/subnet_class
+      value: host
+
+  security_groups:
+    - sg-1234567890
+    - sg-9876543210
+    - name: thing
+      value: ""
+    - name: test
+      values: 
+        - ""
+        - test
+  
+  # security_group_filters:
+  #   - name: group-name
+  #     values: ["cloud87-ecs"]
+
+  # public_ip: false

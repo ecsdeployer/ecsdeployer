@@ -1,0 +1,95 @@
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gofmt
+    - goimports
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - prealloc
+    - staticcheck
+    - typecheck
+    - unconvert
+    - unused
+    - asciicheck
+    - errorlint
+    - depguard
+    - goconst
+    - makezero
+    - nonamedreturns
+    - predeclared
+    - gocritic
+    - importas
+
+issues:
+  exclude:
+    - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*\\.Exit|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv|io\\.WriteString|io\\.Copy). is not checked"
+    - "var `buildSha` is unused"
+    - 'declaration of "err"'
+
+
+# output configuration options
+output:
+  format: 'colored-line-number'
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  depguard:
+    list-type: denylist
+    packages:
+      - github.com/aws/aws-sdk-go/aws
+    packages-with-error-message:
+      - github.com/aws/aws-sdk-go/aws: 'use v2 sdk instead'
+
+  gocritic:
+    disabled-checks:
+      - newDeref # it's wrong on generics
+
+  govet:
+    check-shadowing: true
+    # enable-all: true
+
+  importas:
+    no-unaliased: true
+    # no-extra-aliases: true
+    alias:
+        # AWS Resource Types
+      - pkg: github.com/aws/aws-sdk-go-v2/service/ecs/types
+        alias: ecsTypes
+
+      - pkg: github.com/aws/aws-sdk-go-v2/service/ec2/types
+        alias: ec2Types
+
+      - pkg: github.com/aws/aws-sdk-go-v2/service/eventbridge/types
+        alias: eventTypes
+
+      - pkg: github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types
+        alias: logTypes
+
+      - pkg: github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types
+        alias: taggingTypes
+
+        # AWS Clients
+      - pkg: github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2
+        alias: elbv2
+
+      - pkg: github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing
+        alias: elb
+
+      - pkg: github.com/aws/aws-sdk-go-v2/service/eventbridge
+        alias: events
+
+      - pkg: github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi
+        alias: tagging
+
+      - pkg: github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs
+        alias: logs
+
+
+run:
+  skip-dirs:
+    - scripts

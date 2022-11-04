@@ -1,0 +1,14 @@
+/dist
+.DS_Store
+/ecsdeployer
+def.json
+/scratch
+completions/
+bin/
+coverage.txt
+/coverage/
+manpages/
+www/site/
+www/tmp
+/tmp
+www/hooks/__pycache__/

@@ -1,0 +1,39 @@
+name: golangci-lint Checks
+
+on:
+  push:
+    branches:
+      - main
+      - exploration
+      - 'release/**'
+  pull_request:
+    paths:
+      - .github/workflows/lint.yml
+      - .go-version
+      - .golangci.yml
+      - internal/**
+      - go.sum
+      - main.go
+      - pkg/**
+
+permissions:
+  contents: read
+
+jobs:
+  golangci:
+    name: Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: .go-version
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --config .golangci.yml --timeout 5m --verbose
+      
+  

@@ -1,0 +1,22 @@
+# https://github.com/wjdp/htmltest
+
+IgnoreURLs:
+- www.google-analytics.com
+- fonts.gstatic.com
+- microsoft.com
+- https://github.com/ecsdeployer/ecsdeployer/edit/
+- https://github.com/ecsdeployer/ecsdeployer/pkgs
+- https://github.com/ecsdeployer/ecsdeployer
+- https://github.com/ecsdeployer/ecsdeployer-action
+- docs.github.com
+- help.github.com
+IgnoreDirs:
+- overrides
+IgnoreDirectoryMissingTrailingSlash: true
+IgnoreAltMissing: true
+ExternalTimeout: 60
+EnforceHTTPS: true
+LogLevel: 0
+HTTPHeaders:
+  "Range": "bytes=0-10"
+  "Accept": "*/*"

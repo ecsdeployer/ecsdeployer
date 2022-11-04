@@ -1,0 +1,39 @@
+project: dummy
+cluster: dummy
+
+role: dummy
+execution_role: dummy
+cron_launcher_role: dummy
+
+stage: fancy
+
+console: true
+
+settings:
+  ssm_import: true
+
+network:
+  subnets:
+    - subnet-111111
+  
+  security_groups:
+    - sg-11111111
+
+services:
+  - name: svc1
+    command: ["test"]
+    load_balancer:
+      port: 1234
+      target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
+
+  - name: svc2
+    command: ["test"]
+
+predeploy:
+  - name: pd1
+    command: ["test"]
+
+cronjobs:
+  - name: cron1
+    command: ["test"]
+    schedule: rate(1 minute)

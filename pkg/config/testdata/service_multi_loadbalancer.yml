@@ -1,0 +1,8 @@
+name: web
+command: ["something", "fake"]
+desired: 3
+load_balancer:
+  - port: 1234
+    target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
+  - port: 1235
+    target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake2/xxxxxxxx

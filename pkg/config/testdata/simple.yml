@@ -1,0 +1,3 @@
+project: dummy
+image: fake:latest
+cluster: testcluster

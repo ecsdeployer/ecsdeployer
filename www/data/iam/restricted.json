@@ -1,0 +1,179 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EnvInfoGathering",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeVpcs",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "logs:DescribeLogGroups",
+        "tag:GetResources"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "TaskDefinitions",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:RegisterTaskDefinition",
+        "ecs:DeregisterTaskDefinition",
+        "ecs:ListTaskDefinitionFamilies",
+        "ecs:ListTaskDefinitions",
+        "ecs:DescribeTaskDefinition"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecs:DescribeTasks",
+        "ecs:DescribeServices"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "ArnEquals": {
+          "ecs:cluster": "arn:aws:ecs:REGION:ACCOUNTID:cluster/CLUSTER_NAME"
+        }
+      }
+    },
+    {
+      "Sid": "ServiceDeployment",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:UpdateService",
+        "ecs:DeleteService"
+      ],
+      "Resource": "arn:aws:ecs:REGION:ACCOUNTID:service/CLUSTER_NAME/PROJECT_NAME-*",
+      "Condition": {
+        "ArnEquals": {
+          "ecs:cluster": "arn:aws:ecs:REGION:ACCOUNTID:cluster/CLUSTER_NAME"
+        }
+      }
+    },
+    {
+      "Sid": "ServiceCreation",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:CreateService"
+      ],
+      "Resource": "arn:aws:ecs:REGION:ACCOUNTID:service/CLUSTER_NAME/PROJECT_NAME-*",
+      "Condition": {
+        "ArnEquals": {
+          "ecs:cluster": "arn:aws:ecs:REGION:ACCOUNTID:cluster/CLUSTER_NAME"
+        },
+        "StringEquals": {
+          "aws:RequestTag/ecsdeployer/project": [
+            "PROJECT_NAME"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "ResourceTaggingECS",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:TagResource"
+      ],
+      "Resource": [
+        "arn:aws:ecs:REGION:ACCOUNTID:service/CLUSTER_NAME/PROJECT_NAME-*",
+        "arn:aws:ecs:REGION:ACCOUNTID:task-definition/PROJECT_NAME-*"
+      ]
+    },
+    {
+      "Sid": "PreDeployTasks",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:RunTask"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "ArnEquals": {
+          "ecs:cluster": "arn:aws:ecs:REGION:ACCOUNTID:cluster/CLUSTER_NAME"
+        }
+      }
+    },
+    {
+      "Sid": "ImportSSMParams",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParametersByPath"
+      ],
+      "Resource": "arn:aws:ssm:*:*:parameter/ecsdeployer/secrets/PROJECT_NAME/*"
+    },
+    {
+      "Sid": "Logging",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:PutRetentionPolicy",
+        "logs:TagLogGroup"
+      ],
+      "Resource": [
+        "arn:aws:logs:REGION:ACCOUNTID:log-group:/ecsdeployer/app/PROJECT_NAME*",
+        "arn:aws:logs:REGION:ACCOUNTID:log-group:/ecsdeployer/app/PROJECT_NAME*:*"
+      ]
+    },
+    {
+      "Sid": "CronSetup",
+      "Effect": "Allow",
+      "Action": [
+        "events:PutRule",
+        "events:DeleteRule",
+        "events:RemoveTargets",
+        "events:ListTargetsByRule",
+        "events:TagResource",
+        "events:UntagResource"
+      ],
+      "Resource": [
+        "arn:aws:events:REGION:ACCOUNTID:rule/PROJECT_NAME-*"
+      ]
+    },
+    {
+      "Sid": "CronSetupTargets",
+      "Effect": "Allow",
+      "Action": "events:PutTargets",
+      "Resource": "arn:aws:events:REGION:ACCOUNTID:rule/PROJECT_NAME-*",
+      "Condition": {
+        "ArnEquals": {
+          "events:TargetArn": [
+            "arn:aws:ecs:REGION:ACCOUNTID:cluster/CLUSTER_NAME"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "EcsPassRole",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+        "arn:aws:iam::ACCOUNTID:role/APP_ROLE",
+        "arn:aws:iam::ACCOUNTID:role/ECS_EXECUTION_ROLE"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iam:PassedToService": [
+            "ecs-tasks.amazonaws.com"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "CronPassRole",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+        "arn:aws:iam::ACCOUNTID:role/CRON_LAUNCHER_ROLE"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iam:PassedToService": [
+            "events.amazonaws.com"
+          ]
+        }
+      }
+    }
+  ]
+}
