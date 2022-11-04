@@ -1,0 +1,28 @@
+project: simple-http
+
+cluster: default
+
+image:
+  ecr: simple-http
+  tag: "{{ .ImageTag }}"
+
+task_defaults:
+  cpu: 512
+  memory: 2x
+
+network:
+  public_ip: false
+  subnets:
+    - subnet-111111111
+    - subnet-222222222
+  security_groups:
+    - sg-111111111
+    - sg-222222222
+
+services:
+  - name: web
+    command: ["httpd", "-p", "8080"]
+    desired: 3
+    load_balancer:
+      port: 8080
+      target_group: simple-http-web

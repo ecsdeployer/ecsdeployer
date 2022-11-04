@@ -1,0 +1,50 @@
+name: "Deploy"
+on:
+  push:
+    tags:
+      - 'v**'
+
+# only 1 deployment at a time. (optional)
+concurrency: ecsdeployer
+
+permissions:
+  contents: read
+  
+  # this is only needed if you are using OIDC auth for your AWS Role.
+  # If you are using AWS, you should definitely set this up!
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::12345678910:role/deployment-role
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Setup up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/myapp:${{ github.ref_name }}
+
+      - name: Deploy
+        uses: ecsdeployer/ecsdeployer-action@v1
+        with:
+          config: .ecsdeployer.yml
+          image: ${{ steps.login-ecr.outputs.registry }}/myapp:${{ github.ref_name }}

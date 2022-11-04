@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block site_meta %}
+  {{ super() }}
+  <meta name="generated-date" content="{{build_date_utc}}" />
+  <meta name="go-import" content="ecsdeployer.com/ecsdeployer git https://github.com/ecsdeployer/ecsdeployer" />
+{% endblock %}

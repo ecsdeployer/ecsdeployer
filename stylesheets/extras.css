@@ -1,0 +1,8 @@
+.tbl-nowrap-key tbody tr td:first-of-type {
+  white-space: nowrap;
+}
+
+.tbl-normal-font table:not([class]) td,
+.tbl-normal-font table:not([class]) th {
+  font-size: 0.8rem;
+}
