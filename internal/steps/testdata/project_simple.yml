@@ -1,0 +1,12 @@
+project: dummy
+image: fake:latest
+cluster: testcluster
+
+network:
+  subnets:
+    - subnet-1111111111
+    - subnet-2222222222
+  
+  security_groups:
+    - sg-1111111111
+    - sg-2222222222
