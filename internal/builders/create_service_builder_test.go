@@ -5,6 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBuildCreateService_Basic(t *testing.T) {
@@ -13,9 +14,7 @@ func TestBuildCreateService_Basic(t *testing.T) {
 	// just a basic test to make sure we can pass the common stuff thru it
 
 	ctx, err := config.NewFromYAML("testdata/dummy.yml")
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	require.NoError(t, err)
 
 	tables := []struct {
 		thing    *config.Service

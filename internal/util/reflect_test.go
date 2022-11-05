@@ -2,6 +2,8 @@ package util
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 type fooS struct {
@@ -23,8 +25,8 @@ type barS struct {
 type nester struct {
 	Nest1   *nester
 	Nest2   *nester
-	Foo     *fooS
-	Bar     *barS
+	Foo2    *fooS
+	Bar2    *barS
 	BarV    barS
 	ArrBar  []barS
 	PArrBar []*barS
@@ -41,51 +43,29 @@ func TestDeepFindInStruct(t *testing.T) {
 		Thing1: nester{
 			Nest1: &nester{
 				Nest1: &nester{
-					Foo: &fooS{
+					Foo2: &fooS{
 						StringV: "test",
 					},
 				},
 				Nest2: &nester{
-					Foo: &fooS{
+					Foo2: &fooS{
 						StringV: "test2",
 					},
-					Bar: &barS{
+					Bar2: &barS{
 						NestB: &fooS{
 							StringV: "test4",
 						},
 					},
 				},
-				Foo: &fooS{
+				Foo2: &fooS{
 					StringV: "test3",
 				},
 			},
 		},
 	}
 
-	_ = DeepFindInStruct[fooS](commonHaystack)
-	// if len(stuff) != 4 {
-	// 	t.Errorf("Not enough results! got=%d", len(stuff))
-	// }
-	// fmt.Printf("STUFF FOUND: %v\n", stuff)
-
-	// for _, entry := range stuff {
-	// 	// fmt.Printf("StringV = %v\n", entry.StringV)
-	// 	_ = entry
-	// }
-
-	// tables := []struct {
-	// 	haystack   *parentThing
-	// 	finderFunc func(interface{}) []interface{}
-	// }{
-	// 	{commonHaystack, func(thing interface{}) []any { return DeepFindInStruct[fooS](thing).([]any)} },
-	// }
-
-	// for _, table := range tables {
-	// 	result := table.finderFunc(commonHaystack)
-	// 	if result != table.serviceName {
-	// 		t.Errorf("expected <%s> to give service name of <%s> but got <%s>", table.arn, table.serviceName, result)
-	// 	}
-	// }
+	res := DeepFindInStruct[fooS](commonHaystack)
+	require.Len(t, res, 4)
 }
 
 func TestDeepFindInStruct_WithArrays(t *testing.T) {
@@ -128,7 +108,7 @@ func TestDeepFindInStruct_WithArrays(t *testing.T) {
 			},
 			Nest1: &nester{
 				Nest1: &nester{
-					Foo: &fooS{
+					Foo2: &fooS{
 						StringV: "test",
 					},
 				},
@@ -136,14 +116,9 @@ func TestDeepFindInStruct_WithArrays(t *testing.T) {
 		},
 	}
 
-	stuff := DeepFindInStruct[fooS](commonHaystack)
-	if len(stuff) != 5 {
-		t.Errorf("Not enough results! got=%d", len(stuff))
-	}
-	// fmt.Printf("STUFF FOUND: %v\n", stuff)
+	require.Len(t, DeepFindInStruct[fooS](commonHaystack), 5)
+	require.Len(t, DeepFindInStruct[barS](commonHaystack), 6)
 
-	for _, entry := range stuff {
-		// fmt.Printf("StringV = %v\n", entry.StringV)
-		_ = entry
-	}
+	// it's 1 because the top level is a nester, so children are ignored
+	require.Len(t, DeepFindInStruct[nester](commonHaystack), 1)
 }

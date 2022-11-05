@@ -4,6 +4,7 @@ import (
 	"reflect"
 )
 
+// Returns whether or not a given value could be set to nil
 func IsNilable(v reflect.Value) bool {
 	switch v.Type().Kind() {
 	case reflect.Chan, reflect.Func, reflect.Map, reflect.Ptr, reflect.UnsafePointer, reflect.Interface, reflect.Slice:
@@ -13,28 +14,35 @@ func IsNilable(v reflect.Value) bool {
 	}
 }
 
+type DeepFindInStructOptions struct {
+	// If true, this will return struct VALUE fields that have a zero value for the requested type
+	// By default if you have a value field (vs a pointer field), with a zero struct value,
+	// it will not be returned as it is assumed to have not been provided
+	IncludeZeroStruct bool
+}
+
+// Must provide a pointer as the haystack
+// See DeepFindInStructAdvanced
+// This version will ignore zero values for structs
+func DeepFindInStruct[T interface{}](haystack interface{}) []*T {
+	return DeepFindInStructAdvanced[T](haystack, &DeepFindInStructOptions{})
+}
+
 // Must provide a pointer as the haystack
 //
 // this will recurse into a struct and find all the values of type T within that struct,
 // as well as any child structs
-func DeepFindInStruct[T interface{}](haystack interface{}) []*T {
+//
+// Note: this will stop searching once it finds a match. If you have self-referencing structs,
+// it will not find child structs within a matching struct
+func DeepFindInStructAdvanced[T interface{}](haystack interface{}, options *DeepFindInStructOptions) []*T {
 
 	needleV := reflect.TypeOf(new(T)).Elem()
-	// needleP := reflect.PointerTo(needleV)
-
-	// needleVKind := needleV.Kind()
-	// needlePKind := needleP.Kind()
-
-	// fmt.Printf("needleVType=%v, needlePtype=%v nvKind=%v npKind=%v\n", needleV, needleP, needleVKind, needlePKind)
 
 	haystackVal := reflect.Indirect(reflect.ValueOf(haystack))
-	// haystackVal := reflect.ValueOf(haystack).Elem()
 	haystackType := haystackVal.Type()
 
-	// fmt.Printf("Haystacktype=%v\n", haystackType)
-
 	results := make([]*T, 0)
-	// resultValue := reflect.ValueOf(results)
 
 	for _, field := range reflect.VisibleFields(haystackType) {
 		f := haystackVal.FieldByIndex(field.Index)
@@ -44,12 +52,6 @@ func DeepFindInStruct[T interface{}](haystack interface{}) []*T {
 			// ignore unexported
 			continue
 		}
-
-		// ignore unexported fields
-		// if !f.CanSet() {
-		// 	fmt.Println("CAN NOT SET")
-		// 	continue
-		// }
 
 		value := f
 
@@ -67,13 +69,19 @@ func DeepFindInStruct[T interface{}](haystack interface{}) []*T {
 		// value := reflect.Indirect(f)
 
 		if value.Type() == needleV {
-			results = append(results, value.Addr().Interface().(*T))
+			switch {
+			case value.CanAddr():
+				results = append(results, value.Addr().Interface().(*T))
+
+			case options.IncludeZeroStruct && value.Kind() == reflect.Struct && value.IsZero():
+				zeroStruct := value.Interface().(T)
+				results = append(results, &zeroStruct)
+			}
 			continue
 		}
 
 		if value.Kind() == reflect.Struct {
-			// fmt.Printf("STRUCT!\n")
-			res := DeepFindInStruct[T](value.Interface())
+			res := DeepFindInStructAdvanced[T](value.Interface(), options)
 			results = append(results, res...)
 			continue
 		}
@@ -98,12 +106,13 @@ func DeepFindInStruct[T interface{}](haystack interface{}) []*T {
 				}
 
 				if item.Kind() == reflect.Struct {
-					res := DeepFindInStruct[T](item.Interface())
+					res := DeepFindInStructAdvanced[T](item.Interface(), options)
 					results = append(results, res...)
 					continue
 				}
 
 				if item.Kind() == reflect.Array || item.Kind() == reflect.Slice {
+					// TODO: Add ability to search thru nested lists
 					panic("array/slice within slice not supported")
 				}
 			}
@@ -117,3 +126,4 @@ func DeepFindInStruct[T interface{}](haystack interface{}) []*T {
 type thinger struct{}
 
 var _ = DeepFindInStruct[thinger](&thinger{})
+var _ = DeepFindInStructAdvanced[thinger](&thinger{}, &DeepFindInStructOptions{})

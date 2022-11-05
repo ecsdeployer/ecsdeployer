@@ -32,25 +32,8 @@ func TestBuildCronTarget(t *testing.T) {
 
 	for i, table := range tables {
 		putTargets, err := BuildCronTarget(ctx, ctx.Project.CronJobs[i], "faketask:1")
-		if err != nil {
-			t.Errorf("Unexpected error <index#%d>: %s", i, err)
-		}
-
-		if !testutil.AssertStringEquals(table.name, putTargets.Rule) {
-			t.Errorf("Incorrect Rule. <index#%d> Expected=%s, got=%s", i, table.name, *putTargets.Rule)
-		}
-
-		// if !testutil.AssertEquals[eventtypes.RuleState](table.state, putTargets.State) {
-		// 	t.Errorf("Incorrect State. <index#%d> Expected=%s, got=%s", i, table.state, putTargets.State)
-		// }
-
-		// if !testutil.AssertStringEquals(table.schedule, putTargets.ScheduleExpression) {
-		// 	t.Errorf("Incorrect ScheduleExpression. <index#%d> Expected=%s, got=%s", i, table.schedule, *putTargets.ScheduleExpression)
-		// }
-
-		// if !testutil.AssertStringEquals(table.desciption, putTargets.Description) {
-		// 	t.Errorf("Incorrect Desc. <index#%d> Expected=%v, got=%v", i, table.desciption, putTargets.Description)
-		// }
+		require.NoErrorf(t, err, "Index#%d", i)
+		require.EqualValuesf(t, table.name, *putTargets.Rule, "Index#%d, Name", i)
 	}
 
 }
