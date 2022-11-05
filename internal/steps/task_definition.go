@@ -50,37 +50,3 @@ func stepTaskDefinitionCreate(ctx *config.Context, step *Step, meta *StepMetadat
 
 	return fields, nil
 }
-
-/*
-func stepTaskDefinitionPreApply(ctx *config.Context, step *Step, meta *StepMetadata) error {
-
-	if ctx.Project.Logging.IsDisabled() {
-		// they don't want any logging
-		return nil
-	}
-
-	taskStruct := (step.Resource).(config.IsTaskStruct)
-
-	logGroupPrefix, err := helpers.GetTemplatedPrefix(ctx, ctx.Project.NameTemplates.LogGroup)
-	if err != nil {
-		return err
-	}
-
-	taskDefInput, err := builders.BuildTaskDefinition(ctx, taskStruct)
-	if err != nil {
-		return err
-	}
-
-	for _, containerDef := range taskDefInput.ContainerDefinitions {
-		if containerDef.LogConfiguration != nil && containerDef.LogConfiguration.LogDriver == ecstypes.LogDriverAwslogs {
-			desiredLogGroup, ok := containerDef.LogConfiguration.Options["awslogs-group"]
-			if ok && strings.HasPrefix(desiredLogGroup, logGroupPrefix) {
-				// it wants a log group, and it has a prefix we desire. We need to create it
-				step.Dependencies = append(step.Dependencies, Lo)
-			}
-		}
-	}
-
-	return nil
-}
-*/

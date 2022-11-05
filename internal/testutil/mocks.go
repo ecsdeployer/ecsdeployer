@@ -17,6 +17,8 @@ func MockSimpleStsProxy(t *testing.T) func() {
 	return closeFunc
 }
 
+// func Mock_EC2_DescribeSubnets(params map[string]string, )
+
 func Mock_ELBv2_DescribeTargetGroups_Single_Success(tgName string) *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{

@@ -4,7 +4,9 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTemplate_Functions(t *testing.T) {
@@ -88,5 +90,56 @@ func TestTemplateConditional(t *testing.T) {
 			break
 		}
 
+	}
+}
+
+func TestTplFuncJoin(t *testing.T) {
+
+	tables := []struct {
+		params   []interface{}
+		expected string
+	}{
+		{[]interface{}{"test", util.Ptr("thing"), true, false, int(5), int32(6), int16(50), int64(123123), float32(1.33), float64(2.67), nil}, "test/thing/true/false/5/6/50/123123/1.33/2.67/"},
+		{[]interface{}{int(1), int8(2), int16(3), int32(4), int64(5)}, "1/2/3/4/5"},
+		{[]interface{}{uint(1), uint8(2), uint16(3), uint32(4), uint64(5)}, "1/2/3/4/5"},
+	}
+
+	for _, table := range tables {
+		result := tplFuncJoin("/", table.params...)
+		require.Equal(t, table.expected, result)
+	}
+}
+
+func TestTplFuncPrefix_Valid(t *testing.T) {
+
+	tables := []struct {
+		str      string
+		length   int
+		expected string
+	}{
+		{"something", 4, "some"},
+		{"test", 4, "test"},
+	}
+
+	for _, table := range tables {
+		result, err := tplFuncPrefix(table.str, table.length)
+		require.NoError(t, err)
+		require.Equal(t, table.expected, result)
+	}
+}
+
+func TestTplFuncPrefix_Invalid(t *testing.T) {
+
+	tables := []struct {
+		str    string
+		length int
+	}{
+		{"something", 0},
+		{"something", -1},
+	}
+
+	for _, table := range tables {
+		_, err := tplFuncPrefix(table.str, table.length)
+		require.Error(t, err)
 	}
 }

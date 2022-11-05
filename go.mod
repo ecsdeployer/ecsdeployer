@@ -21,6 +21,7 @@ require (
 	github.com/muesli/roff v0.1.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
+	github.com/webdestroya/awsmocker v0.1.3
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/exp v0.0.0-20220916125017-b168a2c6b86b
@@ -58,7 +59,6 @@ require (
 	github.com/rivo/uniseg v0.4.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/webdestroya/awsmocker v0.1.2 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	golang.org/x/sys v0.0.0-20220909162455-aba9fc2a8ff2 // indirect

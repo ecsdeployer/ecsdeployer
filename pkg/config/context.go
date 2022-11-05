@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"github.com/caarlos0/log"
 )
 
@@ -54,6 +55,16 @@ type Context struct {
 	// Private AWS things
 	awsAccountId string
 	muAwsAcctId  sync.Once
+}
+
+// This is mainly used in tests, and will load a project from a YAML and then instantiate a Context
+func NewFromYAML(file string) (*Context, error) {
+	project, err := yaml.ParseYAMLFile[Project](file)
+	if err != nil {
+		return nil, err
+	}
+
+	return New(project), nil
 }
 
 func New(config *Project) *Context {

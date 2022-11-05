@@ -1,0 +1,15 @@
+subnets:
+  - subnet-00000000000
+  - subnet-11111111111
+
+security_groups:
+  - sg-1234567890
+  - sg-9876543210
+
+  # if there is a vpc-id filter, it should not attempt to add one
+  - name: vpc-id
+    value: vpc-999999999
+
+  - name: test
+    values: 
+      - test

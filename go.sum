@@ -60,11 +60,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/elazarl/goproxy v0.0.0-20221015165544-a0805db90819 h1:RIB4cRk+lBqKK3Oy0r2gRX4ui7tuhiZq2SuTtTCi0/0=
 github.com/elazarl/goproxy v0.0.0-20221015165544-a0805db90819/go.mod h1:Ro8st/ElPeALwNFlcTpWmkr6IoMFfkjXAvTHpevnDsM=
+github.com/elazarl/goproxy/ext v0.0.0-20190711103511-473e67f1d7d2 h1:dWB6v3RcOy03t/bUadywsbyrQwCqZeNIEX6M1OtSZOM=
 github.com/elazarl/goproxy/ext v0.0.0-20190711103511-473e67f1d7d2/go.mod h1:gNh8nYJoAm43RfaxurUnxr+N1PwuFV3ZMl/efxlIlY8=
 github.com/google/go-cmp v0.5.8 h1:e6P7q2lk1O+qJJb4BtCQXlK8vWEO8V1ZeuEdJNOqZyg=
 github.com/google/go-cmp v0.5.8/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-github.com/hashicorp/aws-sdk-go-base/v2 v2.0.0-beta.17 h1:GGRw8tPwRwlvWcvgfZvmh7sj0Lyx7XNoITH6fmCLI2E=
-github.com/hashicorp/aws-sdk-go-base/v2 v2.0.0-beta.17/go.mod h1:xySJRdcDB8hVSmboo3X+evGhZPzBYwPmZbQxLgfGfBw=
 github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0 h1:i462o439ZjprVSFSZLZxcsoAe592sZB1rci2Z8j4wdk=
 github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0/go.mod h1:N0Wam8K1arqPXNWjMo21EXnBPOPp36vB07FNRdD2geA=
 github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=
@@ -116,10 +115,8 @@ github.com/stretchr/testify v1.3.1-0.20190311161405-34c6fa2dc709/go.mod h1:M5WIy
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.0 h1:pSgiaMZlXftHpm5L7V1+rVB+AZJydKsMxsQBIJw4PKk=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
-github.com/webdestroya/awsmocker v0.1.1 h1:B+QQYSD/gKybcZe6IYfSZ9YLTh8ke0Xdng1keepK8ZY=
-github.com/webdestroya/awsmocker v0.1.1/go.mod h1:5VArae+Y9o5gP+SQdPgM79XCs2Qxw+o9stHfUauDspg=
-github.com/webdestroya/awsmocker v0.1.2 h1:dkP9NfMaKt/CLGhvlD2lZ+ezstdZ8uiwP2dlIazyvyA=
-github.com/webdestroya/awsmocker v0.1.2/go.mod h1:5VArae+Y9o5gP+SQdPgM79XCs2Qxw+o9stHfUauDspg=
+github.com/webdestroya/awsmocker v0.1.3 h1:ObjLhi99+Tl0NoPw0x3GZgCMZ4X20SYCQoVPCfmZZL8=
+github.com/webdestroya/awsmocker v0.1.3/go.mod h1:5VArae+Y9o5gP+SQdPgM79XCs2Qxw+o9stHfUauDspg=
 github.com/webdestroya/jsonschema v0.0.0-20221009071543-bd9a93154641 h1:UOS4NCeGOG1ByElNS5MLMKxuykXkFx+XTzVcVu2T+E8=
 github.com/webdestroya/jsonschema v0.0.0-20221009071543-bd9a93154641/go.mod h1:O9uiLokuu0+MGFlyiaqtWxwqJm41/+8Nj0lD7A36YH0=
 github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1 h1:+dBg5k7nuTE38VVdoroRsT0Z88fmvdYrI2EjzJst35I=

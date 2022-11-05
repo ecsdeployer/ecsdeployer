@@ -13,7 +13,7 @@ func TestClusterArn(t *testing.T) {
 	closeMock := testutil.MockSimpleStsProxy(t)
 	defer closeMock()
 
-	ctx, err := testutil.LoadProjectConfig("testdata/simple.yml")
+	ctx, err := config.NewFromYAML("testdata/simple.yml")
 	if err != nil {
 		t.Errorf("Unexpected error: %s", err)
 	}

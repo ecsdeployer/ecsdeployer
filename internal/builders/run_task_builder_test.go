@@ -14,7 +14,7 @@ func TestBuildRunTask_Basic(t *testing.T) {
 	closeMock := testutil.MockSimpleStsProxy(t)
 	defer closeMock()
 
-	ctx, err := testutil.LoadProjectConfig("testdata/dummy.yml")
+	ctx, err := config.NewFromYAML("testdata/dummy.yml")
 	if err != nil {
 		t.Errorf("Unexpected error: %s", err)
 	}

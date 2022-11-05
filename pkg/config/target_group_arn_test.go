@@ -19,7 +19,7 @@ func TestTargetGroupArn_Smoke(t *testing.T) {
 	})
 	defer closeFunc()
 
-	ctx, err := testutil.LoadProjectConfig("testdata/simple.yml")
+	ctx, err := config.NewFromYAML("testdata/simple.yml")
 	if err != nil {
 		t.Errorf("Unexpected error: %s", err)
 	}

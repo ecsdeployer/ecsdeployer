@@ -4,18 +4,18 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBuildCronTarget(t *testing.T) {
 	closeMock := testutil.MockSimpleStsProxy(t)
 	defer closeMock()
 
-	ctx, err := testutil.LoadProjectConfig("testdata/dummy.yml")
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	ctx, err := config.NewFromYAML("testdata/dummy.yml")
+	require.NoError(t, err)
 
 	// MUST MATCH THE ORDER OF THE dummy.yml FILE
 	tables := []struct {

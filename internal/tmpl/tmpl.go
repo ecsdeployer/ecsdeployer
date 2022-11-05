@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
@@ -121,8 +122,11 @@ func tplFuncJoin(sep string, vals ...interface{}) string {
 			tmpArr[i] = fmt.Sprintf("%t", v)
 		case int, int32, int64:
 			tmpArr[i] = fmt.Sprintf("%d", v)
-		case float32, float64:
-			tmpArr[i] = fmt.Sprintf("%f", v)
+		case float32:
+			// tmpArr[i] = fmt.Sprintf("%f", v)
+			tmpArr[i] = strconv.FormatFloat(float64(v), 'f', -1, 32)
+		case float64:
+			tmpArr[i] = strconv.FormatFloat(v, 'f', -1, 64)
 		case nil:
 			tmpArr[i] = ""
 		default:

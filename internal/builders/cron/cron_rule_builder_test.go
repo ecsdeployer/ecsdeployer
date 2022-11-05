@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
 )
@@ -12,7 +13,7 @@ func TestBuildCronRule(t *testing.T) {
 	closeMock := testutil.MockSimpleStsProxy(t)
 	defer closeMock()
 
-	ctx, err := testutil.LoadProjectConfig("testdata/dummy.yml")
+	ctx, err := config.NewFromYAML("testdata/dummy.yml")
 	if err != nil {
 		t.Errorf("Unexpected error: %s", err)
 	}

@@ -1,0 +1,18 @@
+subnets:
+  - subnet-00000000000
+  - subnet-11111111111
+
+  - tag:cloud87/network=private
+  - name: state
+    values: [available]
+  - name: tag:cloud87/subnet_class
+    value: host
+
+security_groups:
+  - sg-1234567890
+  - sg-9876543210
+  - name: thing
+    value: "stuff"
+  - name: test
+    values: 
+      - test

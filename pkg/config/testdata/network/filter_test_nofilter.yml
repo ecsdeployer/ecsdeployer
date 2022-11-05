@@ -1,0 +1,7 @@
+subnets:
+  - subnet-00000000000
+  - subnet-11111111111
+
+security_groups:
+  - sg-1234567890
+  - sg-9876543210
