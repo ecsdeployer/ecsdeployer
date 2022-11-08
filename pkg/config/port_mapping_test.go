@@ -6,6 +6,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPortMapping_FromString(t *testing.T) {
@@ -23,9 +24,7 @@ func TestPortMapping_FromString(t *testing.T) {
 	for _, table := range tables {
 		mapping, err := config.NewPortMappingFromString(table.str)
 
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+		require.NoError(t, err)
 
 		if mapping.Port == nil {
 			t.Errorf("expected port=%d, got port=nil", table.port)
@@ -53,10 +52,7 @@ func TestPortMapping_FromStringFailures(t *testing.T) {
 
 	for _, table := range tables {
 		_, err := config.NewPortMappingFromString(table)
-
-		if err == nil {
-			t.Errorf("expected '%s' to return error, but it did not", table)
-		}
+		require.Error(t, err, "expected '%s' to return error, but it did not", table)
 	}
 }
 

@@ -85,6 +85,6 @@ func (obj *Settings) Validate() error {
 	return nil
 }
 
-// func (Settings) JSONSchemaPost(base *jsonschema.Schema) {
+// func (Settings) JSONSchemaExtend(base *jsonschema.Schema) {
 
 // }

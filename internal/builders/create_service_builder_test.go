@@ -9,8 +9,7 @@ import (
 )
 
 func TestBuildCreateService_Basic(t *testing.T) {
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 	// just a basic test to make sure we can pass the common stuff thru it
 
 	ctx, err := config.NewFromYAML("testdata/dummy.yml")

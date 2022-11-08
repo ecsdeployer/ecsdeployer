@@ -111,7 +111,7 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 	time.Sleep(5 * time.Second)
 
 	stoppedWaiter := ecs.NewTasksStoppedWaiter(ecsClient, func(trwo *ecs.TasksStoppedWaiterOptions) {
-		trwo.MinDelay = 10 * time.Second
+		trwo.MinDelay = 5 * time.Second
 		trwo.MaxDelay = 60 * time.Second
 
 		oldRetryable := trwo.Retryable

@@ -1,21 +1,10 @@
 package testutil
 
 import (
-	"fmt"
 	"net/url"
-	"testing"
 
 	"github.com/webdestroya/awsmocker"
 )
-
-// This is just a basic mock server to get the account ID and region
-func MockSimpleStsProxy(t *testing.T) func() {
-	// awsmocker.GlobalDebugMode = true
-	closeFunc, _, _ := awsmocker.StartMockServer(&awsmocker.MockerOptions{
-		T: t,
-	})
-	return closeFunc
-}
 
 func Mock_ELBv2_DescribeTargetGroups_Single_Success(tgName string) *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
@@ -26,25 +15,34 @@ func Mock_ELBv2_DescribeTargetGroups_Single_Success(tgName string) *awsmocker.Mo
 				"Names.member.1": []string{tgName},
 			},
 		},
-		Response: &awsmocker.MockedResponse{
-			ContentType: awsmocker.ContentTypeXML,
-			Body:        fmt.Sprintf(mock_DescribeTargetGroupsResponse_SingleResult, tgName, tgName),
-		},
+		Response: MockResponse_ELBv2_DescribeTargetGroups_Single(tgName),
+	}
+}
+
+func MockResponse_ELBv2_DescribeTargetGroups_Single(tgName string) *awsmocker.MockedResponse {
+
+	return &awsmocker.MockedResponse{
+		ContentType: awsmocker.ContentTypeXML,
+		Body: TemplateApply(mock_tpl_DescribeTargetGroupsResponse, map[string]interface{}{
+			"TargetGroupNames": []string{tgName},
+			"AccountId":        awsmocker.DefaultAccountId,
+		}),
 	}
 }
 
 const (
-	mock_DescribeTargetGroupsResponse_SingleResult = `<DescribeTargetGroupsResponse xmlns="http://elasticloadbalancing.amazonaws.com/doc/2015-12-01/">
+	mock_tpl_DescribeTargetGroupsResponse = `<DescribeTargetGroupsResponse xmlns="http://elasticloadbalancing.amazonaws.com/doc/2015-12-01/">
   <DescribeTargetGroupsResult> 
-    <TargetGroups> 
+    <TargetGroups>
+			{{ range .TargetGroupNames }}
       <member> 
-        <TargetGroupArn>arn:aws:elasticloadbalancing:us-east-1:555555555555:targetgroup/%s/73e2d6bc24d8a067</TargetGroupArn> 
+        <TargetGroupArn>arn:aws:elasticloadbalancing:us-east-1:{{$.AccountId}}:targetgroup/{{.}}/73e2d6bc24d8a067</TargetGroupArn> 
         <HealthCheckTimeoutSeconds>5</HealthCheckTimeoutSeconds> 
         <HealthCheckPort>traffic-port</HealthCheckPort> 
         <Matcher> 
           <HttpCode>200</HttpCode> 
         </Matcher> 
-        <TargetGroupName>%s</TargetGroupName> 
+        <TargetGroupName>{{.}}</TargetGroupName> 
         <HealthCheckProtocol>HTTP</HealthCheckProtocol> 
         <HealthCheckPath>/</HealthCheckPath> 
         <Protocol>HTTP</Protocol> 
@@ -53,10 +51,11 @@ const (
         <HealthyThresholdCount>5</HealthyThresholdCount> 
         <HealthCheckIntervalSeconds>30</HealthCheckIntervalSeconds> 
         <LoadBalancerArns> 
-          <member>arn:aws:elasticloadbalancing:us-east-1:555555555555:loadbalancer/app/my-load-balancer/50dc6c495c0c9188</member> 
+          <member>arn:aws:elasticloadbalancing:us-east-1:{{$.AccountId}}:loadbalancer/app/my-load-balancer/50dc6c495c0c9188</member> 
         </LoadBalancerArns> 
         <UnhealthyThresholdCount>2</UnhealthyThresholdCount> 
-      </member> 
+      </member>
+			{{ end }}
     </TargetGroups> 
   </DescribeTargetGroupsResult> 
   <ResponseMetadata> 

@@ -94,7 +94,7 @@ func (obj *Service) Validate() error {
 	return nil
 }
 
-// func (Service) JSONSchemaPost(base *jsonschema.Schema) {
+// func (Service) JSONSchemaExtend(base *jsonschema.Schema) {
 
 // 	desired := (util.FirstParam(base.Properties.Get("desired")).(*jsonschema.Schema))
 // 	desired.Minimum = 0

@@ -117,7 +117,7 @@ func (EnvVar) JSONSchema() *jsonschema.Schema {
 // 	}
 // }
 
-func (EnvVarMap) JSONSchemaPost(base *jsonschema.Schema) {
+func (EnvVarMap) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	patt := base.PatternProperties
 	patt["^[a-zA-Z_][^=]*$"] = patt[".*"]

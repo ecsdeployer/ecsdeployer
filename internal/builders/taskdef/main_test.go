@@ -11,8 +11,7 @@ import (
 func TestBuild_Basic(t *testing.T) {
 
 	// just a basic test to make sure we can pass the common stuff thru it
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
 	ctx, err := config.NewFromYAML("testdata/dummy.yml")
 	require.NoError(t, err)

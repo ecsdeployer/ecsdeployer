@@ -93,7 +93,7 @@ func (obj ConsoleTask) IsTaskStruct() bool {
 	return true
 }
 
-func (ConsoleTask) JSONSchemaPost(base *jsonschema.Schema) {
+func (ConsoleTask) JSONSchemaExtend(base *jsonschema.Schema) {
 	// base.Properties.Delete("name")
 
 	console := *base

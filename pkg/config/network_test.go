@@ -21,8 +21,7 @@ func TestNetwork_Valid(t *testing.T) {
 	require.NoError(t, err)
 }
 func TestNetwork_NetworkConfigurationResolver_Errors(t *testing.T) {
-	closeFunc, _, _, ctx := networkFilterMocker(t, "testdata/network/filter_test_sgvpc.yml", []*awsmocker.MockedEndpoint{})
-	defer closeFunc()
+	_, _, ctx := networkFilterMocker(t, "testdata/network/filter_test_sgvpc.yml", []*awsmocker.MockedEndpoint{})
 
 	_, err := networkConfigurationResolver(ctx, nil)
 	require.Error(t, err)
@@ -44,7 +43,7 @@ func TestNetwork_NetworkConfigurationResolver_Errors(t *testing.T) {
 }
 
 func TestNetwork_NetworkConfigurationResolver_Full(t *testing.T) {
-	closeFunc, network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test.yml", []*awsmocker.MockedEndpoint{
+	network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test.yml", []*awsmocker.MockedEndpoint{
 		{
 			Request: &awsmocker.MockedRequest{
 				Service: "ec2",
@@ -110,7 +109,6 @@ func TestNetwork_NetworkConfigurationResolver_Full(t *testing.T) {
 			},
 		},
 	})
-	defer closeFunc()
 
 	result, err := networkConfigurationResolver(ctx, network)
 	require.NoError(t, err)
@@ -153,7 +151,7 @@ func TestNetwork_NetworkConfigurationResolver_Full(t *testing.T) {
 }
 
 func TestNetworkCalculateSecurityGroups_NoVPC(t *testing.T) {
-	closeFunc, network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test_nofilter.yml", []*awsmocker.MockedEndpoint{
+	network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test_nofilter.yml", []*awsmocker.MockedEndpoint{
 		{
 			Request: &awsmocker.MockedRequest{
 				Service: "ec2",
@@ -165,7 +163,6 @@ func TestNetworkCalculateSecurityGroups_NoVPC(t *testing.T) {
 			},
 		},
 	})
-	defer closeFunc()
 
 	result, err := calculateSecurityGroups(ctx, *network, nil)
 	require.NoError(t, err)
@@ -179,7 +176,7 @@ func TestNetworkCalculateSecurityGroups_WithVPC(t *testing.T) {
 
 	vpcId := "vpc-11111111"
 
-	closeFunc, network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test.yml", []*awsmocker.MockedEndpoint{
+	network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test.yml", []*awsmocker.MockedEndpoint{
 		{
 			Request: &awsmocker.MockedRequest{
 				Service: "ec2",
@@ -215,7 +212,6 @@ func TestNetworkCalculateSecurityGroups_WithVPC(t *testing.T) {
 			},
 		},
 	})
-	defer closeFunc()
 
 	result, err := calculateSecurityGroups(ctx, *network, &vpcId)
 	require.NoError(t, err)
@@ -230,7 +226,7 @@ func TestNetworkCalculateSecurityGroups_WithVPC(t *testing.T) {
 // if the filter list already has a VPC filter, don't add our own
 func TestNetworkCalculateSecurityGroups_WithExistingVPC(t *testing.T) {
 
-	closeFunc, network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test_sgvpc.yml", []*awsmocker.MockedEndpoint{
+	network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test_sgvpc.yml", []*awsmocker.MockedEndpoint{
 		{
 			Request: &awsmocker.MockedRequest{
 				Service: "ec2",
@@ -262,7 +258,6 @@ func TestNetworkCalculateSecurityGroups_WithExistingVPC(t *testing.T) {
 			},
 		},
 	})
-	defer closeFunc()
 
 	result, err := calculateSecurityGroups(ctx, *network, util.Ptr("vpc-11111111"))
 	require.NoError(t, err)
@@ -275,7 +270,7 @@ func TestNetworkCalculateSecurityGroups_WithExistingVPC(t *testing.T) {
 }
 
 func TestNetworkCalculateSubnets_NoVPC(t *testing.T) {
-	closeFunc, network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test_nofilter.yml", []*awsmocker.MockedEndpoint{
+	network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test_nofilter.yml", []*awsmocker.MockedEndpoint{
 		{
 			Request: &awsmocker.MockedRequest{
 				Service: "ec2",
@@ -287,7 +282,6 @@ func TestNetworkCalculateSubnets_NoVPC(t *testing.T) {
 			},
 		},
 	})
-	defer closeFunc()
 
 	result, vpcid, err := calculateSubnets(ctx, *network)
 	require.NoError(t, err)
@@ -300,7 +294,7 @@ func TestNetworkCalculateSubnets_NoVPC(t *testing.T) {
 }
 
 func TestNetworkCalculateSubnets_WithVPC(t *testing.T) {
-	closeFunc, network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test.yml", []*awsmocker.MockedEndpoint{
+	network, _, ctx := networkFilterMocker(t, "testdata/network/filter_test.yml", []*awsmocker.MockedEndpoint{
 		{
 			Request: &awsmocker.MockedRequest{
 				Service: "ec2",
@@ -334,7 +328,6 @@ func TestNetworkCalculateSubnets_WithVPC(t *testing.T) {
 			},
 		},
 	})
-	defer closeFunc()
 
 	result, vpcid, err := calculateSubnets(ctx, *network)
 	require.NoError(t, err)
@@ -350,12 +343,9 @@ func TestNetworkCalculateSubnets_WithVPC(t *testing.T) {
 
 }
 
-func networkFilterMocker(t *testing.T, filePath string, mocks []*awsmocker.MockedEndpoint) (func(), *NetworkConfiguration, *Project, *Context) {
-	awsmocker.GlobalDebugMode = true
-	closeFunc, _, _ := awsmocker.StartMockServer(&awsmocker.MockerOptions{
-		T:       t,
-		Verbose: true,
-		Mocks:   append([]*awsmocker.MockedEndpoint{}, mocks...),
+func networkFilterMocker(t *testing.T, filePath string, mocks []*awsmocker.MockedEndpoint) (*NetworkConfiguration, *Project, *Context) {
+	awsmocker.Start(t, &awsmocker.MockerOptions{
+		Mocks: append([]*awsmocker.MockedEndpoint{}, mocks...),
 	})
 
 	network, err := yaml.ParseYAMLFile[NetworkConfiguration](filePath)
@@ -366,5 +356,5 @@ func networkFilterMocker(t *testing.T, filePath string, mocks []*awsmocker.Mocke
 
 	ctx := New(project)
 
-	return closeFunc, network, project, ctx
+	return network, project, ctx
 }

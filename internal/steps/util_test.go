@@ -9,12 +9,9 @@ import (
 	"github.com/webdestroya/awsmocker"
 )
 
-func stepTestAwsMocker(t *testing.T, projectFilePath string, mocks []*awsmocker.MockedEndpoint) (func(), *config.Project, *config.Context) {
-	// awsmocker.GlobalDebugMode = true
-	closeFunc, _, _ := awsmocker.StartMockServer(&awsmocker.MockerOptions{
-		T:       t,
-		Verbose: true,
-		Mocks:   append([]*awsmocker.MockedEndpoint{}, mocks...),
+func stepTestAwsMocker(t *testing.T, projectFilePath string, mocks []*awsmocker.MockedEndpoint) (*config.Project, *config.Context) {
+	awsmocker.Start(t, &awsmocker.MockerOptions{
+		Mocks: append([]*awsmocker.MockedEndpoint{}, mocks...),
 	})
 
 	project, err := yaml.ParseYAMLFile[config.Project](projectFilePath)
@@ -22,5 +19,5 @@ func stepTestAwsMocker(t *testing.T, projectFilePath string, mocks []*awsmocker.
 
 	ctx := config.New(project)
 
-	return closeFunc, project, ctx
+	return project, ctx
 }

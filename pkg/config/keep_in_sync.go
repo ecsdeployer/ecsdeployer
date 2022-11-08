@@ -98,7 +98,7 @@ func (a *KeepInSync) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (KeepInSync) JSONSchemaPost(base *jsonschema.Schema) {
+func (KeepInSync) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	kis := NewKeepInSyncFromBool(defaultKeepInSync)
 	v := reflect.ValueOf(kis)

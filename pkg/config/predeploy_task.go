@@ -34,7 +34,7 @@ func (obj *PreDeployTask) IsTaskStruct() bool {
 	return true
 }
 
-func (PreDeployTask) JSONSchemaPost(base *jsonschema.Schema) {
+func (PreDeployTask) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	base.Required = append(base.Required, "name")
 }

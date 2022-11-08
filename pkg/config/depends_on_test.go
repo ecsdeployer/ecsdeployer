@@ -6,6 +6,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDependsOn_NewFromString_Valid(t *testing.T) {
@@ -23,9 +24,8 @@ func TestDependsOn_NewFromString_Valid(t *testing.T) {
 	for _, table := range tables {
 		st.AssertValid(table.str, true)
 		obj, err := st.Parse(table.str)
-		if err != nil {
-			t.Errorf("error: %s", err)
-		}
+
+		require.NoError(t, err)
 		st.AssertMatchExpected(obj, table.expected, true)
 	}
 }

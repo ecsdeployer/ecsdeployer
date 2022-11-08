@@ -129,7 +129,7 @@ func (nt *NameTemplates) Validate() error {
 	return nil
 }
 
-func (NameTemplates) JSONSchemaPost(base *jsonschema.Schema) {
+func (NameTemplates) JSONSchemaExtend(base *jsonschema.Schema) {
 	templates := &NameTemplates{}
 	templates.ApplyDefaults()
 

@@ -56,7 +56,7 @@ func (obj *EcsDeployerOptions) Validate() error {
 	return nil
 }
 
-func (obj *EcsDeployerOptions) JSONSchemaPost(base *jsonschema.Schema) {
+func (obj *EcsDeployerOptions) JSONSchemaExtend(base *jsonschema.Schema) {
 	configschema.SchemaPropMerge(base, "required_version", func(s *jsonschema.Schema) {
 		s.Description = "Create a version constraint to prevent different versions of ECS Deployer from deploying this app."
 		s.Comments = "https://github.com/Masterminds/semver"

@@ -120,7 +120,7 @@ func (obj *FirelensConfig) ApplyDefaults() {
 	// }
 }
 
-func (FirelensConfig) JSONSchemaPost(base *jsonschema.Schema) {
+func (FirelensConfig) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	def := &FirelensConfig{}
 	def.ApplyDefaults()

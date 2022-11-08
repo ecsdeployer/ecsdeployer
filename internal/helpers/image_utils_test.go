@@ -10,8 +10,7 @@ import (
 
 func TestResolveImageUri(t *testing.T) {
 
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
 	project := &config.Project{
 		ProjectName: "dummy",

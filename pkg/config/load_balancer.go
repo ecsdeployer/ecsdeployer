@@ -93,7 +93,7 @@ func (a *LoadBalancers) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (LoadBalancers) JSONSchemaPost(base *jsonschema.Schema) {
+func (LoadBalancers) JSONSchemaExtend(base *jsonschema.Schema) {
 	oldBase := *base
 	oldBase.Description = "Define multiple load balancer mappings."
 	newSchema := &jsonschema.Schema{

@@ -55,7 +55,7 @@ func (obj *CronJob) Validate() error {
 func (obj *CronJob) ApplyDefaults() {
 }
 
-func (CronJob) JSONSchemaPost(base *jsonschema.Schema) {
+func (CronJob) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	base.Required = append(base.Required, "name")
 

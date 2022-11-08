@@ -11,8 +11,7 @@ import (
 )
 
 func TestBuildCronRule(t *testing.T) {
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
 	ctx, err := config.NewFromYAML("testdata/dummy.yml")
 	require.NoError(t, err)

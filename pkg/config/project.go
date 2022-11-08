@@ -276,7 +276,7 @@ func (obj *Project) ApproxNumTasks() int {
 	return taskCount
 }
 
-func (Project) JSONSchemaPost(base *jsonschema.Schema) {
+func (Project) JSONSchemaExtend(base *jsonschema.Schema) {
 	configschema.SchemaPropMerge(base, "ecsdeployer", func(s *jsonschema.Schema) {
 		s.Description = "Add restrictions to ECSDeployer itself."
 	})

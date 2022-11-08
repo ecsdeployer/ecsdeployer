@@ -11,8 +11,7 @@ import (
 
 func TestTemplate_Functions(t *testing.T) {
 
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
 	ctx := config.New(&config.Project{})
 	ctx.ImageTag = "IMAGETAG"

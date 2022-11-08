@@ -34,10 +34,6 @@ type AwsClientManager struct {
 
 func NewAwsClientManager(ctx context.Context) *AwsClientManager {
 
-	// if fakeaws.IsTestMode() {
-	// 	return NewAwsClientManagerFromConfig(fakeaws.GetAwsConfig())
-	// }
-
 	cfg, err := config.LoadDefaultConfig(ctx, func(lo *config.LoadOptions) error {
 		// lo.ClientLogMode = &clientLogMode
 		return nil
@@ -50,8 +46,6 @@ func NewAwsClientManager(ctx context.Context) *AwsClientManager {
 }
 
 func NewAwsClientManagerFromConfig(cfg aws.Config) *AwsClientManager {
-
-	// cfg.ClientLogMode = aws.LogSigning | aws.LogRequest | aws.LogRequestWithBody | aws.LogRequestEventMessage
 
 	return &AwsClientManager{
 		awsConfig:     cfg,

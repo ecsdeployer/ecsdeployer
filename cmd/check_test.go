@@ -8,8 +8,7 @@ import (
 )
 
 func TestCheckConfig(t *testing.T) {
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
 	cmd := newCheckCmd(defaultCmdMetadata())
 	cmd.cmd.SetArgs([]string{"-c", "testdata/valid.yml"})

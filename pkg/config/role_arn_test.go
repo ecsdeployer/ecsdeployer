@@ -10,8 +10,7 @@ import (
 
 func TestRoleArn(t *testing.T) {
 
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
 	ctx, err := config.NewFromYAML("testdata/simple.yml")
 	if err != nil {

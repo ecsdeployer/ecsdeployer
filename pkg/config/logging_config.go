@@ -80,7 +80,7 @@ func (obj *LoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error
 
 /*
 
-func (LoggingConfig) JSONSchemaPost(base *jsonschema.Schema) {
+func (LoggingConfig) JSONSchemaExtend(base *jsonschema.Schema) {
 	base.Description = "Configure logging options"
 
 	// disabledSchema, _ := base.Properties.Get("disabled")

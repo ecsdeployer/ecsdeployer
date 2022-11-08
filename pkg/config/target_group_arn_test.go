@@ -11,13 +11,11 @@ import (
 
 func TestTargetGroupArn_Smoke(t *testing.T) {
 
-	closeFunc, _, _ := awsmocker.StartMockServer(&awsmocker.MockerOptions{
-		T: t,
+	awsmocker.Start(t, &awsmocker.MockerOptions{
 		Mocks: []*awsmocker.MockedEndpoint{
 			testutil.Mock_ELBv2_DescribeTargetGroups_Single_Success("dummytg"),
 		},
 	})
-	defer closeFunc()
 
 	ctx, err := config.NewFromYAML("testdata/simple.yml")
 	if err != nil {

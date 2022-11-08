@@ -78,7 +78,7 @@ func (a *SSMImport) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (SSMImport) JSONSchemaPost(base *jsonschema.Schema) {
+func (SSMImport) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	defo := &SSMImport{}
 	defo.ApplyDefaults()

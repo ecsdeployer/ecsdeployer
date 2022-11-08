@@ -2,6 +2,10 @@ project: dummy
 image: fake:latest
 cluster: testcluster
 
+role: fakerole
+execution_role: fakerole
+cron_launcher_role: fakerole
+
 network:
   subnets:
     - subnet-1111111111
@@ -11,9 +15,18 @@ network:
     - sg-1111111111
     - sg-2222222222
 
+predeploy:
+  - name: pd1
+    command: "something something"
+
 services:
   - name: web
     command: "fake command"
     load_balancer:
       target_group: faketg
       port: 1234
+
+cronjobs:
+  - name: cron1
+    schedule: rate(1 minute)
+    description: somethingsomething

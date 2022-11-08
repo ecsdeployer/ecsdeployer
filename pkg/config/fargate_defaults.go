@@ -99,7 +99,7 @@ func (obj *FargateDefaults) ApplyDefaults() {
 
 }
 
-func (FargateDefaults) JSONSchemaPost(base *jsonschema.Schema) {
+func (FargateDefaults) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	base.Properties.Delete("name")
 	base.Properties.Delete("logging")
