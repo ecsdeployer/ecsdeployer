@@ -181,12 +181,16 @@ func stepServiceWaitForSuccess(ctx *config.Context, step *Step, service *ecsType
 	startTime := time.Now()
 
 	waiter := ecs.NewServicesStableWaiter(ecsClient, func(sswo *ecs.ServicesStableWaiterOptions) {
-		sswo.MinDelay = 10 * time.Second
-		sswo.MaxDelay = 45 * time.Second
+		sswo.MinDelay, sswo.MaxDelay = helpers.GetAwsWaiterDelays(10*time.Second, 45*time.Second)
 		sswo.LogWaitAttempts = false
 
 		oldRetryable := sswo.Retryable
 		sswo.Retryable = func(ctx context.Context, dsi *ecs.DescribeServicesInput, dso *ecs.DescribeServicesOutput, err error) (bool, error) {
+
+			if err != nil {
+				return false, err
+			}
+
 			logger.WithField(fieldRuntime, time.Since(startTime).Round(time.Second).String()).Info("Waiting for service...")
 
 			return oldRetryable(ctx, dsi, dso, err)

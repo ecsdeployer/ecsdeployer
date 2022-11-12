@@ -20,11 +20,23 @@ predeploy:
     command: "something something"
 
 services:
+  # First service needs to be a web service
   - name: web
     command: "fake command"
+    desired: 3
     load_balancer:
       target_group: faketg
       port: 1234
+  
+  # second needs to be a non-web
+  - name: worker
+    command: "whatever"
+    desired: 2
+  
+  # disabled worker
+  - name: offworker
+    command: "something"
+
 
 cronjobs:
   - name: cron1

@@ -3,6 +3,7 @@ package steps
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -10,6 +11,8 @@ import (
 )
 
 func stepTestAwsMocker(t *testing.T, projectFilePath string, mocks []*awsmocker.MockedEndpoint) (*config.Project, *config.Context) {
+	helpers.IsTestingMode = true
+
 	awsmocker.Start(t, &awsmocker.MockerOptions{
 		Mocks: append([]*awsmocker.MockedEndpoint{}, mocks...),
 	})
