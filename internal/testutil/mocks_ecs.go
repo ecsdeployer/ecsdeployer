@@ -3,13 +3,14 @@ package testutil
 import (
 	"fmt"
 	"path"
+	"sort"
 	"time"
 
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/jmespath/go-jmespath"
 	"github.com/webdestroya/awsmocker"
+	"golang.org/x/exp/slices"
 )
 
 func Mock_ECS_RunTask() *awsmocker.MockedEndpoint {
@@ -24,14 +25,14 @@ func Mock_ECS_RunTask() *awsmocker.MockedEndpoint {
 
 				clusterName := path.Base(cluster.(string))
 
-				return util.Must(util.Jsonify(map[string]interface{}{
+				return jsonify(map[string]interface{}{
 					"failures": []interface{}{},
 					"tasks": []interface{}{
 						map[string]interface{}{
 							"taskArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task/%s/deadbeefdeadbeefdeadbeefdeadbeef", rr.Region, awsmocker.DefaultAccountId, clusterName),
 						},
 					},
-				}))
+				})
 			},
 		},
 	}
@@ -47,7 +48,7 @@ func Mock_ECS_RunTask_FailToLaunch(maxCount int) *awsmocker.MockedEndpoint {
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 
-				return util.Must(util.Jsonify(map[string]interface{}{
+				return jsonify(map[string]interface{}{
 					"failures": []interface{}{
 						map[string]interface{}{
 							"detail": "some failure detail",
@@ -55,7 +56,7 @@ func Mock_ECS_RunTask_FailToLaunch(maxCount int) *awsmocker.MockedEndpoint {
 						},
 					},
 					"tasks": []interface{}{},
-				}))
+				})
 			},
 		},
 	}
@@ -136,11 +137,11 @@ func Mock_ECS_RegisterTaskDefinition_Generic() *awsmocker.MockedEndpoint {
 
 				taskName, _ := jmespath.Search("family", rr.JsonPayload)
 
-				return util.Must(util.Jsonify(map[string]interface{}{
+				return jsonify(map[string]interface{}{
 					"taskDefinition": map[string]interface{}{
 						"taskDefinitionArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:999", rr.Region, awsmocker.DefaultAccountId, taskName.(string)),
 					},
-				}))
+				})
 			},
 		},
 	}
@@ -338,4 +339,93 @@ func MockResponse_ECS_Service(service ecsTypes.Service) map[string]interface{} {
 	}
 
 	return val
+}
+
+func Mock_ECS_ListTaskDefinitionFamilies(results []string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "ecs",
+			Action:  "ListTaskDefinitionFamilies",
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+				return jsonify(map[string]interface{}{
+					"families": results,
+				})
+			},
+		},
+	}
+}
+
+func Mock_ECS_ListTaskDefinitions(familyName string, revisions []int) *awsmocker.MockedEndpoint {
+
+	jmesMatchers := map[string]interface{}{
+		"familyPrefix": familyName,
+	}
+
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "ecs",
+			Action:  "ListTaskDefinitions",
+			Matcher: JmesRequestMatcher(jmesMatchers),
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+
+				if len(revisions) == 0 {
+					return jsonify(map[string]interface{}{
+						"taskDefinitionArns": []interface{}{},
+					})
+				}
+
+				sortDir := JmesPathSearch(rr.JsonPayload, "sort").(string)
+
+				if sortDir == "DESC" {
+					sort.Slice(revisions, func(i, j int) bool {
+						return revisions[i] > revisions[j]
+					})
+				} else {
+					slices.Sort(revisions)
+				}
+
+				arnList := make([]string, 0, len(revisions))
+				for _, rev := range revisions {
+					arnList = append(arnList, fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:%d", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, familyName, rev))
+				}
+
+				return jsonify(map[string]interface{}{
+					"taskDefinitionArns": arnList,
+				})
+			},
+		},
+	}
+}
+
+// params should be "dummy-task" and 1234 format
+func Mock_ECS_DeregisterTaskDefinition(family string, rev int) *awsmocker.MockedEndpoint {
+	defArn := fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:%d", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, family, rev)
+
+	jmesMatchers := map[string]interface{}{
+		"taskDefinition": defArn,
+	}
+
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "ecs",
+			Action:  "DeregisterTaskDefinition",
+			Matcher: JmesRequestMatcher(jmesMatchers),
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+				return jsonify(map[string]interface{}{
+					"taskDefinition": map[string]interface{}{
+						"family":            family,
+						"revision":          rev,
+						"status":            "INACTIVE",
+						"taskDefinitionArn": defArn,
+					},
+				})
+			},
+		},
+	}
 }

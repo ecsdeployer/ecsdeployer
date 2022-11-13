@@ -3,15 +3,21 @@ package testutil
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"reflect"
 	"testing"
 	"text/template"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	"github.com/caarlos0/log"
 	"github.com/jmespath/go-jmespath"
 	"github.com/webdestroya/awsmocker"
 	"golang.org/x/exp/maps"
 )
+
+func DisableLogging() {
+	log.Log = log.New(io.Discard)
+}
 
 func TemplateApply(tpl string, fields interface{}) string {
 	tplate, err := template.New("testutil").Parse(tpl)
