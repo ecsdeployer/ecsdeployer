@@ -153,7 +153,9 @@ func destroyService(ctx *config.Context, log *log.Entry, serviceArn string) erro
 		}
 
 		// wait a lil bit for ecs to catch up
-		time.Sleep(5 * time.Second)
+		if !helpers.IsTestingMode {
+			time.Sleep(5 * time.Second)
+		}
 	}
 
 	_, err = client.DeleteService(ctx.Context, &ecs.DeleteServiceInput{

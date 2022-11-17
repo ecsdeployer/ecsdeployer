@@ -277,6 +277,23 @@ func Mock_ECS_UpdateService_jmespath(jmesMatchers map[string]any, service ecsTyp
 	}
 }
 
+func Mock_ECS_DeleteService_jmespath(jmesMatchers map[string]any, service ecsTypes.Service) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "ecs",
+			Action:  "DeleteService",
+			Matcher: JmesRequestMatcher(jmesMatchers),
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+				return jsonify(map[string]interface{}{
+					"service": MockResponse_ECS_Service(service),
+				})
+			},
+		},
+	}
+}
+
 func MockResponse_ECS_Service(service ecsTypes.Service) map[string]interface{} {
 	val := make(map[string]interface{}, 20)
 

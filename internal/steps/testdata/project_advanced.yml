@@ -6,6 +6,9 @@ role: fakerole
 execution_role: fakerole
 cron_launcher_role: fakerole
 
+settings:
+  ssm_import: true
+
 network:
   subnets:
     - subnet-1111111111

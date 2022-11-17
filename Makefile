@@ -1,5 +1,5 @@
 # gopkgs := ./cmd/... ./internal/... ./pkg/...
-gopkgs := $(shell go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/testutil | grep -v internal/fakeaws)
+gopkgs := $(shell go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/testutil)
 
 
 .PHONY: precommit

@@ -1,6 +1,10 @@
 package fargate
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestFindFargateBestFit(t *testing.T) {
 
@@ -30,5 +34,27 @@ func TestFindFargateBestFit(t *testing.T) {
 			)
 		}
 
+	}
+}
+
+func TestExceedsLargest(t *testing.T) {
+	tables := []struct {
+		cpu int32
+		mem int32
+		ret bool
+	}{
+		{128, 128, false},
+		{9999999, 128, true},
+		{128, 99999999, true},
+	}
+
+	for _, table := range tables {
+		ret := ExceedsLargest(table.cpu, table.mem)
+
+		if table.ret {
+			require.True(t, ret)
+		} else {
+			require.False(t, ret)
+		}
 	}
 }

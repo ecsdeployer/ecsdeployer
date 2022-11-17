@@ -22,7 +22,7 @@ require (
 	github.com/muesli/roff v0.1.0
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.1
-	github.com/webdestroya/awsmocker v0.2.0
+	github.com/webdestroya/awsmocker v0.2.5
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	github.com/xeipuuv/gojsonschema v1.2.0
 	golang.org/x/exp v0.0.0-20221106115401-f9659909a136

@@ -52,7 +52,7 @@ func jsonify(obj interface{}) string {
 func JmesPathSearch(obj interface{}, searchPath string) interface{} {
 	result, err := jmespath.Search(searchPath, obj)
 	if err != nil {
-		panic(fmt.Errorf("Failed to find '%s': %s", searchPath, err))
+		panic(fmt.Errorf("Failed to find '%s': %w", searchPath, err))
 	}
 
 	return result

@@ -17,8 +17,8 @@ func TestServiceStep(t *testing.T) {
 	webServiceName := "dummy-web"
 
 	commonMocks := []*awsmocker.MockedEndpoint{
-		testutil.Mock_Logs_CreateLogGroup(),
-		testutil.Mock_Logs_PutRetentionPolicy(),
+		testutil.Mock_Logs_CreateLogGroup_AllowAny(),
+		testutil.Mock_Logs_PutRetentionPolicy_AllowAny(),
 		testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
 	}
 

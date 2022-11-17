@@ -17,8 +17,8 @@ func TestPreDeployTaskStep(t *testing.T) {
 
 	project, ctx := stepTestAwsMocker(t, "testdata/project_advanced.yml", []*awsmocker.MockedEndpoint{
 		// testutil.Mock_ELBv2_DescribeTargetGroups_Single_Success("faketg"),
-		testutil.Mock_Logs_CreateLogGroup(),
-		testutil.Mock_Logs_PutRetentionPolicy(),
+		testutil.Mock_Logs_CreateLogGroup_AllowAny(),
+		testutil.Mock_Logs_PutRetentionPolicy_AllowAny(),
 		testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
 
 		testutil.Mock_ECS_RunTask_FailToLaunch(1),
