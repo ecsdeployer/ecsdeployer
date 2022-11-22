@@ -5,6 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSpotOverrides(t *testing.T) {
@@ -33,7 +34,7 @@ func TestSpotOverrides(t *testing.T) {
 		}
 
 		if err := obj.Validate(); err != nil {
-			t.Fatalf("Entry<%d> DID NOT PASS VALIDATION! TEST IS BROKE err: %v", entryNum, err)
+			require.NoErrorf(t, err, "Entry<%d> DID NOT PASS VALIDATION! TEST IS BROKE err: %v", entryNum, err)
 		}
 
 		if obj.IsDisabled() != table.disabled {
@@ -115,7 +116,5 @@ func TestSpotOverrides(t *testing.T) {
 				t.Errorf("Entry<%d> expected to have FARGATE_SPOT weight=%d but got %d", entryNum, table.expectedSpot[1], ent[1])
 			}
 		}
-
-		t.Logf("Entry<%d>", entryNum)
 	}
 }

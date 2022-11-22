@@ -16,26 +16,25 @@ func (e *exitMemento) Exit(i int) {
 }
 
 func TestRootCmd(t *testing.T) {
-	mem := &exitMemento{}
-	Execute("1.2.3", mem.Exit, []string{"-h"})
-	require.Equal(t, 0, mem.code)
-}
+	t.Run("help", func(t *testing.T) {
+		mem := &exitMemento{}
+		cmd := newRootCmd("", mem.Exit).cmd
+		cmd.SetArgs([]string{"-h"})
 
-func TestRootCmdHelp(t *testing.T) {
-	mem := &exitMemento{}
-	cmd := newRootCmd("", mem.Exit).cmd
-	cmd.SetArgs([]string{"-h"})
-	require.NoError(t, cmd.Execute())
-	require.Equal(t, 0, mem.code)
-}
+		stdOutStr, _, err := executeCmdAndReturnOutput(cmd)
 
-func TestRootCmdVersion(t *testing.T) {
-	var b bytes.Buffer
-	mem := &exitMemento{}
-	cmd := newRootCmd("1.2.3", mem.Exit).cmd
-	cmd.SetOut(&b)
-	cmd.SetArgs([]string{"-v"})
-	require.NoError(t, cmd.Execute())
-	require.Equal(t, "ecsdeployer version 1.2.3\n", b.String())
-	require.Equal(t, 0, mem.code)
+		require.NoError(t, err)
+		require.Equal(t, 0, mem.code)
+		require.Contains(t, stdOutStr, "https://ecsdeployer.com/")
+	})
+	t.Run("version", func(t *testing.T) {
+		var b bytes.Buffer
+		mem := &exitMemento{}
+		cmd := newRootCmd("1.2.3", mem.Exit).cmd
+		cmd.SetOut(&b)
+		cmd.SetArgs([]string{"-v"})
+		require.NoError(t, cmd.Execute())
+		require.Equal(t, "ecsdeployer version 1.2.3\n", b.String())
+		require.Equal(t, 0, mem.code)
+	})
 }

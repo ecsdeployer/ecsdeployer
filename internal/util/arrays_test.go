@@ -1,6 +1,10 @@
 package util
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestChunkArray(t *testing.T) {
 	tables := []struct {
@@ -18,11 +22,7 @@ func TestChunkArray(t *testing.T) {
 	for i, table := range tables {
 		chunks := ChunkArray(table.input, table.chunkSize)
 
-		t.Logf("Entry<%d> == %v", i, chunks)
-
-		if len(chunks) != table.expChunks {
-			t.Fatalf("Entry<%d> expected %d chunks, but got %d", i, table.expChunks, len(chunks))
-		}
+		require.Lenf(t, chunks, table.expChunks, "Entry<%d> expected %d chunks, but got %d", i, table.expChunks, len(chunks))
 
 		totalItems := 0
 

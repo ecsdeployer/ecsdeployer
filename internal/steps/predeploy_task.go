@@ -118,8 +118,6 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 
 		trwo.MinDelay, trwo.MaxDelay = helpers.GetAwsWaiterDelays(5*time.Second, 60*time.Second)
 
-		fmt.Println("WAITER: ", trwo.MinDelay.String(), trwo.MaxDelay.String())
-
 		oldRetryable := trwo.Retryable
 		trwo.Retryable = func(ctx context.Context, dti *ecs.DescribeTasksInput, dto *ecs.DescribeTasksOutput, err error) (bool, error) {
 

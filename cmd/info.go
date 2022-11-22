@@ -40,11 +40,11 @@ func newInfoCmd(metadata *cmdMetadata) *infoCmd {
 				log.Log = log.New(io.Discard)
 			}
 
-			err := projectInfo(root.opts)
+			err := projectInfo(cmd, root.opts)
 			if err != nil {
 
-				fmt.Println()
-				fmt.Printf("Failure: %s\n", err)
+				cmd.Println()
+				cmd.Printf("Failure: %s\n", err)
 
 				return err
 			}
@@ -63,7 +63,7 @@ func newInfoCmd(metadata *cmdMetadata) *infoCmd {
 	return root
 }
 
-func projectInfo(options infoOpts) error {
+func projectInfo(cmd *cobra.Command, options infoOpts) error {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -84,95 +84,95 @@ func projectInfo(options infoOpts) error {
 	}
 	defer cancel()
 
-	fmt.Println("ECS DEPLOYER")
-	fmt.Println()
-	fmt.Println("Note: this is a VERY high level overview of your app. This is not a detailed report of all settings and configuration.")
-	fmt.Println()
+	cmd.Println("ECS DEPLOYER")
+	cmd.Println()
+	cmd.Println("Note: this is a VERY high level overview of your app. This is not a detailed report of all settings and configuration.")
+	cmd.Println()
 
 	project := ctx.Project
 
-	fmt.Printf("Running Preflight checks...")
+	cmd.Printf("Running Preflight checks...")
 	err = steps.PreflightStep(project).Apply(ctx)
 	if err != nil {
 		return err
 	}
-	fmt.Println("DONE")
-	fmt.Println("")
+	cmd.Println("DONE")
+	cmd.Println("")
 
 	pInfoFmt := "%-13s %s\n"
 
-	fmt.Println("PROJECT INFO:")
-	fmt.Printf(pInfoFmt, "Name:", project.ProjectName)
-	fmt.Printf(pInfoFmt, "Cluster:", util.Must(project.Cluster.Name(ctx)))
-	fmt.Printf(pInfoFmt, "Image:", project.Image.Value())
+	cmd.Println("PROJECT INFO:")
+	cmd.Printf(pInfoFmt, "Name:", project.ProjectName)
+	cmd.Printf(pInfoFmt, "Cluster:", util.Must(project.Cluster.Name(ctx)))
+	cmd.Printf(pInfoFmt, "Image:", project.Image.Value())
 
 	if project.StageName != nil {
-		fmt.Printf(pInfoFmt, "Stage:", *project.StageName)
+		cmd.Printf(pInfoFmt, "Stage:", *project.StageName)
 	}
 
 	if project.Settings.SSMImport.IsEnabled() {
-		fmt.Printf(pInfoFmt, "SSM Import:", *project.Settings.SSMImport.Path)
+		cmd.Printf(pInfoFmt, "SSM Import:", *project.Settings.SSMImport.Path)
 	} else {
-		fmt.Printf(pInfoFmt, "SSM Import:", "<disabled>")
+		cmd.Printf(pInfoFmt, "SSM Import:", "<disabled>")
 	}
 
 	if project.ConsoleTask.IsEnabled() {
-		fmt.Printf(pInfoFmt, "Remote Shell:", "Enabled")
+		cmd.Printf(pInfoFmt, "Remote Shell:", "Enabled")
 	} else {
-		fmt.Printf(pInfoFmt, "Remote Shell:", "<disabled>")
+		cmd.Printf(pInfoFmt, "Remote Shell:", "<disabled>")
 	}
 
-	fmt.Println()
-	fmt.Println("ROLES:")
-	fmt.Printf("  App Role:           %s\n", util.Must(project.Role.Name(ctx)))
-	fmt.Printf("  Execution Role:     %s\n", util.Must(project.ExecutionRole.Name(ctx)))
+	cmd.Println()
+	cmd.Println("ROLES:")
+	cmd.Printf("  App Role:           %s\n", util.Must(project.Role.Name(ctx)))
+	cmd.Printf("  Execution Role:     %s\n", util.Must(project.ExecutionRole.Name(ctx)))
 	if project.CronLauncherRole != nil {
-		fmt.Printf("  Cron Launcher Role: %s\n", util.Must(project.CronLauncherRole.Name(ctx)))
+		cmd.Printf("  Cron Launcher Role: %s\n", util.Must(project.CronLauncherRole.Name(ctx)))
 	}
 
 	numPd := len(project.PreDeployTasks)
 	if numPd > 0 {
-		fmt.Println()
-		fmt.Printf("PREDEPLOY TASKS (%d):\n", numPd)
+		cmd.Println()
+		cmd.Printf("PREDEPLOY TASKS (%d):\n", numPd)
 		for _, pd := range project.PreDeployTasks {
 			cmdTxt := infoDefault
 			if pd.Command != nil {
 				cmdTxt = pd.Command.String()
 			}
-			fmt.Printf("  %-15s %s\n", (pd.Name + ":"), cmdTxt)
+			cmd.Printf("  %-15s %s\n", (pd.Name + ":"), cmdTxt)
 		}
 	}
 
 	numCj := len(project.CronJobs)
 	if numCj > 0 {
-		fmt.Println()
-		fmt.Printf("CRON JOBS (%d):", numCj)
+		cmd.Println()
+		cmd.Printf("CRON JOBS (%d):", numCj)
 		for _, pd := range project.CronJobs {
 			cmdTxt := infoDefault
 			if pd.Command != nil {
 				cmdTxt = pd.Command.String()
 			}
-			fmt.Printf("\n  %s\n    Schedule: %s\n    Command:  %s\n", (pd.Name + ":"), pd.Schedule, cmdTxt)
+			cmd.Printf("\n  %s\n    Schedule: %s\n    Command:  %s\n", (pd.Name + ":"), pd.Schedule, cmdTxt)
 		}
 	}
 
 	numSvc := len(project.Services)
 	if numSvc > 0 {
-		fmt.Println()
-		fmt.Printf("SERVICES (%d):", numSvc)
+		cmd.Println()
+		cmd.Printf("SERVICES (%d):", numSvc)
 		for _, pd := range project.Services {
 			cmdTxt := infoDefault
 			if pd.Command != nil {
 				cmdTxt = pd.Command.String()
 			}
-			fmt.Printf("\n  %s (%d):\n    Command: %s\n", pd.Name, pd.DesiredCount, cmdTxt)
+			cmd.Printf("\n  %s (%d):\n    Command: %s\n", pd.Name, pd.DesiredCount, cmdTxt)
 
 			if pd.IsLoadBalanced() {
-				fmt.Print("    Port: ")
+				cmd.Print("    Port: ")
 				for _, prt := range pd.LoadBalancers {
-					fmt.Printf("%d(%s) ", *prt.PortMapping.Port, util.Must(prt.TargetGroup.Name(ctx)))
+					cmd.Printf("%d(%s) ", *prt.PortMapping.Port, util.Must(prt.TargetGroup.Name(ctx)))
 				}
-				fmt.Println()
+				cmd.Println()
 			}
 
 		}

@@ -9,13 +9,13 @@ type TaskLoggingConfig struct {
 }
 
 func (obj *TaskLoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t TaskLoggingConfig // prevent recursive overflow
-	var defo = t{}
+	type tTaskLoggingConfig TaskLoggingConfig // prevent recursive overflow
+	var defo = tTaskLoggingConfig{}
 	if err := unmarshal(&defo); err != nil {
 		return err
-	} else {
-		*obj = TaskLoggingConfig(defo)
 	}
+
+	*obj = TaskLoggingConfig(defo)
 
 	obj.ApplyDefaults()
 	if err := obj.Validate(); err != nil {
@@ -43,5 +43,8 @@ func (obj *TaskLoggingConfig) ApplyDefaults() {
 }
 
 func (obj *TaskLoggingConfig) IsDisabled() bool {
+	if obj.Driver == nil {
+		return false
+	}
 	return *obj.Driver == LoggingDisableFlag
 }
