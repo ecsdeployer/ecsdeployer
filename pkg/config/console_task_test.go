@@ -5,6 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestConsoleTask_Unmarshal(t *testing.T) {
@@ -25,9 +26,8 @@ func TestConsoleTask_Unmarshal(t *testing.T) {
 
 	for _, table := range tables {
 		con, err := yaml.ParseYAMLString[conDummy](table.str)
-		if err != nil {
-			t.Errorf("unexpected error for <%s> %s", table.str, err)
-		}
+
+		require.NoErrorf(t, err, "unexpected error for <%s> %s", table.str, err)
 
 		if table.enabled != con.Console.IsEnabled() {
 			t.Errorf("expected <%s> to %v console", table.str, table.enabled)

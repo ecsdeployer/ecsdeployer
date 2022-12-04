@@ -68,6 +68,11 @@ showman: gen-man
 test:
 	@./scripts/run_with_test_env.sh go test -timeout 180s $(gopkgs)
 
+
+.PHONY: test-v
+test-v:
+	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs)
+
 .PHONY: docs-serve
 docs-serve:
 	cd www && mkdocs serve

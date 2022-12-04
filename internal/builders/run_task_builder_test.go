@@ -26,14 +26,8 @@ func TestBuildRunTask_Basic(t *testing.T) {
 
 	for _, table := range tables {
 		runTask, err := BuildRunTask(ctx, table.thing)
-		if err != nil {
-			t.Errorf("Unexpected error: %s", err)
-			continue
-		}
-
-		if !runTask.EnableECSManagedTags {
-			t.Errorf("Got incorrect ECSManagedTags")
-		}
+		require.NoError(t, err)
+		require.True(t, runTask.EnableECSManagedTags)
 
 	}
 

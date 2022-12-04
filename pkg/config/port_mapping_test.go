@@ -22,20 +22,17 @@ func TestPortMapping_FromString(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		mapping, err := config.NewPortMappingFromString(table.str)
+		t.Run(table.str, func(t *testing.T) {
 
-		require.NoError(t, err)
+			mapping, err := config.NewPortMappingFromString(table.str)
 
-		if mapping.Port == nil {
-			t.Errorf("expected port=%d, got port=nil", table.port)
-		} else if *mapping.Port != table.port {
-			t.Errorf("expected port=%d, got port=%d", table.port, mapping.Port)
-		}
+			require.NoError(t, err)
 
-		if mapping.Protocol != table.trans {
-			t.Errorf("expected transport=%s, got transport=%s", table.trans, mapping.Protocol)
-		}
+			require.NotNil(t, mapping.Port)
+			require.Equal(t, table.port, *mapping.Port)
+			require.Equal(t, table.trans, mapping.Protocol)
 
+		})
 	}
 }
 

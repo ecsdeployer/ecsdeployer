@@ -29,30 +29,18 @@ func TestBuildUpdateService_Basic(t *testing.T) {
 
 	for _, table := range tables {
 		svcInput, err := BuildUpdateService(ctx, table.thing)
-		if err != nil {
-			t.Errorf("Unexpected error: %s", err)
-			continue
-		}
+		require.NoError(t, err)
 
-		if !*svcInput.EnableECSManagedTags {
-			t.Errorf("Got incorrect ECSManagedTags")
-		}
+		require.Truef(t, *svcInput.EnableECSManagedTags, "ECSManagedTags")
 
-		if len(svcInput.LoadBalancers) != table.lbCount {
-			t.Errorf("Expected %d LoadBalancers, but got %d", table.lbCount, len(svcInput.LoadBalancers))
-		}
+		require.Lenf(t, svcInput.LoadBalancers, table.lbCount, "LoadBalancer count mismatch")
 
 		if table.expGrace >= 0 {
-			if svcInput.HealthCheckGracePeriodSeconds == nil {
-				t.Errorf("Expected HealthCheckGrace to exist, but got nil")
-			}
-
-			if *svcInput.HealthCheckGracePeriodSeconds != table.expGrace {
-				t.Errorf("Expected HealthCheckGrace to be %d, but got %d", table.expGrace, *svcInput.HealthCheckGracePeriodSeconds)
-			}
+			require.NotNilf(t, svcInput.HealthCheckGracePeriodSeconds, "Expected HealthCheckGrace to exist, but got nil")
+			require.Equalf(t, table.expGrace, *svcInput.HealthCheckGracePeriodSeconds, "Expected HealthCheckGrace to be %d, but got %d", table.expGrace, *svcInput.HealthCheckGracePeriodSeconds)
 
 		} else if svcInput.HealthCheckGracePeriodSeconds != nil {
-			t.Errorf("Expected HealthCheckGrace to be nil, but got value")
+			require.Nil(t, svcInput.HealthCheckGracePeriodSeconds)
 		}
 
 	}

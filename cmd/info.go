@@ -77,6 +77,7 @@ func projectInfo(cmd *cobra.Command, options infoOpts) error {
 		imageTag:   options.imageTag,
 		noValidate: false,
 		timeout:    10 * time.Minute,
+		imageUri:   options.imageUri,
 		// imageUri:    op,
 	})
 	if err != nil {

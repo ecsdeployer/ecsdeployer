@@ -44,9 +44,7 @@ func TestDependsOn_NewFromString_Invalid(t *testing.T) {
 
 	for _, table := range tables {
 		valid := st.AssertValid(table.str, false)
-		if valid {
-			t.Errorf("expected: <%s> to not be valid, but it was", table.str)
-		}
+		require.Falsef(t, valid, "expected: <%s> to not be valid, but it was", table.str)
 		// _, err := st.Parse(table.str)
 		// if err == nil {
 		// 	t.Errorf("expected <%s> to fail", table.str)

@@ -13,6 +13,11 @@ const (
 	stepRunModeCleanup
 )
 
+var (
+	stepDeploymentStepFunc  = steps.DeploymentStep
+	stepCleanupOnlyStepFunc = steps.CleanupOnlyStep
+)
+
 func stepRunner(options *configLoaderExtras, mode stepRunMode) error {
 	ctx, cancel, err := loadProjectContext(options)
 
@@ -26,9 +31,9 @@ func stepRunner(options *configLoaderExtras, mode stepRunMode) error {
 
 	switch mode {
 	case stepRunModeDeploy:
-		err = steps.DeploymentStep(ctx.Project).Apply(ctx)
+		err = stepDeploymentStepFunc(ctx.Project).Apply(ctx)
 	case stepRunModeCleanup:
-		err = steps.CleanupOnlyStep(ctx.Project).Apply(ctx)
+		err = stepCleanupOnlyStepFunc(ctx.Project).Apply(ctx)
 	default:
 		err = fmt.Errorf("Unknown deploy mode: %v", mode)
 	}

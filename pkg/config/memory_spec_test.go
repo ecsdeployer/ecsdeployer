@@ -5,6 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMemorySpec_Parse_Valid(t *testing.T) {
@@ -34,20 +35,15 @@ func TestMemorySpec_Parse_Valid(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		memSpec, err := config.ParseMemorySpec(table.str)
-		if err != nil {
-			t.Errorf("unexpected error for <%s>: %s", table.str, err)
-		}
+		t.Run(table.str, func(t *testing.T) {
+			memSpec, err := config.ParseMemorySpec(table.str)
+			require.NoError(t, err)
 
-		memValue, err := memSpec.MegabytesFromCpu(cpuSpec)
-		if err != nil {
-			t.Errorf("unexpected error for <%s>: %s", table.str, err)
-		}
+			memValue, err := memSpec.MegabytesFromCpu(cpuSpec)
+			require.NoError(t, err)
 
-		if memValue != table.expected {
-			t.Errorf("incorrect memory value <%s>. expected=%d, got=%d", table.str, table.expected, memValue)
-		}
-
+			require.Equal(t, table.expected, memValue)
+		})
 	}
 }
 
@@ -61,9 +57,7 @@ func TestMemorySpec_Parse_Invalid(t *testing.T) {
 
 	for _, table := range tables {
 		_, err := config.ParseMemorySpec(table.str)
-		if err == nil {
-			t.Errorf("expected <%s> to error", table.str)
-		}
+		require.ErrorContains(t, err, "Invalid memory specification format")
 
 	}
 }
@@ -80,18 +74,12 @@ func TestMemorySpec_MarshalJSON(t *testing.T) {
 
 	for _, table := range tables {
 		memSpec, err := config.ParseMemorySpec(table.str)
-		if err != nil {
-			t.Errorf("unexpected error for <%s>: %s", table.str, err)
-		}
+		require.NoError(t, err)
 
 		jsonStr, err := util.Jsonify(memSpec)
-		if err != nil {
-			t.Errorf("unexpected error for <%s>: %s", table.str, err)
-		}
+		require.NoError(t, err)
 
-		if jsonStr != table.expected {
-			t.Errorf("mismatch <%s>. Expected=%s Got=%s", table.str, table.expected, jsonStr)
-		}
+		require.Equal(t, table.expected, jsonStr)
 
 	}
 }

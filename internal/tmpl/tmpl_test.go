@@ -37,11 +37,7 @@ func TestTemplate_Functions(t *testing.T) {
 
 	for _, table := range tables {
 		actual, err := tpl.Apply(table.input)
-
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-			break
-		}
+		require.NoError(t, err)
 
 		if actual != table.expected {
 			t.Errorf("Mismatch. Expected=%s, received=%s", table.expected, actual)
@@ -79,10 +75,7 @@ func TestTemplateConditional(t *testing.T) {
 	for _, table := range tables {
 		actual, err := tpl.Apply(table.input)
 
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-			break
-		}
+		require.NoError(t, err)
 
 		if actual != table.expected {
 			t.Errorf("Mismatch. Expected=%s, received=%s", table.expected, actual)

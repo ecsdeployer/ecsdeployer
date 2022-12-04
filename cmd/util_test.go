@@ -21,6 +21,7 @@ func defaultCmdMetadata() *cmdMetadata {
 	}
 }
 
+// Outputs stdout, stderr, Error
 func executeCmdAndReturnOutput(cmd *cobra.Command) (string, string, error) {
 	var bufOut bytes.Buffer
 	var bufErr bytes.Buffer

@@ -6,6 +6,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLogRetention_Unmarshal(t *testing.T) {
@@ -84,9 +85,7 @@ func TestLogRetention_Schema(t *testing.T) {
 	for _, table := range tables {
 		st.AssertValid(table.str, true)
 		obj, err := st.Parse(table.str)
-		if err != nil {
-			t.Errorf("error: %s", err)
-		}
+		require.NoError(t, err)
 		st.AssertMatchExpected(obj, table.expected, true)
 	}
 }

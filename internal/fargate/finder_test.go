@@ -50,11 +50,6 @@ func TestExceedsLargest(t *testing.T) {
 
 	for _, table := range tables {
 		ret := ExceedsLargest(table.cpu, table.mem)
-
-		if table.ret {
-			require.True(t, ret)
-		} else {
-			require.False(t, ret)
-		}
+		require.Equal(t, table.ret, ret)
 	}
 }

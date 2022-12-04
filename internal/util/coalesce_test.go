@@ -2,6 +2,8 @@ package util
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestCoalesce(t *testing.T) {
@@ -65,17 +67,16 @@ func TestCoalesceWithFunc(t *testing.T) {
 
 func TestMustCoalesce(t *testing.T) {
 
-	expected := Ptr(1)
+	t.Run("normal", func(t *testing.T) {
+		expected := Ptr(1)
 
-	if MustCoalesce(nil, nil, nil, expected) != expected {
-		t.Fatal("MustCoalesce() is broken")
-	}
+		require.Equal(t, expected, MustCoalesce(nil, nil, nil, expected))
+	})
 
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("MustCoalesce() should have panicked")
-		}
-	}()
+	t.Run("all nils", func(t *testing.T) {
+		require.Panics(t, func() {
+			_ = MustCoalesce[int](nil, nil, nil, nil)
+		})
+	})
 
-	_ = MustCoalesce[int](nil, nil, nil, nil)
 }

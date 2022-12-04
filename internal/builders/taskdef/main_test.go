@@ -32,18 +32,9 @@ func TestBuild_Basic(t *testing.T) {
 
 	for _, table := range tables {
 		taskDefinition, err := Build(ctx, table.thing)
-		if err != nil {
-			t.Errorf("Unexpected error: %s", err)
-			continue
-		}
-
-		if *taskDefinition.ContainerDefinitions[0].Image != "fake:latest" {
-			t.Errorf("Got incorrect container image")
-		}
-
-		if len(taskDefinition.Tags) != 1 {
-			t.Errorf("Expected 1 tag, got %d", len(taskDefinition.Tags))
-		}
+		require.NoError(t, err)
+		require.Equal(t, "fake:latest", *taskDefinition.ContainerDefinitions[0].Image)
+		require.Len(t, taskDefinition.Tags, 1)
 	}
 
 }

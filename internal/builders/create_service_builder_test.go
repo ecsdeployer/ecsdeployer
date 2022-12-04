@@ -28,14 +28,10 @@ func TestBuildCreateService_Basic(t *testing.T) {
 
 	for _, table := range tables {
 		createSvcInput, err := BuildCreateService(ctx, table.thing)
-		if err != nil {
-			t.Errorf("Unexpected error: %s", err)
-			continue
-		}
+		require.NoError(t, err)
 
-		if !createSvcInput.EnableECSManagedTags {
-			t.Errorf("Got incorrect ECSManagedTags")
-		}
+		require.Truef(t, createSvcInput.EnableECSManagedTags, "ECSManagedTags")
+
 		if len(createSvcInput.Tags) != 1 {
 			t.Errorf("Expected 1 tag, got %d", len(createSvcInput.Tags))
 		}

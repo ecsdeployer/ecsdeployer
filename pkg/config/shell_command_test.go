@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestShellCommand_Valid(t *testing.T) {
@@ -26,9 +27,7 @@ func TestShellCommand_Valid(t *testing.T) {
 	for _, table := range tables {
 		st.AssertValid(table.jsonStr, true)
 		obj, err := st.Parse(table.jsonStr)
-		if err != nil {
-			t.Errorf("error: %s", err)
-		}
+		require.NoError(t, err)
 		st.AssertMatchExpected(obj, table.expected, true)
 	}
 }
@@ -50,8 +49,6 @@ func TestShellCommand_InValid(t *testing.T) {
 			t.Errorf("expected: <%s> to not be valid, but it was", table.jsonStr)
 		}
 		_, err := st.Parse(table.jsonStr)
-		if err == nil {
-			t.Errorf("error: %s", err)
-		}
+		require.Error(t, err)
 	}
 }

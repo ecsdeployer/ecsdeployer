@@ -58,35 +58,37 @@ var (
 	}
 )
 
+func SchemaNamer(t reflect.Type) string {
+	name := t.Name()
+
+	switch name {
+	case "FargateDefaults":
+		return "TaskDefaults"
+	case "NetworkConfiguration":
+		return "Network"
+	case "StorageSpec":
+		return "Storage"
+	case "CpuSpec":
+		return "CPUShares"
+	case "MemorySpec":
+		return "Memory"
+	case "RoleArn":
+		return "RoleRef"
+	case "ClusterArn":
+		return "ClusterRef"
+	case "TargetGroupArn":
+		return "TargetGroupRef"
+	}
+
+	return name
+}
+
 func GenerateSchema(v interface{}) *jsonschema.Schema {
 	// https://www.schemastore.org/json/
 	reflector := &jsonschema.Reflector{
 		AllowAdditionalProperties: false,
 		ExpandedStruct:            true,
-		Namer: func(t reflect.Type) string {
-			name := t.Name()
-
-			switch name {
-			case "FargateDefaults":
-				return "TaskDefaults"
-			case "NetworkConfiguration":
-				return "Network"
-			case "StorageSpec":
-				return "Storage"
-			case "CpuSpec":
-				return "CPUShares"
-			case "MemorySpec":
-				return "Memory"
-			case "RoleArn":
-				return "RoleRef"
-			case "ClusterArn":
-				return "ClusterRef"
-			case "TargetGroupArn":
-				return "TargetGroupRef"
-			}
-
-			return name
-		},
+		Namer:                     SchemaNamer,
 	}
 
 	// schema := jsonschema.Reflect(&config.Project{})

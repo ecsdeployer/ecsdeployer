@@ -6,6 +6,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRoleArn(t *testing.T) {
@@ -13,9 +14,7 @@ func TestRoleArn(t *testing.T) {
 	testutil.MockSimpleStsProxy(t)
 
 	ctx, err := config.NewFromYAML("testdata/simple.yml")
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	require.NoError(t, err)
 
 	tables := []struct {
 		str  string

@@ -82,8 +82,8 @@ func LoadFromBytes(data []byte) (*Project, error) {
 }
 
 func (obj *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t Project
-	var tmpObj t
+	type tProject Project
+	var tmpObj tProject
 	if err := unmarshal(&tmpObj); err != nil {
 		return err
 	}
