@@ -6,6 +6,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	logTypes "github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -37,36 +38,28 @@ func TestLogRetention_Unmarshal(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		obj := dummy{}
-		err := yaml.UnmarshalStrict([]byte(table.str), &obj)
 
-		if !table.valid {
-			if err == nil {
-				t.Errorf("Expected <%s> to cause an error, did not get one", table.str)
+		t.Run(table.str, func(t *testing.T) {
+
+			obj, err := yaml.ParseYAMLString[dummy](table.str)
+
+			if !table.valid {
+				require.Error(t, err)
+				return
 			}
 
-			continue
-		}
+			require.NoError(t, err)
 
-		if err != nil {
-			t.Errorf("unexpected error for <%s> %s", table.str, err)
-		}
+			ret := obj.Retention
 
-		ret := obj.Retention
+			require.Equalf(t, table.forever, ret.Forever(), "Forever")
 
-		if ret.Forever() != table.forever {
-			t.Errorf("expected <%s> to have forever=%v but got %v", table.str, table.forever, ret.Forever())
-			continue
-		}
-
-		if table.forever {
-			continue
-		}
-
-		if table.days != ret.Days() {
-			t.Errorf("expected <%s> to have days=%v but got %v", table.str, table.days, ret.Days())
-		}
-
+			if table.forever {
+				return
+			}
+			require.Equalf(t, table.days, ret.Days(), "Days")
+			require.EqualValuesf(t, &table.days, ret.ToAwsInt32(), "ToAwsInt32")
+		})
 	}
 }
 
@@ -87,5 +80,65 @@ func TestLogRetention_Schema(t *testing.T) {
 		obj, err := st.Parse(table.str)
 		require.NoError(t, err)
 		st.AssertMatchExpected(obj, table.expected, true)
+	}
+}
+
+func TestParseLogRetention(t *testing.T) {
+	t.Run("normal", func(t *testing.T) {
+		tables := []struct {
+			val  config.LogRetention
+			days int32
+		}{
+			{util.Must(config.ParseLogRetention("forever")), -1},
+			{util.Must(config.ParseLogRetention(int32(180))), 180},
+			{util.Must(config.ParseLogRetention(int64(300))), 300},
+			{util.Must(config.ParseLogRetention(int(180))), 180},
+			{util.Must(config.ParseLogRetention("10")), 10},
+		}
+
+		for _, table := range tables {
+			require.Equal(t, table.days, table.val.Days())
+		}
+	})
+
+	t.Run("invalids", func(t *testing.T) {
+		tables := []struct {
+			genFunc func() (any, error)
+		}{
+			{func() (any, error) { return config.ParseLogRetention("never") }},
+			{func() (any, error) { return config.ParseLogRetention(-1) }},
+		}
+
+		for _, table := range tables {
+			_, err := table.genFunc()
+			require.Error(t, err)
+		}
+	})
+
+}
+
+func TestLogRetention_EqualsLogGroup(t *testing.T) {
+
+	buildLogGroup := func(days int32) logTypes.LogGroup {
+		lg := logTypes.LogGroup{}
+		if days >= 0 {
+			lg.RetentionInDays = &days
+		}
+		return lg
+	}
+
+	tables := []struct {
+		val config.LogRetention
+		lg  logTypes.LogGroup
+	}{
+		{util.Must(config.ParseLogRetention("forever")), buildLogGroup(-1)},
+		{util.Must(config.ParseLogRetention(int32(180))), buildLogGroup(180)},
+		{util.Must(config.ParseLogRetention(int64(300))), buildLogGroup(300)},
+		{util.Must(config.ParseLogRetention(int(180))), buildLogGroup(180)},
+		{util.Must(config.ParseLogRetention("10")), buildLogGroup(10)},
+	}
+
+	for _, table := range tables {
+		require.True(t, table.val.EqualsLogGroup(table.lg))
 	}
 }

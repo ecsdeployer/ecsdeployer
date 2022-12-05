@@ -51,3 +51,34 @@ func TestDependsOn_NewFromString_Invalid(t *testing.T) {
 		// }
 	}
 }
+
+func TestNewDependsOnFromString(t *testing.T) {
+	tables := []struct {
+		str         string
+		expectedErr string
+		deps        *config.DependsOn
+	}{
+		{"thing:START", "", &config.DependsOn{ecsTypes.ContainerConditionStart, aws.String("thing")}},
+		{"foo", "", &config.DependsOn{ecsTypes.ContainerConditionStart, aws.String("foo")}},
+
+		// failures
+		{"thing:START:something", "must be object, or string of", nil},
+		{"thing:STORT", "not a valid condition", nil},
+	}
+
+	for _, table := range tables {
+
+		dep, err := config.NewDependsOnFromString(table.str)
+
+		if table.expectedErr != "" {
+			require.Error(t, err)
+			require.ErrorContains(t, err, table.expectedErr)
+			continue
+		}
+
+		require.NoError(t, err)
+
+		require.EqualValues(t, table.deps.Name, dep.Name)
+		require.EqualValues(t, table.deps.Condition, dep.Condition)
+	}
+}

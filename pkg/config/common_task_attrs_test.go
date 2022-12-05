@@ -5,6 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCommonTaskAttrs_Smoke(t *testing.T) {
@@ -22,19 +23,37 @@ func TestCommonTaskAttrs_Smoke(t *testing.T) {
 		},
 	}
 
-	if err := common.Validate(); err != nil {
-		t.Errorf("Expected CommonTaskAttrs to be valid, but got: %s", err)
-	}
+	require.NoError(t, common.Validate())
 
-	if !common.IsTaskStruct() {
-		t.Errorf("Expected CommonTaskAttrs to pass IsTaskStruct()")
-	}
+	require.Truef(t, common.IsTaskStruct(), "IsTaskStruct")
 
 	fields := common.TemplateFields()
-	if fields["Name"] != "test" {
-		t.Errorf("Expected TemplateFields to give Name of %s but got %s", "test", fields["Name"])
-	}
-	if fields["Arch"] != "arm64" {
-		t.Errorf("Expected TemplateFields to give Arch of %s but got %s", "arm64", fields["Arch"])
-	}
+	require.Equalf(t, "test", fields["Name"], "Name")
+	require.Equalf(t, "arm64", fields["Arch"], "Arch")
+}
+
+func TestCommonTaskAttrs_Validate(t *testing.T) {
+	t.Run("invalid", func(t *testing.T) {
+		goodArch := config.ArchitectureAMD64
+		badArch := config.Architecture("badbad")
+		tables := []struct {
+			obj         *config.CommonTaskAttrs
+			expectedErr string
+		}{
+			{&config.CommonTaskAttrs{Architecture: &goodArch}, ""},
+			{&config.CommonTaskAttrs{Architecture: &badArch}, "not a valid arch"},
+		}
+
+		for _, table := range tables {
+
+			err := table.obj.Validate()
+
+			if table.expectedErr == "" {
+				require.NoError(t, err)
+				continue
+			}
+			require.Error(t, err)
+			require.ErrorContains(t, err, table.expectedErr)
+		}
+	})
 }

@@ -20,6 +20,7 @@ func TestService_Unmarshal_Basic(t *testing.T) {
 
 	for _, table := range tables {
 		svc, err := yaml.ParseYAMLFile[config.Service](table.file)
+
 		if table.valid && err != nil {
 			t.Errorf("<%s> unexpected error: %s", table.file, err)
 		}

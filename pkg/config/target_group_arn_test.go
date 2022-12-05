@@ -1,11 +1,14 @@
 package config_test
 
 import (
+	"encoding/json"
+	"fmt"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 	"github.com/webdestroya/awsmocker"
 )
 
@@ -18,9 +21,7 @@ func TestTargetGroupArn_Smoke(t *testing.T) {
 	})
 
 	ctx, err := config.NewFromYAML("testdata/simple.yml")
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	require.NoError(t, err)
 
 	tables := []struct {
 		str  string
@@ -57,6 +58,10 @@ func TestTargetGroupArn_Smoke(t *testing.T) {
 		if arnVal != table.arn {
 			t.Errorf("TargetGroupStr <%s> ARN Mismatch expected=%s got=%s", table.str, table.arn, arnVal)
 		}
+
+		data, err := json.Marshal(roleArn)
+		require.NoError(t, err)
+		require.Equal(t, fmt.Sprintf(`"%s"`, table.arn), string(data))
 
 	}
 }

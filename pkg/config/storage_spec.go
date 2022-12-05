@@ -8,6 +8,11 @@ func (ss StorageSpec) Gigabytes() int32 {
 	return int32(ss)
 }
 
+func NewStorageSpec(gb int32) (*StorageSpec, error) {
+	spec := StorageSpec(gb)
+	return &spec, nil
+}
+
 func (StorageSpec) JSONSchema() *jsonschema.Schema {
 	return &jsonschema.Schema{
 		Type:        "integer",
