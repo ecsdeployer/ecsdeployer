@@ -16,6 +16,7 @@ type SchemaTester[T interface{}] struct {
 
 func NewSchemaTester[Ttype interface{}](t *testing.T, v interface{}) *SchemaTester[Ttype] {
 
+	t.Helper()
 	schema := configschema.GenerateSchema(v)
 
 	schemaJson, err := util.Jsonify(schema)
@@ -36,6 +37,7 @@ func NewSchemaTester[Ttype interface{}](t *testing.T, v interface{}) *SchemaTest
 }
 
 func (st *SchemaTester[T]) AssertValidObj(v T, printErrors bool) bool {
+	// st.tst.Helper()
 	valJson, err := util.Jsonify(v)
 	if err != nil {
 		panic(err)

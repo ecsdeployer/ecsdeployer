@@ -33,35 +33,24 @@ func TestTargetGroupArn_Smoke(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		roleArn, err := yaml.ParseYAMLString[config.TargetGroupArn](table.str)
-		if err != nil {
-			t.Errorf("TargetGroupStr <%s> gave error: %s", table.str, err)
-			continue
-		}
+		t.Run(table.str, func(t *testing.T) {
+			roleArn, err := yaml.ParseYAMLString[config.TargetGroupArn](table.str)
+			require.NoError(t, err)
 
-		nameVal, err := roleArn.Name(ctx)
-		if err != nil {
-			t.Errorf("TargetGroupStr <%s> gave error during name eval: %s", table.str, err)
-			continue
-		}
+			nameVal, err := roleArn.Name(ctx)
+			require.NoErrorf(t, err, "name eval")
 
-		if nameVal != table.name {
-			t.Errorf("TargetGroupStr <%s> Name Mismatch expected=%s got=%s", table.str, table.name, nameVal)
-		}
+			require.Equalf(t, table.name, nameVal, "Name Mismatch")
 
-		arnVal, err := roleArn.Arn(ctx)
-		if err != nil {
-			t.Errorf("TargetGroupStr <%s> gave error during arn eval: %s", table.str, err)
-			continue
-		}
+			arnVal, err := roleArn.Arn(ctx)
+			require.NoErrorf(t, err, "arn eval")
 
-		if arnVal != table.arn {
-			t.Errorf("TargetGroupStr <%s> ARN Mismatch expected=%s got=%s", table.str, table.arn, arnVal)
-		}
+			require.Equalf(t, table.arn, arnVal, "ARN Mismatch")
 
-		data, err := json.Marshal(roleArn)
-		require.NoError(t, err)
-		require.Equal(t, fmt.Sprintf(`"%s"`, table.arn), string(data))
+			data, err := json.Marshal(roleArn)
+			require.NoError(t, err)
+			require.Equal(t, fmt.Sprintf(`"%s"`, table.arn), string(data))
+		})
 
 	}
 }

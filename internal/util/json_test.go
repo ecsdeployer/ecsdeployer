@@ -2,6 +2,8 @@ package util
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 type jsonStruct struct {
@@ -24,9 +26,7 @@ func TestJsonify(t *testing.T) {
 
 	for _, table := range tables {
 		res, err := Jsonify(table.obj)
-		if err != nil {
-			t.Fatalf("Failed to Jsonify: %s", err)
-		}
+		require.NoError(t, err)
 		// ensure interface
 		var _ string = res
 	}
@@ -48,9 +48,7 @@ func TestJsonifyPretty(t *testing.T) {
 
 	for _, table := range tables {
 		res, err := JsonifyPretty(table.obj)
-		if err != nil {
-			t.Fatalf("Failed to JsonifyPretty: %s", err)
-		}
+		require.NoError(t, err)
 		// ensure interface
 		var _ string = res
 	}

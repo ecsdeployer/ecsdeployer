@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -72,6 +73,9 @@ func TestNewDuration(t *testing.T) {
 }
 
 func TestDuration_Unmarshal(t *testing.T) {
+
+	sc := testutil.NewSchemaChecker(&config.Duration{})
+
 	tables := []struct {
 		str     string
 		seconds int32
@@ -106,6 +110,10 @@ func TestDuration_Unmarshal(t *testing.T) {
 				return
 			} else {
 				require.NoError(t, err)
+			}
+
+			if table.str != "null" {
+				require.NoError(t, sc.CheckYAML(t, table.str))
 			}
 
 			require.Equal(t, table.seconds, dur.ToAwsInt32())

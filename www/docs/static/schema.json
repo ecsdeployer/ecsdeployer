@@ -1077,7 +1077,9 @@
       "$ref": "#/$defs/Network"
      },
      "desired": {
-      "type": "integer"
+      "type": "integer",
+      "default": 0,
+      "minimum": 0
      },
      "rollout": {
       "$ref": "#/$defs/RolloutConfig"
@@ -1097,7 +1099,8 @@
     "additionalProperties": false,
     "type": "object",
     "required": [
-     "desired"
+     "desired",
+     "name"
     ]
    },
    "Settings": {
@@ -1275,16 +1278,25 @@
     "type": "object"
    },
    "TaskLoggingConfig": {
-    "properties": {
-     "driver": {
-      "type": "string"
+    "oneOf": [
+     {
+      "type": "boolean",
+      "const": false,
+      "description": "Disable logging"
      },
-     "options": {
-      "$ref": "#/$defs/EnvVarMap"
+     {
+      "properties": {
+       "driver": {
+        "type": "string"
+       },
+       "options": {
+        "$ref": "#/$defs/EnvVarMap"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object"
      }
-    },
-    "additionalProperties": false,
-    "type": "object"
+    ]
    },
    "VersionConstraint": {
     "properties": {},

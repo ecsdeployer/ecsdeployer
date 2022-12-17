@@ -29,9 +29,9 @@ func (obj *CronJob) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var defo = tCronJob{}
 	if err := unmarshal(&defo); err != nil {
 		return err
-	} else {
-		*obj = CronJob(defo)
 	}
+
+	*obj = CronJob(defo)
 
 	obj.ApplyDefaults()
 	if err := obj.Validate(); err != nil {

@@ -5,6 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestProject_Unmarshal(t *testing.T) {
@@ -50,15 +51,12 @@ func TestProject_SchemaCheck_Examples(t *testing.T) {
 
 	for _, table := range tables {
 		obj, err := yaml.ParseYAMLFile[config.Project](table.filepath)
-		if err != nil {
-			t.Errorf("unexpected error loading file <%s>: %s", table.filepath, err)
-		}
+		require.NoErrorf(t, err, "File %s", table.filepath)
 
 		st.AssertValidObj(*obj, true)
 
-		if err := obj.Validate(); err != nil {
-			t.Errorf("file at %s fails project Validate: %s", table.filepath, err)
-		}
+		err = obj.Validate()
+		require.NoErrorf(t, err, "File %s failed validation", table.filepath)
 
 	}
 }

@@ -32,8 +32,8 @@ func (e *EnvVar) Ignore() bool {
 }
 
 func (a *EnvVar) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t EnvVar
-	var envvar t
+	type tEnvVar EnvVar
+	var envvar tEnvVar
 	if err := unmarshal(&envvar); err != nil {
 		var str string
 		if err := unmarshal(&str); err != nil {
@@ -126,6 +126,11 @@ func (EnvVarMap) JSONSchemaExtend(base *jsonschema.Schema) {
 }
 
 func (ev EnvVar) MarshalJSON() ([]byte, error) {
+
+	if ev.Ignore() {
+		return []byte(`""`), nil
+	}
+
 	if ev.IsPlain() {
 		res, err := util.Jsonify(ev.Value)
 		if err != nil {
