@@ -64,5 +64,8 @@ func (EcsDeployerOptions) JSONSchemaExtend(base *jsonschema.Schema) {
 	configschema.SchemaPropMerge(base, "allowed_account_id", func(s *jsonschema.Schema) {
 		s.Description = "Restrict to a specific AWS account ID."
 		s.Pattern = "^[0-9]{12,}$"
+		s.Extras = map[string]interface{}{
+			"type": []string{"string", "integer"},
+		}
 	})
 }

@@ -11,36 +11,40 @@ import (
 )
 
 func TestEcsDeployerOptions(t *testing.T) {
+
 	t.Run("UnmarshalYAML", func(t *testing.T) {
 		sc := testutil.NewSchemaChecker(&config.EcsDeployerOptions{})
 
 		tables := []struct {
-			valid bool
-			str   string
-			exp   *config.VersionConstraint
+			str     string
+			expVC   *config.VersionConstraint
+			expAcct string
 		}{
-			{true, `1.2.3`, util.Must(config.NewVersionConstraint("1.2.3"))},
-			{true, `v1.2.3`, util.Must(config.NewVersionConstraint("v1.2.3"))},
-			{true, `<=v1.2.3`, util.Must(config.NewVersionConstraint("<= v1.2.3"))},
-
-			{false, `bad`, nil},
-			{false, `1`, nil},
-			{false, `false`, nil},
+			{"required_version: 1.2.3\nallowed_account_id: 123456789000", util.Must(config.NewVersionConstraint("1.2.3")), "123456789000"},
+			{"required_version: 1.2.3", util.Must(config.NewVersionConstraint("1.2.3")), ""},
+			{"allowed_account_id: 123456789000", nil, "123456789000"},
 		}
 
 		for _, table := range tables {
 
-			obj, err := yaml.ParseYAMLString[config.VersionConstraint](table.str)
-
-			if !table.valid {
-				require.Error(t, err)
-				return
-			}
+			obj, err := yaml.ParseYAMLString[config.EcsDeployerOptions](table.str)
 
 			require.NoError(t, err)
 			require.NotNil(t, obj)
 
-			require.Equal(t, table.exp.String(), obj.String())
+			if table.expVC == nil {
+				require.Nil(t, obj.RequiredVersion)
+			} else {
+				require.NotNil(t, obj.RequiredVersion)
+				require.Equal(t, table.expVC.String(), obj.RequiredVersion.String())
+			}
+
+			if table.expAcct == "" {
+				require.Nil(t, obj.AllowedAccountId)
+			} else {
+				require.NotNil(t, obj.AllowedAccountId)
+				require.Equal(t, table.expAcct, *obj.AllowedAccountId)
+			}
 
 			require.NoError(t, sc.CheckYAML(t, table.str))
 		}
