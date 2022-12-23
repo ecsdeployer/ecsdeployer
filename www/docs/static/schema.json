@@ -290,10 +290,13 @@
    "EcsDeployerOptions": {
     "properties": {
      "required_version": {
-      "$ref": "#/$defs/VersionConstraint"
+      "$ref": "#/$defs/VersionConstraint",
+      "description": "Create a version constraint to prevent different versions of ECS Deployer from deploying this app."
      },
      "allowed_account_id": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[0-9]{12,}$",
+      "description": "Restrict to a specific AWS account ID."
      }
     },
     "additionalProperties": false,
@@ -1285,6 +1288,10 @@
       "description": "Disable logging"
      },
      {
+      "type": "null",
+      "description": "Inherit logging configuration"
+     },
+     {
       "properties": {
        "driver": {
         "type": "string"
@@ -1299,9 +1306,9 @@
     ]
    },
    "VersionConstraint": {
-    "properties": {},
-    "additionalProperties": false,
-    "type": "object"
+    "$comment": "https://pkg.go.dev/github.com/Masterminds/semver/v3#readme-checking-version-constraints",
+    "type": "string",
+    "description": "Specify a constraint on a semantic version"
    },
    "WaitForStable": {
     "properties": {
