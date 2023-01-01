@@ -48,7 +48,7 @@ func (obj *SchemaChecker) CheckYAML(t *testing.T, val string) error {
 		panic(err)
 	}
 
-	return obj.CheckJSON(t, string(jsonData))
+	return obj.CheckJSON(t, jsonData)
 
 }
 
