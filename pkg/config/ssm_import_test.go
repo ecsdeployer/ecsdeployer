@@ -1,11 +1,14 @@
 package config_test
 
 import (
+	"fmt"
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSSMImport_Unmarshal(t *testing.T) {
@@ -18,42 +21,43 @@ func TestSSMImport_Unmarshal(t *testing.T) {
 
 	tables := []struct {
 		str      string
-		expected config.SSMImport
+		expected *config.SSMImport
 	}{
-		{"ssm_import: true", config.SSMImport{Enabled: true, Path: defSSM.Path, Recursive: defSSM.Recursive}},
-		{"ssm_import: false", config.SSMImport{Enabled: false, Path: defSSM.Path, Recursive: defSSM.Recursive}},
-		{"ssm_import:\n  enabled: false", config.SSMImport{Enabled: false, Path: defSSM.Path, Recursive: defSSM.Recursive}},
-		{"ssm_import:\n  enabled: true", config.SSMImport{Enabled: true, Path: defSSM.Path, Recursive: defSSM.Recursive}},
-		{"ssm_import:\n  enabled: true\n  path: /test/thing", config.SSMImport{Enabled: true, Path: util.Ptr("/test/thing"), Recursive: defSSM.Recursive}},
-		{`ssm_import: /path/to/something`, config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something"), Recursive: &bTrue}},
-		{`ssm_import: "/path/to/something/{{ .ProjectName }}"`, config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something/{{ .ProjectName }}"), Recursive: &bTrue}},
+		{"true", &config.SSMImport{Enabled: true, Path: defSSM.Path, Recursive: defSSM.Recursive}},
+		{"false", &config.SSMImport{Enabled: false, Path: defSSM.Path, Recursive: defSSM.Recursive}},
+		{"enabled: false", &config.SSMImport{Enabled: false, Path: defSSM.Path, Recursive: defSSM.Recursive}},
+		{"enabled: true", &config.SSMImport{Enabled: true, Path: defSSM.Path, Recursive: defSSM.Recursive}},
+		{"enabled: true\npath: /test/thing", &config.SSMImport{Enabled: true, Path: util.Ptr("/test/thing"), Recursive: defSSM.Recursive}},
+		{`/path/to/something`, &config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something"), Recursive: &bTrue}},
+		{`"/path/to/something/{{ .ProjectName }}"`, &config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something/{{ .ProjectName }}"), Recursive: &bTrue}},
+
+		{"1234", nil},      // interpreted as a string, but must start with slash
+		{"test/path", nil}, // ssm path must start with slash
 	}
 
-	type conDummy struct {
-		SSMImport *config.SSMImport `yaml:"ssm_import,omitempty" json:"ssm_import,omitempty"`
-	}
+	sc := testutil.NewSchemaChecker(&config.SSMImport{})
 
-	for _, table := range tables {
-		con := conDummy{}
-		if err := yaml.UnmarshalStrict([]byte(table.str), &con); err != nil {
-			t.Errorf("unexpected error for <%s> %s", table.str, err)
-		}
+	for testNum, table := range tables {
+		t.Run(fmt.Sprintf("test_%02d", testNum+1), func(t *testing.T) {
+			act, err := yaml.ParseYAMLString[config.SSMImport](table.str)
 
-		exp := table.expected
-		exp.ApplyDefaults()
+			if table.expected == nil {
+				require.Error(t, sc.CheckYAML(t, table.str))
+				require.Error(t, err)
+				return
+			}
 
-		act := con.SSMImport
+			require.NoError(t, err)
 
-		if exp.IsEnabled() != act.IsEnabled() {
-			t.Errorf("expected <%s> to have IsEnabled=%t but got %t", table.str, exp.IsEnabled(), act.IsEnabled())
-		}
+			// ensure it passes schema check
+			require.NoError(t, sc.CheckYAML(t, table.str))
 
-		if *exp.Path != *act.Path {
-			t.Errorf("expected <%s> to have Path=%v but got %v", table.str, *exp.Path, *act.Path)
-		}
+			exp := table.expected
+			exp.ApplyDefaults()
 
-		if *exp.Recursive != *act.Recursive {
-			t.Errorf("expected <%s> to have Recursive=%v but got %v", table.str, *exp.Recursive, *act.Recursive)
-		}
+			require.Equalf(t, exp.IsEnabled(), act.IsEnabled(), "IsEnabled")
+			require.Equalf(t, *exp.Path, *act.Path, "Path")
+			require.Equalf(t, *exp.Recursive, *act.Recursive, "Recursive")
+		})
 	}
 }

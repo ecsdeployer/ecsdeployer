@@ -29,9 +29,6 @@ func TestConsoleTask_Unmarshal(t *testing.T) {
 		sc.CheckYAML(t, table.str)
 
 		require.NoErrorf(t, err, "unexpected error for <%s> %s", table.str, err)
-
-		if table.enabled != con.IsEnabled() {
-			t.Errorf("expected <%s> to %v console", table.str, table.enabled)
-		}
+		require.Equal(t, table.enabled, con.IsEnabled())
 	}
 }

@@ -45,10 +45,8 @@ func TestKeepInSync_ApplyDefaults_Fields(t *testing.T) {
 
 	for _, field := range reflect.VisibleFields(reflect.TypeOf(kis)) {
 		kisVal := reflect.Indirect(v.FieldByIndex(field.Index)).Bool()
+		require.Truef(t, kisVal, "expected ApplyDefaults to correctly set field %s but it did not", field.Name)
 
-		if kisVal != true {
-			t.Errorf("expected ApplyDefaults to correctly set field %s but it did not", field.Name)
-		}
 	}
 
 }
@@ -67,9 +65,7 @@ func TestKeepInSync_AllDisabled(t *testing.T) {
 
 	for _, table := range tables {
 		actual := table.obj.AllDisabled()
-		if actual != table.expected {
-			t.Errorf("expected object to return %v but got %v", table.expected, actual)
-		}
+		require.Equal(t, table.expected, actual)
 	}
 }
 

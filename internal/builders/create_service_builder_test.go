@@ -32,25 +32,15 @@ func TestBuildCreateService_Basic(t *testing.T) {
 
 		require.Truef(t, createSvcInput.EnableECSManagedTags, "ECSManagedTags")
 
-		if len(createSvcInput.Tags) != 1 {
-			t.Errorf("Expected 1 tag, got %d", len(createSvcInput.Tags))
-		}
+		require.Lenf(t, createSvcInput.Tags, 1, "Tags")
 
-		if len(createSvcInput.LoadBalancers) != table.lbCount {
-			t.Errorf("Expected %d LoadBalancers, but got %d", table.lbCount, len(createSvcInput.LoadBalancers))
-		}
+		require.Lenf(t, createSvcInput.LoadBalancers, table.lbCount, "LoadBalancers")
 
 		if table.expGrace >= 0 {
-			if createSvcInput.HealthCheckGracePeriodSeconds == nil {
-				t.Errorf("Expected HealthCheckGrace to exist, but got nil")
-			}
-
-			if *createSvcInput.HealthCheckGracePeriodSeconds != table.expGrace {
-				t.Errorf("Expected HealthCheckGrace to be %d, but got %d", table.expGrace, *createSvcInput.HealthCheckGracePeriodSeconds)
-			}
-
-		} else if createSvcInput.HealthCheckGracePeriodSeconds != nil {
-			t.Errorf("Expected HealthCheckGrace to be nil, but got value")
+			require.NotNil(t, createSvcInput.HealthCheckGracePeriodSeconds)
+			require.Equal(t, table.expGrace, *createSvcInput.HealthCheckGracePeriodSeconds)
+		} else {
+			require.Nil(t, createSvcInput.HealthCheckGracePeriodSeconds)
 		}
 
 	}

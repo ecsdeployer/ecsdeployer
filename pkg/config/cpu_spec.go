@@ -100,6 +100,7 @@ func (CpuSpec) JSONSchema() *jsonschema.Schema {
 			{
 				Type:        "string",
 				Description: "CPU Shares or vCPUs",
+				// Pattern:     "[0-9]+", // needs to at least have a number in it
 			},
 		},
 		Description: "Specify CPU Resources",

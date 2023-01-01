@@ -1,18 +1,19 @@
 package config_test
 
 import (
+	"fmt"
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
 
-func TestShellCommand_Valid(t *testing.T) {
-
-	st := NewSchemaTester[config.ShellCommand](t, make(config.ShellCommand, 0))
-
+func TestShellCommand_Parsing(t *testing.T) {
+	sc := testutil.NewSchemaChecker(&config.ShellCommand{})
 	tables := []struct {
-		jsonStr  string
+		str      string
 		expected config.ShellCommand
 	}{
 		{`"test blah"`, config.ShellCommand{"test", "blah"}},
@@ -22,33 +23,28 @@ func TestShellCommand_Valid(t *testing.T) {
 		{`["test", 123]`, config.ShellCommand{"test", "123"}},
 		{`["test", ""]`, config.ShellCommand{"test", ""}},
 		{`"test -c 'something something'"`, config.ShellCommand{"test", "-c", "something something"}},
+		{"- test\n- blah", config.ShellCommand{"test", "blah"}},
+		{"- test\n- 1234", config.ShellCommand{"test", "1234"}},
+
+		{"foo: bar", nil},
 	}
 
-	for _, table := range tables {
-		st.AssertValid(table.jsonStr, true)
-		obj, err := st.Parse(table.jsonStr)
-		require.NoError(t, err)
-		st.AssertMatchExpected(obj, table.expected, true)
-	}
-}
+	for testNum, table := range tables {
+		t.Run(fmt.Sprintf("test_%02d", testNum+1), func(t *testing.T) {
 
-func TestShellCommand_InValid(t *testing.T) {
+			obj, err := yaml.ParseYAMLString[config.ShellCommand](table.str)
+			if table.expected == nil {
+				require.Error(t, err)
+				require.Error(t, sc.CheckYAML(t, table.str))
+				return
+			}
 
-	st := NewSchemaTester[config.ShellCommand](t, make(config.ShellCommand, 0))
+			require.NoError(t, err)
+			require.NotNil(t, obj)
 
-	tables := []struct {
-		jsonStr string
-	}{
-		{`{"test":"thing"}`},
-		// {`["test", ""]`},
-	}
+			require.Equal(t, table.expected.String(), obj.String())
 
-	for _, table := range tables {
-		valid := st.AssertValid(table.jsonStr, false)
-		if valid {
-			t.Errorf("expected: <%s> to not be valid, but it was", table.jsonStr)
-		}
-		_, err := st.Parse(table.jsonStr)
-		require.Error(t, err)
+			require.NoError(t, sc.CheckYAML(t, table.str))
+		})
 	}
 }

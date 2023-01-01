@@ -2,6 +2,8 @@ package util
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestIsBlank(t *testing.T) {
@@ -20,12 +22,8 @@ func TestIsBlank(t *testing.T) {
 
 	for _, table := range tables {
 		actual := IsBlank(&table.str)
-		if actual != table.expected {
-			t.Errorf("Expected IsBlank(%s) to be %t, but it was %t", table.str, table.expected, actual)
-		}
+		require.Equalf(t, table.expected, actual, table.str)
 	}
 
-	if !IsBlank(nil) {
-		t.Error("Expected IsBlank(nil) to be true, but it was false")
-	}
+	require.Truef(t, IsBlank(nil), "IsBlank(nil)")
 }

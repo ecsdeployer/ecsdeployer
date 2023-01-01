@@ -1,6 +1,10 @@
 package helpers
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestGetECSServiceNameFromArn(t *testing.T) {
 	tables := []struct {
@@ -17,9 +21,7 @@ func TestGetECSServiceNameFromArn(t *testing.T) {
 
 	for _, table := range tables {
 		result := GetECSServiceNameFromArn(table.arn)
-		if result != table.serviceName {
-			t.Errorf("expected <%s> to give service name of <%s> but got <%s>", table.arn, table.serviceName, result)
-		}
+		require.Equalf(t, table.serviceName, result, "str=%s", table.arn)
 	}
 }
 
@@ -40,9 +42,7 @@ func TestGetECSClusterNameFromArn(t *testing.T) {
 
 	for _, table := range tables {
 		result := GetECSClusterNameFromArn(table.arn)
-		if result != table.clusterName {
-			t.Errorf("expected <%s> to give cluster name of <%s> but got <%s>", table.arn, table.clusterName, result)
-		}
+		require.Equalf(t, table.clusterName, result, "str=%s", table.arn)
 	}
 }
 
@@ -66,8 +66,6 @@ func TestGetTaskDefFamilyFromArn(t *testing.T) {
 
 	for _, table := range tables {
 		result := GetTaskDefFamilyFromArn(table.arn)
-		if result != table.taskFamily {
-			t.Errorf("expected <%s> to give family name of <%s> but got <%s>", table.arn, table.taskFamily, result)
-		}
+		require.Equalf(t, table.taskFamily, result, "str=%s", table.arn)
 	}
 }

@@ -69,20 +69,10 @@ func TestSpotOverrides(t *testing.T) {
 
 			// ensure they are both identical, and only differ because AWS loves types
 			for i := range strategy {
-				if *strategy[i].CapacityProvider != *ebStrategy[i].CapacityProvider {
-					t.Errorf("Entry<%d>::<%d> Expected CapacityProvider==%v but got %v", entryNum, i, *strategy[i].CapacityProvider, *ebStrategy[i].CapacityProvider)
-					continue
-				}
 
-				if strategy[i].Base != ebStrategy[i].Base {
-					t.Errorf("Entry<%d>::<%d> Expected Base==%v but got %v", entryNum, i, strategy[i].Base, ebStrategy[i].Base)
-					continue
-				}
-
-				if strategy[i].Weight != ebStrategy[i].Weight {
-					t.Errorf("Entry<%d>::<%d> Expected Weight==%v but got %v", entryNum, i, strategy[i].Weight, ebStrategy[i].Weight)
-					continue
-				}
+				require.Equalf(t, *strategy[i].CapacityProvider, *ebStrategy[i].CapacityProvider, "CapacityProvider")
+				require.Equalf(t, strategy[i].Base, ebStrategy[i].Base, "Base")
+				require.Equalf(t, strategy[i].Weight, ebStrategy[i].Weight, "Weight")
 			}
 
 			stratMap := make(map[string][]int32, len(strategy))
@@ -96,22 +86,16 @@ func TestSpotOverrides(t *testing.T) {
 
 			if table.expectedOD != nil {
 				ent := stratMap["FARGATE"]
-				if table.expectedOD[0] != ent[0] {
-					t.Errorf("Entry<%d> expected to have FARGATE base=%d but got %d", entryNum, table.expectedOD[0], ent[0])
-				}
-				if table.expectedOD[1] != ent[1] {
-					t.Errorf("Entry<%d> expected to have FARGATE weight=%d but got %d", entryNum, table.expectedOD[1], ent[1])
-				}
+
+				require.Equalf(t, table.expectedOD[0], ent[0], "FARGATE_base entry=%d", entryNum)
+				require.Equalf(t, table.expectedOD[1], ent[1], "FARGATE_weight entry=%d", entryNum)
 			}
 
 			if table.expectedSpot != nil {
 				ent := stratMap["FARGATE_SPOT"]
-				if table.expectedSpot[0] != ent[0] {
-					t.Errorf("Entry<%d> expected to have FARGATE_SPOT base=%d but got %d", entryNum, table.expectedSpot[0], ent[0])
-				}
-				if table.expectedSpot[1] != ent[1] {
-					t.Errorf("Entry<%d> expected to have FARGATE_SPOT weight=%d but got %d", entryNum, table.expectedSpot[1], ent[1])
-				}
+
+				require.Equalf(t, table.expectedSpot[0], ent[0], "FARGATE_SPOT_base entry=%d", entryNum)
+				require.Equalf(t, table.expectedSpot[1], ent[1], "FARGATE_SPOT_weight entry=%d", entryNum)
 			}
 		})
 	}

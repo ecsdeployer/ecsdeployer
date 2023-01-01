@@ -93,6 +93,7 @@ outdated:
 coverage:
 	@mkdir -p coverage
 	@./scripts/run_with_test_env.sh go test $(gopkgs) -cover -coverprofile=coverage/c.out -covermode=count
+	@#./scripts/run_with_test_env.sh go test $(gopkgs) -coverpkg=./... -coverprofile=coverage/c.out -covermode=count
 	@go tool cover -html=coverage/c.out -o coverage/index.html
 
 .PHONY: htmltest

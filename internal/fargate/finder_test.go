@@ -1,6 +1,7 @@
 package fargate
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -24,15 +25,12 @@ func TestFindFargateBestFit(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		res := FindFargateBestFit(table.cpu, table.mem)
+		t.Run(fmt.Sprintf("FF_cpu_%d__memory_%d", table.cpu, table.mem), func(t *testing.T) {
 
-		if res.Cpu != table.expCpu || res.Memory != table.expMem {
-			t.Errorf("FF(%d, %d) expected (%d,%d) but got (%d,%d)",
-				table.cpu, table.mem,
-				table.expCpu, table.expMem,
-				res.Cpu, res.Memory,
-			)
-		}
+			res := FindFargateBestFit(table.cpu, table.mem)
+			require.Equalf(t, table.expCpu, res.Cpu, "CPU")
+			require.Equalf(t, table.expMem, res.Memory, "Memory")
+		})
 
 	}
 }

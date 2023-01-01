@@ -19,6 +19,19 @@ func Mock_ELBv2_DescribeTargetGroups_Single_Success(tgName string) *awsmocker.Mo
 	}
 }
 
+func Mock_ELBv2_DescribeTargetGroups_Single_Failure(tgName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "elasticloadbalancing",
+			Action:  "DescribeTargetGroups",
+			Params: url.Values{
+				"Names.member.1": []string{tgName},
+			},
+		},
+		Response: awsmocker.MockResponse_Error(400, "TargetGroupNotFound", "One of more target groups not found"),
+	}
+}
+
 func MockResponse_ELBv2_DescribeTargetGroups_Single(tgName string) *awsmocker.MockedResponse {
 
 	return &awsmocker.MockedResponse{

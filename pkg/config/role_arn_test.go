@@ -1,6 +1,7 @@
 package config_test
 
 import (
+	"fmt"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
@@ -25,32 +26,20 @@ func TestRoleArn(t *testing.T) {
 		{"arn:aws:iam::1234567890:role/faker2", "faker2", "arn:aws:iam::1234567890:role/faker2"},
 	}
 
-	for _, table := range tables {
-		roleArn, err := yaml.ParseYAMLString[config.RoleArn](table.str)
-		if err != nil {
-			t.Errorf("RoleStr <%s> gave error: %s", table.str, err)
-			break
-		}
+	for testNum, table := range tables {
+		t.Run(fmt.Sprintf("test_%02d", testNum+1), func(t *testing.T) {
 
-		nameVal, err := roleArn.Name(ctx)
-		if err != nil {
-			t.Errorf("RoleStr <%s> gave error during name eval: %s", table.str, err)
-			break
-		}
+			roleArn, err := yaml.ParseYAMLString[config.RoleArn](table.str)
+			require.NoError(t, err)
 
-		if nameVal != table.name {
-			t.Errorf("RoleStr <%s> Name Mismatch expected=%s got=%s", table.str, table.name, nameVal)
-		}
+			nameVal, err := roleArn.Name(ctx)
+			require.NoErrorf(t, err, "Failure during name eval for '%s'", table.str)
+			require.Equal(t, table.name, nameVal)
 
-		arnVal, err := roleArn.Arn(ctx)
-		if err != nil {
-			t.Errorf("RoleStr <%s> gave error during arn eval: %s", table.str, err)
-			break
-		}
-
-		if arnVal != table.arn {
-			t.Errorf("RoleStr <%s> ARN Mismatch expected=%s got=%s", table.str, table.arn, arnVal)
-		}
+			arnVal, err := roleArn.Arn(ctx)
+			require.NoError(t, err)
+			require.Equal(t, table.arn, arnVal)
+		})
 
 	}
 }
