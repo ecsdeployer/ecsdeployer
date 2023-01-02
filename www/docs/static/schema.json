@@ -294,8 +294,15 @@
       "description": "Create a version constraint to prevent different versions of ECS Deployer from deploying this app."
      },
      "allowed_account_id": {
-      "type": "string",
-      "pattern": "^[0-9]{12,}$",
+      "oneOf": [
+       {
+        "type": "string",
+        "pattern": "^[0-9]{12,}$"
+       },
+       {
+        "type": "integer"
+       }
+      ],
       "description": "Restrict to a specific AWS account ID."
      }
     },
@@ -980,6 +987,7 @@
      },
      {
       "type": "string",
+      "pattern": "^\\/.+",
       "description": "Enable SSM importing, with the value provided as the path to use."
      },
      {
