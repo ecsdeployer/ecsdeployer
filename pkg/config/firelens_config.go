@@ -140,6 +140,17 @@ func (FirelensConfig) JSONSchemaExtend(base *jsonschema.Schema) {
 		}
 	})
 
+	orig := *base
+	newBase := &jsonschema.Schema{
+		OneOf: []*jsonschema.Schema{
+			{
+				Type: "boolean",
+			},
+			&orig,
+		},
+	}
+	*base = *newBase
+
 }
 
 type FirelensAwsLogGroup struct {

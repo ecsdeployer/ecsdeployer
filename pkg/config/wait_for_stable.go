@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/invopop/jsonschema"
 )
 
 type WaitForStable struct {
@@ -78,4 +79,18 @@ func (obj *WaitForStable) ApplyDefaults() {
 		timeout := NewDurationFromTDuration(30 * time.Minute)
 		obj.Timeout = &timeout
 	}
+}
+
+func (WaitForStable) JSONSchemaExtend(base *jsonschema.Schema) {
+	orig := *base
+	newBase := &jsonschema.Schema{
+		OneOf: []*jsonschema.Schema{
+			{
+				Type:        "boolean",
+				Description: "Enable or disable waiting for stability entirely",
+			},
+			&orig,
+		},
+	}
+	*base = *newBase
 }

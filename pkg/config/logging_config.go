@@ -2,6 +2,8 @@ package config
 
 import (
 	"errors"
+
+	"github.com/invopop/jsonschema"
 )
 
 // Project level
@@ -76,6 +78,19 @@ func (obj *LoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error
 	}
 
 	return nil
+}
+
+func (LoggingConfig) JSONSchemaExtend(base *jsonschema.Schema) {
+	orig := *base
+	newBase := &jsonschema.Schema{
+		OneOf: []*jsonschema.Schema{
+			{
+				Type: "boolean",
+			},
+			&orig,
+		},
+	}
+	*base = *newBase
 }
 
 /*

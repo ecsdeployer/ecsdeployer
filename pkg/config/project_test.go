@@ -1,12 +1,35 @@
 package config_test
 
 import (
+	"os"
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
+
+func TestProject_ApplyDefaults(t *testing.T) {
+	proj := &config.Project{}
+	proj.ApplyDefaults()
+
+	require.NotNil(t, proj.ConsoleTask, "ConsoleTask")
+
+	require.NotNil(t, proj.Image, "Image")
+	require.Equal(t, "{{ .Image }}", proj.Image.Value())
+}
+
+func TestProject_Validate(t *testing.T) {
+	proj := &config.Project{}
+	proj.ApplyDefaults()
+
+	// tables := []struct{}{}
+
+	// for _, table := range tables {
+
+	// }
+}
 
 func TestProject_Unmarshal(t *testing.T) {
 	// tables := []struct {
@@ -40,6 +63,7 @@ func TestProject_Unmarshal(t *testing.T) {
 func TestProject_SchemaCheck_Examples(t *testing.T) {
 
 	st := NewSchemaTester[config.Project](t, config.Project{})
+	sc := testutil.NewSchemaChecker(&config.Project{})
 
 	tables := []struct {
 		filepath string
@@ -57,6 +81,10 @@ func TestProject_SchemaCheck_Examples(t *testing.T) {
 
 		err = obj.Validate()
 		require.NoErrorf(t, err, "File %s failed validation", table.filepath)
+
+		fileData, err := os.ReadFile(table.filepath)
+		require.NoError(t, err, "Unable to read test file??")
+		require.NoError(t, sc.CheckYAML(t, string(fileData)))
 
 	}
 }

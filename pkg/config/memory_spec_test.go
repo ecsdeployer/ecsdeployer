@@ -3,7 +3,9 @@ package config_test
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -36,6 +38,8 @@ func TestMemorySpec_Parse_Valid(t *testing.T) {
 		{"2 gb", 2048, false},
 	}
 
+	sc := testutil.NewSchemaChecker(&config.MemorySpec{})
+
 	for _, table := range tables {
 		t.Run(table.str, func(t *testing.T) {
 			memSpec, err := config.ParseMemorySpec(table.str)
@@ -43,12 +47,21 @@ func TestMemorySpec_Parse_Valid(t *testing.T) {
 
 			memValue, err := memSpec.MegabytesFromCpu(cpuSpec)
 			require.NoError(t, err)
-
 			require.Equal(t, table.expected, memValue)
+
+			memValuePtr, err := memSpec.MegabytesPtrFromCpu(cpuSpec)
+			require.NoError(t, err)
+			require.Equal(t, table.expected, *memValuePtr)
 
 			if !table.isMultip {
 				require.Equal(t, table.expected, memSpec.GetValueOnly())
 			}
+
+			// attempt to parse it as well
+			obj, err := yaml.ParseYAMLString[config.MemorySpec](table.str)
+			require.NoError(t, err)
+			require.NoError(t, sc.CheckYAML(t, table.str))
+			require.True(t, memSpec.Equals(obj))
 		})
 	}
 }

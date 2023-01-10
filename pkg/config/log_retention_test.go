@@ -3,6 +3,7 @@ package config_test
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -64,7 +65,8 @@ func TestLogRetention_Unmarshal(t *testing.T) {
 }
 
 func TestLogRetention_Schema(t *testing.T) {
-	st := NewSchemaTester[config.LogRetention](t, &config.LogRetention{})
+	// st := NewSchemaTester[config.LogRetention](t, &config.LogRetention{})
+	sc := testutil.NewSchemaChecker(&config.LogRetention{})
 
 	tables := []struct {
 		str      string
@@ -76,10 +78,16 @@ func TestLogRetention_Schema(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		st.AssertValid(table.str, true)
-		obj, err := st.Parse(table.str)
+		obj, err := yaml.ParseYAMLString[config.LogRetention](table.str)
 		require.NoError(t, err)
-		st.AssertMatchExpected(obj, table.expected, true)
+
+		require.NoError(t, sc.CheckYAML(t, table.str))
+
+		// st.AssertValid(table.str, true)
+		// obj, err := st.Parse(table.str)
+		// require.NoError(t, err)
+		// st.AssertMatchExpected(obj, table.expected, true)
+		testutil.RequireObjectSerializationEqual(t, table.expected, obj)
 	}
 }
 

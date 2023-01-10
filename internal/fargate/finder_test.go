@@ -51,3 +51,23 @@ func TestExceedsLargest(t *testing.T) {
 		require.Equal(t, table.ret, ret)
 	}
 }
+
+func TestFindFargateBestFitOrTrust(t *testing.T) {
+	tables := []struct {
+		cpu         int32
+		mem         int32
+		expectedCpu int32
+		expectedMem int32
+	}{
+		{128, 128, 256, 512},
+		{16384, 122880, 16384, 122880},
+		{16384, 120000, 16384, 122880},
+		{32768, 122880, 32768, 122880},
+	}
+
+	for _, table := range tables {
+		ret := FindFargateBestFitOrTrust(table.cpu, table.mem)
+		require.Equal(t, table.expectedCpu, ret.Cpu)
+		require.Equal(t, table.expectedMem, ret.Memory)
+	}
+}

@@ -22,6 +22,10 @@ type MemorySpec struct {
 	multiplier float64 // `yaml:"multiplier,omitempty" json:"multiplier,omitempty"`
 }
 
+func (m *MemorySpec) Equals(other *MemorySpec) bool {
+	return m.value == other.value && m.multiplier == other.multiplier
+}
+
 func (m *MemorySpec) GetValueOnly() int32 {
 	return m.value
 }

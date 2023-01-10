@@ -3,19 +3,27 @@
   "$id": "https://ecsdeployer.com/ecsdeployer/pkg/config/project",
   "$defs": {
    "AwsLogConfig": {
-    "properties": {
-     "disabled": {
-      "type": "boolean"
+    "oneOf": [
+     {
+      "type": "boolean",
+      "description": "Enable or disable logging to AWS using default values"
      },
-     "retention": {
-      "$ref": "#/$defs/LogRetention"
-     },
-     "options": {
-      "$ref": "#/$defs/EnvVarMap"
+     {
+      "properties": {
+       "disabled": {
+        "type": "boolean"
+       },
+       "retention": {
+        "$ref": "#/$defs/LogRetention"
+       },
+       "options": {
+        "$ref": "#/$defs/EnvVarMap"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object"
      }
-    },
-    "additionalProperties": false,
-    "type": "object"
+    ]
    },
    "CPUShares": {
     "oneOf": [
@@ -383,46 +391,53 @@
     "description": "Should logs for firelens be sent to a log group"
    },
    "FirelensConfig": {
-    "properties": {
-     "disabled": {
+    "oneOf": [
+     {
       "type": "boolean"
      },
-     "type": {
-      "type": "string",
-      "enum": [
-       "fluentbit",
-       "fluentd"
-      ],
-      "default": "fluentbit"
-     },
-     "container_name": {
-      "type": "string",
-      "default": "log_router"
-     },
-     "options": {
-      "$ref": "#/$defs/EnvVarMap"
-     },
-     "environment": {
-      "$ref": "#/$defs/EnvVarMap"
-     },
-     "credentials": {
-      "type": "string"
-     },
-     "inherit_env": {
-      "type": "boolean"
-     },
-     "image": {
-      "$ref": "#/$defs/ImageUri"
-     },
-     "memory": {
-      "$ref": "#/$defs/Memory"
-     },
-     "log_to_awslogs": {
-      "$ref": "#/$defs/FirelensAwsLogGroup"
+     {
+      "properties": {
+       "disabled": {
+        "type": "boolean"
+       },
+       "type": {
+        "type": "string",
+        "enum": [
+         "fluentbit",
+         "fluentd"
+        ],
+        "default": "fluentbit"
+       },
+       "container_name": {
+        "type": "string",
+        "default": "log_router"
+       },
+       "options": {
+        "$ref": "#/$defs/EnvVarMap"
+       },
+       "environment": {
+        "$ref": "#/$defs/EnvVarMap"
+       },
+       "credentials": {
+        "type": "string"
+       },
+       "inherit_env": {
+        "type": "boolean"
+       },
+       "image": {
+        "$ref": "#/$defs/ImageUri"
+       },
+       "memory": {
+        "$ref": "#/$defs/Memory"
+       },
+       "log_to_awslogs": {
+        "$ref": "#/$defs/FirelensAwsLogGroup"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object"
      }
-    },
-    "additionalProperties": false,
-    "type": "object"
+    ]
    },
    "HealthCheck": {
     "properties": {
@@ -601,19 +616,26 @@
     "description": "How long to retain logs in CloudWatch logs"
    },
    "LoggingConfig": {
-    "properties": {
-     "disabled": {
+    "oneOf": [
+     {
       "type": "boolean"
      },
-     "firelens": {
-      "$ref": "#/$defs/FirelensConfig"
-     },
-     "awslogs": {
-      "$ref": "#/$defs/AwsLogConfig"
+     {
+      "properties": {
+       "disabled": {
+        "type": "boolean"
+       },
+       "firelens": {
+        "$ref": "#/$defs/FirelensConfig"
+       },
+       "awslogs": {
+        "$ref": "#/$defs/AwsLogConfig"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object"
      }
-    },
-    "additionalProperties": false,
-    "type": "object"
+    ]
    },
    "Memory": {
     "oneOf": [
@@ -1319,20 +1341,28 @@
     "description": "Specify a constraint on a semantic version"
    },
    "WaitForStable": {
-    "properties": {
-     "disabled": {
-      "type": "boolean"
-     },
-     "individually": {
+    "oneOf": [
+     {
       "type": "boolean",
-      "description": "Don't use this"
+      "description": "Enable or disable waiting for stability entirely"
      },
-     "timeout": {
-      "$ref": "#/$defs/Duration"
+     {
+      "properties": {
+       "disabled": {
+        "type": "boolean"
+       },
+       "individually": {
+        "type": "boolean",
+        "description": "Don't use this"
+       },
+       "timeout": {
+        "$ref": "#/$defs/Duration"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object"
      }
-    },
-    "additionalProperties": false,
-    "type": "object"
+    ]
    }
   },
   "properties": {
