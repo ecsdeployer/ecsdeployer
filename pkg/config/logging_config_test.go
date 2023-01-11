@@ -114,6 +114,7 @@ func TestLoggingConfig_Unmarshal(t *testing.T) {
 
 			if table.invalid {
 				require.Error(t, err)
+				require.ErrorIs(t, err, config.ErrValidation)
 
 				if table.validationErrorContains != "" {
 					require.ErrorContains(t, err, table.validationErrorContains)

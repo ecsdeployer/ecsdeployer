@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-	"fmt"
 	"io"
 	"os"
 
@@ -167,15 +165,15 @@ func (project *Project) ApplyDefaults() {
 func (project *Project) Validate() error {
 
 	if project.ProjectName == "" {
-		return errors.New("you must provide a project name")
+		return NewValidationError("you must provide a project name")
 	}
 
 	if !shortCodeNameRegex.MatchString(project.ProjectName) {
-		return errors.New("Project name must be lowercase letters, numbers, hyphen only")
+		return NewValidationError("Project name must be lowercase letters, numbers, hyphen only")
 	}
 
 	if project.StageName != nil && !shortCodeNameRegex.MatchString(*project.StageName) {
-		return errors.New("Stage name must be lowercase letters, numbers, hyphen only")
+		return NewValidationError("Stage name must be lowercase letters, numbers, hyphen only")
 	}
 
 	if err := project.TaskDefaults.Validate(); err != nil {
@@ -231,17 +229,17 @@ func (project *Project) Validate() error {
 	for _, nameVal := range nameList {
 		_, exists := nameChecker[nameVal]
 		if exists {
-			return fmt.Errorf("Duplicate Resource Name! Multiple resources have been named '%s'", nameVal)
+			return NewValidationError("Duplicate Resource Name! Multiple resources have been named '%s'", nameVal)
 		}
 		nameChecker[nameVal] = struct{}{}
 	}
 
 	if len(project.CronJobs) > 0 && project.CronLauncherRole == nil {
-		return errors.New("You must provide a CronLauncher role if you are using CronJobs")
+		return NewValidationError("You must provide a CronLauncher role if you are using CronJobs")
 	}
 
 	if project.Cluster == nil {
-		return errors.New("you must provide a cluster")
+		return NewValidationError("you must provide a cluster")
 	}
 
 	// TODO: have enabled Firelens, but LogDriver is not set to awsfirelens

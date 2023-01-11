@@ -51,6 +51,7 @@ func TestCronJob(t *testing.T) {
 			if table.errStr != "" {
 				require.Error(t, err)
 				require.ErrorContains(t, err, table.errStr)
+				require.ErrorIs(t, err, config.ErrValidation)
 			} else {
 				require.NoError(t, err)
 			}

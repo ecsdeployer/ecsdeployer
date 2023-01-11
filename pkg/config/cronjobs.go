@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/invopop/jsonschema"
 )
@@ -43,7 +41,7 @@ func (obj *CronJob) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (obj *CronJob) Validate() error {
 	if obj.Schedule == "" {
-		return errors.New("you must provide a cron schedule")
+		return NewValidationError("you must provide a cron schedule")
 	}
 
 	if err := obj.CommonTaskAttrs.Validate(); err != nil {

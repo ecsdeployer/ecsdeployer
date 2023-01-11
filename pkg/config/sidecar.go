@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
@@ -18,7 +16,7 @@ type Sidecar struct {
 func (obj *Sidecar) Validate() error {
 
 	if obj.Name == "" {
-		return errors.New("you must set a name")
+		return NewValidationError("you must set a name")
 	}
 
 	if err := obj.CommonContainerAttrs.Validate(); err != nil {

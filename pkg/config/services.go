@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/invopop/jsonschema"
 )
@@ -71,7 +69,7 @@ func (obj *Service) Validate() error {
 	// }
 
 	if obj.DesiredCount < 0 {
-		return errors.New("desired count cannot be less than zero")
+		return NewValidationError("desired count cannot be less than zero")
 	}
 
 	if err := obj.RolloutConfig.ValidateWithDesiredCount(obj.DesiredCount); err != nil {
@@ -85,7 +83,7 @@ func (obj *Service) Validate() error {
 	}
 
 	// if obj.GracePeriod != nil && obj.IsWorker() {
-	// 	return errors.New("GracePeriod is only valid on services connected to a target group")
+	// 	return NewValidationError("GracePeriod is only valid on services connected to a target group")
 	// }
 
 	// if obj.Capacity != nil {

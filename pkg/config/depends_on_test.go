@@ -63,18 +63,21 @@ func TestNewDependsOnFromString(t *testing.T) {
 	}
 
 	for _, table := range tables {
+		t.Run(table.str, func(t *testing.T) {
 
-		dep, err := config.NewDependsOnFromString(table.str)
+			dep, err := config.NewDependsOnFromString(table.str)
 
-		if table.expectedErr != "" {
-			require.Error(t, err)
-			require.ErrorContains(t, err, table.expectedErr)
-			continue
-		}
+			if table.expectedErr != "" {
+				require.Error(t, err)
+				require.ErrorContains(t, err, table.expectedErr)
+				require.ErrorIs(t, err, config.ErrValidation)
+				return
+			}
 
-		require.NoError(t, err)
+			require.NoError(t, err)
 
-		require.EqualValues(t, table.deps.Name, dep.Name)
-		require.EqualValues(t, table.deps.Condition, dep.Condition)
+			require.EqualValues(t, table.deps.Name, dep.Name)
+			require.EqualValues(t, table.deps.Condition, dep.Condition)
+		})
 	}
 }

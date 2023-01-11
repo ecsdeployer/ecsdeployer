@@ -47,6 +47,7 @@ func TestCpuSpec_Unmarshal(t *testing.T) {
 
 			if !table.valid {
 				require.Errorf(t, err, "Parse failure")
+				require.ErrorIs(t, err, config.ErrValidation)
 
 				// we allow "invalid" things in the schema, but then error when parsing.
 				// require.Errorf(t, sc.CheckYAML(t, table.str), "Schema Validation")

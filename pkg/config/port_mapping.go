@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -99,17 +98,17 @@ func (obj *PortMapping) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (obj *PortMapping) Validate() error {
 	if obj.Port == nil {
-		return errors.New("you must provide a port value")
+		return NewValidationError("you must provide a port value")
 	}
 
 	portVal := *obj.Port
 
 	if portVal < minimumPortNumber || portVal > maximumPortNumber {
-		return fmt.Errorf("port must be between %d and %d", minimumPortNumber, maximumPortNumber)
+		return NewValidationError("port must be between %d and %d", minimumPortNumber, maximumPortNumber)
 	}
 
 	if !slices.Contains(ecsTypes.TransportProtocolTcp.Values(), obj.Protocol) {
-		return fmt.Errorf("'%s' is not a valid protocol", string(obj.Protocol))
+		return NewValidationError("'%s' is not a valid protocol", string(obj.Protocol))
 	}
 	return nil
 }

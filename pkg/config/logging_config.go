@@ -31,7 +31,7 @@ func (obj *LoggingConfig) Validate() error {
 	}
 
 	if obj.FirelensConfig.IsDisabled() && obj.AwsLogConfig.IsDisabled() {
-		return errors.New("if you want to disable logging, set the 'disabled:true' flag on the 'logging' section")
+		return NewValidationError("if you want to disable logging, set the 'disabled:true' flag on the 'logging' section")
 	}
 
 	return nil
@@ -57,9 +57,14 @@ func (obj *LoggingConfig) ApplyDefaults() {
 }
 
 func (obj *LoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t LoggingConfig // prevent recursive overflow
-	var defo = t{}
+	type tLoggingConfig LoggingConfig // prevent recursive overflow
+	var defo = tLoggingConfig{}
 	if err := unmarshal(&defo); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var val bool
 		if err := unmarshal(&val); err != nil {
 			return err

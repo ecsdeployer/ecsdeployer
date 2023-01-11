@@ -33,6 +33,10 @@ func (a *WaitForStable) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	var val bool
 	if err := unmarshal(&val); err != nil {
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		type t WaitForStable
 		var obj t
 		if err := unmarshal(&obj); err != nil {
@@ -59,7 +63,7 @@ func (def *WaitForStable) Validate() error {
 
 	// TODO: when we eventually support merging service checks into chunks, we can allow this
 	if def.Individually == nil || !*def.Individually {
-		return errors.New("'individually' must be set to true (or left blank) currently")
+		return NewValidationError("'individually' must be set to true (or left blank) currently")
 	}
 
 	return nil

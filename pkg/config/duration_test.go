@@ -107,6 +107,7 @@ func TestDuration_Unmarshal(t *testing.T) {
 			dur, err := yaml.ParseYAMLString[config.Duration](table.str)
 			if table.seconds == -1 {
 				require.Error(t, err)
+				require.ErrorIs(t, err, config.ErrValidation)
 				return
 			} else {
 				require.NoError(t, err)

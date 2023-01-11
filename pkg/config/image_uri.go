@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -96,19 +95,19 @@ func (def *ImageUri) Validate() error {
 	}
 
 	if util.IsBlank(def.Docker) && util.IsBlank(def.Ecr) {
-		return errors.New("you must one of (uri,ecr,docker) in your image uri")
+		return NewValidationError("you must one of (uri,ecr,docker) in your image uri")
 	}
 
 	if !util.IsBlank(def.Docker) && !util.IsBlank(def.Ecr) {
-		return errors.New("You cannot specify both docker and ecr. Pick one.")
+		return NewValidationError("You cannot specify both docker and ecr. Pick one.")
 	}
 
 	if util.IsBlank(def.Tag) && util.IsBlank(def.Digest) {
-		return errors.New("You must define either a tag or a digest for your image reference")
+		return NewValidationError("You must define either a tag or a digest for your image reference")
 	}
 
 	// if !util.IsBlank(def.Tag) && !util.IsBlank(def.Digest) {
-	// 	return errors.New("you must one of (uri,ecr,docker) in your image uri")
+	// 	return NewValidationError("you must one of (uri,ecr,docker) in your image uri")
 	// }
 
 	return nil

@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"github.com/invopop/jsonschema"
 )
 
@@ -24,7 +22,7 @@ func (obj *PreDeployTask) Validate() error {
 	}
 
 	if obj.Name == "" {
-		return errors.New("you need to name your PreDeployTask")
+		return NewValidationError("you need to name your PreDeployTask")
 	}
 
 	return nil

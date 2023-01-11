@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"github.com/invopop/jsonschema"
 )
 
@@ -19,14 +17,14 @@ func (nc *LoadBalancer) ApplyDefaults() {
 func (obj *LoadBalancer) Validate() error {
 
 	if obj.PortMapping == nil {
-		return errors.New("You must specify a port for a load balanced service")
+		return NewValidationError("You must specify a port for a load balanced service")
 	}
 	if err := obj.PortMapping.Validate(); err != nil {
 		return err
 	}
 
 	if obj.TargetGroup == nil {
-		return errors.New("You must specify a target group for a load balanced service")
+		return NewValidationError("You must specify a target group for a load balanced service")
 	}
 
 	return nil

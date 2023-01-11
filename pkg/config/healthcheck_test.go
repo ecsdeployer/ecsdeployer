@@ -30,6 +30,7 @@ func TestHealthCheck_Validate(t *testing.T) {
 			require.NoErrorf(t, err, "entry#%d", i)
 		} else {
 			require.Error(t, err, "entry#%d", i)
+			require.ErrorIs(t, err, config.ErrValidation)
 		}
 
 	}

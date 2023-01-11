@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -82,7 +81,7 @@ func (obj *NameArn) superArn(ctx *Context, resolve resolverFunc) (string, error)
 // THESE SHOULD BE OVERRIDDEN BY CHILD STRUCTS
 // DO NOT CACHE WITHIN
 func (obj *NameArn) InferArn(ctx *Context) (string, error) {
-	return "", errors.New("unable to infer ARN")
+	return "", NewValidationError("unable to infer ARN")
 }
 
 // THESE SHOULD BE OVERRIDDEN BY CHILD STRUCTS
@@ -101,7 +100,7 @@ func (obj *NameArn) InferName(ctx *Context) (string, error) {
 		return parts[1], nil
 	}
 
-	return "", errors.New("unable to infer name from ARN")
+	return "", NewValidationError("unable to infer name from ARN")
 }
 
 func (obj *NameArn) Validate() error {

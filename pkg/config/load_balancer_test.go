@@ -67,6 +67,7 @@ func TestLoadBalancer_Validate(t *testing.T) {
 			err := table.lb.Validate()
 			require.Error(t, err)
 			require.ErrorContains(t, err, table.errStr)
+			require.ErrorIs(t, err, config.ErrValidation)
 		}
 	})
 }

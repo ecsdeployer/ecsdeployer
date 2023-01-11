@@ -46,6 +46,7 @@ func TestLogRetention_Unmarshal(t *testing.T) {
 
 			if !table.valid {
 				require.Error(t, err)
+				require.ErrorIs(t, err, config.ErrValidation)
 				return
 			}
 
@@ -120,6 +121,7 @@ func TestParseLogRetention(t *testing.T) {
 		for _, table := range tables {
 			_, err := table.genFunc()
 			require.Error(t, err)
+			require.ErrorIs(t, err, config.ErrInvalidLogRetention)
 		}
 	})
 

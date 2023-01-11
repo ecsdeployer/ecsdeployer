@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
@@ -32,11 +30,11 @@ func (a *NameValuePair) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (def *NameValuePair) Validate() error {
 	if def.Name == nil {
-		return errors.New("you must provide a tag Name")
+		return NewValidationError("you must provide a tag Name")
 	}
 
 	if def.Value == nil {
-		return errors.New("you must provide a tag Value")
+		return NewValidationError("you must provide a tag Value")
 	}
 
 	return nil

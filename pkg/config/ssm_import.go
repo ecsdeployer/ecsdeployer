@@ -47,8 +47,17 @@ func (a *SSMImport) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var boolVal bool
 	if err := unmarshal(&boolVal); err != nil {
 
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var str string
 		if err := unmarshal(&str); err != nil {
+
+			if errors.Is(err, ErrValidation) {
+				return err
+			}
+
 			type tSSMImport SSMImport
 			var obj tSSMImport
 			if err := unmarshal(&obj); err != nil {
@@ -59,7 +68,7 @@ func (a *SSMImport) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		} else {
 
 			if !strings.HasPrefix(str, "/") {
-				return errors.New("SSM Paths must begin with a slash '/' character")
+				return NewValidationError("SSM Paths must begin with a slash '/' character")
 			}
 
 			*a = SSMImport{

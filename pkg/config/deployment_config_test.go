@@ -50,5 +50,6 @@ func TestDeploymentConfig_ValidateDesiredCountFailures(t *testing.T) {
 
 		err := dc.ValidateWithDesiredCount(table.desired)
 		require.Error(t, err)
+		require.ErrorIs(t, err, config.ErrValidation)
 	}
 }

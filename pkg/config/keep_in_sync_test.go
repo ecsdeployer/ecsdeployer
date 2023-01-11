@@ -91,6 +91,7 @@ func TestKeepInSync_Unmarshal(t *testing.T) {
 			obj, err := yaml.ParseYAMLString[config.KeepInSync](table.str)
 			if table.expected == nil {
 				require.Error(t, err)
+				require.ErrorIs(t, err, config.ErrValidation)
 				return
 			} else {
 				require.NoError(t, err)

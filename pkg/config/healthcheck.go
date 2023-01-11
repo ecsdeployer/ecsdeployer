@@ -1,7 +1,5 @@
 package config
 
-import "errors"
-
 type HealthCheck struct {
 	Command     []string  `yaml:"command" json:"command"`
 	Interval    *Duration `yaml:"interval,omitempty" json:"interval,omitempty"`
@@ -13,15 +11,15 @@ type HealthCheck struct {
 func (obj *HealthCheck) Validate() error {
 
 	if obj.Command == nil || len(obj.Command) == 0 {
-		return errors.New("Healthcheck command cannot be empty")
+		return NewValidationError("Healthcheck command cannot be empty")
 	}
 
 	if obj.Command[0] != "CMD" && obj.Command[0] != "CMD-SHELL" {
-		return errors.New("Healthcheck command MUST start with 'CMD' or 'CMD-SHELL'")
+		return NewValidationError("Healthcheck command MUST start with 'CMD' or 'CMD-SHELL'")
 	}
 
 	if obj.Retries != nil && *obj.Retries < 0 {
-		return errors.New("Retries cannot be negative")
+		return NewValidationError("Retries cannot be negative")
 	}
 
 	return nil

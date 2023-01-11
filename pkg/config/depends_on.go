@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
@@ -32,7 +31,7 @@ func NewDependsOnFromString(str string) (*DependsOn, error) {
 	}
 
 	if len(parts) != 2 {
-		return nil, errors.New("DependsOn must be object, or string of 'container:condition'")
+		return nil, NewValidationError("DependsOn must be object, or string of 'container:condition'")
 	}
 
 	res := &DependsOn{
@@ -51,6 +50,11 @@ func (a *DependsOn) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	type tDependsOn DependsOn
 	var obj tDependsOn
 	if err := unmarshal(&obj); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var str string
 		if err := unmarshal(&str); err != nil {
 			return err
@@ -84,11 +88,11 @@ func (obj *DependsOn) ApplyDefaults() {
 func (obj *DependsOn) Validate() error {
 
 	if util.IsBlank(obj.Name) {
-		return errors.New("Name cannot be blank")
+		return NewValidationError("Name cannot be blank")
 	}
 
 	if !slices.Contains(ecsTypes.ContainerConditionComplete.Values(), obj.Condition) {
-		return fmt.Errorf("'%s' is not a valid condition for a depends_on. Must be one of: %v", obj.Condition, ecsTypes.ContainerConditionComplete.Values())
+		return NewValidationError("'%s' is not a valid condition for a depends_on. Must be one of: %v", obj.Condition, ecsTypes.ContainerConditionComplete.Values())
 	}
 
 	return nil

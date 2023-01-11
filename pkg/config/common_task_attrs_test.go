@@ -54,6 +54,7 @@ func TestCommonTaskAttrs_Validate(t *testing.T) {
 			}
 			require.Error(t, err)
 			require.ErrorContains(t, err, table.expectedErr)
+			require.ErrorIs(t, err, config.ErrValidation)
 		}
 	})
 }

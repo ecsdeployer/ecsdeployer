@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
@@ -79,7 +78,7 @@ func (obj *Settings) Validate() error {
 	}
 
 	if obj.DisableMarkerTag && !obj.KeepInSync.AllDisabled() {
-		return errors.New("If you disable the marker tag, you must also disable keep_in_sync")
+		return NewValidationError("If you disable the marker tag, you must also disable keep_in_sync")
 	}
 
 	return nil
