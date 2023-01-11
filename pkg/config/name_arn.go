@@ -132,7 +132,7 @@ func (obj *NameArn) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	namearn := NameArn{}
 	if err := namearn.ParseFromString(str); err != nil {
-		return err
+		return NewValidationError(err)
 	}
 
 	*obj = namearn

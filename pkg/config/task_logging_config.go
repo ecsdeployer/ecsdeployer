@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
 )
@@ -21,7 +19,7 @@ func (obj *TaskLoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) e
 	// allow `false` as a value
 	if err := unmarshal(&val); err == nil {
 		if val {
-			return fmt.Errorf("'true' is not a valid value for logging config. Please see docs.")
+			return NewValidationError("'true' is not a valid value for logging config. Please see docs.")
 		}
 
 		*obj = TaskLoggingConfig{

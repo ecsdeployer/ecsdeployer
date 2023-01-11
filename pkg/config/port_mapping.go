@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"errors"
 	"strconv"
 	"strings"
 
@@ -44,18 +44,18 @@ func NewPortMappingFromString(value string) (*PortMapping, error) {
 	if len(parts) == 2 {
 		protocol := ecsTypes.TransportProtocol(parts[1])
 		if !slices.Contains(ecsTypes.TransportProtocolTcp.Values(), protocol) {
-			return nil, fmt.Errorf("'%s' is not a valid protocol", parts[1])
+			return nil, NewValidationError("'%s' is not a valid protocol", parts[1])
 		}
 		mapping.Protocol = protocol
 	}
 
 	port, err := strconv.ParseInt(parts[0], 10, 0)
 	if err != nil {
-		return nil, err
+		return nil, NewValidationError(err)
 	}
 
 	if port > maximumPortNumber || port < minimumPortNumber {
-		return nil, fmt.Errorf("port '%d' is invalid and out of range", port)
+		return nil, NewValidationError("port '%d' is invalid and out of range", port)
 	}
 
 	mapping.Port = aws.Int32(int32(port))
@@ -68,9 +68,14 @@ func NewPortMappingFromString(value string) (*PortMapping, error) {
 }
 
 func (obj *PortMapping) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t PortMapping // prevent recursive overflow
-	var defo = t{}
+	type tPortMapping PortMapping // prevent recursive overflow
+	var defo = tPortMapping{}
 	if err := unmarshal(&defo); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var str string
 		if err := unmarshal(&str); err != nil {
 			return err
