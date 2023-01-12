@@ -68,10 +68,20 @@ showman: gen-man
 test:
 	@./scripts/run_with_test_env.sh go test -timeout 180s $(gopkgs)
 
-
 .PHONY: test-v
 test-v:
-	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs)
+	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs)\
+
+.PHONY: test-testutil
+test-testutil:
+	@go test -timeout 180s ./internal/testutil
+
+.PHONY: test-single
+test-single:
+ifndef name
+	$(error Rerun as 'make <command> name=<something>')
+endif
+	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs) -run $(name)
 
 .PHONY: docs-serve
 docs-serve:

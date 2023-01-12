@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -8,10 +9,6 @@ import (
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
-
-// import (
-// 	"github.com/invopop/jsonschema"
-// )
 
 type ImageDigestAlg string
 
@@ -70,9 +67,14 @@ func (img *ImageUri) Resolve(ctx *Context) (string, error) {
 }
 
 func (a *ImageUri) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t ImageUri
-	var obj t
+	type tImageUri ImageUri
+	var obj tImageUri
 	if err := unmarshal(&obj); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var str string
 		if err := unmarshal(&str); err != nil {
 			return err

@@ -13,25 +13,6 @@ import (
 
 type ContextEnv map[string]string
 
-// Copy returns a copy of the environment.
-func (e ContextEnv) Copy() ContextEnv {
-	out := ContextEnv{}
-	for k, v := range e {
-		out[k] = v
-	}
-	return out
-}
-
-// Strings returns the current environment as a list of strings, suitable for
-// os executions.
-func (e ContextEnv) Strings() []string {
-	result := make([]string, 0, len(e))
-	for k, v := range e {
-		result = append(result, k+"="+v)
-	}
-	return result
-}
-
 type Context struct {
 	stdctx.Context
 	*AwsClientManager

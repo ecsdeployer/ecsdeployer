@@ -1,6 +1,7 @@
 package config_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -21,48 +22,75 @@ func TestProject_ApplyDefaults(t *testing.T) {
 }
 
 func TestProject_Validate(t *testing.T) {
-	proj := &config.Project{}
-	proj.ApplyDefaults()
+	tables := []struct {
+		str      string
+		errMatch string
+	}{
+		{
+			str:      "project: fake\ncluster: fake",
+			errMatch: "",
+		},
+		{
+			str:      `cluster: fake`,
+			errMatch: "must provide a project name",
+		},
+		{
+			str:      `project: "bad name"`,
+			errMatch: "Project name must be lower",
+		},
+		{
+			str: `
+			project: fake
+			stage: "bad stage"`,
+			errMatch: "Stage name must be lower",
+		},
+		{
+			str: `
+			project: fake
+			cluster: fake
+			predeploy:
+				- name: thing
+				- name: thing
+				- name: thing2`,
+			errMatch: "Duplicate Resource Name",
+		},
+		{
+			str: `
+			project: fake
+			cronjobs:
+				- name: thing
+					schedule: rate(1)`,
+			errMatch: "provide a CronLauncher role",
+		},
+		{
+			str:      `project: fake`,
+			errMatch: "provide a cluster",
+		},
+	}
 
-	// tables := []struct{}{}
+	for tNum, table := range tables {
+		t.Run(fmt.Sprintf("test_%02d", tNum+1), func(t *testing.T) {
+			// cleanStr := strings.ReplaceAll(dedent.Dedent(table.str), "\t", "  ")
+			cleanStr := testutil.CleanTestYaml(table.str)
 
-	// for _, table := range tables {
+			fmt.Println(cleanStr)
 
-	// }
-}
+			proj, err := config.LoadFromBytes([]byte(cleanStr))
+			if table.errMatch == "" {
+				require.NoError(t, err)
+				require.NotNil(t, proj)
+				return
+			}
 
-func TestProject_Unmarshal(t *testing.T) {
-	// tables := []struct {
-	// 	str     string
-	// 	enabled bool
-	// }{
-	// 	{"console: true", true},
-	// 	{"console: false", false},
-	// 	{"console:\n  enabled: true", true},
-	// 	{"console:\n  enabled: false", false},
-	// }
-
-	// type conDummy struct {
-	// 	Console *config.ConsoleTask `yaml:"console,omitempty" json:"console,omitempty"`
-	// }
-
-	// for _, table := range tables {
-	// 	con := conDummy{}
-	// 	if err := yaml.UnmarshalStrict([]byte(table.str), &con); err != nil {
-	// 		t.Errorf("unexpected error for <%s> %s", table.str, err)
-	// 	}
-
-	// 	if table.enabled != con.Console.IsEnabled() {
-	// 		t.Errorf("expected <%s> to %v console", table.str, table.enabled)
-	// 	}
-	// }
-	t.Skip("Not finished")
+			require.Error(t, err)
+			require.ErrorContains(t, err, table.errMatch)
+		})
+	}
 }
 
 // make sure that our doc examples are all valid
 func TestProject_SchemaCheck_Examples(t *testing.T) {
 
-	st := NewSchemaTester[config.Project](t, config.Project{})
 	sc := testutil.NewSchemaChecker(&config.Project{})
 
 	tables := []struct {
@@ -77,8 +105,6 @@ func TestProject_SchemaCheck_Examples(t *testing.T) {
 		obj, err := yaml.ParseYAMLFile[config.Project](table.filepath)
 		require.NoErrorf(t, err, "File %s", table.filepath)
 
-		st.AssertValidObj(*obj, true)
-
 		err = obj.Validate()
 		require.NoErrorf(t, err, "File %s failed validation", table.filepath)
 
@@ -88,7 +114,3 @@ func TestProject_SchemaCheck_Examples(t *testing.T) {
 
 	}
 }
-
-// func TestProject_Validate(t *testing.T) {
-// 	t.Skip("Not finished")
-// }

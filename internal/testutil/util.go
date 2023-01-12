@@ -1,10 +1,13 @@
 package testutil
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
 	"reflect"
+	"regexp"
+	"strings"
 	"testing"
 	"text/template"
 
@@ -124,4 +127,42 @@ func numberToFloat64(value any) any {
 	}
 
 	panic(fmt.Errorf("bad type: %T is not a numerical type", value))
+}
+
+// Go doesnt have nice heredocs or <<~EOF things.
+// this lets me not write ugly yaml blocks for test cases
+func CleanTestYaml(value string) string {
+	return strings.ReplaceAll(StripIndentation(value), "\t", "  ")
+}
+
+var (
+	leadingWhitespace = regexp.MustCompile("^[ \t]+")
+)
+
+func StripIndentation(value string) string {
+	var indent string
+
+	scanner := bufio.NewScanner(strings.NewReader(value))
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		// empty lines are fine
+		if len(line) == 0 {
+			continue
+		}
+
+		matches := leadingWhitespace.FindStringSubmatch(line)
+
+		// we found no matches, that means that part of this string is at the root. abort
+		if len(matches) == 0 {
+			return value
+		}
+
+		prefix := matches[0]
+		if indent == "" || (len(prefix) < len(indent)) {
+			indent = prefix
+		}
+	}
+
+	return regexp.MustCompile("(?m)^"+indent).ReplaceAllString(value, "")
 }
