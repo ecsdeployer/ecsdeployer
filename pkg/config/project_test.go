@@ -3,9 +3,11 @@ package config_test
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -70,7 +72,6 @@ func TestProject_Validate(t *testing.T) {
 
 	for tNum, table := range tables {
 		t.Run(fmt.Sprintf("test_%02d", tNum+1), func(t *testing.T) {
-			// cleanStr := strings.ReplaceAll(dedent.Dedent(table.str), "\t", "  ")
 			cleanStr := testutil.CleanTestYaml(table.str)
 
 			fmt.Println(cleanStr)
@@ -84,6 +85,37 @@ func TestProject_Validate(t *testing.T) {
 
 			require.Error(t, err)
 			require.ErrorContains(t, err, table.errMatch)
+		})
+	}
+}
+
+func TestProject_Loading(t *testing.T) {
+
+	tables := []struct {
+		filepath string
+	}{
+		{"../../cmd/testdata/valid.yml"},
+		{"../../www/docs/static/examples/generic.yml"},
+		{"../../www/docs/static/examples/simple_web.yml"},
+	}
+
+	for _, table := range tables {
+		t.Run(table.filepath, func(t *testing.T) {
+			obj, err := config.Load(table.filepath)
+			require.NoError(t, err)
+
+			fileData, err := os.ReadFile(table.filepath)
+			require.NoError(t, err)
+			strReader := strings.NewReader(string(fileData))
+
+			obj2, err := config.LoadReader(strReader)
+			require.NoError(t, err)
+
+			json1, _ := util.Jsonify(obj)
+			json2, _ := util.Jsonify(obj2)
+
+			require.JSONEq(t, json1, json2)
+
 		})
 	}
 }
@@ -102,15 +134,17 @@ func TestProject_SchemaCheck_Examples(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		obj, err := yaml.ParseYAMLFile[config.Project](table.filepath)
-		require.NoErrorf(t, err, "File %s", table.filepath)
+		t.Run(table.filepath, func(t *testing.T) {
 
-		err = obj.Validate()
-		require.NoErrorf(t, err, "File %s failed validation", table.filepath)
+			obj, err := yaml.ParseYAMLFile[config.Project](table.filepath)
+			require.NoErrorf(t, err, "File %s", table.filepath)
 
-		fileData, err := os.ReadFile(table.filepath)
-		require.NoError(t, err, "Unable to read test file??")
-		require.NoError(t, sc.CheckYAML(t, string(fileData)))
+			err = obj.Validate()
+			require.NoErrorf(t, err, "File %s failed validation", table.filepath)
 
+			fileData, err := os.ReadFile(table.filepath)
+			require.NoError(t, err, "Unable to read test file??")
+			require.NoError(t, sc.CheckYAML(t, string(fileData)))
+		})
 	}
 }

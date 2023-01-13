@@ -92,8 +92,6 @@ func (obj ConsoleTask) IsTaskStruct() bool {
 }
 
 func (ConsoleTask) JSONSchemaExtend(base *jsonschema.Schema) {
-	// base.Properties.Delete("name")
-
 	console := *base
 	newBase := &jsonschema.Schema{
 		OneOf: []*jsonschema.Schema{

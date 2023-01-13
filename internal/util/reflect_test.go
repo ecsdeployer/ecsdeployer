@@ -13,13 +13,14 @@ type fooS struct {
 }
 
 type barS struct {
-	NestA *barS
-	NestB *fooS
-	Foo   *fooS
-	Bar   *barS
-	Blah1 *string
-	Blah2 *int32
-	Blah3 int32
+	NestA     *barS
+	NestB     *fooS
+	Foo       *fooS
+	Bar       *barS
+	Blah1     *string
+	Blah2     *int32
+	Blah3     int32
+	something *int32
 }
 
 type nester struct {

@@ -3,6 +3,7 @@ package util
 import (
 	"testing"
 
+	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -47,4 +48,17 @@ func TestChunkArray(t *testing.T) {
 		}
 
 	}
+}
+
+func TestStrArrayToInterArray(t *testing.T) {
+
+	input := ecsTypes.TaskDefinitionStatusActive.Values()
+	inters := StrArrayToInterArray(input)
+
+	for i, val := range input {
+		require.EqualValues(t, val, inters[i])
+	}
+
+	// require.IsType(t, []any, inters)
+
 }

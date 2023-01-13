@@ -78,18 +78,4 @@ func NewValidationError(value any, values ...any) *ValidationError {
 	default:
 		return &ValidationError{Reason: "Validation Error"}
 	}
-
-	// var wrappedErr error = nil
-
-	// if len(values) > 0 {
-	// 	if err, ok := (values[len(values)-1]).(error); ok {
-	// 		wrappedErr = err
-
-	// 	}
-	// }
-
-	// return &ValidationError{
-	// 	Reason: fmt.Sprintf(value, values...),
-	// 	Err:    wrappedErr,
-	// }
 }

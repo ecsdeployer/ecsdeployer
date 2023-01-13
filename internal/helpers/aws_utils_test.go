@@ -32,9 +32,11 @@ func TestGetECSClusterNameFromArn(t *testing.T) {
 	}{
 		{"arn:aws:ecs:us-east-1:1234567890:service/mycluster/fakeservice", "mycluster"},
 		{"arn:aws:ecs:us-east-1:1234567890:service/thingservice", ""},
+		{"arn:aws:ecs:us-east-1:1234567890:cluster/mycluster", "mycluster"},
 		{"arn:aws:ecs:us-east-1:1234567890:task/mycluster/asdasdasdasdasd", "mycluster"},
 		{"arn:aws:ecs:us-east-1:1234567890:container-instance/mycluster/asdasdasdasdasd", "mycluster"},
 		{"arn:aws:ecs:us-east-1:1234567890:task-set/mycluster/asdasdasdasdasd", "mycluster"},
+		{"arn:aws:ecs:us-east-1:1234567890:junk/mycluster/asdasdasdasdasd", ""},
 		{"asdasdasdasdasd", ""},
 		{"arn:asdasdasdasdasd", ""},
 		{"arn:aws:iam::1234567890:role/asdasdasdasdasd", ""},
@@ -67,5 +69,24 @@ func TestGetTaskDefFamilyFromArn(t *testing.T) {
 	for _, table := range tables {
 		result := GetTaskDefFamilyFromArn(table.arn)
 		require.Equalf(t, table.taskFamily, result, "str=%s", table.arn)
+	}
+}
+
+func TestGetEventRuleNameAndBusFromArn(t *testing.T) {
+	tables := []struct {
+		arn      string
+		busname  string
+		rulename string
+	}{
+		{"arn:aws:events:us-east-2:123456789012:rule/example", "", "example"},
+		{"arn:aws:events:us-east-2:123456789012:rule/garybussy/example", "garybussy", "example"},
+		{"arn:aws:fake:us-east-2:123456789012:whatever/thing", "", ""},
+		{"arn:aws:events:us-east-2:123456789012:target/thing", "", ""},
+	}
+
+	for _, table := range tables {
+		rulename, busname := GetEventRuleNameAndBusFromArn(table.arn)
+		require.Equalf(t, table.busname, busname, "busname str=%s", table.arn)
+		require.Equalf(t, table.rulename, rulename, "rulename str=%s", table.arn)
 	}
 }
