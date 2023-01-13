@@ -1,7 +1,7 @@
 package steps
 
 import (
-	"errors"
+	"fmt"
 
 	cronBuilder "ecsdeployer.com/ecsdeployer/internal/builders/cron"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -25,7 +25,7 @@ func stepCronTargetCreate(ctx *config.Context, step *Step, meta *StepMetadata) (
 
 	taskDefinitionArn, ok := step.LookupOutput("task_definition_arn")
 	if !ok {
-		return nil, errors.New("Unable to find task definition arn")
+		return nil, fmt.Errorf("%w: Unable to find task definition arn", ErrStepDependencyFailure)
 	}
 
 	// step.Logger.Info("Making cron target")
@@ -48,7 +48,7 @@ func stepCronTargetCreate(ctx *config.Context, step *Step, meta *StepMetadata) (
 		for _, failEntry := range result.FailedEntries {
 			step.Logger.Errorf("TargetFailure: (%s) %s: %s", aws.ToString(failEntry.TargetId), aws.ToString(failEntry.ErrorCode), aws.ToString(failEntry.ErrorMessage))
 		}
-		return nil, errors.New("Failed to create Cron Targets")
+		return nil, fmt.Errorf("%w: Failed to create Cron Targets", ErrStepFailed)
 	}
 
 	return nil, nil

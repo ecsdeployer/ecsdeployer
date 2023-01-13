@@ -7,6 +7,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"ecsdeployer.com/ecsdeployer/pkg/version"
 	"github.com/stretchr/testify/require"
 )
 
@@ -93,7 +94,7 @@ func TestEcsDeployerOptions(t *testing.T) {
 			allowGT    bool
 		}{
 			{"1.2.3", true, true},
-			{"development", false, true},
+			{version.DevVersionID, false, true},
 		}
 
 		for _, table := range tables {

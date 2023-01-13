@@ -35,8 +35,8 @@ func (obj *RolloutConfig) GetMinMaxCount(count int32) (int32, int32) {
 }
 
 func (a *RolloutConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t RolloutConfig
-	var obj = t{}
+	type tRolloutConfig RolloutConfig
+	var obj = tRolloutConfig{}
 	if err := unmarshal(&obj); err != nil {
 		return err
 	}

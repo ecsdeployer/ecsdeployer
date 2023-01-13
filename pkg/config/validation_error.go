@@ -36,6 +36,7 @@ func (ve *ValidationError) Is(err error) bool {
 		return false
 	}
 
+	//nolint:errorlint
 	if err == ErrValidation {
 		return true
 	}
@@ -62,10 +63,10 @@ func NewValidationError(value any, values ...any) *ValidationError {
 
 	case error:
 		if len(values) > 0 {
-			fmtString, values := values[0], values[1:]
+			fmtString, rest := values[0], values[1:]
 
 			return &ValidationError{
-				Reason: fmt.Sprintf(fmtString.(string), values...),
+				Reason: fmt.Sprintf(fmtString.(string), rest...),
 				Err:    firstVal,
 			}
 		} else {

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
+	"ecsdeployer.com/ecsdeployer/pkg/version"
 	"github.com/Masterminds/semver/v3"
 	"github.com/caarlos0/log"
 	"github.com/invopop/jsonschema"
@@ -34,7 +35,7 @@ func (obj *EcsDeployerOptions) IsVersionAllowed(versionStr string) (bool, []erro
 		return true, nil
 	}
 
-	if versionStr == "development" {
+	if versionStr == version.DevVersionID {
 		versionStr = "v9999.0.0"
 	}
 

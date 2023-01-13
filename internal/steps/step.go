@@ -14,7 +14,9 @@ import (
 // type ParallelDeps []Step
 
 var (
-	ErrFuncNotImplemented = errors.New("Function not implemented")
+	ErrFuncNotImplemented    = errors.New("Function not implemented")
+	ErrStepFailed            = errors.New("step failed")
+	ErrStepDependencyFailure = errors.New("step dependency failure")
 )
 
 const useLogIndentation = false

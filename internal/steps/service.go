@@ -18,6 +18,10 @@ const (
 	serviceStepAttrName = "ServiceName"
 )
 
+var (
+	ErrTaskDefNotCreated = errors.New("Task definition was not created")
+)
+
 func ServiceStep(resource *config.Service) *Step {
 	return NewStep(&Step{
 		Label:    "Service",
@@ -63,7 +67,7 @@ func stepServiceCreate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 
 	taskDefOutput, ok := step.LookupOutput("task_definition_arn")
 	if !ok {
-		return nil, errors.New("Task definition was not created")
+		return nil, ErrTaskDefNotCreated
 	}
 
 	createServiceInput, err := builders.BuildCreateService(ctx, svc)
@@ -97,7 +101,7 @@ func stepServiceUpdate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 
 	taskDefOutput, ok := step.LookupOutput("task_definition_arn")
 	if !ok {
-		return nil, errors.New("Task definition was not created")
+		return nil, ErrTaskDefNotCreated
 	}
 
 	updateServiceInput, err := builders.BuildUpdateService(ctx, svc)

@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/pkg/version"
 	"github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )
@@ -17,7 +18,7 @@ func TestMain(m *testing.M) {
 
 func defaultCmdMetadata() *cmdMetadata {
 	return &cmdMetadata{
-		version: "development",
+		version: version.DevVersionID,
 	}
 }
 

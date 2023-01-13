@@ -66,7 +66,7 @@ func ParseLogRetention[T int32 | int64 | int | string](value T) (LogRetention, e
 		return ParseLogRetention(days)
 	}
 
-	var intVal int32 = 0
+	var intVal int32
 
 	switch v := any(value).(type) {
 	case int64:
