@@ -201,8 +201,9 @@ func (ImageUri) JSONSchema() *jsonschema.Schema {
 	})
 
 	objSchema := &jsonschema.Schema{
-		Type:       "object",
-		Properties: props,
+		Type:                 "object",
+		Properties:           props,
+		AdditionalProperties: jsonschema.FalseSchema,
 		OneOf: []*jsonschema.Schema{
 			{Required: []string{"ecr", "tag"}},
 			{Required: []string{"ecr", "digest"}},

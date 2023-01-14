@@ -5,7 +5,6 @@ import (
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	"golang.org/x/exp/maps"
 )
 
 func loggingConfBuilderDefaultAwslogs(input *pipelineInput) (*ecsTypes.LogConfiguration, *ecsTypes.ContainerDefinition, error) {
@@ -28,19 +27,14 @@ func loggingConfBuilderDefaultAwslogs(input *pipelineInput) (*ecsTypes.LogConfig
 		Options:       make(map[string]string),
 	}
 
-	logOptions := map[string]config.EnvVar{
+	logOptions := config.MergeEnvVarMaps(map[string]config.EnvVar{
 		// "awslogs-create-group":  {Value: aws.String("true")},
 		"awslogs-group":         {ValueTemplate: templates.LogGroup},
 		"awslogs-region":        {ValueTemplate: aws.String("{{ AwsRegion }}")},
 		"awslogs-stream-prefix": {ValueTemplate: templates.LogStreamPrefix},
-	}
-	maps.Copy(logOptions, logConfig.Options)
+	}, logConfig.Options).Filter()
 
 	for lk, lv := range logOptions {
-		if lv.Ignore() {
-			continue
-		}
-
 		if lv.IsSSM() {
 			conf.SecretOptions = append(conf.SecretOptions, ecsTypes.Secret{
 				Name:      aws.String(lk),
@@ -49,17 +43,12 @@ func loggingConfBuilderDefaultAwslogs(input *pipelineInput) (*ecsTypes.LogConfig
 			continue
 		}
 
-		if lv.IsTemplated() {
-			val, err := tpl.Apply(*lv.ValueTemplate)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			conf.Options[lk] = val
-			continue
+		val, err := lv.GetValue(tpl)
+		if err != nil {
+			return nil, nil, err
 		}
+		conf.Options[lk] = val
 
-		conf.Options[lk] = aws.ToString(lv.Value)
 	}
 
 	return conf, nil, nil

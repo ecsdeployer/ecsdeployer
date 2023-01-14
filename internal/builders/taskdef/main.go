@@ -56,7 +56,7 @@ func Build(ctx *config.Context, resource config.IsTaskStruct) (*ecs.RegisterTask
 	tpl = tpl.WithExtraFields(commonTplFields)
 
 	// Allocate secrets and env vars
-	envVarMap := make(map[string]config.EnvVar)
+	envVarMap := make(config.EnvVarMap)
 
 	if !project.Settings.SkipDeploymentEnvVars {
 		// add the deployment env vars
@@ -292,7 +292,7 @@ func envVarMapToECS(ctx *config.Context, tpl *tmpl.Template, ev map[string]confi
 	var secrets = []ecsTypes.Secret{}
 
 	for key, val := range ev {
-		if val.Ignore() {
+		if val.IsUnset() {
 			continue
 		}
 

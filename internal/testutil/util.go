@@ -18,6 +18,14 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+func DisableLoggingForTest(t *testing.T) {
+	orig := log.Log
+	t.Cleanup(func() {
+		log.Log = orig
+	})
+	log.Log = log.New(io.Discard)
+}
+
 func DisableLogging() {
 	log.Log = log.New(io.Discard)
 }

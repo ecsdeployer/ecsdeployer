@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
 )
@@ -39,6 +41,11 @@ func (obj *AwsLogConfig) UnmarshalYAML(unmarshal func(interface{}) error) error 
 	type tAwsLogConfig AwsLogConfig
 	var defo = tAwsLogConfig{}
 	if err := unmarshal(&defo); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var val bool
 		if err := unmarshal(&val); err != nil {
 			return err

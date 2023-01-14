@@ -1,6 +1,8 @@
 package taskdef
 
 import (
+	"errors"
+
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -50,22 +52,16 @@ func loggingConfBuilderDefaultFirelens(input *pipelineInput) (*ecsTypes.LogConfi
 		flContainer.Secrets = input.TaskDef.ContainerDefinitions[0].Secrets
 	}
 
-	for lk, lv := range firelensConfig.Options {
-		if lv.Ignore() {
-			continue
+	if firelensConfig.Options.HasSSM() {
+		return nil, nil, errors.New("Cannot use SSM references in firelens options")
+	}
+
+	for lk, lv := range firelensConfig.Options.Filter() {
+		val, err := lv.GetValue(tpl)
+		if err != nil {
+			return nil, nil, err
 		}
-
-		if lv.IsTemplated() {
-			val, err := tpl.Apply(*lv.ValueTemplate)
-			if err != nil {
-				return nil, nil, err
-			}
-
-			flConfig.Options[lk] = val
-			continue
-		}
-
-		flConfig.Options[lk] = *lv.Value
+		flConfig.Options[lk] = val
 	}
 
 	if firelensConfig.LogToAwsLogs.Enabled() {

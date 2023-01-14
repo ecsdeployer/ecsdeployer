@@ -103,7 +103,7 @@ func TestVersionConstraint(t *testing.T) {
 
 			res, err := json.Marshal(table.ver)
 			require.NoError(t, err)
-			require.Equal(t, string(expected), string(res))
+			require.JSONEq(t, string(expected), string(res))
 		}
 	})
 }

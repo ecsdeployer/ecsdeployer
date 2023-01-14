@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestUtil_ExtractCommonTaskAttrs(t *testing.T) {
+func TestExtractCommonTaskAttrs(t *testing.T) {
 	tables := []struct {
 		obj   interface{}
 		valid bool

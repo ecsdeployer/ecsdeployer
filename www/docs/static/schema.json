@@ -361,6 +361,20 @@
       ]
      },
      {
+      "$comment": "Unsets any value that was defined previously",
+      "properties": {
+       "unset": {
+        "type": "boolean",
+        "const": true
+       }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+       "unset"
+      ]
+     },
+     {
       "$ref": "#/$defs/StringLikeWithBlank",
       "$comment": "Use a value verbatim"
      }

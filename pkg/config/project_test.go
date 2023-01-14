@@ -74,8 +74,6 @@ func TestProject_Validate(t *testing.T) {
 		t.Run(fmt.Sprintf("test_%02d", tNum+1), func(t *testing.T) {
 			cleanStr := testutil.CleanTestYaml(table.str)
 
-			fmt.Println(cleanStr)
-
 			proj, err := config.LoadFromBytes([]byte(cleanStr))
 			if table.errMatch == "" {
 				require.NoError(t, err)
@@ -90,6 +88,7 @@ func TestProject_Validate(t *testing.T) {
 }
 
 func TestProject_Loading(t *testing.T) {
+	testutil.DisableLoggingForTest(t)
 
 	tables := []struct {
 		filepath string
