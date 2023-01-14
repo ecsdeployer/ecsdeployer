@@ -527,6 +527,7 @@
         "title": "Image digest"
        }
       },
+      "additionalProperties": false,
       "type": "object"
      },
      {
