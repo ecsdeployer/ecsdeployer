@@ -17,6 +17,7 @@ var (
 	ErrFuncNotImplemented    = errors.New("Function not implemented")
 	ErrStepFailed            = errors.New("step failed")
 	ErrStepDependencyFailure = errors.New("step dependency failure")
+	ErrStepInvalid           = errors.New("step invalid")
 )
 
 const useLogIndentation = false
@@ -397,20 +398,20 @@ func NewStep(step *Step) *Step {
 func (s *Step) Validate() error {
 
 	if s.Label == "" {
-		return errors.New("Please include a Label")
+		return fmt.Errorf("%w: Please include a Label", ErrStepInvalid)
 	}
 
 	if !s.IsNoOp {
 		if s.Create == nil && s.Update == nil {
-			return errors.New("You must implement Update or Create")
+			return fmt.Errorf("%w: You must implement Update or Create", ErrStepInvalid)
 		}
 
 		if s.Update != nil && s.Read == nil {
-			return errors.New("You can't have an Update func without a Read func")
+			return fmt.Errorf("%w: You can't have an Update func without a Read func", ErrStepInvalid)
 		}
 
 		if s.Delete != nil && s.Read == nil {
-			return errors.New("You can't have a Delete func without a Read func")
+			return fmt.Errorf("%w: You can't have a Delete func without a Read func", ErrStepInvalid)
 		}
 
 	}

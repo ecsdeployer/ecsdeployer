@@ -14,7 +14,7 @@ import (
 
 func TestTargetGroupArn_Smoke(t *testing.T) {
 
-	awsmocker.Start(t, &awsmocker.MockerOptions{
+	testutil.StartMocker(t, &awsmocker.MockerOptions{
 		Mocks: []*awsmocker.MockedEndpoint{
 			testutil.Mock_ELBv2_DescribeTargetGroups_Single_Success("dummytg"),
 			testutil.Mock_ELBv2_DescribeTargetGroups_Single_Failure("invalid"),

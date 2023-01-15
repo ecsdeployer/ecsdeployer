@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 
@@ -77,6 +78,11 @@ func NewKeepInSyncFromBool(val bool) KeepInSync {
 func (a *KeepInSync) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var boolVal bool
 	if err := unmarshal(&boolVal); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		type t KeepInSync
 		var obj t // = t(NewKeepInSyncFromBool(defaultKeepInSync))
 		if err := unmarshal(&obj); err != nil {

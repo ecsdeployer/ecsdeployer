@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -344,7 +345,7 @@ func TestNetworkCalculateSubnets_WithVPC(t *testing.T) {
 }
 
 func networkFilterMocker(t *testing.T, filePath string, mocks []*awsmocker.MockedEndpoint) (*NetworkConfiguration, *Project, *Context) {
-	awsmocker.Start(t, &awsmocker.MockerOptions{
+	testutil.StartMocker(t, &awsmocker.MockerOptions{
 		Mocks: append([]*awsmocker.MockedEndpoint{}, mocks...),
 	})
 

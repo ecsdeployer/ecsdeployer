@@ -22,13 +22,13 @@ type Settings struct {
 }
 
 func (a *Settings) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t Settings
-	var obj t
+	type tSettings Settings
+	var obj tSettings
 	if err := unmarshal(&obj); err != nil {
 		return err
-	} else {
-		*a = Settings(obj)
 	}
+
+	*a = Settings(obj)
 
 	a.ApplyDefaults()
 
@@ -83,7 +83,3 @@ func (obj *Settings) Validate() error {
 
 	return nil
 }
-
-// func (Settings) JSONSchemaExtend(base *jsonschema.Schema) {
-
-// }

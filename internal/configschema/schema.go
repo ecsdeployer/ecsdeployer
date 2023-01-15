@@ -101,44 +101,6 @@ func GenerateSchema(v interface{}) *jsonschema.Schema {
 	return schema
 }
 
-// Things that will just be casted to a string automatically
-// func schemaStringLike() *jsonschema.Schema {
-
-// 	return &jsonschema.Schema{
-// 		Description: "Any value that can be cast to a string of at least one character long",
-// 		OneOf: []*jsonschema.Schema{
-// 			{
-// 				Type:      "string",
-// 				MinLength: 1,
-// 			},
-// 			{
-// 				Type: "number",
-// 			},
-// 			{
-// 				Type: "boolean",
-// 			},
-// 		},
-// 	}
-// }
-
-// func schemaStringLikeWithBlank() *jsonschema.Schema {
-
-// 	return &jsonschema.Schema{
-// 		OneOf: []*jsonschema.Schema{
-// 			{
-// 				Type: "string",
-// 			},
-// 			{
-// 				Type: "number",
-// 			},
-// 			{
-// 				Type: "boolean",
-// 			},
-// 		},
-// 		Description: "Any value that can be cast to a string, or blank",
-// 	}
-// }
-
 // Extract a property from a schema without having to cast it
 // NOTE: This assumes you know the prop exists. There is no error checking
 func GetSchemaProp(base *jsonschema.Schema, propName string) *jsonschema.Schema {

@@ -9,13 +9,11 @@ import (
 type NameValuePair struct {
 	Name  *string `yaml:"name" json:"name"`
 	Value *string `yaml:"value" json:"value"`
-	// NameTemplate  string `yaml:"name_template,omitempty" json:"name_template,omitempty"`
-	// ValueTemplate string `yaml:"value,omitempty" json:"value,omitempty"`
 }
 
 func (a *NameValuePair) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t NameValuePair
-	var obj = t{}
+	type tNameValuePair NameValuePair
+	var obj = tNameValuePair{}
 	if err := unmarshal(&obj); err != nil {
 		return err
 	}
@@ -49,18 +47,6 @@ func (NameValuePair) JSONSchema() *jsonschema.Schema {
 	})
 
 	properties.Set("value", &jsonschema.Schema{
-		// OneOf: []*jsonschema.Schema{
-		// 	{
-		// 		Type:      "string",
-		// 		MinLength: 1,
-		// 	},
-		// 	{
-		// 		Type: "boolean",
-		// 	},
-		// 	{
-		// 		Type: "number",
-		// 	},
-		// },
 		Ref: configschema.StringLikeRef,
 	})
 

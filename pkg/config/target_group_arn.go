@@ -1,6 +1,7 @@
 package config
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	elbv2 "github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2"
 )
@@ -12,7 +13,7 @@ type TargetGroupArn struct {
 func (obj *TargetGroupArn) Arn(ctx *Context) (string, error) {
 	return obj.NameArn.superArn(ctx, func() (string, error) {
 
-		result, err := ctx.ELBv2Client().DescribeTargetGroups(ctx, &elbv2.DescribeTargetGroupsInput{
+		result, err := awsclients.ELBv2Client().DescribeTargetGroups(ctx, &elbv2.DescribeTargetGroupsInput{
 			Names: []string{obj.name},
 		})
 		if err != nil {

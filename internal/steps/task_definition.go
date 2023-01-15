@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	taskBuilder "ecsdeployer.com/ecsdeployer/internal/builders/taskdef"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -33,7 +34,7 @@ func stepTaskDefinitionCreate(ctx *config.Context, step *Step, meta *StepMetadat
 		return nil, err
 	}
 
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 
 	result, err := ecsClient.RegisterTaskDefinition(ctx.Context, taskDefInput)
 	if err != nil {

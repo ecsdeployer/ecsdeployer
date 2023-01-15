@@ -3,6 +3,7 @@ package steps
 import (
 	"sync"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -38,7 +39,7 @@ func stepDeregisterTaskDefinitionsCreate(ctx *config.Context, step *Step, meta *
 
 	log.WithField("prefix", taskFamilyPrefix).Debug("Listing task definition families")
 
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 
 	request := &ecs.ListTaskDefinitionFamiliesInput{
 		FamilyPrefix: aws.String(taskFamilyPrefix),
@@ -88,7 +89,7 @@ func deregisterOldTaskDefinitions(ctx *config.Context, log *log.Entry, taskFamil
 
 	// logger.Debug("Deregistering Old Definitions")
 
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 
 	request := &ecs.ListTaskDefinitionsInput{
 		FamilyPrefix: aws.String(taskFamily),
@@ -139,7 +140,7 @@ func deregisterOldTaskDefinitions(ctx *config.Context, log *log.Entry, taskFamil
 }
 
 func deregisterTaskDefinition(ctx *config.Context, taskDefinitionArn string) error {
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 
 	_, err := ecsClient.DeregisterTaskDefinition(ctx.Context, &ecs.DeregisterTaskDefinitionInput{
 		TaskDefinition: aws.String(taskDefinitionArn),

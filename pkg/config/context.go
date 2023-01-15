@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"github.com/caarlos0/log"
 )
@@ -15,7 +16,6 @@ type ContextEnv map[string]string
 
 type Context struct {
 	stdctx.Context
-	*AwsClientManager
 
 	Project    *Project
 	Date       time.Time
@@ -60,12 +60,11 @@ func NewWithTimeout(project *Project, timeout time.Duration) (*Context, stdctx.C
 
 func Wrap(ctx stdctx.Context, project *Project) *Context {
 	return &Context{
-		Context:          ctx,
-		AwsClientManager: NewAwsClientManager(ctx),
-		Cache:            &ContextCache{},
-		Project:          project,
-		Date:             time.Now(),
-		Env:              ToEnv(append(os.Environ(), project.Env...)),
+		Context: ctx,
+		Cache:   &ContextCache{},
+		Project: project,
+		Date:    time.Now(),
+		Env:     ToEnv(append(os.Environ(), project.Env...)),
 	}
 }
 
@@ -85,7 +84,7 @@ func ToEnv(env []string) ContextEnv {
 func (ctx *Context) AwsAccountId() string {
 	ctx.muAwsAcctId.Do(func() {
 		log.Debug("Requesting AWS Account Id")
-		res, err := ctx.STSClient().GetCallerIdentity(ctx.Context, nil)
+		res, err := awsclients.STSClient().GetCallerIdentity(ctx.Context, nil)
 		if err != nil {
 			panic(err)
 		}
@@ -96,7 +95,7 @@ func (ctx *Context) AwsAccountId() string {
 }
 
 func (ctx *Context) AwsRegion() string {
-	return ctx.AwsConfig().Region
+	return awsclients.AwsConfig().Region
 }
 
 func (ctx *Context) ClusterName() string {

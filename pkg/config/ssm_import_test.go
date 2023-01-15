@@ -57,6 +57,7 @@ func TestSSMImport_Unmarshal(t *testing.T) {
 
 			require.Equalf(t, exp.IsEnabled(), act.IsEnabled(), "IsEnabled")
 			require.Equalf(t, *exp.Path, *act.Path, "Path")
+			require.Equalf(t, *exp.Path, act.GetPath(), "GetPath")
 			require.Equalf(t, *exp.Recursive, *act.Recursive, "Recursive")
 		})
 	}

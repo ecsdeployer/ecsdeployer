@@ -44,18 +44,6 @@ func TemplateApply(tpl string, fields interface{}) string {
 	return buffer.String()
 }
 
-func MockResponse_EmptySuccess() *awsmocker.MockedResponse {
-	return &awsmocker.MockedResponse{
-		StatusCode: 200,
-		Body:       "OK",
-	}
-}
-
-// This is just a basic mock server to get the account ID and region
-func MockSimpleStsProxy(t *testing.T) {
-	awsmocker.Start(t, nil)
-}
-
 func jsonify(obj interface{}) string {
 	return util.Must(util.Jsonify(obj))
 }

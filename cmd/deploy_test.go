@@ -4,17 +4,13 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/steps"
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
-	"github.com/webdestroya/awsmocker"
 )
 
 func TestDeployCmd(t *testing.T) {
 	silenceLogging(t)
-
-	// t.Run("checks function reference", func(t *testing.T) {
-	// 	require.(t, steps.CleanupOnlyStep, stepDeploymentStepFunc)
-	// })
 
 	t.Run("calls correct function", func(t *testing.T) {
 		oldRef := stepDeploymentStepFunc
@@ -22,7 +18,7 @@ func TestDeployCmd(t *testing.T) {
 			stepDeploymentStepFunc = oldRef
 		})
 
-		awsmocker.Start(t, nil)
+		testutil.StartMocker(t, nil)
 
 		wasCalled := false
 		stepDeploymentStepFunc = func(_ *config.Project) *steps.Step {
@@ -40,18 +36,4 @@ func TestDeployCmd(t *testing.T) {
 
 		require.True(t, wasCalled)
 	})
-
-	// tagMatcher := map[string]string{
-	// 	"ecsdeployer/project": "dummy/fancy",
-	// }
-
-	// awsmocker.Start(t, &awsmocker.MockerOptions{
-	// 	Mocks: []*awsmocker.MockedEndpoint{
-	// 		testutil.Mock_Logs_DescribeLogGroups(nil),
-	// 		testutil.Mock_Tagging_GetResources("events:rule", tagMatcher, []string{}),
-	// 		testutil.Mock_Tagging_GetResources("ecs:task-definition", tagMatcher, []string{}),
-	// 		testutil.Mock_Tagging_GetResources("ecs:service", tagMatcher, []string{}),
-	// 	},
-	// })
-
 }

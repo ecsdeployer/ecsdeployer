@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -226,7 +227,7 @@ func calculateSubnets(ctx *Context, network NetworkConfiguration) ([]string, *st
 		return subnetIds, nil, nil
 	}
 
-	ec2Client := ctx.EC2Client()
+	ec2Client := awsclients.EC2Client()
 
 	request := &ec2.DescribeSubnetsInput{}
 
@@ -263,7 +264,7 @@ func calculateSecurityGroups(ctx *Context, network NetworkConfiguration, vpcId *
 		return securityGroupIds, nil
 	}
 
-	ec2Client := ctx.EC2Client()
+	ec2Client := awsclients.EC2Client()
 
 	request := &ec2.DescribeSecurityGroupsInput{}
 	hasVpcFilter := false

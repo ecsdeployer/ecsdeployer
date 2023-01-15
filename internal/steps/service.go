@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/builders"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
@@ -77,7 +78,7 @@ func stepServiceCreate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 
 	createServiceInput.TaskDefinition = aws.String(taskDefOutput.(string))
 
-	result, err := ctx.ECSClient().CreateService(ctx.Context, createServiceInput)
+	result, err := awsclients.ECSClient().CreateService(ctx.Context, createServiceInput)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +112,7 @@ func stepServiceUpdate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 
 	updateServiceInput.TaskDefinition = aws.String(taskDefOutput.(string))
 
-	result, err := ctx.ECSClient().UpdateService(ctx.Context, updateServiceInput)
+	result, err := awsclients.ECSClient().UpdateService(ctx.Context, updateServiceInput)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +143,7 @@ func stepServiceRead(ctx *config.Context, step *Step, meta *StepMetadata) (any, 
 		return nil, err
 	}
 
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 	result, err := ecsClient.DescribeServices(ctx.Context, &ecs.DescribeServicesInput{
 		Services: []string{serviceName},
 		Cluster:  aws.String(clusterArn),
@@ -181,7 +182,7 @@ func stepServiceWaitForSuccess(ctx *config.Context, step *Step, service *ecsType
 		return nil
 	}
 
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 	startTime := time.Now()
 
 	waiter := ecs.NewServicesStableWaiter(ecsClient, func(sswo *ecs.ServicesStableWaiterOptions) {

@@ -3,13 +3,13 @@ package cmd
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"github.com/stretchr/testify/require"
-	"github.com/webdestroya/awsmocker"
 )
 
 func TestInfoCmd(t *testing.T) {
 	silenceLogging(t)
-	awsmocker.Start(t, nil)
+	testutil.StartMocker(t, nil)
 
 	cmd := newInfoCmd(defaultCmdMetadata()).cmd
 	cmd.SetArgs([]string{"-c", "testdata/info_simple.yml"})

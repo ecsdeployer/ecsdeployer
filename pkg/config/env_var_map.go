@@ -16,6 +16,8 @@ func (EnvVarMap) JSONSchemaExtend(base *jsonschema.Schema) {
 }
 
 // Filters a map of env vars and removes any Unset values
+// You should only use this at the very very end of an evaluation tree.
+// (i.e. after merging parent maps)
 func (obj EnvVarMap) Filter() EnvVarMap {
 	newMap := make(EnvVarMap, len(obj))
 	for k, v := range obj {

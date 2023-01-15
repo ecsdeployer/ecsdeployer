@@ -12,10 +12,10 @@ import (
 type EnvVarType int
 
 const (
-	EnvVarTypeUnset EnvVarType = iota
-	EnvVarTypePlain
+	EnvVarTypePlain EnvVarType = iota
 	EnvVarTypeSSM
 	EnvVarTypeTemplated
+	EnvVarTypeUnset
 )
 
 type EnvVar struct {
@@ -25,22 +25,22 @@ type EnvVar struct {
 	Unset         bool    `yaml:"unset,omitempty" json:"unset,omitempty"`
 }
 
-func (e *EnvVar) IsTemplated() bool {
+func (e EnvVar) IsTemplated() bool {
 	// return e.ValueTemplate != nil && e.Value == nil && e.ValueSSM == nil
 	return e.ValueTemplate != nil
 }
 
-func (e *EnvVar) IsSSM() bool {
+func (e EnvVar) IsSSM() bool {
 	// return e.ValueTemplate == nil && e.Value == nil && e.ValueSSM != nil
 	return e.ValueSSM != nil
 }
 
-func (e *EnvVar) IsPlain() bool {
+func (e EnvVar) IsPlain() bool {
 	// return e.ValueTemplate == nil && e.Value != nil && e.ValueSSM == nil
 	return e.Value != nil
 }
 
-func (e *EnvVar) IsUnset() bool {
+func (e EnvVar) IsUnset() bool {
 	return e.Unset
 }
 
@@ -64,7 +64,7 @@ type templater interface {
 	Apply(string) (string, error)
 }
 
-func (e *EnvVar) GetValue(tplRef any) (string, error) {
+func (e EnvVar) GetValue(tplRef any) (string, error) {
 	if e.IsPlain() {
 		return *e.Value, nil
 	}

@@ -3,6 +3,7 @@ package steps
 import (
 	"sync"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -47,7 +48,7 @@ func stepCleanupCronjobsCreate(ctx *config.Context, step *Step, meta *StepMetada
 		expectedRuleNames = append(expectedRuleNames, ruleName)
 	}
 
-	client := ctx.TaggingClient()
+	client := awsclients.TaggingClient()
 
 	request := &tagging.GetResourcesInput{
 		ResourceTypeFilters: []string{"events:rule"},
@@ -104,7 +105,7 @@ func destroyRule(ctx *config.Context, log *log.Entry, ruleArn string) error {
 
 	logger.Info("Removing unused rule")
 
-	client := ctx.EventsClient()
+	client := awsclients.EventsClient()
 
 	listTargetsReq := &events.ListTargetsByRuleInput{
 		Rule: &ruleName,

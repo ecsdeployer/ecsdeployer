@@ -34,7 +34,6 @@ func TestSchemaCmd(t *testing.T) {
 	t.Run("outputs to stdout", func(t *testing.T) {
 		cmd := newSchemaCmd(defaultCmdMetadata()).cmd
 		cmd.SetArgs([]string{"--output", "-"})
-		// require.NoError(t, cmd.Execute())
 
 		osOut, _, err := executeCmdAndReturnOutput(cmd)
 		require.NoError(t, err)

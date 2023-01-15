@@ -3,6 +3,7 @@ package steps
 import (
 	"fmt"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	cronBuilder "ecsdeployer.com/ecsdeployer/internal/builders/cron"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -37,7 +38,7 @@ func stepCronTargetCreate(ctx *config.Context, step *Step, meta *StepMetadata) (
 		return nil, err
 	}
 
-	client := ctx.EventsClient()
+	client := awsclients.EventsClient()
 
 	result, err := client.PutTargets(ctx.Context, putTargetsInput)
 	if err != nil {

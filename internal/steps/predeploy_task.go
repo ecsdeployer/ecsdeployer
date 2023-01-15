@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/builders"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/util"
@@ -64,7 +65,7 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 
 	logger.Info("Running PreDeployTask")
 
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 
 	startTime := time.Now()
 

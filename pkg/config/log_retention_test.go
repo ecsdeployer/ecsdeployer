@@ -66,7 +66,6 @@ func TestLogRetention_Unmarshal(t *testing.T) {
 }
 
 func TestLogRetention_Schema(t *testing.T) {
-	// st := NewSchemaTester[config.LogRetention](t, &config.LogRetention{})
 	sc := testutil.NewSchemaChecker(&config.LogRetention{})
 
 	tables := []struct {
@@ -84,10 +83,6 @@ func TestLogRetention_Schema(t *testing.T) {
 
 		require.NoError(t, sc.CheckYAML(t, table.str))
 
-		// st.AssertValid(table.str, true)
-		// obj, err := st.Parse(table.str)
-		// require.NoError(t, err)
-		// st.AssertMatchExpected(obj, table.expected, true)
 		testutil.RequireObjectSerializationEqual(t, table.expected, obj)
 	}
 }

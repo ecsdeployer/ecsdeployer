@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -30,7 +31,7 @@ func stepPreloadLogGroupsCreate(ctx *config.Context, step *Step, meta *StepMetad
 
 	step.Logger.WithField("prefix", logGroupPrefix).Info("Preloading Log Group Info")
 
-	logsClient := ctx.LogsClient()
+	logsClient := awsclients.LogsClient()
 
 	request := &logs.DescribeLogGroupsInput{
 		LogGroupNamePrefix: aws.String(logGroupPrefix),

@@ -18,7 +18,7 @@ func init() {
 func stepTestAwsMocker(t *testing.T, projectFilePath string, mocks []*awsmocker.MockedEndpoint) (*config.Project, *config.Context) {
 	helpers.IsTestingMode = true
 
-	awsmocker.Start(t, &awsmocker.MockerOptions{
+	testutil.StartMocker(t, &awsmocker.MockerOptions{
 		Mocks: append([]*awsmocker.MockedEndpoint{}, mocks...),
 	})
 

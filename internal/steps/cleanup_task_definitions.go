@@ -3,6 +3,7 @@ package steps
 import (
 	"sync"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -71,7 +72,7 @@ func stepCleanupTaskDefinitionsCreate(ctx *config.Context, step *Step, meta *Ste
 		expectedTaskFamilies = append(expectedTaskFamilies, svcName)
 	}
 
-	client := ctx.TaggingClient()
+	client := awsclients.TaggingClient()
 
 	request := &tagging.GetResourcesInput{
 		ResourceTypeFilters: []string{"ecs:task-definition"},
