@@ -22,7 +22,7 @@ tidy:
 .PHONY: lint-install
 lint-install:
 	@echo "Installing golangci-lint"
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.46.2
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 
 .PHONY: lint
 lint:
@@ -30,7 +30,8 @@ lint:
 		echo "golangci-lint not found, please run: make lint-install"; \
 		exit 1; \
 	}
-	golangci-lint run
+	@golangci-lint version
+	@golangci-lint run && echo "Code passed lint check!"
 
 .PHONY: test-release
 test-release:
