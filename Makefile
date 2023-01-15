@@ -50,11 +50,11 @@ schema:
 
 .PHONY: smokedeploy-debug
 smokedeploy-debug:
-	@env AWS_PROFILE=ecsdeployer-example go run . deploy --debug -c cmd/testdata/smoke.yml --image-tag test --app-version 1.2.3
+	@env AWS_PROFILE=ecsdeployer-example go run . deploy --debug -c cmd/testdata/smoke.yml --tag test --app-version 1.2.3
 
 .PHONY: smokedeploy
 smokedeploy:
-	@env AWS_PROFILE=ecsdeployer-example go run . deploy -c cmd/testdata/smoke.yml --image-tag test --app-version 1.2.3
+	@env AWS_PROFILE=ecsdeployer-example go run . deploy -c cmd/testdata/smoke.yml --tag test --app-version 1.2.3
 
 .PHONY: gen-man
 gen-man:
