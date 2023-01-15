@@ -44,7 +44,6 @@ jobs:
           tags: ${{ steps.login-ecr.outputs.registry }}/myapp:${{ github.ref_name }}
 
       - name: Deploy
-        uses: ecsdeployer/ecsdeployer-action@v1
+        uses: ecsdeployer/github-action@v1
         with:
-          config: .ecsdeployer.yml
           image: ${{ steps.login-ecr.outputs.registry }}/myapp:${{ github.ref_name }}
