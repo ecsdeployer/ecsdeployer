@@ -61,7 +61,7 @@ func Build(ctx *config.Context, resource config.IsTaskStruct) (*ecs.RegisterTask
 	if !project.Settings.SkipDeploymentEnvVars {
 		// add the deployment env vars
 		for k, v := range config.DefaultDeploymentEnvVars {
-			envVarMap[k] = config.EnvVar{ValueTemplate: aws.String(v)}
+			envVarMap[k] = config.NewEnvVar(config.EnvVarTypeTemplated, v)
 		}
 	}
 

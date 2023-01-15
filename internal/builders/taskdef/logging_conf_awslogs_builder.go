@@ -27,11 +27,11 @@ func loggingConfBuilderDefaultAwslogs(input *pipelineInput) (*ecsTypes.LogConfig
 		Options:       make(map[string]string),
 	}
 
-	logOptions := config.MergeEnvVarMaps(map[string]config.EnvVar{
-		// "awslogs-create-group":  {Value: aws.String("true")},
-		"awslogs-group":         {ValueTemplate: templates.LogGroup},
-		"awslogs-region":        {ValueTemplate: aws.String("{{ AwsRegion }}")},
-		"awslogs-stream-prefix": {ValueTemplate: templates.LogStreamPrefix},
+	logOptions := config.MergeEnvVarMaps(config.EnvVarMap{
+		// "awslogs-create-group":         config.NewEnvVar(config.EnvVarTypePlain, "true"),
+		"awslogs-group":         config.NewEnvVar(config.EnvVarTypeTemplated, *templates.LogGroup),
+		"awslogs-region":        config.NewEnvVar(config.EnvVarTypeTemplated, "{{ AwsRegion }}"),
+		"awslogs-stream-prefix": config.NewEnvVar(config.EnvVarTypeTemplated, *templates.LogStreamPrefix),
 	}, logConfig.Options).Filter()
 
 	for lk, lv := range logOptions {

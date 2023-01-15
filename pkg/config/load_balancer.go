@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+
 	"github.com/invopop/jsonschema"
 )
 
@@ -77,6 +79,11 @@ func (lbs LoadBalancers) GetHealthCheckGracePeriod() *int32 {
 func (a *LoadBalancers) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var single LoadBalancer
 	if err := unmarshal(&single); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var multi []LoadBalancer
 
 		if err := unmarshal(&multi); err != nil {

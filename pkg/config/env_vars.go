@@ -60,10 +60,6 @@ func NewEnvVar(vartype EnvVarType, value string) EnvVar {
 	}
 }
 
-type templater interface {
-	Apply(string) (string, error)
-}
-
 func (e EnvVar) GetValue(tplRef any) (string, error) {
 	if e.IsPlain() {
 		return *e.Value, nil

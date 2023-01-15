@@ -51,8 +51,9 @@ func (NameValuePair) JSONSchema() *jsonschema.Schema {
 	})
 
 	return &jsonschema.Schema{
-		Type:       "object",
-		Properties: properties,
-		Required:   []string{"name", "value"},
+		Type:                 "object",
+		Properties:           properties,
+		Required:             []string{"name", "value"},
+		AdditionalProperties: jsonschema.FalseSchema,
 	}
 }

@@ -1,10 +1,12 @@
 package config_test
 
 import (
+	"fmt"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -78,4 +80,77 @@ func TestMergeEnvVarMaps(t *testing.T) {
 	require.Equal(t, "test6", util.Must(newmap["THING6"].GetValue(testutil.TplDummy)))
 	require.Equal(t, "newval", util.Must(newmap["THING7"].GetValue(testutil.TplDummy)))
 
+}
+
+func TestEnvVarMap_UnmarshalYAML(t *testing.T) {
+	tables := []struct {
+		str        string
+		invalid    bool
+		errMatch   string
+		badSchema  bool
+		hasSSM     bool
+		extraCheck func(*testing.T, *config.EnvVarMap)
+	}{
+		{
+			str: `SOMEVAR: testing`,
+		},
+		{
+			str:    `SOMETHING: {ssm: /var/whatever}`,
+			hasSSM: true,
+		},
+		{
+			str:       `123SOMETHING: badvar`,
+			badSchema: true,
+		},
+		{
+			str: `
+			THING1: test
+			THING2:
+				ssm: /blah
+			THING3:
+				template: "{{.ProjectName}} thing"
+			THING4:
+				unset: true
+			`,
+			hasSSM: true,
+			extraCheck: func(t *testing.T, evm *config.EnvVarMap) {
+				require.Len(t, *evm, 4)
+			},
+		},
+	}
+
+	sc := testutil.NewSchemaChecker(&config.EnvVarMap{})
+
+	for tNum, table := range tables {
+		t.Run(fmt.Sprintf("test_%02d", tNum+1), func(t *testing.T) {
+			cleanStr := testutil.CleanTestYaml(table.str)
+
+			schemaErr := sc.CheckYAML(t, cleanStr)
+			if table.badSchema {
+				require.Error(t, schemaErr)
+			} else {
+				require.NoError(t, schemaErr)
+			}
+
+			obj, err := yaml.ParseYAMLString[config.EnvVarMap](cleanStr)
+			if table.invalid || table.errMatch != "" {
+				require.Error(t, err)
+
+				if table.errMatch != "" {
+					require.ErrorContains(t, err, table.errMatch)
+				}
+				return
+			}
+
+			require.NoError(t, err)
+			require.IsType(t, &config.EnvVarMap{}, obj)
+
+			require.Equal(t, table.hasSSM, obj.HasSSM(), "HasSSM")
+
+			if table.extraCheck != nil {
+				table.extraCheck(t, obj)
+			}
+
+		})
+	}
 }

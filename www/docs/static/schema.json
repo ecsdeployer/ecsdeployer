@@ -750,6 +750,7 @@
       "$ref": "#/$defs/StringLike"
      }
     },
+    "additionalProperties": false,
     "type": "object",
     "required": [
      "name",

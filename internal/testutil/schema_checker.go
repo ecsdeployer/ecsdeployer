@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -14,6 +15,8 @@ import (
 type SchemaChecker struct {
 	schema *gojsonschema.Schema
 }
+
+var ErrSchemaViolation = errors.New("JsonSchemaViolation")
 
 func NewSchemaChecker(v any) *SchemaChecker {
 	schema := configschema.GenerateSchema(v)
@@ -75,5 +78,5 @@ func (obj *SchemaChecker) CheckJSON(t *testing.T, val string) error {
 	for _, err := range schemaErrs {
 		errList = append(errList, err.String())
 	}
-	return fmt.Errorf(strings.Join(errList, "\n"))
+	return fmt.Errorf("%w: %s", ErrSchemaViolation, strings.Join(errList, "\n"))
 }
