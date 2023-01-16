@@ -2,10 +2,24 @@ package helpers
 
 import (
 	"strings"
+	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	awsarn "github.com/aws/aws-sdk-go-v2/aws/arn"
 )
+
+// enable testing mode
+var IsTestingMode = false
+
+// Will return the min/max delays to use for a waiter
+// during test mode, it sets them to 1 microsecond
+func GetAwsWaiterDelays(minDelay time.Duration, maxDelay time.Duration) (time.Duration, time.Duration) {
+	if IsTestingMode {
+		return (1 * time.Microsecond), (1 * time.Microsecond)
+	}
+
+	return minDelay, maxDelay
+}
 
 func GetECSServiceNameFromArn(str string) string {
 

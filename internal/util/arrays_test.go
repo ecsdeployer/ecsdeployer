@@ -1,6 +1,11 @@
 package util
 
-import "testing"
+import (
+	"testing"
+
+	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/stretchr/testify/require"
+)
 
 func TestChunkArray(t *testing.T) {
 	tables := []struct {
@@ -18,11 +23,7 @@ func TestChunkArray(t *testing.T) {
 	for i, table := range tables {
 		chunks := ChunkArray(table.input, table.chunkSize)
 
-		t.Logf("Entry<%d> == %v", i, chunks)
-
-		if len(chunks) != table.expChunks {
-			t.Fatalf("Entry<%d> expected %d chunks, but got %d", i, table.expChunks, len(chunks))
-		}
+		require.Lenf(t, chunks, table.expChunks, "Entry<%d> expected %d chunks, but got %d", i, table.expChunks, len(chunks))
 
 		totalItems := 0
 
@@ -47,4 +48,17 @@ func TestChunkArray(t *testing.T) {
 		}
 
 	}
+}
+
+func TestStrArrayToInterArray(t *testing.T) {
+
+	input := ecsTypes.TaskDefinitionStatusActive.Values()
+	inters := StrArrayToInterArray(input)
+
+	for i, val := range input {
+		require.EqualValues(t, val, inters[i])
+	}
+
+	// require.IsType(t, []any, inters)
+
 }

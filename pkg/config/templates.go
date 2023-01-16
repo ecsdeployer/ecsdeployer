@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"reflect"
 	"strings"
 
@@ -77,8 +76,8 @@ func (def *NameTemplates) ApplyDefaults() {
 }
 
 func (a *NameTemplates) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t NameTemplates
-	var defo = t{}
+	type tNameTemplates NameTemplates
+	var defo = tNameTemplates{}
 	if err := unmarshal(&defo); err != nil {
 		return err
 	} else {
@@ -95,41 +94,41 @@ func (nt *NameTemplates) Validate() error {
 	// TODO: need to ensure that the templates at least have the baseline values
 
 	if util.IsBlank(nt.ContainerName) {
-		return errors.New("ContainerName template cannot be blank")
+		return NewValidationError("ContainerName template cannot be blank")
 	}
 
 	if util.IsBlank(nt.ServiceName) {
-		return errors.New("ServiceName template cannot be blank")
+		return NewValidationError("ServiceName template cannot be blank")
 	}
 
 	if util.IsBlank(nt.TaskFamily) {
-		return errors.New("TaskFamily template cannot be blank")
+		return NewValidationError("TaskFamily template cannot be blank")
 	}
 
 	if util.IsBlank(nt.CronRule) {
-		return errors.New("CronRule template cannot be blank")
+		return NewValidationError("CronRule template cannot be blank")
 	}
 
 	if util.IsBlank(nt.CronTarget) {
-		return errors.New("CronTarget template cannot be blank")
+		return NewValidationError("CronTarget template cannot be blank")
 	}
 
 	if util.IsBlank(nt.LogGroup) {
-		return errors.New("LogGroup template cannot be blank")
+		return NewValidationError("LogGroup template cannot be blank")
 	}
 
 	if util.IsBlank(nt.LogStreamPrefix) {
-		return errors.New("LogStreamPrefix template cannot be blank")
+		return NewValidationError("LogStreamPrefix template cannot be blank")
 	}
 
 	if util.IsBlank(nt.MarkerTagValue) || util.IsBlank(nt.MarkerTagKey) {
-		return errors.New("MarkerTagKey/MarkerTagValue cannot be blank. Use settings.disable_marker_tag instead")
+		return NewValidationError("MarkerTagKey/MarkerTagValue cannot be blank. Use settings.disable_marker_tag instead")
 	}
 
 	return nil
 }
 
-func (NameTemplates) JSONSchemaPost(base *jsonschema.Schema) {
+func (NameTemplates) JSONSchemaExtend(base *jsonschema.Schema) {
 	templates := &NameTemplates{}
 	templates.ApplyDefaults()
 

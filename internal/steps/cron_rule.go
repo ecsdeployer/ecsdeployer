@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	cronBuilder "ecsdeployer.com/ecsdeployer/internal/builders/cron"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
@@ -24,7 +25,7 @@ func stepCronRuleCreate(ctx *config.Context, step *Step, meta *StepMetadata) (Ou
 	}
 
 	step.Logger.WithField("rule", *payload.Name).Info("Creating CronJob Rule")
-	result, err := ctx.EventsClient().PutRule(ctx, payload)
+	result, err := awsclients.EventsClient().PutRule(ctx, payload)
 	if err != nil {
 		return nil, err
 	}

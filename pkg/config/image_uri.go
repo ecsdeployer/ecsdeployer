@@ -10,10 +10,6 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
-// import (
-// 	"github.com/invopop/jsonschema"
-// )
-
 type ImageDigestAlg string
 
 type ImageUri struct {
@@ -71,9 +67,14 @@ func (img *ImageUri) Resolve(ctx *Context) (string, error) {
 }
 
 func (a *ImageUri) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t ImageUri
-	var obj t
+	type tImageUri ImageUri
+	var obj tImageUri
 	if err := unmarshal(&obj); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var str string
 		if err := unmarshal(&str); err != nil {
 			return err
@@ -96,19 +97,19 @@ func (def *ImageUri) Validate() error {
 	}
 
 	if util.IsBlank(def.Docker) && util.IsBlank(def.Ecr) {
-		return errors.New("you must one of (uri,ecr,docker) in your image uri")
+		return NewValidationError("you must one of (uri,ecr,docker) in your image uri")
 	}
 
 	if !util.IsBlank(def.Docker) && !util.IsBlank(def.Ecr) {
-		return errors.New("You cannot specify both docker and ecr. Pick one.")
+		return NewValidationError("You cannot specify both docker and ecr. Pick one.")
 	}
 
 	if util.IsBlank(def.Tag) && util.IsBlank(def.Digest) {
-		return errors.New("You must define either a tag or a digest for your image reference")
+		return NewValidationError("You must define either a tag or a digest for your image reference")
 	}
 
 	// if !util.IsBlank(def.Tag) && !util.IsBlank(def.Digest) {
-	// 	return errors.New("you must one of (uri,ecr,docker) in your image uri")
+	// 	return NewValidationError("you must one of (uri,ecr,docker) in your image uri")
 	// }
 
 	return nil
@@ -200,8 +201,9 @@ func (ImageUri) JSONSchema() *jsonschema.Schema {
 	})
 
 	objSchema := &jsonschema.Schema{
-		Type:       "object",
-		Properties: props,
+		Type:                 "object",
+		Properties:           props,
+		AdditionalProperties: jsonschema.FalseSchema,
 		OneOf: []*jsonschema.Schema{
 			{Required: []string{"ecr", "tag"}},
 			{Required: []string{"ecr", "digest"}},

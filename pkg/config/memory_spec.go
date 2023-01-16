@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"regexp"
@@ -22,6 +21,10 @@ type MemorySpec struct {
 	multiplier float64 // `yaml:"multiplier,omitempty" json:"multiplier,omitempty"`
 }
 
+func (m *MemorySpec) Equals(other *MemorySpec) bool {
+	return m.value == other.value && m.multiplier == other.multiplier
+}
+
 func (m *MemorySpec) GetValueOnly() int32 {
 	return m.value
 }
@@ -33,11 +36,11 @@ func (m *MemorySpec) MegabytesFromCpu(cpu *CpuSpec) (int32, error) {
 	}
 
 	if m.multiplier == 0 {
-		return 0, errors.New("No value or multiplier set for this memory setting")
+		return 0, NewValidationError("No value or multiplier set for this memory setting")
 	}
 
 	if cpu == nil {
-		return 0, errors.New("CPU value needed for memory multiplier")
+		return 0, NewValidationError("CPU value needed for memory multiplier")
 	}
 
 	return int32(math.Ceil(float64(cpu.Shares()) * (m.multiplier))), nil
@@ -53,7 +56,7 @@ func (m *MemorySpec) MegabytesPtrFromCpu(cpu *CpuSpec) (*int32, error) {
 
 func (m *MemorySpec) Validate() error {
 	if m.multiplier == 0 && m.value == 0 {
-		return errors.New("you must specify memory as a value or multiplier. If you want the default, then do not specify at all.")
+		return NewValidationError("you must specify memory as a value or multiplier. If you want the default, then do not specify at all.")
 	}
 	return nil
 }
@@ -85,7 +88,7 @@ func ParseMemorySpec(str string) (*MemorySpec, error) {
 		return &MemorySpec{value: int32(val * 1024.0)}, nil
 	}
 
-	return nil, errors.New("Invalid memory specification format")
+	return nil, NewValidationError("Invalid memory specification format")
 }
 
 func (obj *MemorySpec) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -96,7 +99,7 @@ func (obj *MemorySpec) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	memSpec, err := ParseMemorySpec(def)
 	if err != nil {
-		return err
+		return NewValidationError(err)
 	}
 
 	*obj = *memSpec

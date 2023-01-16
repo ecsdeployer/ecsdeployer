@@ -4,18 +4,17 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBuildCronRule(t *testing.T) {
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
-	ctx, err := testutil.LoadProjectConfig("testdata/dummy.yml")
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	ctx, err := config.NewFromYAML("testdata/dummy.yml")
+	require.NoError(t, err)
 
 	// MUST MATCH THE ORDER OF THE dummy.yml FILE
 	tables := []struct {
@@ -32,24 +31,16 @@ func TestBuildCronRule(t *testing.T) {
 
 	for i, table := range tables {
 		putRule, err := BuildCronRule(ctx, ctx.Project.CronJobs[i])
-		if err != nil {
-			t.Errorf("Unexpected error <index#%d>: %s", i, err)
-		}
+		require.NoErrorf(t, err, "Index#%d", i)
 
-		if !testutil.AssertStringEquals(table.name, putRule.Name) {
-			t.Errorf("Incorrect name. <index#%d> Expected=%s, got=%s", i, table.name, *putRule.Name)
-		}
+		require.EqualValuesf(t, table.name, *putRule.Name, "Index#%d, Name", i)
+		require.EqualValuesf(t, table.state, putRule.State, "Index#%d, State", i)
+		require.EqualValuesf(t, table.schedule, *putRule.ScheduleExpression, "Index#%d, ScheduleExpression", i)
 
-		if !testutil.AssertEquals[eventTypes.RuleState](table.state, putRule.State) {
-			t.Errorf("Incorrect State. <index#%d> Expected=%s, got=%s", i, table.state, putRule.State)
-		}
-
-		if !testutil.AssertStringEquals(table.schedule, putRule.ScheduleExpression) {
-			t.Errorf("Incorrect ScheduleExpression. <index#%d> Expected=%s, got=%s", i, table.schedule, *putRule.ScheduleExpression)
-		}
-
-		if !testutil.AssertStringEquals(table.desciption, putRule.Description) {
-			t.Errorf("Incorrect Desc. <index#%d> Expected=%v, got=%v", i, table.desciption, putRule.Description)
+		if table.desciption == nil {
+			require.Nilf(t, putRule.Description, "Index#%d, Description", i)
+		} else {
+			require.EqualValuesf(t, *table.desciption, *putRule.Description, "Index#%d, Description", i)
 		}
 	}
 

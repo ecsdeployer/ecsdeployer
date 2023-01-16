@@ -2,7 +2,7 @@ package util
 
 import "encoding/json"
 
-func Jsonify(val interface{}) (string, error) {
+func Jsonify(val any) (string, error) {
 	bytes, err := json.Marshal(val)
 	if err != nil {
 		return "", err
@@ -10,7 +10,7 @@ func Jsonify(val interface{}) (string, error) {
 	return string(bytes), nil
 }
 
-func JsonifyPretty(val interface{}) (string, error) {
+func JsonifyPretty(val any) (string, error) {
 	bytes, err := json.MarshalIndent(val, "", "  ")
 	if err != nil {
 		return "", err

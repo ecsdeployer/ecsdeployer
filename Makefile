@@ -1,5 +1,5 @@
 # gopkgs := ./cmd/... ./internal/... ./pkg/...
-gopkgs := $(shell go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/testutil | grep -v internal/fakeaws)
+gopkgs := $(shell go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/testutil)
 
 
 .PHONY: precommit
@@ -22,7 +22,7 @@ tidy:
 .PHONY: lint-install
 lint-install:
 	@echo "Installing golangci-lint"
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.46.2
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 
 .PHONY: lint
 lint:
@@ -30,7 +30,8 @@ lint:
 		echo "golangci-lint not found, please run: make lint-install"; \
 		exit 1; \
 	}
-	golangci-lint run
+	@golangci-lint version
+	@golangci-lint run && echo "Code passed lint check!"
 
 .PHONY: test-release
 test-release:
@@ -50,11 +51,11 @@ schema:
 
 .PHONY: smokedeploy-debug
 smokedeploy-debug:
-	@env AWS_PROFILE=ecsdeployer-example go run . deploy --debug -c cmd/testdata/smoke.yml --image-tag test --app-version 1.2.3
+	@env AWS_PROFILE=ecsdeployer-example go run . deploy --debug -c cmd/testdata/smoke.yml --tag test --app-version 1.2.3
 
 .PHONY: smokedeploy
 smokedeploy:
-	@env AWS_PROFILE=ecsdeployer-example go run . deploy -c cmd/testdata/smoke.yml --image-tag test --app-version 1.2.3
+	@env AWS_PROFILE=ecsdeployer-example go run . deploy -c cmd/testdata/smoke.yml --tag test --app-version 1.2.3
 
 .PHONY: gen-man
 gen-man:
@@ -67,6 +68,21 @@ showman: gen-man
 .PHONY: test
 test:
 	@./scripts/run_with_test_env.sh go test -timeout 180s $(gopkgs)
+
+.PHONY: test-v
+test-v:
+	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs)\
+
+.PHONY: test-testutil
+test-testutil:
+	@go test -timeout 180s ./internal/testutil
+
+.PHONY: test-single
+test-single:
+ifndef name
+	$(error Rerun as 'make <command> name=<something>')
+endif
+	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs) -run $(name)
 
 .PHONY: docs-serve
 docs-serve:
@@ -88,6 +104,7 @@ outdated:
 coverage:
 	@mkdir -p coverage
 	@./scripts/run_with_test_env.sh go test $(gopkgs) -cover -coverprofile=coverage/c.out -covermode=count
+	@#./scripts/run_with_test_env.sh go test $(gopkgs) -coverpkg=./... -coverprofile=coverage/c.out -covermode=count
 	@go tool cover -html=coverage/c.out -o coverage/index.html
 
 .PHONY: htmltest

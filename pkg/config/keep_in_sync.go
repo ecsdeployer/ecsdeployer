@@ -35,14 +35,14 @@ func (obj *KeepInSync) AllDisabled() bool {
 
 func (obj *KeepInSync) Validate() error {
 	// if obj.Services == nil || obj.Cronjobs == nil || obj.LogRetention == nil {
-	// 	return errors.New("All fields must be set")
+	// 	return NewValidationError("All fields must be set")
 	// }
 	v := reflect.ValueOf(obj).Elem()
 
 	for _, field := range reflect.VisibleFields(v.Type()) {
 		f := v.FieldByIndex(field.Index)
 		if isKeepInSyncDefaultableField(field, f) && f.IsNil() {
-			return errors.New("If you override keep_in_sync, then you must define ALL attributes")
+			return NewValidationError("If you override keep_in_sync, then you must define ALL attributes")
 		}
 	}
 	return nil
@@ -78,6 +78,11 @@ func NewKeepInSyncFromBool(val bool) KeepInSync {
 func (a *KeepInSync) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var boolVal bool
 	if err := unmarshal(&boolVal); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		type t KeepInSync
 		var obj t // = t(NewKeepInSyncFromBool(defaultKeepInSync))
 		if err := unmarshal(&obj); err != nil {
@@ -98,7 +103,7 @@ func (a *KeepInSync) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (KeepInSync) JSONSchemaPost(base *jsonschema.Schema) {
+func (KeepInSync) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	kis := NewKeepInSyncFromBool(defaultKeepInSync)
 	v := reflect.ValueOf(kis)

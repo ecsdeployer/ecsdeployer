@@ -32,24 +32,24 @@ func NewDurationFromUint(val uint32) (Duration, error) {
 
 func (a *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var intVal uint32
-	if err := unmarshal(&intVal); err != nil {
-		var str string
-		if err := unmarshal(&str); err != nil {
-			return err
-		}
-		dur, err := NewDurationFromString(str)
-		if err != nil {
-			return err
-		}
-		*a = dur
-
-	} else {
+	if err := unmarshal(&intVal); err == nil {
 		dur, err := NewDurationFromUint(intVal)
 		if err != nil {
-			return err
+			return NewValidationError(err)
 		}
 		*a = dur
+		return nil
 	}
+
+	var str string
+	if err := unmarshal(&str); err != nil {
+		return NewValidationError(err, "Invalid duration format")
+	}
+	dur, err := NewDurationFromString(str)
+	if err != nil {
+		return NewValidationError(err)
+	}
+	*a = dur
 
 	return nil
 }

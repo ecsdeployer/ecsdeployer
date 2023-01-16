@@ -5,6 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestImageUri_ParsingValid(t *testing.T) {
@@ -18,9 +19,8 @@ func TestImageUri_ParsingValid(t *testing.T) {
 	for _, table := range tables {
 		imgUri := config.NewImageUri(table.str)
 
-		if err := imgUri.Validate(); err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+		err := imgUri.Validate()
+		require.NoError(t, err)
 
 	}
 }
@@ -48,10 +48,7 @@ func TestImageUri_Validate(t *testing.T) {
 
 	for i, table := range tables {
 		err := table.obj.Validate()
-		if table.valid != (err == nil) {
-			t.Errorf("Entry<%d> was expected to have Validate()==%t but it wasnt: %s", i, table.valid, err)
-
-		}
+		require.Equalf(t, table.valid, (err == nil), "Row %d: %s", i, err)
 	}
 }
 
@@ -70,15 +67,10 @@ func TestImageUri_Value(t *testing.T) {
 
 	for i, table := range tables {
 
-		if err := table.obj.Validate(); err != nil {
-			t.Fatalf("Entry<%d> IS NOT VALID. BAD TEST CASE: %s", i, err)
-		}
+		require.NoErrorf(t, table.obj.Validate(), "BAD TEST CASE. ALL TEST CASES SHOULD BE VALID IMAGEURI OBJECTS")
 
 		imgValue := table.obj.Value()
-
-		if imgValue != table.expected {
-			t.Errorf("Expected entry<%d> to give <%s> but got %s", i, table.expected, imgValue)
-		}
+		require.Equalf(t, table.expected, imgValue, "Entry %d", i)
 
 	}
 }

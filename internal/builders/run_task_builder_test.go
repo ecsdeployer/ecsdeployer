@@ -5,19 +5,17 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBuildRunTask_Basic(t *testing.T) {
 
 	// just a basic test to make sure we can pass the common stuff thru it
 
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
-	ctx, err := testutil.LoadProjectConfig("testdata/dummy.yml")
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	ctx, err := config.NewFromYAML("testdata/dummy.yml")
+	require.NoError(t, err)
 
 	tables := []struct {
 		thing *config.PreDeployTask
@@ -28,14 +26,8 @@ func TestBuildRunTask_Basic(t *testing.T) {
 
 	for _, table := range tables {
 		runTask, err := BuildRunTask(ctx, table.thing)
-		if err != nil {
-			t.Errorf("Unexpected error: %s", err)
-			continue
-		}
-
-		if !runTask.EnableECSManagedTags {
-			t.Errorf("Got incorrect ECSManagedTags")
-		}
+		require.NoError(t, err)
+		require.True(t, runTask.EnableECSManagedTags)
 
 	}
 

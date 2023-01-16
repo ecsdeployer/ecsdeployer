@@ -10,6 +10,10 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
+var (
+	ErrInvalidLogRetention = errors.New("invalid log retention")
+)
+
 var logRetentionRegex *regexp.Regexp
 
 type LogRetention struct {
@@ -46,7 +50,7 @@ func ParseLogRetention[T int32 | int64 | int | string](value T) (LogRetention, e
 
 	if isString {
 		if !logRetentionRegex.MatchString(strVal) {
-			return LogRetention{}, errors.New("Log rention must be number of days or 'forever'")
+			return LogRetention{}, fmt.Errorf("%w: Log retention must be number of days or 'forever'", ErrInvalidLogRetention)
 		}
 
 		if strVal == "forever" {
@@ -55,13 +59,14 @@ func ParseLogRetention[T int32 | int64 | int | string](value T) (LogRetention, e
 
 		days, err := strconv.ParseInt(strVal, 10, 32)
 		if err != nil {
-			return LogRetention{}, err
+			// return LogRetention{}, err
+			return LogRetention{}, fmt.Errorf("%w: %s", ErrInvalidLogRetention, err.Error())
 		}
 
 		return ParseLogRetention(days)
 	}
 
-	var intVal int32 = 0
+	var intVal int32
 
 	switch v := any(value).(type) {
 	case int64:
@@ -71,11 +76,11 @@ func ParseLogRetention[T int32 | int64 | int | string](value T) (LogRetention, e
 	case int:
 		intVal = int32(v)
 	default:
-		panic("somehow got a nonstandard integer to the log retention parser")
+		return LogRetention{}, fmt.Errorf("%w: somehow got a nonstandard integer to the log retention parser", ErrInvalidLogRetention)
 	}
 
 	if intVal <= 0 {
-		return LogRetention{}, errors.New("Log retention must be more than 1 day or 'forever'")
+		return LogRetention{}, fmt.Errorf("%w: Log retention must be more than 1 day or 'forever'", ErrInvalidLogRetention)
 	}
 
 	return LogRetention{days: intVal}, nil
@@ -89,7 +94,7 @@ func (a *LogRetention) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	obj, err := ParseLogRetention(str)
 	if err != nil {
-		return err
+		return NewValidationError(err)
 	}
 
 	*a = obj

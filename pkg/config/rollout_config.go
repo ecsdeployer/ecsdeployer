@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -36,8 +35,8 @@ func (obj *RolloutConfig) GetMinMaxCount(count int32) (int32, int32) {
 }
 
 func (a *RolloutConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t RolloutConfig
-	var obj = t{}
+	type tRolloutConfig RolloutConfig
+	var obj = tRolloutConfig{}
 	if err := unmarshal(&obj); err != nil {
 		return err
 	}
@@ -52,15 +51,15 @@ func (a *RolloutConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (def *RolloutConfig) Validate() error {
 	if def.Maximum == nil || def.Minimum == nil {
-		return fmt.Errorf("you must define both 'min' and 'max' for rollout configuration")
+		return NewValidationError("you must define both 'min' and 'max' for rollout configuration")
 	}
 
 	if *def.Minimum >= *def.Maximum {
-		return fmt.Errorf("RolloutConfiguration: maximum must be higher than minimum")
+		return NewValidationError("RolloutConfiguration: maximum must be higher than minimum")
 	}
 
 	if *def.Maximum < 0 || *def.Minimum < 0 {
-		return fmt.Errorf("RolloutConfig: Min/Max cannot be below zero")
+		return NewValidationError("RolloutConfig: Min/Max cannot be below zero")
 	}
 
 	return nil
@@ -79,7 +78,7 @@ func (obj *RolloutConfig) ValidateWithDesiredCount(count int32) error {
 	minHealthyCount, maxHealthyCount := obj.GetMinMaxCount(count)
 
 	if minHealthyCount >= maxHealthyCount {
-		return fmt.Errorf("this is an impossible rollout config. Desired=%d, Min=%d, Max=%d. This would give minCount=%d and maxCount=%d",
+		return NewValidationError("this is an impossible rollout config. Desired=%d, Min=%d, Max=%d. This would give minCount=%d and maxCount=%d",
 			count,
 			*obj.Minimum,
 			*obj.Maximum,

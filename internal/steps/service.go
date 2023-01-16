@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/builders"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
@@ -16,6 +17,10 @@ import (
 
 const (
 	serviceStepAttrName = "ServiceName"
+)
+
+var (
+	ErrTaskDefNotCreated = errors.New("Task definition was not created")
 )
 
 func ServiceStep(resource *config.Service) *Step {
@@ -63,7 +68,7 @@ func stepServiceCreate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 
 	taskDefOutput, ok := step.LookupOutput("task_definition_arn")
 	if !ok {
-		return nil, errors.New("Task definition was not created")
+		return nil, ErrTaskDefNotCreated
 	}
 
 	createServiceInput, err := builders.BuildCreateService(ctx, svc)
@@ -73,7 +78,7 @@ func stepServiceCreate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 
 	createServiceInput.TaskDefinition = aws.String(taskDefOutput.(string))
 
-	result, err := ctx.ECSClient().CreateService(ctx.Context, createServiceInput)
+	result, err := awsclients.ECSClient().CreateService(ctx.Context, createServiceInput)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +102,7 @@ func stepServiceUpdate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 
 	taskDefOutput, ok := step.LookupOutput("task_definition_arn")
 	if !ok {
-		return nil, errors.New("Task definition was not created")
+		return nil, ErrTaskDefNotCreated
 	}
 
 	updateServiceInput, err := builders.BuildUpdateService(ctx, svc)
@@ -107,7 +112,7 @@ func stepServiceUpdate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 
 	updateServiceInput.TaskDefinition = aws.String(taskDefOutput.(string))
 
-	result, err := ctx.ECSClient().UpdateService(ctx.Context, updateServiceInput)
+	result, err := awsclients.ECSClient().UpdateService(ctx.Context, updateServiceInput)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +143,7 @@ func stepServiceRead(ctx *config.Context, step *Step, meta *StepMetadata) (any, 
 		return nil, err
 	}
 
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 	result, err := ecsClient.DescribeServices(ctx.Context, &ecs.DescribeServicesInput{
 		Services: []string{serviceName},
 		Cluster:  aws.String(clusterArn),
@@ -177,16 +182,20 @@ func stepServiceWaitForSuccess(ctx *config.Context, step *Step, service *ecsType
 		return nil
 	}
 
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 	startTime := time.Now()
 
 	waiter := ecs.NewServicesStableWaiter(ecsClient, func(sswo *ecs.ServicesStableWaiterOptions) {
-		sswo.MinDelay = 10 * time.Second
-		sswo.MaxDelay = 45 * time.Second
+		sswo.MinDelay, sswo.MaxDelay = helpers.GetAwsWaiterDelays(10*time.Second, 45*time.Second)
 		sswo.LogWaitAttempts = false
 
 		oldRetryable := sswo.Retryable
 		sswo.Retryable = func(ctx context.Context, dsi *ecs.DescribeServicesInput, dso *ecs.DescribeServicesOutput, err error) (bool, error) {
+
+			if err != nil {
+				return false, err
+			}
+
 			logger.WithField(fieldRuntime, time.Since(startTime).Round(time.Second).String()).Info("Waiting for service...")
 
 			return oldRetryable(ctx, dsi, dso, err)

@@ -5,17 +5,15 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBuildCreateService_Basic(t *testing.T) {
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 	// just a basic test to make sure we can pass the common stuff thru it
 
-	ctx, err := testutil.LoadProjectConfig("testdata/dummy.yml")
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	ctx, err := config.NewFromYAML("testdata/dummy.yml")
+	require.NoError(t, err)
 
 	tables := []struct {
 		thing    *config.Service
@@ -30,33 +28,19 @@ func TestBuildCreateService_Basic(t *testing.T) {
 
 	for _, table := range tables {
 		createSvcInput, err := BuildCreateService(ctx, table.thing)
-		if err != nil {
-			t.Errorf("Unexpected error: %s", err)
-			continue
-		}
+		require.NoError(t, err)
 
-		if !createSvcInput.EnableECSManagedTags {
-			t.Errorf("Got incorrect ECSManagedTags")
-		}
-		if len(createSvcInput.Tags) != 1 {
-			t.Errorf("Expected 1 tag, got %d", len(createSvcInput.Tags))
-		}
+		require.Truef(t, createSvcInput.EnableECSManagedTags, "ECSManagedTags")
 
-		if len(createSvcInput.LoadBalancers) != table.lbCount {
-			t.Errorf("Expected %d LoadBalancers, but got %d", table.lbCount, len(createSvcInput.LoadBalancers))
-		}
+		require.Lenf(t, createSvcInput.Tags, 1, "Tags")
+
+		require.Lenf(t, createSvcInput.LoadBalancers, table.lbCount, "LoadBalancers")
 
 		if table.expGrace >= 0 {
-			if createSvcInput.HealthCheckGracePeriodSeconds == nil {
-				t.Errorf("Expected HealthCheckGrace to exist, but got nil")
-			}
-
-			if *createSvcInput.HealthCheckGracePeriodSeconds != table.expGrace {
-				t.Errorf("Expected HealthCheckGrace to be %d, but got %d", table.expGrace, *createSvcInput.HealthCheckGracePeriodSeconds)
-			}
-
-		} else if createSvcInput.HealthCheckGracePeriodSeconds != nil {
-			t.Errorf("Expected HealthCheckGrace to be nil, but got value")
+			require.NotNil(t, createSvcInput.HealthCheckGracePeriodSeconds)
+			require.Equal(t, table.expGrace, *createSvcInput.HealthCheckGracePeriodSeconds)
+		} else {
+			require.Nil(t, createSvcInput.HealthCheckGracePeriodSeconds)
 		}
 
 	}

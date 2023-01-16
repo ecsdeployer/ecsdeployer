@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -49,7 +50,7 @@ func stepCleanupServicesCreate(ctx *config.Context, step *Step, meta *StepMetada
 		expectedServiceNames = append(expectedServiceNames, svcName)
 	}
 
-	client := ctx.TaggingClient()
+	client := awsclients.TaggingClient()
 
 	request := &tagging.GetResourcesInput{
 		ResourceTypeFilters: []string{"ecs:service"},
@@ -123,7 +124,7 @@ func destroyService(ctx *config.Context, log *log.Entry, serviceArn string) erro
 
 	logger.Info("Removing unused service")
 
-	client := ctx.ECSClient()
+	client := awsclients.ECSClient()
 
 	result, err := client.DescribeServices(ctx.Context, &ecs.DescribeServicesInput{
 		Services: []string{serviceArn},
@@ -153,7 +154,9 @@ func destroyService(ctx *config.Context, log *log.Entry, serviceArn string) erro
 		}
 
 		// wait a lil bit for ecs to catch up
-		time.Sleep(5 * time.Second)
+		if !helpers.IsTestingMode {
+			time.Sleep(5 * time.Second)
+		}
 	}
 
 	_, err = client.DeleteService(ctx.Context, &ecs.DeleteServiceInput{

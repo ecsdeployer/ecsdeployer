@@ -4,16 +4,12 @@ import (
 	"os"
 
 	"ecsdeployer.com/ecsdeployer/cmd"
-)
-
-var (
-	buildVersion = "development"
-	buildSha     = "devel"
+	"ecsdeployer.com/ecsdeployer/pkg/version"
 )
 
 func main() {
 	cmd.Execute(
-		buildVersion,
+		version.Version,
 		os.Exit,
 		os.Args[1:],
 	)

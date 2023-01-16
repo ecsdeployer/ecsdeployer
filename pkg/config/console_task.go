@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -75,11 +73,11 @@ func (con *ConsoleTask) ApplyDefaults() {
 func (con *ConsoleTask) Validate() error {
 
 	if con.Name == "" {
-		return errors.New("must provide name")
+		return NewValidationError("must provide name")
 	}
 
 	if con.PortMapping == nil {
-		return errors.New("must provide port")
+		return NewValidationError("must provide port")
 	}
 
 	if err := con.PortMapping.Validate(); err != nil {
@@ -93,9 +91,7 @@ func (obj ConsoleTask) IsTaskStruct() bool {
 	return true
 }
 
-func (ConsoleTask) JSONSchemaPost(base *jsonschema.Schema) {
-	// base.Properties.Delete("name")
-
+func (ConsoleTask) JSONSchemaExtend(base *jsonschema.Schema) {
 	console := *base
 	newBase := &jsonschema.Schema{
 		OneOf: []*jsonschema.Schema{

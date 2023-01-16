@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -27,19 +26,26 @@ type FirelensConfig struct {
 }
 
 func (obj *FirelensConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t FirelensConfig // prevent recursive overflow
-	var defo = t{}
-	if err := unmarshal(&defo); err != nil {
-		var val bool
-		if err := unmarshal(&val); err != nil {
+
+	var val bool
+	if err := unmarshal(&val); err != nil {
+
+		if errors.Is(err, ErrValidation) {
 			return err
 		}
 
+		type tFirelensConfig FirelensConfig // prevent recursive overflow
+		var defo = tFirelensConfig{}
+		if err := unmarshal(&defo); err != nil {
+			return err
+		} else {
+			*obj = FirelensConfig(defo)
+		}
+
+	} else {
 		*obj = FirelensConfig{
 			Disabled: !val,
 		}
-	} else {
-		*obj = FirelensConfig(defo)
 	}
 
 	obj.ApplyDefaults()
@@ -64,12 +70,12 @@ func (obj *FirelensConfig) Validate() error {
 	}
 
 	if obj.Image == nil {
-		return errors.New("you must provide an image URI for the firelens configuration")
+		return NewValidationError("you must provide an image URI for the firelens configuration")
 	}
 
 	for _, v := range obj.Options {
 		if v.IsSSM() {
-			return errors.New("you cannot have SSM options in Firelens configuration")
+			return NewValidationError("you cannot have SSM options in Firelens configuration")
 		}
 	}
 
@@ -120,7 +126,7 @@ func (obj *FirelensConfig) ApplyDefaults() {
 	// }
 }
 
-func (FirelensConfig) JSONSchemaPost(base *jsonschema.Schema) {
+func (FirelensConfig) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	def := &FirelensConfig{}
 	def.ApplyDefaults()
@@ -140,60 +146,15 @@ func (FirelensConfig) JSONSchemaPost(base *jsonschema.Schema) {
 		}
 	})
 
-}
-
-type FirelensAwsLogGroup struct {
-	Path string
-}
-
-func (obj *FirelensAwsLogGroup) Enabled() bool {
-	return obj.Path != ""
-}
-
-func (obj *FirelensAwsLogGroup) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var bVal bool
-
-	if err := unmarshal(&bVal); err != nil {
-		var sVal string
-		if err := unmarshal(&sVal); err != nil {
-			return err
-		}
-
-		*obj = FirelensAwsLogGroup{Path: sVal}
-	} else {
-		if bVal {
-			return errors.New("You cannot set 'log_to_awslogs' to true. You must set it to false OR to a string of the log group name")
-		}
-		*obj = FirelensAwsLogGroup{Path: ""}
-	}
-
-	return nil
-}
-
-func (FirelensAwsLogGroup) JSONSchema() *jsonschema.Schema {
-
-	return &jsonschema.Schema{
+	orig := *base
+	newBase := &jsonschema.Schema{
 		OneOf: []*jsonschema.Schema{
 			{
-				Type:        "boolean",
-				Const:       false,
-				Description: "Do not log to AWSLogs",
+				Type: "boolean",
 			},
-			{
-				Type:        "string",
-				MinLength:   2,
-				Description: "Send logs to this log group",
-			},
+			&orig,
 		},
-		Description: "Should logs for firelens be sent to a log group",
 	}
+	*base = *newBase
 
-}
-
-func (obj FirelensAwsLogGroup) MarshalJSON() ([]byte, error) {
-	if obj.Enabled() {
-		return []byte(fmt.Sprintf(`"%s"`, obj.Path)), nil
-	}
-
-	return []byte("false"), nil
 }

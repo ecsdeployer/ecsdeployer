@@ -8,28 +8,35 @@ import (
 )
 
 func TestCheckConfig(t *testing.T) {
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	silenceLogging(t)
 
-	cmd := newCheckCmd(defaultCmdMetadata())
-	cmd.cmd.SetArgs([]string{"-c", "testdata/valid.yml"})
-	require.NoError(t, cmd.cmd.Execute())
-}
+	t.Run("happy path", func(t *testing.T) {
 
-func TestCheckConfigThatDoesNotExist(t *testing.T) {
-	cmd := newCheckCmd(defaultCmdMetadata())
-	cmd.cmd.SetArgs([]string{"-c", "testdata/nope.yml"})
-	require.EqualError(t, cmd.cmd.Execute(), "open testdata/nope.yml: no such file or directory")
-}
+		testutil.MockSimpleStsProxy(t)
 
-func TestCheckConfigUnmarshalError(t *testing.T) {
-	cmd := newCheckCmd(defaultCmdMetadata())
-	cmd.cmd.SetArgs([]string{"-c", "testdata/badformat.yml"})
-	require.EqualError(t, cmd.cmd.Execute(), "config does not adhere to schema")
-}
+		cmd := newCheckCmd(defaultCmdMetadata()).cmd
+		cmd.SetArgs([]string{"-c", "testdata/valid.yml"})
+		_, _, err := executeCmdAndReturnOutput(cmd)
+		require.NoError(t, err)
+	})
 
-func TestCheckConfigInvalid(t *testing.T) {
-	cmd := newCheckCmd(defaultCmdMetadata())
-	cmd.cmd.SetArgs([]string{"-c", "testdata/invalid.yml"})
-	require.EqualError(t, cmd.cmd.Execute(), "invalid config: CPU shares provided in an invalid format")
+	tables := []struct {
+		name          string
+		filepath      string
+		expectedError string
+	}{
+		{"DoesNotExist", "testdata/nope.yml", "open testdata/nope.yml: no such file or directory"},
+		{"UnmarshalError", "testdata/badformat.yml", "config does not adhere to schema"},
+		{"Invalid", "testdata/invalid.yml", "invalid config: CPU shares provided in an invalid format"},
+	}
+
+	for _, table := range tables {
+		t.Run("failure/"+table.name, func(t *testing.T) {
+			cmd := newCheckCmd(defaultCmdMetadata()).cmd
+			cmd.SetArgs([]string{"-c", table.filepath})
+			_, _, err := executeCmdAndReturnOutput(cmd)
+			require.EqualError(t, err, table.expectedError)
+		})
+	}
+
 }

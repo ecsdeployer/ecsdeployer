@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeploymentConfig_ValidateDesiredCountSuccess(t *testing.T) {
@@ -26,9 +27,7 @@ func TestDeploymentConfig_ValidateDesiredCountSuccess(t *testing.T) {
 
 		err := dc.ValidateWithDesiredCount(table.desired)
 
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+		require.NoError(t, err)
 	}
 }
 
@@ -50,9 +49,7 @@ func TestDeploymentConfig_ValidateDesiredCountFailures(t *testing.T) {
 		}
 
 		err := dc.ValidateWithDesiredCount(table.desired)
-
-		if err == nil {
-			t.Errorf("unexpected pass")
-		}
+		require.Error(t, err)
+		require.ErrorIs(t, err, config.ErrValidation)
 	}
 }

@@ -5,6 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSmokeTest_StepFuncs(t *testing.T) {
@@ -74,9 +75,7 @@ func TestSmokeTest_StepFuncs(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		if table.step.Label != table.label {
-			t.Errorf("Label Mismatch. Expected %s got %s", table.label, table.step.Label)
-		}
+		require.Equal(t, table.label, table.step.Label)
 	}
 
 }

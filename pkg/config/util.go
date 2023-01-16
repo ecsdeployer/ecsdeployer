@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-func ExtractCommonTaskAttrs(obj interface{}) (*CommonTaskAttrs, error) {
+func ExtractCommonTaskAttrs(obj any) (*CommonTaskAttrs, error) {
 	switch v := obj.(type) {
 	case *Service:
 		return &v.CommonTaskAttrs, nil

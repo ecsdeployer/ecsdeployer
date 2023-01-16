@@ -3,13 +3,12 @@ package util
 import (
 	"errors"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestFirstParam(t *testing.T) {
-
-	if FirstParam(1, 2, 3, 4, 5) != 1 {
-		t.Fatal("it's broken")
-	}
+	require.Equal(t, 1, FirstParam(1, 2, 3, 4, 5))
 }
 
 func mustGood() (string, error) {
@@ -22,26 +21,15 @@ func mustBad() (string, error) {
 
 func TestMust(t *testing.T) {
 
-	if Must(mustGood()) != "yay" {
-		t.Fatal("Must() is broken")
-	}
+	require.Equal(t, "yay", Must(mustGood()))
 
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("Must() should have panicked")
-		}
-	}()
-
-	_ = Must(mustBad())
+	require.Panics(t, func() {
+		_ = Must(mustBad())
+	})
 }
 
 func TestPtr(t *testing.T) {
 	value := "test"
-
 	resp := Ptr(value)
-
-	if value != *resp {
-		t.Fatal("Ptr() is broken")
-	}
-
+	require.Equal(t, value, *resp)
 }

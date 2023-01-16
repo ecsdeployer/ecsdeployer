@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -70,7 +71,7 @@ func stepLogGroupCreate(ctx *config.Context, step *Step, meta *StepMetadata) (Ou
 	outputs := make(OutputFields, 1)
 	outputs["LogGroupName"] = logGroupName
 
-	logsClient := ctx.LogsClient()
+	logsClient := awsclients.LogsClient()
 
 	request := &logs.CreateLogGroupInput{
 		LogGroupName: aws.String(logGroupName),
@@ -157,7 +158,7 @@ func stepLogGroupUpdate(ctx *config.Context, step *Step, meta *StepMetadata) (Ou
 
 	logConfig := ctx.Project.Logging.AwsLogConfig.Retention
 
-	logsClient := ctx.LogsClient()
+	logsClient := awsclients.LogsClient()
 
 	logGroup := step.ExistingResource.(logTypes.LogGroup)
 

@@ -4,9 +4,10 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
-func TestUtil_ExtractCommonTaskAttrs(t *testing.T) {
+func TestExtractCommonTaskAttrs(t *testing.T) {
 	tables := []struct {
 		obj   interface{}
 		valid bool
@@ -31,17 +32,12 @@ func TestUtil_ExtractCommonTaskAttrs(t *testing.T) {
 	for i, table := range tables {
 		common, err := config.ExtractCommonTaskAttrs(table.obj)
 
-		if table.valid != (err == nil) {
-			t.Errorf("Expected entry<%d> to have valid=%t but it wasnt. %v", i, table.valid, err)
-		}
+		require.Equalf(t, table.valid, (err == nil), "Expected entry<%d> to have valid=%t but it wasnt. %v", i, table.valid, err)
 
 		if !table.valid {
 			continue
 		}
-
-		if common.Name != table.name {
-			t.Errorf("Expected entry<%d> to give name of <%s> but it gave <%s>", i, table.name, common.Name)
-		}
+		require.Equalf(t, table.name, common.Name, "Expected entry<%d> to give name of <%s> but it gave <%s>", i, table.name, common.Name)
 
 	}
 }

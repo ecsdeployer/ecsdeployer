@@ -5,6 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHealthCheck_Validate(t *testing.T) {
@@ -24,9 +25,13 @@ func TestHealthCheck_Validate(t *testing.T) {
 		table.obj.ApplyDefaults()
 
 		err := table.obj.Validate()
-		if table.valid != (err == nil) {
-			t.Errorf("Entry<%d> was expected to have Validate()==%t but it wasnt: %s", i, table.valid, err)
 
+		if table.valid {
+			require.NoErrorf(t, err, "entry#%d", i)
+		} else {
+			require.Error(t, err, "entry#%d", i)
+			require.ErrorIs(t, err, config.ErrValidation)
 		}
+
 	}
 }

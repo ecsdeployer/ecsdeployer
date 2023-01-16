@@ -1,22 +1,21 @@
 package config_test
 
 import (
+	"fmt"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClusterArn(t *testing.T) {
 
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
-	ctx, err := testutil.LoadProjectConfig("testdata/simple.yml")
-	if err != nil {
-		t.Errorf("Unexpected error: %s", err)
-	}
+	ctx, err := config.NewFromYAML("testdata/simple.yml")
+	require.NoError(t, err)
 
 	tables := []struct {
 		str  string
@@ -27,32 +26,20 @@ func TestClusterArn(t *testing.T) {
 		{"arn:aws:ecs:us-east-1:1234567890:cluster/faker2", "faker2", "arn:aws:ecs:us-east-1:1234567890:cluster/faker2"},
 	}
 
-	for _, table := range tables {
-		clusterArn, err := yaml.ParseYAMLString[config.ClusterArn](table.str)
-		if err != nil {
-			t.Errorf("ClusterStr <%s> gave error: %s", table.str, err)
-			break
-		}
+	for testNum, table := range tables {
 
-		nameVal, err := clusterArn.Name(ctx)
-		if err != nil {
-			t.Errorf("ClusterStr <%s> gave error during name eval: %s", table.str, err)
-			break
-		}
+		t.Run(fmt.Sprintf("test_%02d", testNum+1), func(t *testing.T) {
 
-		if nameVal != table.name {
-			t.Errorf("ClusterStr <%s> Name Mismatch expected=%s got=%s", table.str, table.name, nameVal)
-		}
+			obj, err := yaml.ParseYAMLString[config.ClusterArn](table.str)
+			require.NoError(t, err)
 
-		arnVal, err := clusterArn.Arn(ctx)
-		if err != nil {
-			t.Errorf("ClusterStr <%s> gave error during arn eval: %s", table.str, err)
-			break
-		}
+			nameVal, err := obj.Name(ctx)
+			require.NoErrorf(t, err, "Failure during name eval for '%s'", table.str)
+			require.Equal(t, table.name, nameVal)
 
-		if arnVal != table.arn {
-			t.Errorf("ClusterStr <%s> ARN Mismatch expected=%s got=%s", table.str, table.arn, arnVal)
-		}
-
+			arnVal, err := obj.Arn(ctx)
+			require.NoError(t, err)
+			require.Equal(t, table.arn, arnVal)
+		})
 	}
 }

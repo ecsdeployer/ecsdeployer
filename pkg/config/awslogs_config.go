@@ -1,7 +1,10 @@
 package config
 
 import (
+	"errors"
+
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	"github.com/invopop/jsonschema"
 )
 
 // Project level
@@ -35,9 +38,14 @@ func (obj *AwsLogConfig) ApplyDefaults() {
 }
 
 func (obj *AwsLogConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t AwsLogConfig
-	var defo = t{}
+	type tAwsLogConfig AwsLogConfig
+	var defo = tAwsLogConfig{}
 	if err := unmarshal(&defo); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var val bool
 		if err := unmarshal(&val); err != nil {
 			return err
@@ -56,4 +64,18 @@ func (obj *AwsLogConfig) UnmarshalYAML(unmarshal func(interface{}) error) error 
 	}
 
 	return nil
+}
+
+func (AwsLogConfig) JSONSchemaExtend(base *jsonschema.Schema) {
+	orig := *base
+	newBase := &jsonschema.Schema{
+		OneOf: []*jsonschema.Schema{
+			{
+				Type:        "boolean",
+				Description: "Enable or disable logging to AWS using default values",
+			},
+			&orig,
+		},
+	}
+	*base = *newBase
 }

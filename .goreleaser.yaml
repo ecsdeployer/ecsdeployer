@@ -27,7 +27,10 @@ builds:
       - "7"
 
     ldflags:
-      - "-s -w -X main.buildVersion={{.Version}} -X main.buildSha={{.Commit}}"
+      # - "-s -w -X main.buildVersion={{.Version}} -X main.buildSha={{.Commit}}"
+      - "-s -w"
+      - -X ecsdeployer.com/ecsdeployer/pkg/version.Version={{.Version}}
+      - -X ecsdeployer.com/ecsdeployer/pkg/version.BuildSHA={{.Commit}}
 
 archives:
   - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"

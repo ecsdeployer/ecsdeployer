@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"golang.org/x/exp/maps"
 )
 
@@ -37,7 +35,7 @@ func (cta *CommonTaskAttrs) Validate() error {
 
 	if cta.Architecture != nil {
 		if *cta.Architecture != ArchitectureAMD64 && *cta.Architecture != ArchitectureARM64 {
-			return fmt.Errorf("'%s' is not a valid architecture", *cta.Architecture)
+			return NewValidationError("'%s' is not a valid architecture", *cta.Architecture)
 		}
 	}
 

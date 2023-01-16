@@ -1,13 +1,18 @@
 package config_test
 
 import (
+	"fmt"
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCpuSpec_Unmarshal(t *testing.T) {
+
+	sc := testutil.NewSchemaChecker(config.CpuSpec(0))
 
 	tables := []struct {
 		str      string
@@ -36,23 +41,25 @@ func TestCpuSpec_Unmarshal(t *testing.T) {
 		{`. cores`, false, 0},
 	}
 
-	for _, table := range tables {
-		cpu, err := yaml.ParseYAMLString[config.CpuSpec](table.str)
-		if table.valid != (err == nil) {
-			t.Errorf("Error <%s> expectation was %t but got %t :: %v", table.str, table.valid, (err == nil), err)
-		}
+	for testNum, table := range tables {
+		t.Run(fmt.Sprintf("test_%02d_%s", testNum+1, table.str), func(t *testing.T) {
+			cpu, err := yaml.ParseYAMLString[config.CpuSpec](table.str)
 
-		if !table.valid {
-			continue
-		}
+			if !table.valid {
+				require.Errorf(t, err, "Parse failure")
+				require.ErrorIs(t, err, config.ErrValidation)
 
-		if err := cpu.Validate(); err != nil {
-			t.Errorf("Expected <%s> to give valid CPU, but got err: %s", table.str, err)
-		}
+				// we allow "invalid" things in the schema, but then error when parsing.
+				// require.Errorf(t, sc.CheckYAML(t, table.str), "Schema Validation")
+				return
+			}
+			require.NoError(t, err)
+			require.NoError(t, sc.CheckYAML(t, table.str))
 
-		if int32(*cpu) != table.expected {
-			t.Errorf("expected <%s> to give %d but got %d", table.str, table.expected, *cpu)
-		}
+			require.NoError(t, cpu.Validate())
+			require.EqualValues(t, table.expected, *cpu)
+			require.Equal(t, table.expected, cpu.Shares())
+		})
 	}
 }
 
@@ -68,16 +75,14 @@ func TestCpuSpec_NewCpuSpec(t *testing.T) {
 
 	for _, table := range tables {
 		cpu, err := config.NewCpuSpec(table.value)
-		if table.valid != (err == nil) {
-			t.Errorf("Expected error=%t for <%d> but didnt: %v", table.valid, table.value, err)
-		}
 
 		if !table.valid {
-			continue
+			require.Error(t, err)
+			break
 		}
 
-		if cpu.Shares() != table.expected {
-			t.Errorf("Expected <%d> to give shares=%d but it gave <%d>", table.value, table.expected, cpu.Shares())
-		}
+		require.NoError(t, err)
+		require.Equal(t, table.expected, cpu.Shares())
+
 	}
 }

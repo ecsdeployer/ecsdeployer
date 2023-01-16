@@ -137,7 +137,7 @@ func (obj *SpotOverrides) UnmarshalYAML(unmarshal func(interface{}) error) error
 func (obj *SpotOverrides) Validate() error {
 
 	// if obj.MinimumOnDemand != nil && obj.MinimumOnDemandPercent != nil {
-	// 	return errors.New("You cannot set minimum_ondemand and minimum_ondemand_percent at the same time.")
+	// 	return NewValidationError("You cannot set minimum_ondemand and minimum_ondemand_percent at the same time.")
 	// }
 
 	return nil

@@ -1,11 +1,13 @@
 package config_test
 
 import (
+	"fmt"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNameTemplates_Defaults(t *testing.T) {
@@ -50,27 +52,22 @@ func TestNameTemplates_Defaults(t *testing.T) {
 		{templates.MarkerTagValue, "testproj", "testproj/princess"},
 	}
 
-	for _, table := range tables {
-		field := *table.field
+	for x, table := range tables {
+		t.Run(fmt.Sprintf("table_%02d", x), func(t *testing.T) {
 
-		noStageVal, err := tplNoStage.Apply(field)
-		if err != nil {
-			t.Errorf("unexpected error: <%s> got %s", field, err)
-		}
+			field := *table.field
 
-		if noStageVal != table.expectedNoStage {
-			t.Errorf("expected NonStage tpl of <%s> to equal <%s> but got <%s>", field, table.expectedNoStage, noStageVal)
-		}
+			noStageVal, err := tplNoStage.Apply(field)
+			require.NoError(t, err)
 
-		stageVal, err := tplStage.Apply(field)
-		if err != nil {
-			t.Errorf("unexpected error: <%s> got %s", field, err)
-		}
+			require.Equalf(t, table.expectedNoStage, noStageVal, "NoStageVal: %s", field)
 
-		if stageVal != table.expectedWithStage {
-			t.Errorf("expected Stage tpl of <%s> to equal <%s> but got <%s>", field, table.expectedWithStage, stageVal)
-		}
+			stageVal, err := tplStage.Apply(field)
+			require.NoError(t, err)
 
+			require.Equalf(t, table.expectedWithStage, stageVal, "StageVal: %s", field)
+
+		})
 	}
 }
 
@@ -95,9 +92,6 @@ func TestNameTemplates_Validate(t *testing.T) {
 	for i, table := range tables {
 		table.obj.ApplyDefaults()
 		err := table.obj.Validate()
-		if table.valid != (err == nil) {
-			t.Errorf("Entry<%d> was expected to have Validate()==%t but it wasnt: %s", i, table.valid, err)
-
-		}
+		require.Equalf(t, table.valid, (err == nil), "Entry<%d> was expected to have Validate()==%t but it wasnt: %s", i, table.valid, err)
 	}
 }

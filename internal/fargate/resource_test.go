@@ -1,6 +1,10 @@
 package fargate
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestFargateResourceStrings(t *testing.T) {
 	tables := []struct {
@@ -12,12 +16,7 @@ func TestFargateResourceStrings(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		if table.res.CpuString() != table.cpu {
-			t.Errorf("expected cpu %s to be %s but it wasnt", table.res.CpuString(), table.cpu)
-		}
-
-		if table.res.MemoryString() != table.mem {
-			t.Errorf("expected mem %s to be %s but it wasnt", table.res.MemoryString(), table.mem)
-		}
+		require.Equal(t, table.cpu, table.res.CpuString())
+		require.Equal(t, table.mem, table.res.MemoryString())
 	}
 }

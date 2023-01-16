@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
@@ -23,13 +22,13 @@ type Settings struct {
 }
 
 func (a *Settings) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t Settings
-	var obj t
+	type tSettings Settings
+	var obj tSettings
 	if err := unmarshal(&obj); err != nil {
 		return err
-	} else {
-		*a = Settings(obj)
 	}
+
+	*a = Settings(obj)
 
 	a.ApplyDefaults()
 
@@ -79,12 +78,8 @@ func (obj *Settings) Validate() error {
 	}
 
 	if obj.DisableMarkerTag && !obj.KeepInSync.AllDisabled() {
-		return errors.New("If you disable the marker tag, you must also disable keep_in_sync")
+		return NewValidationError("If you disable the marker tag, you must also disable keep_in_sync")
 	}
 
 	return nil
 }
-
-// func (Settings) JSONSchemaPost(base *jsonschema.Schema) {
-
-// }

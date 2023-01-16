@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -35,7 +33,7 @@ func (obj *FargateDefaults) UnmarshalYAML(unmarshal func(interface{}) error) err
 
 func (obj *FargateDefaults) Validate() error {
 	if obj.LoggingConfig != nil {
-		return errors.New("do not add logging information to the task_defaults section. It belongs on its own in logging")
+		return NewValidationError("do not add logging information to the task_defaults section. It belongs on its own in logging")
 	}
 
 	if err := obj.CommonTaskAttrs.Validate(); err != nil {
@@ -99,7 +97,7 @@ func (obj *FargateDefaults) ApplyDefaults() {
 
 }
 
-func (FargateDefaults) JSONSchemaPost(base *jsonschema.Schema) {
+func (FargateDefaults) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	base.Properties.Delete("name")
 	base.Properties.Delete("logging")

@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/invopop/jsonschema"
 )
@@ -29,9 +27,9 @@ func (obj *CronJob) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var defo = tCronJob{}
 	if err := unmarshal(&defo); err != nil {
 		return err
-	} else {
-		*obj = CronJob(defo)
 	}
+
+	*obj = CronJob(defo)
 
 	obj.ApplyDefaults()
 	if err := obj.Validate(); err != nil {
@@ -43,7 +41,7 @@ func (obj *CronJob) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (obj *CronJob) Validate() error {
 	if obj.Schedule == "" {
-		return errors.New("you must provide a cron schedule")
+		return NewValidationError("you must provide a cron schedule")
 	}
 
 	if err := obj.CommonTaskAttrs.Validate(); err != nil {
@@ -55,7 +53,7 @@ func (obj *CronJob) Validate() error {
 func (obj *CronJob) ApplyDefaults() {
 }
 
-func (CronJob) JSONSchemaPost(base *jsonschema.Schema) {
+func (CronJob) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	base.Required = append(base.Required, "name")
 

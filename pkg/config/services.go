@@ -1,7 +1,8 @@
 package config
 
 import (
-	"errors"
+	"ecsdeployer.com/ecsdeployer/internal/configschema"
+	"github.com/invopop/jsonschema"
 )
 
 type Service struct {
@@ -68,7 +69,7 @@ func (obj *Service) Validate() error {
 	// }
 
 	if obj.DesiredCount < 0 {
-		return errors.New("desired cannot be less than zero")
+		return NewValidationError("desired count cannot be less than zero")
 	}
 
 	if err := obj.RolloutConfig.ValidateWithDesiredCount(obj.DesiredCount); err != nil {
@@ -82,7 +83,7 @@ func (obj *Service) Validate() error {
 	}
 
 	// if obj.GracePeriod != nil && obj.IsWorker() {
-	// 	return errors.New("GracePeriod is only valid on services connected to a target group")
+	// 	return NewValidationError("GracePeriod is only valid on services connected to a target group")
 	// }
 
 	// if obj.Capacity != nil {
@@ -94,11 +95,14 @@ func (obj *Service) Validate() error {
 	return nil
 }
 
-// func (Service) JSONSchemaPost(base *jsonschema.Schema) {
+func (Service) JSONSchemaExtend(base *jsonschema.Schema) {
+	configschema.SchemaPropMerge(base, "desired", func(s *jsonschema.Schema) {
+		s.Extras = map[string]interface{}{
+			"minimum": 0,
+			"default": 0,
+		}
+	})
 
-// 	desired := (util.FirstParam(base.Properties.Get("desired")).(*jsonschema.Schema))
-// 	desired.Minimum = 0
+	base.Required = append(base.Required, "name")
 
-// 	skipWait := (util.FirstParam(base.Properties.Get("skip_wait_for_stable")).(*jsonschema.Schema))
-// 	skipWait.Default = false
-// }
+}

@@ -6,12 +6,12 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/stretchr/testify/require"
 )
 
 func TestResolveImageUri(t *testing.T) {
 
-	closeMock := testutil.MockSimpleStsProxy(t)
-	defer closeMock()
+	testutil.MockSimpleStsProxy(t)
 
 	project := &config.Project{
 		ProjectName: "dummy",
@@ -37,17 +37,11 @@ func TestResolveImageUri(t *testing.T) {
 
 		if err := table.obj.Validate(); err != nil {
 			// none of the test cases should ever be invalid
-			t.Fatal("YOU BLEW IT!")
+			require.NoErrorf(t, err, "This should not occur unless you wrote a bad test case")
 		}
 
 		uri, err := ResolveImageUri(ctx, &table.obj)
-		if err != nil {
-			t.Errorf("Error when resolving img: <%s> got err: %v", table.obj.Value(), err)
-			continue
-		}
-
-		if uri != table.expected {
-			t.Errorf("Got incorrect image uri: expected=<%v> but got=<%v>", table.expected, uri)
-		}
+		require.NoError(t, err)
+		require.Equal(t, table.expected, uri)
 	}
 }

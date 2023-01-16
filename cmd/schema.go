@@ -32,7 +32,7 @@ func newSchemaCmd(metadata *cmdMetadata) *schemaCmd {
 				return fmt.Errorf("failed to create jsonschema: %w", err)
 			}
 			if root.output == "-" {
-				fmt.Println(string(bts))
+				cmd.Println(string(bts))
 				return nil
 			}
 			if err := os.MkdirAll(filepath.Dir(root.output), 0o755); err != nil {

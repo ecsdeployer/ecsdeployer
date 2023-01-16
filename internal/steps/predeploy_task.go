@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/builders"
+	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -63,7 +65,7 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 
 	logger.Info("Running PreDeployTask")
 
-	ecsClient := ctx.ECSClient()
+	ecsClient := awsclients.ECSClient()
 
 	startTime := time.Now()
 
@@ -103,19 +105,27 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 	logger = logger.WithField("timeout", maxWaitTime)
 
 	// runningWaiter := ecs.NewTasksRunningWaiter(ecsClient, func(trwo *ecs.TasksRunningWaiterOptions) {
-	// 	trwo.MinDelay = 10 * time.Second
-	// 	trwo.MaxDelay = 30 * time.Second
+	// 	trwo.MinDelay, trwo.MaxDelay = helpers.GetAwsWaiterDelays(5*time.Second, 60*time.Second)
 	// })
 
 	// just a dumb wait to make sure the task shows up on AWS API
-	time.Sleep(5 * time.Second)
+	if !helpers.IsTestingMode {
+		time.Sleep(5 * time.Second)
+	}
 
 	stoppedWaiter := ecs.NewTasksStoppedWaiter(ecsClient, func(trwo *ecs.TasksStoppedWaiterOptions) {
-		trwo.MinDelay = 10 * time.Second
-		trwo.MaxDelay = 60 * time.Second
+		// trwo.MinDelay = 5 * time.Second
+		// trwo.MaxDelay = 60 * time.Second
+
+		trwo.MinDelay, trwo.MaxDelay = helpers.GetAwsWaiterDelays(5*time.Second, 60*time.Second)
 
 		oldRetryable := trwo.Retryable
 		trwo.Retryable = func(ctx context.Context, dti *ecs.DescribeTasksInput, dto *ecs.DescribeTasksOutput, err error) (bool, error) {
+
+			if err != nil {
+				return oldRetryable(ctx, dti, dto, err)
+			}
+
 			logger.WithFields(log.Fields{
 				fieldRuntime: time.Since(startTime).Round(time.Second).String(),
 				fieldStatus:  aws.ToString(dto.Tasks[0].LastStatus),

@@ -2,6 +2,8 @@ package config
 
 import (
 	"errors"
+
+	"github.com/invopop/jsonschema"
 )
 
 // Project level
@@ -29,7 +31,7 @@ func (obj *LoggingConfig) Validate() error {
 	}
 
 	if obj.FirelensConfig.IsDisabled() && obj.AwsLogConfig.IsDisabled() {
-		return errors.New("if you want to disable logging, set the 'disabled:true' flag on the 'logging' section")
+		return NewValidationError("if you want to disable logging, set the 'disabled:true' flag on the 'logging' section")
 	}
 
 	return nil
@@ -55,9 +57,14 @@ func (obj *LoggingConfig) ApplyDefaults() {
 }
 
 func (obj *LoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t LoggingConfig // prevent recursive overflow
-	var defo = t{}
+	type tLoggingConfig LoggingConfig // prevent recursive overflow
+	var defo = tLoggingConfig{}
 	if err := unmarshal(&defo); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var val bool
 		if err := unmarshal(&val); err != nil {
 			return err
@@ -78,55 +85,15 @@ func (obj *LoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error
 	return nil
 }
 
-/*
-
-func (LoggingConfig) JSONSchemaPost(base *jsonschema.Schema) {
-	base.Description = "Configure logging options"
-
-	// disabledSchema, _ := base.Properties.Get("disabled")
-	awsLogsSchema, _ := base.Properties.Get("awslogs")
-	firelensSchema, _ := base.Properties.Get("firelens")
-
-	base.Properties = nil
-
-	// falseyDisabledSchema := &jsonschema.Schema{
-	// 	Type: "boolean",
-	// }
-
-	trueDisabledSchema := &jsonschema.Schema{
-		Type: "object",
-		Properties: configschema.NewPropertyChain().Set("disabled", &jsonschema.Schema{
-			Type:  "boolean",
-			Const: true,
-		}).End(),
-	}
-
-	base.OneOf = []*jsonschema.Schema{
-		{
-			Type:     "object",
-			Required: []string{"disabled"},
-			Properties: configschema.NewPropertyChain().Set("disabled", &jsonschema.Schema{
-				Type:  "boolean",
-				Const: true,
-			}).End(),
-			AdditionalProperties: jsonschema.FalseSchema,
-			Description:          "Entirely disable logging",
-		},
-		{
-			Type:                 "object",
-			Required:             []string{"awslogs"},
-			Properties:           configschema.NewPropertyChain().Set("awslogs", awsLogsSchema).End(),
-			AdditionalProperties: jsonschema.FalseSchema,
-			Not:                  trueDisabledSchema,
-		},
-		{
-			Type:                 "object",
-			Required:             []string{"firelens"},
-			Properties:           configschema.NewPropertyChain().Set("firelens", firelensSchema).End(),
-			AdditionalProperties: jsonschema.FalseSchema,
-			Not:                  trueDisabledSchema,
+func (LoggingConfig) JSONSchemaExtend(base *jsonschema.Schema) {
+	orig := *base
+	newBase := &jsonschema.Schema{
+		OneOf: []*jsonschema.Schema{
+			{
+				Type: "boolean",
+			},
+			&orig,
 		},
 	}
-
+	*base = *newBase
 }
-*/

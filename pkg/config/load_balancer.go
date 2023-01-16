@@ -19,14 +19,14 @@ func (nc *LoadBalancer) ApplyDefaults() {
 func (obj *LoadBalancer) Validate() error {
 
 	if obj.PortMapping == nil {
-		return errors.New("You must specify a port for a load balanced service")
+		return NewValidationError("You must specify a port for a load balanced service")
 	}
 	if err := obj.PortMapping.Validate(); err != nil {
 		return err
 	}
 
 	if obj.TargetGroup == nil {
-		return errors.New("You must specify a target group for a load balanced service")
+		return NewValidationError("You must specify a target group for a load balanced service")
 	}
 
 	return nil
@@ -79,6 +79,11 @@ func (lbs LoadBalancers) GetHealthCheckGracePeriod() *int32 {
 func (a *LoadBalancers) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var single LoadBalancer
 	if err := unmarshal(&single); err != nil {
+
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var multi []LoadBalancer
 
 		if err := unmarshal(&multi); err != nil {
@@ -93,7 +98,7 @@ func (a *LoadBalancers) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (LoadBalancers) JSONSchemaPost(base *jsonschema.Schema) {
+func (LoadBalancers) JSONSchemaExtend(base *jsonschema.Schema) {
 	oldBase := *base
 	oldBase.Description = "Define multiple load balancer mappings."
 	newSchema := &jsonschema.Schema{

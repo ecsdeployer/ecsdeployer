@@ -59,6 +59,16 @@ You can specify values as either a path to an SSM Parameter, the full ARN for an
       GITHUB_REF: "{{ .Env.GITHUB_REF_NAME }}"
     ```
 
+=== "Unset Inherited Value"
+
+    If you define an environment variable globally (or it is pulled from your SSM root), then you can optionally unset that variable for a specific task or service.
+
+    ```yaml
+    environment:
+      SOMEVAR:
+        unset: true
+      SOME_OTHER_VAL: "some value"
+    ```
 
 ## Example
 

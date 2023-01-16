@@ -12,9 +12,10 @@ on:
       - .go-version
       - .golangci.yml
       - internal/**
+      - cmd/**
+      - pkg/**
       - go.sum
       - main.go
-      - pkg/**
 
 permissions:
   contents: read

@@ -5,12 +5,12 @@ hide:
 
 # GitHub Actions
 
-ECS Deployer can also be used on [GitHub Actions](https://github.com/features/actions) using our [official action](https://github.com/ecsdeployer/ecsdeployer-action).
+ECS Deployer can also be used on [GitHub Actions](https://github.com/features/actions) using our [official action](https://github.com/ecsdeployer/github-action).
 
 ## Usage
 
 !!! tip
-    **For the most up-to-date info, please visit the [ECS Deployer GitHub Action](https://github.com/ecsdeployer/ecsdeployer-action) page.**
+    **For the most up-to-date info, please visit the [ECS Deployer GitHub Action](https://github.com/ecsdeployer/github-action) page.**
 
 ### Recommend Directory Structure
 
@@ -78,7 +78,7 @@ ECS Deployer can also be used on [GitHub Actions](https://github.com/features/ac
 
     _Default_: `false`
 
-[`deployer-version`](#action.deployer-version){ #action.deployer-version }
+[`ecsdeployer-version`](#action.ecsdeployer-version){ #action.ecsdeployer-version }
 
 :   Override the version of ECSDeployer to run.
 

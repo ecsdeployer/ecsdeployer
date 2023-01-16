@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
@@ -46,16 +47,30 @@ func (a *SSMImport) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var boolVal bool
 	if err := unmarshal(&boolVal); err != nil {
 
+		if errors.Is(err, ErrValidation) {
+			return err
+		}
+
 		var str string
 		if err := unmarshal(&str); err != nil {
-			type t SSMImport
-			var obj t
+
+			if errors.Is(err, ErrValidation) {
+				return err
+			}
+
+			type tSSMImport SSMImport
+			var obj tSSMImport
 			if err := unmarshal(&obj); err != nil {
 				return err
 			}
 
 			*a = SSMImport(obj)
 		} else {
+
+			if !strings.HasPrefix(str, "/") {
+				return NewValidationError("SSM Paths must begin with a slash '/' character")
+			}
+
 			*a = SSMImport{
 				Enabled:   true,
 				Path:      &str,
@@ -78,7 +93,7 @@ func (a *SSMImport) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (SSMImport) JSONSchemaPost(base *jsonschema.Schema) {
+func (SSMImport) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	defo := &SSMImport{}
 	defo.ApplyDefaults()
@@ -98,6 +113,7 @@ func (SSMImport) JSONSchemaPost(base *jsonschema.Schema) {
 			{
 				Type:        "string",
 				Description: "Enable SSM importing, with the value provided as the path to use.",
+				Pattern:     "^\\/.+",
 			},
 			&orig,
 		},

@@ -27,8 +27,12 @@ linters:
 issues:
   exclude:
     - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*\\.Exit|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv|io\\.WriteString|io\\.Copy). is not checked"
-    - "var `buildSha` is unused"
     - 'declaration of "err"'
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec
 
 
 # output configuration options
@@ -38,6 +42,7 @@ output:
   print-linter-name: true
 
 linters-settings:
+
   depguard:
     list-type: denylist
     packages:

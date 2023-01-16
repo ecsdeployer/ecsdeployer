@@ -3,9 +3,11 @@ package config_test
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPortMapping_FromString(t *testing.T) {
@@ -21,22 +23,17 @@ func TestPortMapping_FromString(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		mapping, err := config.NewPortMappingFromString(table.str)
+		t.Run(table.str, func(t *testing.T) {
 
-		if err != nil {
-			t.Errorf("unexpected error: %s", err)
-		}
+			mapping, err := config.NewPortMappingFromString(table.str)
 
-		if mapping.Port == nil {
-			t.Errorf("expected port=%d, got port=nil", table.port)
-		} else if *mapping.Port != table.port {
-			t.Errorf("expected port=%d, got port=%d", table.port, mapping.Port)
-		}
+			require.NoError(t, err)
 
-		if mapping.Protocol != table.trans {
-			t.Errorf("expected transport=%s, got transport=%s", table.trans, mapping.Protocol)
-		}
+			require.NotNil(t, mapping.Port)
+			require.Equal(t, table.port, *mapping.Port)
+			require.Equal(t, table.trans, mapping.Protocol)
 
+		})
 	}
 }
 
@@ -53,47 +50,31 @@ func TestPortMapping_FromStringFailures(t *testing.T) {
 
 	for _, table := range tables {
 		_, err := config.NewPortMappingFromString(table)
-
-		if err == nil {
-			t.Errorf("expected '%s' to return error, but it did not", table)
-		}
+		require.Error(t, err, "expected '%s' to return error, but it did not", table)
 	}
 }
 
 func TestPortMapping_Unmarshal(t *testing.T) {
 
-	type dummy struct {
-		Mapping *config.PortMapping `yaml:"port,omitempty" json:"port,omitempty"`
-	}
+	sc := testutil.NewSchemaChecker(&config.PortMapping{})
 
 	tables := []struct {
 		str   string
 		port  int32
 		trans ecsTypes.TransportProtocol
 	}{
-		{"port: 8080", 8080, ecsTypes.TransportProtocolTcp},
-		{`port: "8080/tcp"`, 8080, ecsTypes.TransportProtocolTcp},
-		{`port: "8080/udp"`, 8080, ecsTypes.TransportProtocolUdp},
+		{"8080", 8080, ecsTypes.TransportProtocolTcp},
+		{`"8080/tcp"`, 8080, ecsTypes.TransportProtocolTcp},
+		{`"8080/udp"`, 8080, ecsTypes.TransportProtocolUdp},
 	}
 
 	for _, table := range tables {
-		dum := dummy{}
+		mapping, err := yaml.ParseYAMLString[config.PortMapping](table.str)
+		require.NoError(t, err)
+		require.NoError(t, sc.CheckYAML(t, table.str))
 
-		if err := yaml.UnmarshalStrict([]byte(table.str), &dum); err != nil {
-			t.Errorf("unexpected error for <%s> %s", table.str, err)
-		}
-
-		mapping := dum.Mapping
-
-		if mapping.Port == nil {
-			t.Errorf("expected port=%d, got port=nil", table.port)
-		} else if *mapping.Port != table.port {
-			t.Errorf("expected port=%d, got port=%d", table.port, mapping.Port)
-		}
-
-		if mapping.Protocol != table.trans {
-			t.Errorf("expected transport=%s, got transport=%s", table.trans, mapping.Protocol)
-		}
-
+		require.NotNilf(t, mapping.Port, "Port was nil")
+		require.Equalf(t, table.port, *mapping.Port, "Port")
+		require.Equalf(t, table.trans, mapping.Protocol, "Protocol")
 	}
 }

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"regexp"
 	"strconv"
 
@@ -68,7 +67,7 @@ func ParseCpuSpec(str string) (*CpuSpec, error) {
 		return util.Must(NewCpuSpec(int32(val * 1024.0))), nil
 	}
 
-	return nil, errors.New("CPU shares provided in an invalid format")
+	return nil, NewValidationError("CPU shares provided in an invalid format")
 }
 
 // Export the CPU Shares required by this spec
@@ -82,7 +81,7 @@ func (nc *CpuSpec) ApplyDefaults() {
 
 func (nc CpuSpec) Validate() error {
 	if int32(nc) < 0 {
-		return errors.New("CPU Shares must be positive or zero")
+		return NewValidationError("CPU Shares must be positive or zero")
 	}
 	return nil
 }
@@ -100,6 +99,7 @@ func (CpuSpec) JSONSchema() *jsonschema.Schema {
 			{
 				Type:        "string",
 				Description: "CPU Shares or vCPUs",
+				// Pattern:     "[0-9]+", // needs to at least have a number in it
 			},
 		},
 		Description: "Specify CPU Resources",

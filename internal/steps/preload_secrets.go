@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -39,7 +40,7 @@ func stepPreloadSecretsCreate(ctx *config.Context, step *Step, meta *StepMetadat
 
 	logger.Debugf("loading secrets from SSM")
 
-	ssmClient := ctx.SSMClient()
+	ssmClient := awsclients.SSMClient()
 
 	request := &ssm.GetParametersByPathInput{
 		Path:           aws.String(ssmPrefix),
@@ -62,10 +63,7 @@ func stepPreloadSecretsCreate(ctx *config.Context, step *Step, meta *StepMetadat
 		for _, parameter := range output.Parameters {
 			// just want the last part of the name
 			name := filepath.Base(*parameter.Name)
-
-			secrets[name] = config.EnvVar{
-				ValueSSM: parameter.ARN,
-			}
+			secrets[name] = config.NewEnvVar(config.EnvVarTypeSSM, *parameter.ARN)
 		}
 	}
 

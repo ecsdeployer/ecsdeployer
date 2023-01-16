@@ -3,10 +3,11 @@ package yaml
 import (
 	"io"
 	"os"
+	"strings"
 )
 
 // This is mainly used in tests, normal app operations should not need this
-func ParseYAMLFile[T interface{}](file string) (*T, error) {
+func ParseYAMLFile[T any](file string) (*T, error) {
 
 	f, err := os.Open(file) // #nosec
 	if err != nil {
@@ -14,21 +15,21 @@ func ParseYAMLFile[T interface{}](file string) (*T, error) {
 	}
 	defer f.Close()
 
-	data, err := io.ReadAll(f)
-	if err != nil {
-		return nil, err
-	}
-
-	return ParseYAMLString[T](string(data))
+	return ParseYAML[T](f)
 }
 
-func ParseYAMLString[T interface{}](data string) (*T, error) {
+// This is mainly used in tests, normal app operations should not need this
+func ParseYAML[T any](f io.Reader) (*T, error) {
 
 	obj := *new(T)
 
-	if err := UnmarshalStrict([]byte(data), &obj); err != nil {
+	if err := unmarshalReader(f, true, &obj); err != nil {
 		return nil, err
 	}
 
 	return &obj, nil
+}
+
+func ParseYAMLString[T any](data string) (*T, error) {
+	return ParseYAML[T](strings.NewReader(data))
 }

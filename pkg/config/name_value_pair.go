@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
@@ -11,13 +9,11 @@ import (
 type NameValuePair struct {
 	Name  *string `yaml:"name" json:"name"`
 	Value *string `yaml:"value" json:"value"`
-	// NameTemplate  string `yaml:"name_template,omitempty" json:"name_template,omitempty"`
-	// ValueTemplate string `yaml:"value,omitempty" json:"value,omitempty"`
 }
 
 func (a *NameValuePair) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t NameValuePair
-	var obj = t{}
+	type tNameValuePair NameValuePair
+	var obj = tNameValuePair{}
 	if err := unmarshal(&obj); err != nil {
 		return err
 	}
@@ -32,11 +28,11 @@ func (a *NameValuePair) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (def *NameValuePair) Validate() error {
 	if def.Name == nil {
-		return errors.New("you must provide a tag Name")
+		return NewValidationError("you must provide a tag Name")
 	}
 
 	if def.Value == nil {
-		return errors.New("you must provide a tag Value")
+		return NewValidationError("you must provide a tag Value")
 	}
 
 	return nil
@@ -51,24 +47,13 @@ func (NameValuePair) JSONSchema() *jsonschema.Schema {
 	})
 
 	properties.Set("value", &jsonschema.Schema{
-		// OneOf: []*jsonschema.Schema{
-		// 	{
-		// 		Type:      "string",
-		// 		MinLength: 1,
-		// 	},
-		// 	{
-		// 		Type: "boolean",
-		// 	},
-		// 	{
-		// 		Type: "number",
-		// 	},
-		// },
 		Ref: configschema.StringLikeRef,
 	})
 
 	return &jsonschema.Schema{
-		Type:       "object",
-		Properties: properties,
-		Required:   []string{"name", "value"},
+		Type:                 "object",
+		Properties:           properties,
+		Required:             []string{"name", "value"},
+		AdditionalProperties: jsonschema.FalseSchema,
 	}
 }
