@@ -14,7 +14,7 @@ func CronSchedulesStep(resource *config.Project) *Step {
 	}
 
 	return NewStep(&Step{
-		Label:        "CronSchedulesStep",
+		Label:        "CronSchedules",
 		Resource:     resource,
 		ParallelDeps: true, // these do not depend on each other
 		Dependencies: deps,

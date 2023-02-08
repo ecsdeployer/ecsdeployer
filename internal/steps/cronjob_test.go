@@ -11,11 +11,15 @@ import (
 func TestCronjobStep(t *testing.T) {
 	project, ctx := stepTestAwsMocker(t, "testdata/project_advanced.yml", []*awsmocker.MockedEndpoint{
 		// testutil.Mock_ELBv2_DescribeTargetGroups_Single_Success("faketg"),
+
+		testutil.Mock_Scheduler_GetSchedule_Missing("dummy", "ecsd-dummy-cron-cron1"),
+		testutil.Mock_Scheduler_CreateSchedule("dummy", "ecsd-dummy-cron-cron1"),
+
 		testutil.Mock_Logs_CreateLogGroup_AllowAny(),
 		testutil.Mock_Logs_PutRetentionPolicy_AllowAny(),
 		testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
-		testutil.Mock_Events_PutRule_Generic(),
-		testutil.Mock_Events_PutTargets_Generic(),
+		// testutil.Mock_Events_PutRule_Generic(),
+		// testutil.Mock_Events_PutTargets_Generic(),
 	})
 
 	err := CronjobStep(project.CronJobs[0]).Apply(ctx)
