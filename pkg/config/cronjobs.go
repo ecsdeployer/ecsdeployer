@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/invopop/jsonschema"
 )
@@ -8,10 +10,15 @@ import (
 type CronJob struct {
 	CommonTaskAttrs `yaml:",inline" json:",inline"`
 
-	Disabled     bool    `yaml:"disabled,omitempty" json:"disabled,omitempty"`
-	Description  string  `yaml:"description,omitempty" json:"description,omitempty"`
-	Schedule     string  `yaml:"schedule" json:"schedule" jsonschema:"minLength=5"`
+	Disabled    bool   `yaml:"disabled,omitempty" json:"disabled,omitempty"`
+	Description string `yaml:"description,omitempty" json:"description,omitempty"`
+	Schedule    string `yaml:"schedule" json:"schedule" jsonschema:"minLength=5"`
+
+	TimeZone     *string `yaml:"timezone,omitempty" json:"timezone,omitempty"`
 	EventBusName *string `yaml:"bus,omitempty" json:"bus,omitempty"`
+
+	StartDate *time.Time `yaml:"start_date,omitempty" json:"start_date,omitempty"`
+	EndDate   *time.Time `yaml:"end_date,omitempty" json:"end_date,omitempty"`
 }
 
 func (obj *CronJob) IsTaskStruct() bool {

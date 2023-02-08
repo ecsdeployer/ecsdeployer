@@ -7,6 +7,7 @@ import (
 	elbv2 "github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2"
 	events "github.com/aws/aws-sdk-go-v2/service/eventbridge"
 	tagging "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi"
+	"github.com/aws/aws-sdk-go-v2/service/scheduler"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 )
@@ -65,4 +66,11 @@ func TaggingClient() *tagging.Client {
 	defer initMutex.RUnlock()
 
 	return taggingClient
+}
+
+func SchedulerClient() *scheduler.Client {
+	initMutex.RLock()
+	defer initMutex.RUnlock()
+
+	return schedulerClient
 }

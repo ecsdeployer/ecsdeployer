@@ -8,15 +8,17 @@ func CronDeploymentStep(resource *config.Project) *Step {
 		return NoopStep()
 	}
 
-	deps := make([]*Step, len(resource.CronJobs))
-	for i := range resource.CronJobs {
-		deps[i] = CronjobStep(resource.CronJobs[i])
+	deps := []*Step{
+		// ensure that the group exists
+		ScheduleGroupStep(resource),
+
+		// parallelize the individual schedules
+		CronSchedulesStep(resource),
 	}
 
 	return NewStep(&Step{
 		Label:        "CronDeployment",
 		Resource:     resource,
-		ParallelDeps: true, // these do not depend on each other
 		Dependencies: deps,
 	})
 }

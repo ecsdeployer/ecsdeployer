@@ -71,7 +71,7 @@ test:
 
 .PHONY: test-v
 test-v:
-	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs)\
+	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs)
 
 .PHONY: test-testutil
 test-testutil:

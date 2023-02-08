@@ -17,6 +17,8 @@ type NameTemplates struct {
 	CronRule           *string `yaml:"cron_rule,omitempty" json:"cron_rule,omitempty" jsonschema:"minLength=1"`
 	CronTarget         *string `yaml:"cron_target,omitempty" json:"cron_target,omitempty" jsonschema:"minLength=1"`
 	CronGroup          *string `yaml:"cron_group,omitempty" json:"cron_group,omitempty"`
+	ScheduleGroupName  *string `yaml:"schedule_group,omitempty" json:"schedule_group,omitempty"`
+	ScheduleName       *string `yaml:"schedule,omitempty" json:"schedule,omitempty"`
 	PreDeployGroup     *string `yaml:"predeploy_group,omitempty" json:"predeploy_group,omitempty"`
 	PreDeployStartedBy *string `yaml:"predeploy_started_by,omitempty" json:"predeploy_started_by,omitempty"`
 	LogGroup           *string `yaml:"log_group,omitempty" json:"log_group,omitempty" jsonschema:"minLength=1"`
@@ -33,6 +35,13 @@ func (def *NameTemplates) ApplyDefaults() {
 
 	if def.ServiceName == nil {
 		def.ServiceName = aws.String("{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}")
+	}
+
+	if def.ScheduleGroupName == nil {
+		def.ScheduleGroupName = aws.String("{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}")
+	}
+	if def.ScheduleName == nil {
+		def.ScheduleName = aws.String("ecsd-{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-cron-{{ .Name }}")
 	}
 
 	if def.CronRule == nil {
@@ -103,6 +112,13 @@ func (nt *NameTemplates) Validate() error {
 
 	if util.IsBlank(nt.TaskFamily) {
 		return NewValidationError("TaskFamily template cannot be blank")
+	}
+
+	if util.IsBlank(nt.ScheduleGroupName) {
+		return NewValidationError("ScheduleGroupName template cannot be blank")
+	}
+	if util.IsBlank(nt.ScheduleName) {
+		return NewValidationError("ScheduleName template cannot be blank")
 	}
 
 	if util.IsBlank(nt.CronRule) {
