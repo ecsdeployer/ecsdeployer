@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
-	schedulerBuilder "ecsdeployer.com/ecsdeployer/internal/builders/scheduler"
+	cronBuilder "ecsdeployer.com/ecsdeployer/internal/builders/cron"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -70,7 +70,7 @@ func stepCronjob_BuildCreateReq(ctx *config.Context, step *Step, meta *StepMetad
 
 	cronJob := (step.Resource).(*config.CronJob)
 
-	createScheduleInput, err := schedulerBuilder.BuildSchedule(ctx, cronJob, taskDefinitionArn.(string))
+	createScheduleInput, err := cronBuilder.BuildSchedule(ctx, cronJob, taskDefinitionArn.(string))
 	if err != nil {
 		return nil, err
 	}

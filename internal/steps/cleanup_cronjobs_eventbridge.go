@@ -15,20 +15,20 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func CleanupCronjobsStep(resource *config.KeepInSync) *Step {
+func CleanupCronjobsEventbridgeStep(resource *config.KeepInSync) *Step {
 
 	if !*resource.Cronjobs {
 		return NoopStep()
 	}
 
 	return NewStep(&Step{
-		Label:    "CleanupCronjobs",
+		Label:    "CleanupCronjobsEventbridge",
 		Resource: resource,
-		Create:   stepCleanupCronjobsCreate,
+		Create:   stepCleanupCronjobsEventbridgeCreate,
 	})
 }
 
-func stepCleanupCronjobsCreate(ctx *config.Context, step *Step, meta *StepMetadata) (OutputFields, error) {
+func stepCleanupCronjobsEventbridgeCreate(ctx *config.Context, step *Step, meta *StepMetadata) (OutputFields, error) {
 
 	log := step.Logger
 

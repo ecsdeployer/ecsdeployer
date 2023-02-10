@@ -50,7 +50,7 @@ func TestSmokeTest_StepFuncs(t *testing.T) {
 		{CleanupStep(project.Settings.KeepInSync), "Cleanup"},
 		{ConsoleTaskStep(project.ConsoleTask), "ConsoleTask"},
 		{CleanupTaskDefinitionsStep(project.Settings.KeepInSync), "CleanupTaskDefinitions"},
-		{CleanupCronjobsStep(project.Settings.KeepInSync), "CleanupCronjobs"},
+		{CleanupCronjobsEventbridgeStep(project.Settings.KeepInSync), "CleanupCronjobs"},
 		{CleanupServicesStep(project.Settings.KeepInSync), "CleanupServices"},
 		{CleanupOnlyStep(&project), "CleanupOnly"},
 		{CronDeploymentStep(&project), "CronDeployment"},

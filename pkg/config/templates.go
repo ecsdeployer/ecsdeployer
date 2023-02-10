@@ -14,8 +14,6 @@ type NameTemplates struct {
 	TaskFamily         *string `yaml:"task_family,omitempty" json:"task_family,omitempty" jsonschema:"minLength=1"`
 	ServiceName        *string `yaml:"service_name,omitempty" json:"service_name,omitempty" jsonschema:"minLength=1"`
 	ContainerName      *string `yaml:"container,omitempty" json:"container,omitempty" jsonschema:"minLength=1"`
-	CronRule           *string `yaml:"cron_rule,omitempty" json:"cron_rule,omitempty" jsonschema:"minLength=1"`
-	CronTarget         *string `yaml:"cron_target,omitempty" json:"cron_target,omitempty" jsonschema:"minLength=1"`
 	CronGroup          *string `yaml:"cron_group,omitempty" json:"cron_group,omitempty"`
 	ScheduleGroupName  *string `yaml:"schedule_group,omitempty" json:"schedule_group,omitempty"`
 	ScheduleName       *string `yaml:"schedule,omitempty" json:"schedule,omitempty"`
@@ -26,6 +24,10 @@ type NameTemplates struct {
 	TargetGroup        *string `yaml:"target_group,omitempty" json:"target_group,omitempty" jsonschema:"minLength=1"`
 	MarkerTagKey       *string `yaml:"marker_tag_key,omitempty" json:"marker_tag_key,omitempty" jsonschema:"minLength=1"`
 	MarkerTagValue     *string `yaml:"marker_tag_value,omitempty" json:"marker_tag_value,omitempty" jsonschema:"minLength=1"`
+
+	// old
+	CronRule   *string `yaml:"cron_rule,omitempty" json:"cron_rule,omitempty" jsonschema:"minLength=1"`
+	CronTarget *string `yaml:"cron_target,omitempty" json:"cron_target,omitempty" jsonschema:"minLength=1"`
 }
 
 func (def *NameTemplates) ApplyDefaults() {
@@ -41,7 +43,7 @@ func (def *NameTemplates) ApplyDefaults() {
 		def.ScheduleGroupName = aws.String("{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}")
 	}
 	if def.ScheduleName == nil {
-		def.ScheduleName = aws.String("ecsd-{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-cron-{{ .Name }}")
+		def.ScheduleName = aws.String("ecsd-cron-{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}")
 	}
 
 	if def.CronRule == nil {

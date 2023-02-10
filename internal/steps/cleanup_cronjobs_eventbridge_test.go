@@ -20,7 +20,7 @@ func TestCleanupCronjobsStep(t *testing.T) {
 		project, ctx := stepTestAwsMocker(t, "testdata/project_advanced.yml", []*awsmocker.MockedEndpoint{
 			testutil.Mock_Tagging_GetResources("events:rule", tagMatcher, []string{}),
 		})
-		err := CleanupCronjobsStep(project.Settings.KeepInSync).Apply(ctx)
+		err := CleanupCronjobsEventbridgeStep(project.Settings.KeepInSync).Apply(ctx)
 		require.NoError(t, err)
 	})
 
@@ -30,7 +30,7 @@ func TestCleanupCronjobsStep(t *testing.T) {
 				ruleArnPrefix + "dummy-rule-cron1",
 			}),
 		})
-		err := CleanupCronjobsStep(project.Settings.KeepInSync).Apply(ctx)
+		err := CleanupCronjobsEventbridgeStep(project.Settings.KeepInSync).Apply(ctx)
 		require.NoError(t, err)
 	})
 
@@ -50,7 +50,7 @@ func TestCleanupCronjobsStep(t *testing.T) {
 			testutil.Mock_Events_RemoveTargets("dummy-rule-oldcustcron", "custombus", "dummy-target-oldcustcron"),
 			testutil.Mock_Events_DeleteRule("dummy-rule-oldcustcron", "custombus"),
 		})
-		err := CleanupCronjobsStep(project.Settings.KeepInSync).Apply(ctx)
+		err := CleanupCronjobsEventbridgeStep(project.Settings.KeepInSync).Apply(ctx)
 		require.NoError(t, err)
 	})
 

@@ -1,6 +1,5 @@
 package steps
 
-/*
 import (
 	"fmt"
 
@@ -10,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
-func OLD_CronTargetStep(resource *config.CronJob) *Step {
+func CronTargetStep(resource *config.CronJob) *Step {
 	return NewStep(&Step{
 		Label:    "CronTarget",
 		ID:       resource.Name,
@@ -55,4 +54,3 @@ func stepCronTargetCreate(ctx *config.Context, step *Step, meta *StepMetadata) (
 
 	return nil, nil
 }
-*/

@@ -18,6 +18,9 @@ type Settings struct {
 
 	WaitForStable *WaitForStable `yaml:"wait_for_stable,omitempty" json:"wait_for_stable,omitempty"`
 
+	// Use the older eventbridge target/rule style to do cronjobs
+	CronUsesEventing bool `yaml:"cron_uses_eventing,omitempty" json:"cron_uses_eventing,omitempty"`
+
 	SSMImport *SSMImport `yaml:"ssm_import,omitempty" json:"ssm_import,omitempty"`
 }
 

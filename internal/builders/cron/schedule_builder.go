@@ -12,15 +12,6 @@ import (
 	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 )
 
-type cronContainerOverride struct {
-	Name    string              `json:"name"`
-	Command config.ShellCommand `json:"command,omitempty"`
-}
-
-type cronInputObj struct {
-	ContainerOverrides []cronContainerOverride `json:"containerOverrides,omitempty"`
-}
-
 func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn string) (*scheduler.CreateScheduleInput, error) {
 
 	project := ctx.Project

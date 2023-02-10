@@ -23,7 +23,7 @@ func CleanupStep(resource *config.KeepInSync) *Step {
 		Dependencies: []*Step{
 			CleanupServicesStep(resource),
 			CleanupTaskDefinitionsStep(resource),
-			CleanupCronjobsStep(resource),
+			CleanupCronjobsEventbridgeStep(resource),
 		},
 	})
 }

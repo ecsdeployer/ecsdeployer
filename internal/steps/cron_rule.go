@@ -1,6 +1,5 @@
 package steps
 
-/*
 import (
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	cronBuilder "ecsdeployer.com/ecsdeployer/internal/builders/cron"
@@ -37,4 +36,3 @@ func stepCronRuleCreate(ctx *config.Context, step *Step, meta *StepMetadata) (Ou
 
 	return fields, nil
 }
-*/
