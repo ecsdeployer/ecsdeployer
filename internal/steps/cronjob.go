@@ -19,7 +19,20 @@ const (
 	cronjobStepAttrGroupName    = "CronGroupName"
 )
 
-func CronjobStep(resource *config.CronJob) *Step {
+func CronjobStep(resource *config.CronJob, useOldEventbridgeStyle bool) *Step {
+
+	if useOldEventbridgeStyle {
+		// maybe make this a distinct step?
+		return NewStep(&Step{
+			Label:    "Cronjob",
+			ID:       resource.Name,
+			Resource: resource,
+			Dependencies: []*Step{
+				CronTargetStep(resource),
+			},
+		})
+	}
+
 	return NewStep(&Step{
 		Label:    "Cronjob",
 		ID:       resource.Name,

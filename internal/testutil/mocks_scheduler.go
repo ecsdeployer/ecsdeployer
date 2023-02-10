@@ -180,7 +180,7 @@ func Mock_Scheduler_ListSchedules(groupName string, schedules []MockListSchedule
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{
 			Service: "scheduler",
-			Method:  http.MethodPost,
+			Method:  http.MethodGet,
 			Path:    "/schedules",
 			Params: url.Values{
 				"ScheduleGroup": []string{groupName},

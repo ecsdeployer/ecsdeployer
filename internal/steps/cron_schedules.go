@@ -10,7 +10,7 @@ func CronSchedulesStep(resource *config.Project) *Step {
 
 	deps := make([]*Step, len(resource.CronJobs))
 	for i := range resource.CronJobs {
-		deps[i] = CronjobStep(resource.CronJobs[i])
+		deps[i] = CronjobStep(resource.CronJobs[i], false)
 	}
 
 	return NewStep(&Step{
