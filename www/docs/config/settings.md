@@ -40,13 +40,21 @@ settings:
 
     _Default_: `{{schema:default:Settings.predeploy_timeout}}` (seconds)
 
+[`skip_cron_env_vars`](#settings.skip_cron_env_vars){ #settings.skip_cron_env_vars }
+
+:   This will prevent the extra environment variables from being added to your cron jobs.
+
+    For a list of env vars, see [Cron Env Vars](#cron-env-vars).
+
+    _Default_: `{{schema:default:Settings.skip_cron_env_vars}}`
+
 [`skip_deployment_env_vars`](#settings.skip_deployment_env_vars){ #settings.skip_deployment_env_vars }
 
 :   This will prevent the extra deployment environment variables from being added to your application.
 
-    These are things like `ECSDEPLOYER_IMAGE_TAG`, `ECSDEPLOYER_PROJECT`, etc
+    These are things like `ECSDEPLOYER_IMAGE_TAG`, `ECSDEPLOYER_PROJECT`, etc.
 
-    For a list of env vars, see [Deployment Env Vars](#deployment-env-vars)
+    For a list of env vars, see [Deployment Env Vars](#deployment-env-vars).
 
     _Default_: `{{schema:default:Settings.skip_deployment_env_vars}}`
 
@@ -60,6 +68,14 @@ settings:
     **It's recommended you do not disable this**
 
     _Default_: `false` (Marker tag will be used)
+
+[`use_old_cron_eventbus`](#settings.use_old_cron_eventbus){ #settings.use_old_cron_eventbus }
+
+:   Use the old and deprecated method of creating CronJobs. The new method uses EventBridge Scheduler, which is much better.
+
+    This option is only really for legacy deployments that still use EventBridge targets/rules. You should not use this.
+
+    _Default_: `false` (Will use the newer EventBridge Scheduler)
 
 [`keep_in_sync`](#settings.keep_in_sync){ #settings.keep_in_sync }
 
@@ -230,3 +246,20 @@ Variable Name             | Template
 
 !!! note ""
     Any values that evaluate to a blank string will not be added to your environment.
+
+
+## Cron Env Vars
+
+!!! note ""
+    These are only added to cron jobs. Values are [EventBridge Scheduler context attributes](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-context-attributes.html)
+
+<div class="tbl-nowrap-key tbl-normal-font" markdown>
+
+Variable Name                     | Template
+----------------------------------|------
+`ECSDEPLOYER_CRON_SCHEDULE_ARN`   | `<aws.scheduler.schedule-arn>`
+`ECSDEPLOYER_CRON_SCHEDULED_TIME` | `<aws.scheduler.scheduled-time>`
+`ECSDEPLOYER_CRON_EXECUTION_ID`   | `<aws.scheduler.execution-id>`
+`ECSDEPLOYER_CRON_ATTEMPT`        | `<aws.scheduler.attempt-number>`
+
+</div>

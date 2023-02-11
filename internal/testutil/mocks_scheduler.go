@@ -21,21 +21,7 @@ func Mock_Scheduler_GetScheduleGroup_Missing(groupName string) *awsmocker.Mocked
 		},
 		Response: &awsmocker.MockedResponse{
 			Handler: func(rr *awsmocker.ReceivedRequest) *http.Response {
-				body := jsonify(map[string]interface{}{
-					"Message": fmt.Sprintf("Schedule %s does not exist.", groupName),
-				})
-				status := http.StatusNotFound
-				resp := &http.Response{
-					StatusCode: status,
-					Status:     http.StatusText(status),
-					Header:     make(http.Header),
-				}
-				resp.Header.Set("x-amzn-ErrorType", "ResourceNotFoundException:http://internal.amazon.com/coral/com.amazonaws.chronos/")
-				resp.Header.Set("Content-Type", "application/json")
-				buf := bytes.NewBufferString(body)
-				resp.ContentLength = int64(buf.Len())
-				resp.Body = io.NopCloser(buf)
-				return resp
+				return schedulerGoofyErrorResponder(rr, http.StatusNotFound, "ResourceNotFoundException", fmt.Sprintf("Schedule %s does not exist.", groupName))
 			},
 		},
 	}
@@ -87,21 +73,7 @@ func Mock_Scheduler_GetSchedule_Missing(groupName, scheduleName string) *awsmock
 		},
 		Response: &awsmocker.MockedResponse{
 			Handler: func(rr *awsmocker.ReceivedRequest) *http.Response {
-				body := jsonify(map[string]interface{}{
-					"Message": fmt.Sprintf("Schedule %s does not exist.", groupName),
-				})
-				status := http.StatusNotFound
-				resp := &http.Response{
-					StatusCode: status,
-					Status:     http.StatusText(status),
-					Header:     make(http.Header),
-				}
-				resp.Header.Set("x-amzn-ErrorType", "ResourceNotFoundException:http://internal.amazon.com/coral/com.amazonaws.chronos/")
-				resp.Header.Set("Content-Type", "application/json")
-				buf := bytes.NewBufferString(body)
-				resp.ContentLength = int64(buf.Len())
-				resp.Body = io.NopCloser(buf)
-				return resp
+				return schedulerGoofyErrorResponder(rr, http.StatusNotFound, "ResourceNotFoundException", fmt.Sprintf("Schedule %s does not exist.", groupName))
 			},
 		},
 	}
@@ -192,4 +164,22 @@ func Mock_Scheduler_ListSchedules(groupName string, schedules []MockListSchedule
 			}),
 		},
 	}
+}
+
+// because nothing on AWS is ever consistent.
+func schedulerGoofyErrorResponder(rr *awsmocker.ReceivedRequest, status int, errorType, message string) *http.Response {
+	body := jsonify(map[string]interface{}{
+		"Message": message,
+	})
+	resp := &http.Response{
+		StatusCode: status,
+		Status:     http.StatusText(status),
+		Header:     make(http.Header),
+	}
+	resp.Header.Set("x-amzn-ErrorType", fmt.Sprintf("%s:http://internal.amazon.com/coral/com.amazonaws.chronos/", errorType))
+	resp.Header.Set("Content-Type", "application/json")
+	buf := bytes.NewBufferString(body)
+	resp.ContentLength = int64(buf.Len())
+	resp.Body = io.NopCloser(buf)
+	return resp
 }

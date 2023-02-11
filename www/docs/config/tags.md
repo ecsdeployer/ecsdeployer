@@ -17,9 +17,9 @@ tags:
     value: true
   
   - name: cloud87/application
-    value: "{{ .ProjectName }}"
+    value: "{{ .Project }}"
 
-  - name: "cloud87/{{.ProjectName}}/tag"
+  - name: "cloud87/{{.Project}}/tag"
     value: "{{ .ImageTag }}"
 ```
 

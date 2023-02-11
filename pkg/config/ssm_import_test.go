@@ -30,6 +30,7 @@ func TestSSMImport_Unmarshal(t *testing.T) {
 		{"enabled: true\npath: /test/thing", &config.SSMImport{Enabled: true, Path: util.Ptr("/test/thing"), Recursive: defSSM.Recursive}},
 		{`/path/to/something`, &config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something"), Recursive: &bTrue}},
 		{`"/path/to/something/{{ .ProjectName }}"`, &config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something/{{ .ProjectName }}"), Recursive: &bTrue}},
+		{`"/path/to/something/{{ .Project }}"`, &config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something/{{ .Project }}"), Recursive: &bTrue}},
 
 		{"1234", nil},      // interpreted as a string, but must start with slash
 		{"test/path", nil}, // ssm path must start with slash

@@ -1,3 +1,8 @@
+---
+hide:
+  - toc
+---
+
 # AWS IAM Permissions
 
 Below are two default policies that you can use for ECS Deployer.
@@ -9,6 +14,12 @@ Below are two default policies that you can use for ECS Deployer.
 
     ```json
     --8<-- "./data/iam/lax.json"
+    ```
+
+    #### Grant (Trust Relationships)
+
+    ```json
+    --8<-- "./data/iam/deployer_grant.json"
     ```
 
 === "Restrictive Policy"
@@ -27,4 +38,16 @@ Below are two default policies that you can use for ECS Deployer.
 
     ```json
     --8<-- "./data/iam/restricted.json"
+    ```
+
+=== "Cron Launcher Policy"
+
+    ```json
+    --8<-- "./data/iam/cron.json"
+    ```
+
+    #### Grant (Trust Relationships)
+
+    ```json
+    --8<-- "./data/iam/cron_grant.json"
     ```

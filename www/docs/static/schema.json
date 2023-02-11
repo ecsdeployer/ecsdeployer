@@ -232,8 +232,19 @@
        "rate(2 hours)"
       ]
      },
+     "timezone": {
+      "type": "string"
+     },
      "bus": {
       "type": "string"
+     },
+     "start_date": {
+      "type": "string",
+      "format": "date-time"
+     },
+     "end_date": {
+      "type": "string",
+      "format": "date-time"
      }
     },
     "additionalProperties": false,
@@ -677,44 +688,44 @@
      "task_family": {
       "type": "string",
       "minLength": 1,
-      "default": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
+      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
      },
      "service_name": {
       "type": "string",
       "minLength": 1,
-      "default": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
+      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
      },
      "container": {
       "type": "string",
       "minLength": 1,
       "default": "{{ .Name }}"
      },
-     "cron_rule": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}"
-     },
-     "cron_target": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}"
-     },
      "cron_group": {
       "type": "string",
-      "default": "ecsd:{{ .ProjectName }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}"
+      "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}"
+     },
+     "schedule_group": {
+      "type": "string",
+      "minLength": 1,
+      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}"
+     },
+     "schedule": {
+      "type": "string",
+      "minLength": 1,
+      "default": "ecsd-cron-{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
      },
      "predeploy_group": {
       "type": "string",
-      "default": "ecsd:{{ .ProjectName }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}"
+      "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}"
      },
      "predeploy_started_by": {
       "type": "string",
-      "default": "ecsd:{{ .ProjectName }}{{ if .Stage }}:{{ .Stage }}{{end}}:deployer"
+      "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:deployer"
      },
      "log_group": {
       "type": "string",
       "minLength": 1,
-      "default": "/ecsdeployer/app/{{ .ProjectName }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}"
+      "default": "/ecsdeployer/app/{{ .Project }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}"
      },
      "log_stream_prefix": {
       "type": "string",
@@ -724,7 +735,7 @@
      "target_group": {
       "type": "string",
       "minLength": 1,
-      "default": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}"
+      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}"
      },
      "marker_tag_key": {
       "type": "string",
@@ -734,7 +745,17 @@
      "marker_tag_value": {
       "type": "string",
       "minLength": 1,
-      "default": "{{ .ProjectName }}{{ if .Stage }}/{{ .Stage }}{{end}}"
+      "default": "{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{end}}"
+     },
+     "cron_rule": {
+      "type": "string",
+      "minLength": 1,
+      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}"
+     },
+     "cron_target": {
+      "type": "string",
+      "minLength": 1,
+      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}"
      }
     },
     "additionalProperties": false,
@@ -1036,7 +1057,7 @@
        "path": {
         "type": "string",
         "description": "Path to the SSM parameter root for your project. A trailing slash will be added.",
-        "default": "/ecsdeployer/secrets/{{ .ProjectName }}{{ if .Stage }}/{{ .Stage }}{{ end }}"
+        "default": "/ecsdeployer/secrets/{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{ end }}"
        },
        "recursive": {
         "type": "boolean",
@@ -1163,6 +1184,9 @@
      "skip_deployment_env_vars": {
       "type": "boolean"
      },
+     "skip_cron_env_vars": {
+      "type": "boolean"
+     },
      "disable_marker_tag": {
       "type": "boolean"
      },
@@ -1171,6 +1195,9 @@
      },
      "wait_for_stable": {
       "$ref": "#/$defs/WaitForStable"
+     },
+     "use_old_cron_eventbus": {
+      "type": "boolean"
      },
      "ssm_import": {
       "$ref": "#/$defs/SSMImport"

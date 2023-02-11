@@ -140,6 +140,7 @@ func generateTemplateExamples(tplMap typeDefaults, includeStage bool) typeDefaul
 
 	tplFields := map[string]interface{}{
 		"ProjectName": "{PROJECT}",
+		"Project":     "{PROJECT}",
 		"Stage":       nil,
 		"Name":        "{NAME}",
 	}

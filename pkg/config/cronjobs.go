@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
@@ -33,6 +34,12 @@ func (obj *CronJob) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	type tCronJob CronJob
 	var defo = tCronJob{}
 	if err := unmarshal(&defo); err != nil {
+
+		var parseErr *time.ParseError
+		if errors.As(err, &parseErr) {
+			return NewValidationError(parseErr, "Invalid format for start or end time: %s", parseErr.Error())
+		}
+
 		return err
 	}
 

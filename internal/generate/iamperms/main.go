@@ -23,22 +23,30 @@ type IamDoc struct {
 	Statement []Statement `json:"Statement"`
 }
 
+type principal struct {
+	Service   any `json:"Service,omitempty"`
+	AWS       any `json:"AWS,omitempty"`
+	Federated any `json:"Federated,omitempty"`
+}
+
 type Statement struct {
 	Sid       string                            `json:"Sid,omitempty"`
 	Effect    string                            `json:"Effect,omitempty"`
 	Action    interface{}                       `json:"Action,omitempty"`
 	Resource  interface{}                       `json:"Resource,omitempty"`
+	Principal interface{}                       `json:"Principal,omitempty"`
 	Condition map[string]map[string]interface{} `json:"Condition,omitempty"`
 }
 
 type stmt struct {
-	id      string
-	action  string
-	actions []string
-	res     string
-	reslist []string
-	cond    *cond
-	conds   []cond
+	id        string
+	action    string
+	actions   []string
+	res       string
+	reslist   []string
+	cond      *cond
+	conds     []cond
+	principal *principal
 }
 
 func (s *stmt) toPretty() *Statement {
@@ -61,6 +69,11 @@ func (s *stmt) toPretty() *Statement {
 		st.Action = s.actions
 	} else {
 		panic("missing action")
+	}
+
+	if s.principal != nil {
+		st.Principal = s.principal
+		st.Resource = nil
 	}
 
 	condList := make([]cond, 0, 10)
@@ -114,6 +127,7 @@ var (
 				"elasticloadbalancing:DescribeTargetGroups",
 				"logs:DescribeLogGroups",
 				"tag:GetResources",
+				"scheduler:ListSchedules",
 			},
 		},
 		{
@@ -214,27 +228,43 @@ func generateIAMRestricted() []stmt {
 		{
 			id: "CronSetup",
 			actions: []string{
-				"events:PutRule",
-				"events:DeleteRule",
-				"events:RemoveTargets",
-				"events:ListTargetsByRule",
-				"events:TagResource",
-				"events:UntagResource",
+				"scheduler:UpdateSchedule",
+				"scheduler:CreateSchedule",
+				"scheduler:DeleteSchedule",
 			},
-			reslist: []string{
-				"arn:aws:events:REGION:ACCOUNTID:rule/PROJECT_NAME-*",
-			},
+			res: "arn:aws:scheduler:*:*:schedule/PROJECT_NAME/*",
 		},
 		{
-			id:     "CronSetupTargets",
-			action: "events:PutTargets",
-			res:    "arn:aws:events:REGION:ACCOUNTID:rule/PROJECT_NAME-*",
-			cond: &cond{
-				test:     "ArnEquals",
-				variable: "events:TargetArn",
-				values:   []string{clusterArn},
+			id: "CronSetupGroup",
+			actions: []string{
+				"scheduler:GetScheduleGroup",
+				"scheduler:CreateScheduleGroup",
 			},
 		},
+		// {
+		// 	id: "CronSetup",
+		// 	actions: []string{
+		// 		"events:PutRule",
+		// 		"events:DeleteRule",
+		// 		"events:RemoveTargets",
+		// 		"events:ListTargetsByRule",
+		// 		"events:TagResource",
+		// 		"events:UntagResource",
+		// 	},
+		// 	reslist: []string{
+		// 		"arn:aws:events:REGION:ACCOUNTID:rule/PROJECT_NAME-*",
+		// 	},
+		// },
+		// {
+		// 	id:     "CronSetupTargets",
+		// 	action: "events:PutTargets",
+		// 	res:    "arn:aws:events:REGION:ACCOUNTID:rule/PROJECT_NAME-*",
+		// 	cond: &cond{
+		// 		test:     "ArnEquals",
+		// 		variable: "events:TargetArn",
+		// 		values:   []string{clusterArn},
+		// 	},
+		// },
 		{
 			id:     "EcsPassRole",
 			action: "iam:PassRole",
@@ -257,7 +287,10 @@ func generateIAMRestricted() []stmt {
 			cond: &cond{
 				test:     "StringLike",
 				variable: "iam:PassedToService",
-				values:   []string{"events.amazonaws.com"},
+				values: []string{
+					// "events.amazonaws.com",
+					"scheduler.amazonaws.com",
+				},
 			},
 		},
 	}...)
@@ -278,11 +311,17 @@ func generateIAMNormal() []stmt {
 		{
 			id: "CronSetup",
 			actions: []string{
-				"events:PutRule",
-				"events:DeleteRule",
-				"events:RemoveTargets",
-				"events:ListTargetsByRule",
-				"events:PutTargets",
+				// "events:PutRule",
+				// "events:DeleteRule",
+				// "events:RemoveTargets",
+				// "events:ListTargetsByRule",
+				// "events:PutTargets",
+				"scheduler:UpdateSchedule",
+				"scheduler:CreateSchedule",
+				"scheduler:DeleteSchedule",
+
+				"scheduler:GetScheduleGroup",
+				"scheduler:CreateScheduleGroup",
 			},
 		},
 		{
@@ -303,8 +342,8 @@ func generateIAMNormal() []stmt {
 			actions: []string{
 				"logs:TagLogGroup",
 				"ecs:TagResource",
-				"events:TagResource",
-				"events:UntagResource",
+				// "events:TagResource",
+				// "events:UntagResource",
 			},
 		},
 		{
@@ -315,11 +354,82 @@ func generateIAMNormal() []stmt {
 				variable: "iam:PassedToService",
 				values: []string{
 					"ecs-tasks.amazonaws.com",
-					"events.amazonaws.com",
+					"scheduler.amazonaws.com",
+					// "events.amazonaws.com",
 				},
 			},
 		},
 	}...)
+}
+
+func generateIAMCronLauncher() []stmt {
+	return []stmt{
+		{
+			actions: []string{
+				"ecs:RunTask",
+			},
+		},
+		{
+			id:     "RolePassing",
+			action: "iam:PassRole",
+			cond: &cond{
+				test:     "StringLike",
+				variable: "iam:PassedToService",
+				values: []string{
+					"ecs-tasks.amazonaws.com",
+				},
+			},
+		},
+	}
+}
+
+func generateIAMGrantCronLauncher() []stmt {
+	return []stmt{
+		{
+			id:     "AllowFromScheduler",
+			action: "sts:AssumeRole",
+			principal: &principal{
+				Service: "scheduler.amazonaws.com",
+			},
+			cond: &cond{
+				test:     "StringEquals",
+				variable: "aws:SourceAccount",
+				value:    "ACCOUNTID",
+			},
+		},
+
+		{
+			id:     "DeprecatedAllowFromEventbridge",
+			action: "sts:AssumeRole",
+			principal: &principal{
+				Service: "events.amazonaws.com",
+			},
+		},
+	}
+}
+
+func generateIAMGrantDeployer() []stmt {
+	return []stmt{
+		{
+			id:     "AllowFromGithubActions",
+			action: "sts:AssumeRoleWithWebIdentity",
+			principal: &principal{
+				Federated: "arn:aws:iam::ACCOUNTID:oidc-provider/token.actions.githubusercontent.com",
+			},
+			conds: []cond{
+				{
+					test:     "StringEquals",
+					variable: "token.actions.githubusercontent.com:aud",
+					value:    "sts.amazonaws.com",
+				},
+				{
+					test:     "StringLike",
+					variable: "token.actions.githubusercontent.com:sub",
+					value:    "repo:YOUR_GITHUB_ORG/*",
+				},
+			},
+		},
+	}
 }
 
 func makePrettyStatements(stmts []stmt) []Statement {
@@ -373,4 +483,9 @@ func exportPolicy(stmts []Statement, filename string) error {
 func main() {
 	exportPolicy(makePrettyStatements(generateIAMNormal()), "./data/iam/lax.json")
 	exportPolicy(makePrettyStatements(generateIAMRestricted()), "./data/iam/restricted.json")
+	exportPolicy(makePrettyStatements(generateIAMCronLauncher()), "./data/iam/cron.json")
+
+	exportPolicy(makePrettyStatements(generateIAMGrantCronLauncher()), "./data/iam/cron_grant.json")
+	exportPolicy(makePrettyStatements(generateIAMGrantDeployer()), "./data/iam/deployer_grant.json")
+
 }

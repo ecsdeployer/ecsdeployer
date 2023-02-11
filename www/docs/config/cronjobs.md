@@ -1,6 +1,6 @@
 # CronJobs
 
-You can easily create [Scheduled Tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduled_tasks.html) for your application by specifying a cronjobs block.
+You can easily create [Scheduled Tasks](https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html) for your application by specifying a cronjobs block.
 
 ## Example
 ```yaml
@@ -17,13 +17,13 @@ In addition to the fields listed below, you can also specify anything in [Common
 
 [`name`](#cronjob.name){ #cronjob.name } - **(required)**
 
-:   Unique name for your cron job. This will be used to create the Rule and Target on EventBridge. This should be a short identifier with only letters, numbers, dash or underscore.
+:   Unique name for your cron job. This will be used to create the schedule on EventBridge Scheduler. This should be a short identifier with only letters, numbers, dash or underscore.
 
 [`schedule`](#cronjob.schedule){ #cronjob.schedule } - **(required)**
 
-:   The schedule expression that is used to determine when your task runs. This can be either a [cron expression](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html#eb-cron-expressions), or a [rate expression](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html#eb-rate-expressions).
+:   The schedule expression that is used to determine when your task runs. This can be either a [cron expression](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html#cron-based), a [rate expression](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html#rate-based), or a [one-time expression](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html#one-time).
 
-    Expression format: [EventBridge Cron/Rate Expressions](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html)
+    Expression format: [EventBridge Cron/Rate Expressions](https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html)
 
 [`command`](#cronjob.command){ #cronjob.command } - _(recommended)_
 
@@ -34,7 +34,7 @@ In addition to the fields listed below, you can also specify anything in [Common
 
 [`description`](#cronjob.description){ #cronjob.description }
 
-:   An optional description that will be added to the Eventbridge Rule. Any string is valid here.
+:   An optional description that will be added to the schedule. Any string is valid here.
 
     _Default_: _none_
 
@@ -44,6 +44,15 @@ In addition to the fields listed below, you can also specify anything in [Common
 
     _Default_: `{{schema:default:CronJob.disabled}}`
 
+
+[`timezone`](#cronjob.timezone){ #cronjob.timezone }
+
+:   Sets the time zone used when interpreting the schedule expression.
+
+    This should be an [IANA Timezone Identifier](https://www.iana.org/time-zones) like `UTC` or `America/Los_Angeles`.
+
+    _Default_: _none_ (AWS will default to UTC)
+
 [`<anything from common>`](#cronjob.common){ #cronjob.common }
 
 :   See [Common Task Options](common.md).
@@ -52,4 +61,4 @@ In addition to the fields listed below, you can also specify anything in [Common
 
 * [Customizing Resource Names](naming.md)
 * [Templating](../templating.md)
-* [AWS Scheduled Tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduled_tasks.html)
+* [AWS EventBridge Scheduler](https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html)

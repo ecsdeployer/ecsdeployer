@@ -47,7 +47,7 @@ func (img *ImageUri) Value() string {
 	ecrRepo := *img.Ecr
 
 	if ecrRepo == "" {
-		ecrRepo = "{{ .ProjectName }}"
+		ecrRepo = "{{ .Project }}"
 	}
 
 	if !strings.Contains(ecrRepo, "amazonaws.com") {

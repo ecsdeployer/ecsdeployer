@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"encoding/json"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
@@ -16,6 +17,10 @@ func TestBuildSchedule(t *testing.T) {
 	ctx, err := config.NewFromYAML("testdata/dummy.yml")
 	require.NoError(t, err)
 
+	ctxNoCronEnv, err := config.NewFromYAML("testdata/dummy.yml")
+	require.NoError(t, err)
+	ctxNoCronEnv.Project.Settings.SkipCronEnvVars = true
+
 	// MUST MATCH THE ORDER OF THE dummy.yml FILE
 	tables := []struct {
 		name       string
@@ -29,10 +34,32 @@ func TestBuildSchedule(t *testing.T) {
 		{"ecsd-cron-dummy-job4", schedulerTypes.ScheduleStateEnabled, "rate(1 hour)", nil},
 	}
 
-	for i, table := range tables {
-		schedule, err := BuildSchedule(ctx, ctx.Project.CronJobs[i], "faketask:1")
-		require.NoErrorf(t, err, "Index#%d", i)
-		require.EqualValuesf(t, table.name, *schedule.Name, "Index#%d, Name", i)
-	}
+	t.Run("with_cron_envvars", func(t *testing.T) {
+		for i, table := range tables {
+			schedule, err := BuildSchedule(ctx, ctx.Project.CronJobs[i], "faketask:1")
+			require.NoErrorf(t, err, "Index#%d", i)
+			require.EqualValuesf(t, table.name, *schedule.Name, "Index#%d, Name", i)
+
+			input := make(map[string]interface{})
+
+			err = json.Unmarshal([]byte(*schedule.Target.Input), &input)
+			require.NoError(t, err)
+
+			require.Len(t, input["containerOverrides"], 1)
+			require.Len(t, (input["containerOverrides"].([]interface{}))[0].(map[string]interface{})["environment"], len(config.DefaultCronEnvVars))
+
+		}
+	})
+
+	t.Run("without_cron_envvars", func(t *testing.T) {
+		for i, table := range tables {
+			schedule, err := BuildSchedule(ctxNoCronEnv, ctxNoCronEnv.Project.CronJobs[i], "faketask:1")
+			require.NoErrorf(t, err, "Index#%d", i)
+			require.EqualValuesf(t, table.name, *schedule.Name, "Index#%d, Name", i)
+
+			require.Equal(t, "{}", *schedule.Target.Input)
+
+		}
+	})
 
 }

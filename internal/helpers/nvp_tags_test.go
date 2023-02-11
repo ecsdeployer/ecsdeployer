@@ -22,7 +22,7 @@ func TestNameValuePair_Build_Tags(t *testing.T) {
 		Tags: []config.NameValuePair{
 			{
 				Name:  aws.String("test/{{.ProjectName}}/thing"),
-				Value: aws.String("test/{{.ProjectName}}/stuff"),
+				Value: aws.String("test/{{.Project}}/stuff"),
 			},
 			{
 				Name:  aws.String("projectlevel"),

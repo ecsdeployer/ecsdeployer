@@ -29,7 +29,7 @@ func (obj *SSMImport) GetPath() string {
 
 func (obj *SSMImport) ApplyDefaults() {
 	if obj.Path == nil {
-		obj.Path = aws.String("/ecsdeployer/secrets/{{ .ProjectName }}{{ if .Stage }}/{{ .Stage }}{{ end }}")
+		obj.Path = aws.String("/ecsdeployer/secrets/{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{ end }}")
 	}
 	obj.Path = aws.String(strings.TrimSuffix(*obj.Path, "/"))
 

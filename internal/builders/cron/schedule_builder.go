@@ -30,6 +30,11 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 		return nil, err
 	}
 
+	cronContainerName, err := tpl.Apply(*templates.ContainerName)
+	if err != nil {
+		return nil, err
+	}
+
 	ecsParams := &schedulerTypes.EcsParameters{
 		TaskDefinitionArn:    aws.String(taskDefArn),
 		TaskCount:            aws.Int32(1),
@@ -50,18 +55,27 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 	}
 
 	// Cronjob Input field
-	// cronInput := cronInput{
-	// 	ContainerOverrides: []cronContainerOverride{
-	// 		{
-	// 			Name:    cronContainerName,
-	// 			Command: *resource.Command,
-	// 		},
-	// 	},
-	// }
+	cronInput := cronInputObj{}
+
+	if !project.Settings.SkipCronEnvVars {
+		cronEnvVars := make([]cronOverrideKeyPair, 0, len(config.DefaultCronEnvVars))
+		for k, v := range config.DefaultCronEnvVars {
+			cronEnvVars = append(cronEnvVars, cronOverrideKeyPair{
+				Name:  k,
+				Value: v,
+			})
+		}
+		cronInput.ContainerOverrides = []cronContainerOverride{
+			{
+				Name:        cronContainerName,
+				Environment: cronEnvVars,
+			},
+		}
+	}
 
 	// Because we have a unique taskdef for each cronjob, we dont need to override the input
 	// this just makes it so an empty JSON is sent
-	cronInput := cronInputObj{}
+	// cronInput := cronInputObj{}
 	cronInputJsonBytes, err := json.Marshal(cronInput)
 	if err != nil {
 		return nil, err

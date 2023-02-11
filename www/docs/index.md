@@ -18,7 +18,7 @@ Applications can easily and securely be deployed with a simple GitHub Action.
 ## Resources ECS Deployer Manages
 * ECS Services
 * ECS Task Definitions
-* EventBridge Rules and Targets (For CronJobs)
+* EventBridge Scheduler Schedules and ScheduleGroup (For CronJobs)
 * Creation only of CloudWatch Log Groups (if desired)
 
 #### Resources ECS Deployer DOES NOT manage

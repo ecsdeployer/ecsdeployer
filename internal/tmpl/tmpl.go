@@ -22,38 +22,43 @@ type Template struct {
 type Fields map[string]interface{}
 
 const (
-	projectName  = "ProjectName"
-	env          = "Env"
-	stage        = "Stage"
-	date         = "Date"
-	timestamp    = "Timestamp"
-	version      = "Version"
-	appVersion   = "AppVersion"
-	imageTag     = "ImageTag"
-	tag          = "Tag"
-	image        = "Image"
-	awsRegion    = "AwsRegion"
-	awsAccountId = "AwsAccountId"
-	clusterName  = "ClusterName"
+	projectNameLong = "ProjectName"
+	projectName     = "Project"
+	env             = "Env"
+	stage           = "Stage"
+	date            = "Date"
+	timestamp       = "Timestamp"
+	version         = "Version"
+	appVersion      = "AppVersion"
+	imageTag        = "ImageTag"
+	tag             = "Tag"
+	image           = "Image"
+	awsRegion       = "AwsRegion"
+	awsAccountId    = "AwsAccountId"
+	clusterNameLong = "ClusterName"
+	clusterName     = "Cluster"
 )
 
 // New Template.
 func New(ctx *config.Context) *Template {
 
+	clusterNameVal := ctx.ClusterName()
 	return &Template{
 		ctx: ctx,
 		fields: Fields{
-			projectName: ctx.Project.ProjectName,
-			version:     ctx.Version,
-			appVersion:  ctx.Version,
-			imageTag:    ctx.ImageTag,
-			tag:         ctx.ImageTag,
-			image:       ctx.ImageUriRef,
-			env:         ctx.Env,
-			date:        ctx.Date.UTC().Format(time.RFC3339),
-			timestamp:   ctx.Date.UTC().Unix(),
-			stage:       ctx.Stage,
-			clusterName: ctx.ClusterName(),
+			projectNameLong: ctx.Project.ProjectName,
+			projectName:     ctx.Project.ProjectName,
+			version:         ctx.Version,
+			appVersion:      ctx.Version,
+			imageTag:        ctx.ImageTag,
+			tag:             ctx.ImageTag,
+			image:           ctx.ImageUriRef,
+			env:             ctx.Env,
+			date:            ctx.Date.UTC().Format(time.RFC3339),
+			timestamp:       ctx.Date.UTC().Unix(),
+			stage:           ctx.Stage,
+			clusterNameLong: clusterNameVal,
+			clusterName:     clusterNameVal,
 		},
 	}
 }

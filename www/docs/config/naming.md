@@ -22,7 +22,7 @@ For more details on the options you can use in templates, view the [Templating](
 
 ```yaml
 name_templates:
-  log_group: "/applogs/{{ .ProjectName }}/{{ .Name }}"
+  log_group: "/applogs/{{ .Project }}/{{ .Name }}"
 ```
 
 ## Fields
@@ -104,6 +104,44 @@ name_templates:
         {{schema:default:NameTemplates.task_family}}
         ```
 
+[`schedule_group`](#naming.schedule_group){ #naming.schedule_group } - **(required)**
+
+:   The Schedule Group name when creating [CronJobs](cronjobs.md)
+
+    === "Default"
+        ```
+        {{schema:default:TplDefault.schedule_group}}
+        ```
+    
+    === "Default (with Stage)"
+        ```
+        {{schema:default:TplDefaultStage.schedule_group}}
+        ```
+
+    === "Raw"
+        ```
+        {{schema:default:NameTemplates.schedule_group}}
+        ```
+
+[`schedule`](#naming.schedule){ #naming.schedule } - **(required)**
+
+:   The schedule name when creating [CronJobs](cronjobs.md)
+
+    === "Default"
+        ```
+        {{schema:default:TplDefault.schedule}}
+        ```
+    
+    === "Default (with Stage)"
+        ```
+        {{schema:default:TplDefaultStage.schedule}}
+        ```
+
+    === "Raw"
+        ```
+        {{schema:default:NameTemplates.schedule}}
+        ```
+<!-- 
 [`cron_rule`](#naming.cron_rule){ #naming.cron_rule } - **(required)**
 
 :   The EventBridge rule name when creating [CronJobs](cronjobs.md)
@@ -141,6 +179,7 @@ name_templates:
         ```
         {{schema:default:NameTemplates.cron_target}}
         ```
+-->
 
 [`cron_group`](#naming.cron_group){ #naming.cron_group }
 

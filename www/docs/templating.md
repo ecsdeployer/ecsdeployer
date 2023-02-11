@@ -14,7 +14,7 @@ These fields are available to all templates, everywhere. Note they must be wrapp
 
 Key             | Description
 ----------------|---------------
-`.ProjectName`  | the project name
+`.Project`      | the project name
 `.Env.VARNAME`  | a Map with all the current environment variables
 `.Date`         | current UTC date in RFC 3339 format
 `.Timestamp`    | current UTC time in Unix format
@@ -23,7 +23,7 @@ Key             | Description
 `.ImageTag`     | the value you provided to `--tag`
 `.Tag`          | alias for `.ImageTag`
 `.Image`        | the value you provided to `--image` (a container image URI)
-`.ClusterName`  | the name of the ECS Cluster the app will be deployed on
+`.Cluster`      | the name of the ECS Cluster the app will be deployed on
 `.Stage`        | the stage name for the application (i.e. "production", "staging", etc). You can specify this with `stage: VALUE` in the config file.<br><br>**IMPORTANT:** Specifying a `stage` in your file _WILL_ modify the naming conventions for your application. If you have already deployed, do not add this.<br>See [Naming](config/naming.md#fields) to see how this will change the names of resources.
 `AwsAccountId`  | numeric AWS Account number (note the lack of `.` at the start)
 `AwsRegion`     | current AWS region (note the lack of `.` at the start)

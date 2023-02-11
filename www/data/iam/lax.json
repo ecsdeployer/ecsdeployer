@@ -10,7 +10,8 @@
         "ec2:DescribeSecurityGroups",
         "elasticloadbalancing:DescribeTargetGroups",
         "logs:DescribeLogGroups",
-        "tag:GetResources"
+        "tag:GetResources",
+        "scheduler:ListSchedules"
       ],
       "Resource": "*"
     },
@@ -42,11 +43,11 @@
       "Sid": "CronSetup",
       "Effect": "Allow",
       "Action": [
-        "events:PutRule",
-        "events:DeleteRule",
-        "events:RemoveTargets",
-        "events:ListTargetsByRule",
-        "events:PutTargets"
+        "scheduler:UpdateSchedule",
+        "scheduler:CreateSchedule",
+        "scheduler:DeleteSchedule",
+        "scheduler:GetScheduleGroup",
+        "scheduler:CreateScheduleGroup"
       ],
       "Resource": "*"
     },
@@ -72,9 +73,7 @@
       "Effect": "Allow",
       "Action": [
         "logs:TagLogGroup",
-        "ecs:TagResource",
-        "events:TagResource",
-        "events:UntagResource"
+        "ecs:TagResource"
       ],
       "Resource": "*"
     },
@@ -87,7 +86,7 @@
         "StringLike": {
           "iam:PassedToService": [
             "ecs-tasks.amazonaws.com",
-            "events.amazonaws.com"
+            "scheduler.amazonaws.com"
           ]
         }
       }
