@@ -43,6 +43,7 @@
       "Sid": "CronSetup",
       "Effect": "Allow",
       "Action": [
+        "scheduler:GetSchedule",
         "scheduler:UpdateSchedule",
         "scheduler:CreateSchedule",
         "scheduler:DeleteSchedule",
@@ -73,7 +74,8 @@
       "Effect": "Allow",
       "Action": [
         "logs:TagLogGroup",
-        "ecs:TagResource"
+        "ecs:TagResource",
+        "scheduler:TagResource"
       ],
       "Resource": "*"
     },

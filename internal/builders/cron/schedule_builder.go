@@ -1,7 +1,6 @@
 package cron
 
 import (
-	"encoding/json"
 	"errors"
 
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
@@ -76,7 +75,7 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 	// Because we have a unique taskdef for each cronjob, we dont need to override the input
 	// this just makes it so an empty JSON is sent
 	// cronInput := cronInputObj{}
-	cronInputJsonBytes, err := json.Marshal(cronInput)
+	cronInputJsonBytes, err := util.Jsonify(cronInput)
 	if err != nil {
 		return nil, err
 	}

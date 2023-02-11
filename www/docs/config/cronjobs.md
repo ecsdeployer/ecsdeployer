@@ -53,6 +53,22 @@ In addition to the fields listed below, you can also specify anything in [Common
 
     _Default_: _none_ (AWS will default to UTC)
 
+[`start_date`](#cronjob.start_date){ #cronjob.start_date }
+
+:   You can set a cron to start evaluating after a specific date if needed.
+
+    If provided, must be in [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.8) format.
+
+    _Default_: _none_
+
+[`end_date`](#cronjob.end_date){ #cronjob.end_date }
+
+:   Stop executing the cron job after the given date.
+
+    If provided, must be in [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339#section-5.8) format.
+
+    _Default_: _none_
+
 [`<anything from common>`](#cronjob.common){ #cronjob.common }
 
 :   See [Common Task Options](common.md).

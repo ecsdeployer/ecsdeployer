@@ -58,9 +58,14 @@ func (obj *CronJob) Validate() error {
 		return NewValidationError("you must provide a cron schedule")
 	}
 
+	if obj.EndDate != nil && obj.StartDate != nil && obj.StartDate.After(*obj.EndDate) {
+		return NewValidationError("end date cannot be after the start date")
+	}
+
 	if err := obj.CommonTaskAttrs.Validate(); err != nil {
 		return err
 	}
+
 	return nil
 }
 

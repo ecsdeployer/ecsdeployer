@@ -111,7 +111,8 @@ func TestConsoleTask_Unmarshal(t *testing.T) {
 				require.Contains(t, res, `"enabled":true`)
 				require.Contains(t, res, `"name":"console"`)
 			} else {
-				require.Equal(t, "false", res)
+				// require.Equal(t, "false", res)
+				require.JSONEq(t, "false", res)
 			}
 		})
 	}

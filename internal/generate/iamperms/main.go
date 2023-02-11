@@ -316,6 +316,7 @@ func generateIAMNormal() []stmt {
 				// "events:RemoveTargets",
 				// "events:ListTargetsByRule",
 				// "events:PutTargets",
+				"scheduler:GetSchedule",
 				"scheduler:UpdateSchedule",
 				"scheduler:CreateSchedule",
 				"scheduler:DeleteSchedule",
@@ -342,6 +343,7 @@ func generateIAMNormal() []stmt {
 			actions: []string{
 				"logs:TagLogGroup",
 				"ecs:TagResource",
+				"scheduler:TagResource",
 				// "events:TagResource",
 				// "events:UntagResource",
 			},
