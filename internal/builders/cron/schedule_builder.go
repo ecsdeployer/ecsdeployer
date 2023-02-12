@@ -75,7 +75,7 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 	// Because we have a unique taskdef for each cronjob, we dont need to override the input
 	// this just makes it so an empty JSON is sent
 	// cronInput := cronInputObj{}
-	cronInputJsonBytes, err := util.Jsonify(cronInput)
+	cronInputJson, err := util.Jsonify(cronInput)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 	// The target
 	targetParams := &schedulerTypes.Target{
 		Arn:           aws.String(clusterArn),
-		Input:         aws.String(string(cronInputJsonBytes)),
+		Input:         aws.String(cronInputJson),
 		EcsParameters: ecsParams,
 		RetryPolicy: &schedulerTypes.RetryPolicy{
 			MaximumEventAgeInSeconds: aws.Int32(180),
