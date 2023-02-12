@@ -750,12 +750,14 @@
      "cron_rule": {
       "type": "string",
       "minLength": 1,
-      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}"
+      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}",
+      "deprecated": true
      },
      "cron_target": {
       "type": "string",
       "minLength": 1,
-      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}"
+      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
+      "deprecated": true
      }
     },
     "additionalProperties": false,

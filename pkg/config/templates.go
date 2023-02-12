@@ -26,8 +26,8 @@ type NameTemplates struct {
 	MarkerTagValue     *string `yaml:"marker_tag_value,omitempty" json:"marker_tag_value,omitempty" jsonschema:"minLength=1"`
 
 	// old
-	CronRule   *string `yaml:"cron_rule,omitempty" json:"cron_rule,omitempty" jsonschema:"minLength=1"`
-	CronTarget *string `yaml:"cron_target,omitempty" json:"cron_target,omitempty" jsonschema:"minLength=1"`
+	CronRule   *string `yaml:"cron_rule,omitempty" json:"cron_rule,omitempty" jsonschema:"minLength=1" jsonschema_extras:"deprecated=true"`
+	CronTarget *string `yaml:"cron_target,omitempty" json:"cron_target,omitempty" jsonschema:"minLength=1" jsonschema_extras:"deprecated=true"`
 }
 
 func (def *NameTemplates) ApplyDefaults() {
@@ -156,7 +156,6 @@ func (NameTemplates) JSONSchemaExtend(base *jsonschema.Schema) {
 	for _, field := range reflect.VisibleFields(reflect.TypeOf(*templates)) {
 		kisVal := v.FieldByIndex(field.Index).Elem().String()
 
-		// jsonField := strings.Replace(field.Tag.Get("json"), ",omitempty", "", 1)
 		jsonField, _, _ := strings.Cut(field.Tag.Get("json"), ",")
 
 		configschema.SchemaPropMerge(base, jsonField, func(s *jsonschema.Schema) {

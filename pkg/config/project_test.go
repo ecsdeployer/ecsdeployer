@@ -10,6 +10,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stretchr/testify/require"
 )
 
@@ -85,6 +86,28 @@ func TestProject_Validate(t *testing.T) {
 			require.ErrorContains(t, err, table.errMatch)
 		})
 	}
+}
+
+func TestProject_ApproxNumTasks(t *testing.T) {
+	proj := &config.Project{
+		PreDeployTasks: []*config.PreDeployTask{
+			{}, {},
+		},
+		CronJobs: []*config.CronJob{
+			{}, {}, {}, {},
+		},
+		Services: []*config.Service{
+			{}, {}, {}, {}, {}, {}, {}, {},
+		},
+		ConsoleTask: &config.ConsoleTask{
+			Enabled: aws.Bool(true),
+		},
+	}
+
+	require.Equal(t, 15, proj.ApproxNumTasks())
+
+	proj.ConsoleTask.Enabled = aws.Bool(false)
+	require.Equal(t, 14, proj.ApproxNumTasks())
 }
 
 func TestProject_Loading(t *testing.T) {

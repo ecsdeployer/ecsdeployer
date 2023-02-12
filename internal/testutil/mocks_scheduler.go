@@ -79,6 +79,36 @@ func Mock_Scheduler_GetSchedule_Missing(groupName, scheduleName string) *awsmock
 	}
 }
 
+func Mock_Scheduler_GetSchedule(groupName, scheduleName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "scheduler",
+			Method:  http.MethodGet,
+			Path:    fmt.Sprintf("/schedules/%s", scheduleName),
+			Params: url.Values{
+				"groupName": []string{groupName},
+			},
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: jsonify(map[string]interface{}{
+				"GroupName":            groupName,
+				"Name":                 scheduleName,
+				"State":                "ACTIVE",
+				"ScheduleExpression":   "rate(1 hour)",
+				"CreationDate":         time.Now().UnixMilli(),
+				"LastModificationDate": time.Now().UnixMilli(),
+				"Arn":                  fmt.Sprintf("arn:aws:scheduler:%s:%s:schedule/%s/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, groupName, scheduleName),
+				"Target": map[string]interface{}{
+					"Arn": fmt.Sprintf("arn:aws:ecs:%s:%s:cluster/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, groupName),
+				},
+				"FlexibleTimeWindow": map[string]interface{}{
+					"Mode": "OFF",
+				},
+			}),
+		},
+	}
+}
+
 func Mock_Scheduler_CreateSchedule(groupName, scheduleName string) *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{
