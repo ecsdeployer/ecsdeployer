@@ -64,11 +64,7 @@ func TestCronJob(t *testing.T) {
 
 	t.Run("UnmarshalYAML", func(t *testing.T) {
 
-		tzLocUTC, err := time.LoadLocation("UTC")
-		require.NoError(t, err)
-
-		tzLocAmLA, err := time.LoadLocation("America/Los_Angeles")
-		require.NoError(t, err)
+		tzMinus8UTC := time.FixedZone("UTC-8", -8*3600)
 
 		tables := []struct {
 			str      string
@@ -89,7 +85,7 @@ func TestCronJob(t *testing.T) {
 				schedule: rate(1 hour)
 				start_date: 2023-01-02T09:12:55Z`,
 				expSched: "rate(1 hour)",
-				expStart: util.Ptr(time.Date(2023, 1, 2, 9, 12, 55, 0, tzLocUTC)),
+				expStart: util.Ptr(time.Date(2023, 1, 2, 9, 12, 55, 0, time.UTC)),
 			},
 			{
 				str: `
@@ -97,7 +93,7 @@ func TestCronJob(t *testing.T) {
 				schedule: rate(1 hour)
 				start_date: 2023-01-02T09:12:55-08:00`,
 				expSched: "rate(1 hour)",
-				expStart: util.Ptr(time.Date(2023, 1, 2, 9, 12, 55, 0, tzLocAmLA)),
+				expStart: util.Ptr(time.Date(2023, 1, 2, 9, 12, 55, 0, tzMinus8UTC)),
 			},
 			{
 				str: `
@@ -106,8 +102,8 @@ func TestCronJob(t *testing.T) {
 				start_date: 2023-01-02T09:12:55-08:00
 				end_date: 2024-01-02T09:12:55-08:00`,
 				expSched: "rate(1 hour)",
-				expStart: util.Ptr(time.Date(2023, 1, 2, 9, 12, 55, 0, tzLocAmLA)),
-				expEnd:   util.Ptr(time.Date(2024, 1, 2, 9, 12, 55, 0, tzLocAmLA)),
+				expStart: util.Ptr(time.Date(2023, 1, 2, 9, 12, 55, 0, tzMinus8UTC)),
+				expEnd:   util.Ptr(time.Date(2024, 1, 2, 9, 12, 55, 0, tzMinus8UTC)),
 			},
 		}
 		for i, table := range tables {
@@ -126,11 +122,13 @@ func TestCronJob(t *testing.T) {
 
 				if table.expStart != nil {
 					require.NotNil(t, obj.StartDate)
+					require.Equal(t, "UTC", obj.StartDate.Location().String())
 					require.Equal(t, table.expStart.UTC(), obj.StartDate.UTC())
 				}
 
 				if table.expEnd != nil {
 					require.NotNil(t, obj.EndDate)
+					require.Equal(t, "UTC", obj.EndDate.Location().String())
 					require.Equal(t, table.expEnd.UTC(), obj.EndDate.UTC())
 				}
 

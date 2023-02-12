@@ -42,6 +42,8 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 		LaunchType:           schedulerTypes.LaunchTypeFargate,
 		PlatformVersion:      resource.PlatformVersion,
 		PropagateTags:        schedulerTypes.PropagateTagsTaskDefinition,
+
+		// this isnt needed since the launchtype is fargate
 		// CapacityProviderStrategy: config.NewSpotOnDemand().ExportCapacityStrategyScheduler(),
 	}
 
@@ -72,9 +74,6 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 		}
 	}
 
-	// Because we have a unique taskdef for each cronjob, we dont need to override the input
-	// this just makes it so an empty JSON is sent
-	// cronInput := cronInputObj{}
 	cronInputJson, err := util.Jsonify(cronInput)
 	if err != nil {
 		return nil, err
@@ -106,12 +105,6 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 			MaximumEventAgeInSeconds: aws.Int32(180),
 			MaximumRetryAttempts:     aws.Int32(0),
 		},
-		// RoleArn:                     new(string),
-		// DeadLetterConfig:            &schedulerTypes.DeadLetterConfig{},
-		// EventBridgeParameters:       &schedulerTypes.EventBridgeParameters{},
-		// KinesisParameters:           &schedulerTypes.KinesisParameters{},
-		// SageMakerPipelineParameters: &schedulerTypes.SageMakerPipelineParameters{},
-		// SqsParameters:               &schedulerTypes.SqsParameters{},
 	}
 
 	if project.CronLauncherRole != nil {
@@ -136,9 +129,6 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 		ScheduleExpression: aws.String(resource.Schedule),
 		StartDate:          resource.StartDate,
 		EndDate:            resource.EndDate,
-		// ScheduleExpressionTimezone: new(string),
-		// KmsKeyArn:                  new(string),
-		// ClientToken: new(string),
 	}
 
 	if resource.TimeZone != nil {

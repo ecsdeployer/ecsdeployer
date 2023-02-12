@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
+	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
 )
 
@@ -70,6 +71,14 @@ func (obj *CronJob) Validate() error {
 }
 
 func (obj *CronJob) ApplyDefaults() {
+
+	if obj.StartDate != nil {
+		obj.StartDate = util.Ptr(obj.StartDate.UTC())
+	}
+
+	if obj.EndDate != nil {
+		obj.EndDate = util.Ptr(obj.EndDate.UTC())
+	}
 }
 
 func (CronJob) JSONSchemaExtend(base *jsonschema.Schema) {

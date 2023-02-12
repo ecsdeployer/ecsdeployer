@@ -34,8 +34,8 @@ func (obj *Service) IsTaskStruct() bool {
 }
 
 func (a *Service) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t Service
-	var obj = t{}
+	type tService Service
+	var obj = tService{}
 	if err := unmarshal(&obj); err != nil {
 		return err
 	}

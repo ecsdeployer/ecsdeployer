@@ -209,6 +209,7 @@ func (s *Step) Apply(ctx *config.Context) error {
 		s.Indent()
 
 		if s.ParallelDeps {
+
 			eg := new(errgroup.Group)
 			eg.SetLimit(5)
 
