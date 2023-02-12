@@ -59,6 +59,7 @@ func stepScheduleGroupRead(ctx *config.Context, step *Step, meta *StepMetadata) 
 
 func stepScheduleGroupCreate(ctx *config.Context, step *Step, meta *StepMetadata) (OutputFields, error) {
 
+	step.Logger.Info("Creating ScheduleGroup")
 	scheduleGroupName := step.Attributes["scheduleGroupName"].(string)
 
 	params := &scheduler.CreateScheduleGroupInput{

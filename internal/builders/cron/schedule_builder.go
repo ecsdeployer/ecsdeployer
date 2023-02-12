@@ -34,13 +34,15 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 		return nil, err
 	}
 
+	platformVersion := util.Coalesce(resource.PlatformVersion, ctx.Project.TaskDefaults.PlatformVersion)
+
 	ecsParams := &schedulerTypes.EcsParameters{
 		TaskDefinitionArn:    aws.String(taskDefArn),
 		TaskCount:            aws.Int32(1),
 		EnableECSManagedTags: aws.Bool(true),
 		EnableExecuteCommand: aws.Bool(false),
 		LaunchType:           schedulerTypes.LaunchTypeFargate,
-		PlatformVersion:      resource.PlatformVersion,
+		PlatformVersion:      platformVersion,
 		PropagateTags:        schedulerTypes.PropagateTagsTaskDefinition,
 
 		// this isnt needed since the launchtype is fargate

@@ -93,6 +93,7 @@ func stepCronjob_BuildCreateReq(ctx *config.Context, step *Step, meta *StepMetad
 
 func stepCronjobCreate(ctx *config.Context, step *Step, meta *StepMetadata) (OutputFields, error) {
 
+	step.Logger.Info("Creating cronjob schedule")
 	createInput, err := stepCronjob_BuildCreateReq(ctx, step, meta)
 	if err != nil {
 		return nil, err
@@ -108,6 +109,7 @@ func stepCronjobCreate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 }
 
 func stepCronjobUpdate(ctx *config.Context, step *Step, meta *StepMetadata) (OutputFields, error) {
+	step.Logger.Info("Updating cronjob schedule")
 	createInput, err := stepCronjob_BuildCreateReq(ctx, step, meta)
 	if err != nil {
 		return nil, err

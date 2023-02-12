@@ -228,6 +228,7 @@ func generateIAMRestricted() []stmt {
 		{
 			id: "CronSetup",
 			actions: []string{
+				"scheduler:GetSchedule",
 				"scheduler:UpdateSchedule",
 				"scheduler:CreateSchedule",
 				"scheduler:DeleteSchedule",
