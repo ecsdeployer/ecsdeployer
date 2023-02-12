@@ -15,7 +15,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         
-      - uses: ./.github/workflows/docs.yml
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: .go-version
+
+      - name: Run Docs Helper Scripts
+        run: ./scripts/cmd_docs.sh
+      
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install mkdocs and deps
+        run: pip install -r www/requirements.txt
+
+      - name: Build Site
+        working-directory: ./www
+        run: mkdocs build
         
       - name: Deploy Docs
         working-directory: ./www
