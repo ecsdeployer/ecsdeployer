@@ -35,7 +35,7 @@ func TestSpotOverrides(t *testing.T) {
 			obj.ApplyDefaults()
 
 			if table.expectedOD == nil && table.expectedSpot == nil {
-				t.Fatal("TEST BROKEN! you cant have SPOT and OD set to nil, that doesnt make sense")
+				require.FailNow(t, "TEST BROKEN! you cant have SPOT and OD set to nil, that doesnt make sense")
 			}
 
 			if err := obj.Validate(); err != nil {

@@ -12,15 +12,6 @@ import (
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
 )
 
-type cronContainerOverride struct {
-	Name    string              `json:"name"`
-	Command config.ShellCommand `json:"command,omitempty"`
-}
-
-type cronInputObj struct {
-	ContainerOverrides []cronContainerOverride `json:"containerOverrides,omitempty"`
-}
-
 func BuildCronTarget(ctx *config.Context, resource *config.CronJob, taskDefArn string) (*events.PutTargetsInput, error) {
 
 	project := ctx.Project

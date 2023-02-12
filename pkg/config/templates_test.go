@@ -40,6 +40,9 @@ func TestNameTemplates_Defaults(t *testing.T) {
 		{templates.CronTarget, "testproj-target-thing", "testproj-princess-target-thing"},
 		{templates.CronGroup, "ecsd:testproj:cron:thing", "ecsd:testproj:princess:cron:thing"},
 
+		{templates.ScheduleGroupName, "testproj", "testproj-princess"},
+		{templates.ScheduleName, "ecsd-cron-testproj-thing", "ecsd-cron-testproj-princess-thing"},
+
 		{templates.PreDeployGroup, "ecsd:testproj:pd:thing", "ecsd:testproj:princess:pd:thing"},
 		{templates.PreDeployStartedBy, "ecsd:testproj:deployer", "ecsd:testproj:princess:deployer"},
 
@@ -87,6 +90,8 @@ func TestNameTemplates_Validate(t *testing.T) {
 		{config.NameTemplates{LogStreamPrefix: util.Ptr("")}, false},
 		{config.NameTemplates{MarkerTagKey: util.Ptr("")}, false},
 		{config.NameTemplates{MarkerTagValue: util.Ptr("")}, false},
+		{config.NameTemplates{ScheduleGroupName: util.Ptr("")}, false},
+		{config.NameTemplates{ScheduleName: util.Ptr("")}, false},
 	}
 
 	for i, table := range tables {

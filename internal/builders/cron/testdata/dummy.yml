@@ -32,3 +32,4 @@ cronjobs:
   - name: job4
     schedule: "rate(1 hour)"
     command: something
+    timezone: America/Los_Angeles

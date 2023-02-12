@@ -28,6 +28,9 @@ func TestGetTemplatedPrefix(t *testing.T) {
 		{"{{.TaskName}}-suffix", ""},
 		{"{{.TaskName}}-suffix", ""},
 		{"/{{.ProjectName}}/stuff/{{.TaskName}}-suffix", "/myproject/stuff/"},
+		{"/{{.Project}}/stuff/{{.TaskName}}-suffix", "/myproject/stuff/"},
+		{"/{{.Cluster}}/stuff/{{.TaskName}}-suffix", "/mycluster/stuff/"},
+		{"/{{.ClusterName}}/stuff/{{.TaskName}}-suffix", "/mycluster/stuff/"},
 		{"/test/thing", "/test/thing"},
 	}
 

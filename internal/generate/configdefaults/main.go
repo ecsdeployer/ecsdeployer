@@ -102,7 +102,7 @@ func exportStructValues(obj DefaultApplier) typeDefaults {
 		case reflect.Struct:
 			switch val.Type() {
 			case durationType:
-				strMap[fname] = fmt.Sprintf("%s", f.MethodByName("ToString").Call([]reflect.Value{})[0])
+				strMap[fname] = fmt.Sprintf("%s", f.MethodByName("String").Call([]reflect.Value{})[0])
 
 			case logRetentionType:
 				// mt := val.Interface().(config.LogRetention)
@@ -140,6 +140,7 @@ func generateTemplateExamples(tplMap typeDefaults, includeStage bool) typeDefaul
 
 	tplFields := map[string]interface{}{
 		"ProjectName": "{PROJECT}",
+		"Project":     "{PROJECT}",
 		"Stage":       nil,
 		"Name":        "{NAME}",
 	}

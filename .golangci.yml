@@ -78,6 +78,9 @@ linters-settings:
       - pkg: github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types
         alias: taggingTypes
 
+      - pkg: github.com/aws/aws-sdk-go-v2/service/scheduler/types
+        alias: schedulerTypes
+
         # AWS Clients
       - pkg: github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2
         alias: elbv2

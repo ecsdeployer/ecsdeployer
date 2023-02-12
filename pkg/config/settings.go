@@ -12,11 +12,15 @@ type Settings struct {
 	PreDeployTimeout  *Duration `yaml:"predeploy_timeout,omitempty" json:"predeploy_timeout,omitempty"`
 
 	SkipDeploymentEnvVars bool `yaml:"skip_deployment_env_vars,omitempty" json:"skip_deployment_env_vars,omitempty"`
+	SkipCronEnvVars       bool `yaml:"skip_cron_env_vars,omitempty" json:"skip_cron_env_vars,omitempty"`
 
 	DisableMarkerTag bool        `yaml:"disable_marker_tag,omitempty" json:"disable_marker_tag,omitempty"`
 	KeepInSync       *KeepInSync `yaml:"keep_in_sync,omitempty" json:"keep_in_sync,omitempty"`
 
 	WaitForStable *WaitForStable `yaml:"wait_for_stable,omitempty" json:"wait_for_stable,omitempty"`
+
+	// Use the older eventbridge target/rule style to do cronjobs
+	CronUsesEventing bool `yaml:"use_old_cron_eventbus,omitempty" json:"use_old_cron_eventbus,omitempty"`
 
 	SSMImport *SSMImport `yaml:"ssm_import,omitempty" json:"ssm_import,omitempty"`
 }

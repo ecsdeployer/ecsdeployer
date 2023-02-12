@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"testing"
 
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -21,31 +22,26 @@ func TestChunkArray(t *testing.T) {
 	}
 
 	for i, table := range tables {
-		chunks := ChunkArray(table.input, table.chunkSize)
+		t.Run(fmt.Sprintf("test_%02d", i+1), func(t *testing.T) {
+			chunks := ChunkArray(table.input, table.chunkSize)
 
-		require.Lenf(t, chunks, table.expChunks, "Entry<%d> expected %d chunks, but got %d", i, table.expChunks, len(chunks))
+			require.Lenf(t, chunks, table.expChunks, "expected %d chunks, but got %d", table.expChunks, len(chunks))
 
-		totalItems := 0
+			totalItems := 0
 
-		lastVal, chunks := chunks[len(chunks)-1], chunks[:len(chunks)-1]
+			lastVal, chunks := chunks[len(chunks)-1], chunks[:len(chunks)-1]
 
-		for c, chunk := range chunks {
-			chunkLen := len(chunk)
-			totalItems += chunkLen
-			if chunkLen != table.chunkSize {
-				t.Fatalf("Entry<%d> expected chunk <%d> to have %d items but it only had %d", i, c, table.chunkSize, chunkLen)
+			for c, chunk := range chunks {
+				chunkLen := len(chunk)
+				totalItems += chunkLen
+				require.Equalf(t, table.chunkSize, chunkLen, "expected chunk <%d> to have %d items but it only had %d", c, table.chunkSize, chunkLen)
 			}
-		}
 
-		if len(lastVal) > table.chunkSize {
-			t.Fatalf("Entry<%d> last chunk has too many items. (had %d)", i, len(lastVal))
-		}
+			require.LessOrEqual(t, len(lastVal), table.chunkSize, "last chunk has too many items")
+			totalItems += len(lastVal)
 
-		totalItems += len(lastVal)
-
-		if totalItems != len(table.input) {
-			t.Fatalf("Entry<%d> Has missing items??. (start=%d, now=%d)", i, len(table.input), totalItems)
-		}
+			require.Equal(t, len(table.input), totalItems, "missing items??")
+		})
 
 	}
 }

@@ -3,7 +3,7 @@
 site_name: ECS Deployer
 repo_name: ecsdeployer/ecsdeployer
 site_description: Easily deploy containerized applications to AWS ECS Fargate
-copyright: Copyright &copy; 2022 Mitch Dempsey
+copyright: Copyright &copy; 2023 Mitch Dempsey
 repo_url: https://github.com/ecsdeployer/ecsdeployer
 site_url: https://ecsdeployer.com/
 # edit_uri: edit/main/www/docs/

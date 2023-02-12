@@ -27,7 +27,6 @@ builds:
       - "7"
 
     ldflags:
-      # - "-s -w -X main.buildVersion={{.Version}} -X main.buildSha={{.Commit}}"
       - "-s -w"
       - -X ecsdeployer.com/ecsdeployer/pkg/version.Version={{.Version}}
       - -X ecsdeployer.com/ecsdeployer/pkg/version.BuildSHA={{.Commit}}

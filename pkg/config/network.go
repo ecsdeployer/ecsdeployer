@@ -12,6 +12,7 @@ import (
 	ec2Types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
+	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 	"github.com/caarlos0/log"
 )
 
@@ -103,6 +104,27 @@ func (nc *NetworkConfiguration) ResolveCWE(ctx *Context) (*eventTypes.NetworkCon
 	}
 
 	result := &eventTypes.NetworkConfiguration{
+		AwsvpcConfiguration: &vpcConfig,
+	}
+
+	return result, nil
+}
+
+func (nc *NetworkConfiguration) ResolveSched(ctx *Context) (*schedulerTypes.NetworkConfiguration, error) {
+	err := nc.resolve(ctx)
+	if err != nil {
+		return nil, err
+	}
+	vpcConfig := schedulerTypes.AwsVpcConfiguration{
+		Subnets:        nc.resolvedConfig.subnets,
+		AssignPublicIp: schedulerTypes.AssignPublicIpDisabled,
+		SecurityGroups: nc.resolvedConfig.securityGroups,
+	}
+	if nc.resolvedConfig.publicIp {
+		vpcConfig.AssignPublicIp = schedulerTypes.AssignPublicIpEnabled
+	}
+
+	result := &schedulerTypes.NetworkConfiguration{
 		AwsvpcConfiguration: &vpcConfig,
 	}
 

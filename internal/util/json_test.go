@@ -14,16 +14,18 @@ func TestJsonifyAndPretty(t *testing.T) {
 	}
 
 	tables := []struct {
-		obj interface{}
-		exp string
+		obj        interface{}
+		exp        string
+		expEscaped string
 	}{
-		{5, `5`},
-		{"test", `"test"`},
-		{true, `true`},
-		{jsonStruct{Thing: "blahblahba"}, `{"thing":"blahblahba"}`},
-		{&jsonStruct{Thing: "blahblahba"}, `{"thing":"blahblahba"}`},
-		{[]int{1, 2, 3, 4, 5}, `[1,2,3,4,5]`},
-		{nil, `null`},
+		{5, `5`, ""},
+		{"test", `"test"`, ""},
+		{true, `true`, ""},
+		{jsonStruct{Thing: "blahblahba"}, `{"thing":"blahblahba"}`, ""},
+		{&jsonStruct{Thing: "blahblahba"}, `{"thing":"blahblahba"}`, ""},
+		{&jsonStruct{Thing: "<turd>"}, `{"thing":"<turd>"}`, `{"thing":"\u003cturd\u003e"}`},
+		{[]int{1, 2, 3, 4, 5}, `[1,2,3,4,5]`, ""},
+		{nil, `null`, ""},
 	}
 
 	for tNum, table := range tables {
@@ -36,6 +38,17 @@ func TestJsonifyAndPretty(t *testing.T) {
 			require.NoError(t, err)
 
 			require.JSONEq(t, res, resPretty)
+
+			expectedEscaped := table.expEscaped
+			if expectedEscaped == "" {
+				expectedEscaped = table.exp
+			}
+
+			resEscaped, err := JsonifyEscaped(table.obj)
+			require.NoError(t, err)
+			require.JSONEq(t, res, resEscaped)
+			require.Equal(t, expectedEscaped, resEscaped)
+
 		})
 	}
 }

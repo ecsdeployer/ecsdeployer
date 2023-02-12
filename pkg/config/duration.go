@@ -54,12 +54,12 @@ func (a *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (obj *Duration) ToString() string {
+func (obj *Duration) String() string {
 	return fmt.Sprintf("%d", int32(obj.ToDuration().Seconds()))
 }
 
 func (obj *Duration) MarshalYAML() (interface{}, error) {
-	return obj.ToString(), nil
+	return obj.String(), nil
 }
 
 func (obj *Duration) MarshalJSON() ([]byte, error) {

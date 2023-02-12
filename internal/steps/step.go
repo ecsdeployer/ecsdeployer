@@ -127,6 +127,10 @@ func (s *Step) GetAttr(key string) (interface{}, bool) {
 	return val, ok
 }
 
+func (s *Step) GetAttrMust(key string) interface{} {
+	return s.Attributes[key]
+}
+
 // looks in this step and any children
 func (s *Step) SearchAttr(key string) (interface{}, bool) {
 	val, ok := s.Attributes[key]
@@ -205,6 +209,7 @@ func (s *Step) Apply(ctx *config.Context) error {
 		s.Indent()
 
 		if s.ParallelDeps {
+
 			eg := new(errgroup.Group)
 			eg.SetLimit(5)
 

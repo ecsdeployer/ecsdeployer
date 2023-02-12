@@ -14,16 +14,29 @@ ECS Deployer can also be used on [GitHub Actions](https://github.com/features/ac
 
 ### Recommend Directory Structure
 
-```
-<repo root>
-├── .ecsdeployer
-│   ├── beta.yml
-│   ├── production.yml
-│   └── staging.yml
-└── .github
-    └── workflows
-      └── deploy.yml
-```
+=== "Default"
+
+    ```
+    <repo root>
+    ├── .ecsdeployer.yml
+    └── .github
+        └── workflows
+        └── deploy.yml
+    ```
+
+
+=== "Using Stages"
+
+    ```
+    <repo root>
+    ├── .ecsdeployer
+    │   ├── beta.yml
+    │   ├── production.yml
+    │   └── staging.yml
+    └── .github
+        └── workflows
+        └── deploy.yml
+    ```
 
 ## Configuring
 

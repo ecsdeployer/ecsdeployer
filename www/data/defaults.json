@@ -14,7 +14,7 @@
     "ECSDEPLOYER_APP_VERSION": "{{ .Version }}",
     "ECSDEPLOYER_DEPLOYED_AT": "{{ .Date }}",
     "ECSDEPLOYER_IMAGE_TAG": "{{ .ImageTag }}",
-    "ECSDEPLOYER_PROJECT": "{{ .ProjectName }}",
+    "ECSDEPLOYER_PROJECT": "{{ .Project }}",
     "ECSDEPLOYER_STAGE": "{{ .Stage }}",
     "ECSDEPLOYER_TASK_NAME": "{{ .Name }}"
   },
@@ -39,19 +39,21 @@
   },
   "NameTemplates": {
     "container": "{{ .Name }}",
-    "cron_group": "ecsd:{{ .ProjectName }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}",
-    "cron_rule": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}",
-    "cron_target": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
-    "log_group": "/ecsdeployer/app/{{ .ProjectName }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}",
+    "cron_group": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}",
+    "cron_rule": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}",
+    "cron_target": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
+    "log_group": "/ecsdeployer/app/{{ .Project }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}",
     "log_stream_prefix": "{{ .Name }}",
     "marker_tag_key": "ecsdeployer/project",
-    "marker_tag_value": "{{ .ProjectName }}{{ if .Stage }}/{{ .Stage }}{{end}}",
-    "predeploy_group": "ecsd:{{ .ProjectName }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}",
-    "predeploy_started_by": "ecsd:{{ .ProjectName }}{{ if .Stage }}:{{ .Stage }}{{end}}:deployer",
-    "service_name": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}",
-    "ssm_import__path": "/ecsdeployer/secrets/{{ .ProjectName }}{{ if .Stage }}/{{ .Stage }}{{ end }}",
-    "target_group": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
-    "task_family": "{{ .ProjectName }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
+    "marker_tag_value": "{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{end}}",
+    "predeploy_group": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}",
+    "predeploy_started_by": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:deployer",
+    "schedule": "ecsd-cron-{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}",
+    "schedule_group": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}",
+    "service_name": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}",
+    "ssm_import__path": "/ecsdeployer/secrets/{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{ end }}",
+    "target_group": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
+    "task_family": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
   },
   "PreDeployTask": {
     "disabled": "false",
@@ -60,7 +62,7 @@
   },
   "SSMImport": {
     "enabled": "false",
-    "path": "/ecsdeployer/secrets/{{ .ProjectName }}{{ if .Stage }}/{{ .Stage }}{{ end }}",
+    "path": "/ecsdeployer/secrets/{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{ end }}",
     "recursive": "true"
   },
   "Service": {
@@ -72,7 +74,9 @@
     "disable_marker_tag": "false",
     "predeploy_parallel": "false",
     "predeploy_timeout": "5400",
-    "skip_deployment_env_vars": "false"
+    "skip_cron_env_vars": "false",
+    "skip_deployment_env_vars": "false",
+    "use_old_cron_eventbus": "false"
   },
   "TplDefault": {
     "container": "{NAME}",
@@ -85,6 +89,8 @@
     "marker_tag_value": "{PROJECT}",
     "predeploy_group": "ecsd:{PROJECT}:pd:{NAME}",
     "predeploy_started_by": "ecsd:{PROJECT}:deployer",
+    "schedule": "ecsd-cron-{PROJECT}-{NAME}",
+    "schedule_group": "{PROJECT}",
     "service_name": "{PROJECT}-{NAME}",
     "ssm_import__path": "/ecsdeployer/secrets/{PROJECT}",
     "target_group": "{PROJECT}-target-{NAME}",
@@ -101,6 +107,8 @@
     "marker_tag_value": "{PROJECT}/{STAGE}",
     "predeploy_group": "ecsd:{PROJECT}:{STAGE}:pd:{NAME}",
     "predeploy_started_by": "ecsd:{PROJECT}:{STAGE}:deployer",
+    "schedule": "ecsd-cron-{PROJECT}-{STAGE}-{NAME}",
+    "schedule_group": "{PROJECT}-{STAGE}",
     "service_name": "{PROJECT}-{STAGE}-{NAME}",
     "ssm_import__path": "/ecsdeployer/secrets/{PROJECT}/{STAGE}",
     "target_group": "{PROJECT}-{STAGE}-target-{NAME}",

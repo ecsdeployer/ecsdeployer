@@ -65,9 +65,11 @@ settings: ...
 
 [`cron_launcher_role`](#root.cron_launcher_role){ #root.cron_launcher_role } - **(required if using [CronJobs](cronjobs.md))**
 
-:   This is the role that EventBridge will use to launch your task based on the schedule you specify.
+:   This is the role that EventBridge Scheduler will use to launch your task based on the schedule you specify.
 
     You can specify roles using the full ARN or the name of the role. Roles must already exist, they will not be created for you.
+
+    An example policy can be seen on the [AWS IAM Permissions](../aws/iam.md) page.
 
 [`network`](#root.network){ #root.network } - **(required)**
 

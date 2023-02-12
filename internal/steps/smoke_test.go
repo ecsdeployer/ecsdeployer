@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"fmt"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
@@ -56,7 +57,9 @@ func TestSmokeTest_StepFuncs(t *testing.T) {
 		{CronDeploymentStep(&project), "CronDeployment"},
 		{CronRuleStep(project.CronJobs[0]), "CronRule"},
 		{CronTargetStep(project.CronJobs[0]), "CronTarget"},
-		{CronjobStep(project.CronJobs[0]), "Cronjob"},
+		{CronSchedulesStep(&project), "CronSchedules"},
+		{CronjobStep(project.CronJobs[0], true), "Cronjob"},
+		{CronjobStep(project.CronJobs[0], false), "Cronjob"},
 		{DeploymentStep(&project), "Deployment"},
 		{DeregisterTaskDefinitionsStep(&project), "DeregisterTaskDefinitions"},
 		{FirelensStep(&project), "Firelens"},
@@ -68,14 +71,17 @@ func TestSmokeTest_StepFuncs(t *testing.T) {
 		{PreloadLogGroupsStep(&project), "PreloadLogGroups"},
 		{PreloadSecretsStep(&project), "PreloadSecrets"},
 		{PreloadStep(&project), "Preload"},
+		{ScheduleGroupStep(&project), "ScheduleGroup"},
 		{ServiceDeploymentStep(&project), "ServiceDeployment"},
 		{ServiceStep(project.Services[0]), "Service"},
-		{TargetGroupStep(project.Services[0]), "TargetGroup"},
 		{TaskDefinitionStep(project.ConsoleTask), "TaskDefinition"},
 	}
 
-	for _, table := range tables {
-		require.Equal(t, table.label, table.step.Label)
+	for i, table := range tables {
+		t.Run(fmt.Sprintf("test_%02d_%s", i+1, table.label), func(t *testing.T) {
+			require.Equal(t, table.label, table.step.Label)
+			require.NoError(t, table.step.Validate())
+		})
 	}
 
 }

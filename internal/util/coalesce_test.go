@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -20,16 +21,11 @@ func runCoalesceTest[T comparable](t *testing.T, expected *T, values ...*T) {
 	result := Coalesce(values...)
 
 	if expected == nil {
-		if result != nil {
-			t.Fatalf("Incorrect result for Coalesce test: expected nil but was given not nil")
-		}
+		require.Nil(t, result)
 		return
 	}
 
-	if *expected != *result {
-		t.Fatalf("Incorrect result for coalesce. expected=<%v> got=<%v / %v>", *expected, result, *result)
-		return
-	}
+	require.Equal(t, *expected, *result)
 }
 
 func TestCoalesceWithFunc(t *testing.T) {
@@ -43,25 +39,22 @@ func TestCoalesceWithFunc(t *testing.T) {
 		{false, 0, []*int{nil, nil, nil}},
 	}
 
-	for _, table := range tables {
-		result, ok := CoalesceWithFunc(func(i *int) bool {
-			return *i > 5
-		}, table.values...)
+	for testNum, table := range tables {
+		t.Run(fmt.Sprintf("test_%02d", testNum+1), func(t *testing.T) {
+			result, ok := CoalesceWithFunc(func(i *int) bool {
+				return *i > 5
+			}, table.values...)
 
-		if ok != table.matchExpected {
-			t.Fatalf("Expected to have ok=%t but got %t", table.matchExpected, ok)
-		}
+			require.Equal(t, table.matchExpected, ok)
 
-		if table.matchExpected {
-			if result == nil {
-				t.Fatalf("Result should not have been nil but was")
+			if !table.matchExpected {
+				require.Nil(t, result)
+				return
 			}
-			if table.expectedVal != *result {
-				t.Fatalf("Result expected=%v got=%v", table.expectedVal, *result)
-			}
-		} else if result != nil {
-			t.Fatalf("Result should have been nil but wasnt")
-		}
+
+			require.NotNil(t, result, "Result should not have been nil but was")
+			require.Equal(t, table.expectedVal, *result)
+		})
 	}
 }
 

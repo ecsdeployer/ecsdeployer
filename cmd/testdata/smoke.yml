@@ -8,7 +8,7 @@ project: deployer-test
 # image: "webdestroya/http-placeholder:latest"
 # image:
 #   ecr: cloud87/remote-shell
-#   tag: "{{ .ProjectName }}"
+#   tag: "{{ .Project }}"
 image:
   docker: webdestroya/http-placeholder
   tag: latest
@@ -60,12 +60,12 @@ tags:
     value: true
   
   - name: cloud87/application
-    value: "{{ .ProjectName }}"
+    value: "{{ .Project }}"
 
   - name: cloud87/ecs/app
-    value: "{{ .ProjectName }}"
+    value: "{{ .Project }}"
 
-  # - name: "cloud87/{{.ProjectName}}/things"
+  # - name: "cloud87/{{.Project}}/things"
   #   value: "{{ .Date }}"
 
 console:

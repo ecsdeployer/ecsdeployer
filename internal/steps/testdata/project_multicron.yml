@@ -1,0 +1,36 @@
+project: dummy
+image: fake:latest
+cluster: testcluster
+
+cron_launcher_role: fakerole
+
+network:
+  subnets:
+    - subnet-1111111111
+    - subnet-2222222222
+  
+  security_groups:
+    - sg-1111111111
+    - sg-2222222222
+
+
+cronjobs:
+  - name: cron1
+    command: /bin/true
+    schedule: rate(1 day)
+    disabled: true
+  
+  - name: cron2
+    command: /bin/true
+    schedule: rate(1 day)
+    disabled: true
+  
+  - name: cron3
+    command: /bin/true
+    schedule: rate(1 day)
+    disabled: true
+  
+  - name: cron4
+    command: /bin/true
+    schedule: rate(1 day)
+    disabled: true

@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
+	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
@@ -35,6 +36,21 @@ func (obj *SpotOverrides) ExportCapacityStrategyEventBridge() []eventTypes.Capac
 
 	for i, elm := range ecs {
 		eb[i] = eventTypes.CapacityProviderStrategyItem{
+			CapacityProvider: elm.CapacityProvider,
+			Base:             elm.Base,
+			Weight:           elm.Weight,
+		}
+	}
+
+	return eb
+}
+
+func (obj *SpotOverrides) ExportCapacityStrategyScheduler() []schedulerTypes.CapacityProviderStrategyItem {
+	ecs := obj.ExportCapacityStrategy()
+	eb := make([]schedulerTypes.CapacityProviderStrategyItem, len(ecs))
+
+	for i, elm := range ecs {
+		eb[i] = schedulerTypes.CapacityProviderStrategyItem{
 			CapacityProvider: elm.CapacityProvider,
 			Base:             elm.Base,
 			Weight:           elm.Weight,

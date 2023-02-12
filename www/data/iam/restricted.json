@@ -10,7 +10,8 @@
         "ec2:DescribeSecurityGroups",
         "elasticloadbalancing:DescribeTargetGroups",
         "logs:DescribeLogGroups",
-        "tag:GetResources"
+        "tag:GetResources",
+        "scheduler:ListSchedules"
       ],
       "Resource": "*"
     },
@@ -120,29 +121,21 @@
       "Sid": "CronSetup",
       "Effect": "Allow",
       "Action": [
-        "events:PutRule",
-        "events:DeleteRule",
-        "events:RemoveTargets",
-        "events:ListTargetsByRule",
-        "events:TagResource",
-        "events:UntagResource"
+        "scheduler:GetSchedule",
+        "scheduler:UpdateSchedule",
+        "scheduler:CreateSchedule",
+        "scheduler:DeleteSchedule"
       ],
-      "Resource": [
-        "arn:aws:events:REGION:ACCOUNTID:rule/PROJECT_NAME-*"
-      ]
+      "Resource": "arn:aws:scheduler:*:*:schedule/PROJECT_NAME/*"
     },
     {
-      "Sid": "CronSetupTargets",
+      "Sid": "CronSetupGroup",
       "Effect": "Allow",
-      "Action": "events:PutTargets",
-      "Resource": "arn:aws:events:REGION:ACCOUNTID:rule/PROJECT_NAME-*",
-      "Condition": {
-        "ArnEquals": {
-          "events:TargetArn": [
-            "arn:aws:ecs:REGION:ACCOUNTID:cluster/CLUSTER_NAME"
-          ]
-        }
-      }
+      "Action": [
+        "scheduler:GetScheduleGroup",
+        "scheduler:CreateScheduleGroup"
+      ],
+      "Resource": "*"
     },
     {
       "Sid": "EcsPassRole",
@@ -170,7 +163,7 @@
       "Condition": {
         "StringLike": {
           "iam:PassedToService": [
-            "events.amazonaws.com"
+            "scheduler.amazonaws.com"
           ]
         }
       }
