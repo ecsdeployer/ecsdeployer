@@ -17,4 +17,13 @@ func TestCronDeploymentStep(t *testing.T) {
 		require.Len(t, step.Dependencies, 1)
 		require.Equal(t, "Cronjob", step.Dependencies[0].Label)
 	})
+
+	t.Run("when no cronjobs", func(t *testing.T) {
+		project, _ := stepTestAwsMocker(t, "testdata/project_advanced.yml", nil)
+
+		project.CronJobs = nil
+
+		step := CronDeploymentStep(project)
+		require.Equal(t, "Noop", step.Label)
+	})
 }

@@ -22,21 +22,23 @@ type Template struct {
 type Fields map[string]interface{}
 
 const (
+	projectName  = "Project"
+	env          = "Env"
+	stage        = "Stage"
+	date         = "Date"
+	timestamp    = "Timestamp"
+	version      = "Version"
+	appVersion   = "AppVersion"
+	imageTag     = "ImageTag"
+	tag          = "Tag"
+	image        = "Image"
+	awsRegion    = "AwsRegion"
+	awsAccountId = "AwsAccountId"
+	clusterName  = "Cluster"
+
+	// Older deprecated values
 	projectNameLong = "ProjectName"
-	projectName     = "Project"
-	env             = "Env"
-	stage           = "Stage"
-	date            = "Date"
-	timestamp       = "Timestamp"
-	version         = "Version"
-	appVersion      = "AppVersion"
-	imageTag        = "ImageTag"
-	tag             = "Tag"
-	image           = "Image"
-	awsRegion       = "AwsRegion"
-	awsAccountId    = "AwsAccountId"
 	clusterNameLong = "ClusterName"
-	clusterName     = "Cluster"
 )
 
 // New Template.
