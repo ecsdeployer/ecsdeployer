@@ -121,6 +121,7 @@
       "Sid": "CronSetup",
       "Effect": "Allow",
       "Action": [
+        "scheduler:GetSchedule",
         "scheduler:UpdateSchedule",
         "scheduler:CreateSchedule",
         "scheduler:DeleteSchedule"
