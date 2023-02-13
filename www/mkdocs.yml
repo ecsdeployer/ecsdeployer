@@ -51,7 +51,7 @@ extra_css:
 extra:
   analytics:
     provider: google
-    property: !ENV GOOGLE_ANALYTICS_KEY
+    property: G-V07ZM4DN4C
   # version:
   #   provider: mike
   #   default: latest
