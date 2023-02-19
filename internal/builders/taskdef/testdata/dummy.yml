@@ -2,9 +2,14 @@ project: dummy
 image: fake:latest
 cluster: fake
 
-role: fake
-execution_role: fale
-cron_launcher_role: fale
+role: faketask
+execution_role: fakeexec
+cron_launcher_role: fakecron
+
+tags:
+  - name: testing/ecsd
+    value: true
+
 
 network:
   subnets:
@@ -25,8 +30,9 @@ console: true
 services:
   - name: svc1
     desired: 1
+    command: bundle exec puma -C config/puma.rb
     load_balancer:
-      target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
+      target_group: arn:aws:elasticloadbalancing:us-east-1:555555555555:targetgroup/fake/xxxxxxxx
       port: 1234
   
   - name: svc2
