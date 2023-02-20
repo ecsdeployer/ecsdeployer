@@ -44,6 +44,10 @@ func (e EnvVar) IsUnset() bool {
 	return e.Unset
 }
 
+func (e EnvVar) IsSecret() bool {
+	return e.IsSSM()
+}
+
 func NewEnvVar(vartype EnvVarType, value string) EnvVar {
 	switch vartype {
 	case EnvVarTypeTemplated:
@@ -60,7 +64,7 @@ func NewEnvVar(vartype EnvVarType, value string) EnvVar {
 	}
 }
 
-func (e EnvVar) GetValue(tplRef any) (string, error) {
+func (e EnvVar) GetValue(tplRef templater) (string, error) {
 	if e.IsPlain() {
 		return *e.Value, nil
 	}
@@ -75,8 +79,9 @@ func (e EnvVar) GetValue(tplRef any) (string, error) {
 	}
 
 	if e.IsTemplated() {
-		if tpl, ok := tplRef.(templater); ok {
-			val, err := tpl.Apply(*e.ValueTemplate)
+		// if tpl, ok := tplRef.(templater); ok {
+		if tplRef != nil {
+			val, err := tplRef.Apply(*e.ValueTemplate)
 			if err != nil {
 				return "", err
 			}

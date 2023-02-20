@@ -72,7 +72,7 @@ func Build(ctx *config.Context, resource config.IsTaskStruct) (*ecs.RegisterTask
 	maps.Copy(envVarMap, taskDefaults.EnvVars)
 	maps.Copy(envVarMap, common.EnvVars)
 
-	gEnvVars, gSecrets, err := envVarMapToECS(ctx, tpl, envVarMap)
+	gEnvVars, gSecrets, err := envVarMapToECS_OLD(ctx, tpl, envVarMap)
 	if err != nil {
 		return nil, err
 	}
@@ -287,7 +287,8 @@ func Build(ctx *config.Context, resource config.IsTaskStruct) (*ecs.RegisterTask
 }
 
 // converts environment variables to the types needed for ECS
-func envVarMapToECS(ctx *config.Context, tpl *tmpl.Template, ev map[string]config.EnvVar) ([]ecsTypes.KeyValuePair, []ecsTypes.Secret, error) {
+// use EnvVarMap.Export instead
+func envVarMapToECS_OLD(ctx *config.Context, tpl *tmpl.Template, ev map[string]config.EnvVar) ([]ecsTypes.KeyValuePair, []ecsTypes.Secret, error) {
 	var envvars = []ecsTypes.KeyValuePair{}
 	var secrets = []ecsTypes.Secret{}
 

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
 	"golang.org/x/exp/maps"
 )
@@ -48,4 +49,32 @@ func MergeEnvVarMaps(values ...EnvVarMap) EnvVarMap {
 	}
 
 	return newMap
+}
+
+type EnvVarExportFunc func(string, string) any
+
+func (obj EnvVarMap) Export(tpl templater, envVarFunc EnvVarExportFunc, secretFunc EnvVarExportFunc) (any, any, error) {
+	var envvars = []any{}
+	var secrets = []any{}
+
+	for key, val := range obj.Filter() {
+		if val.IsSSM() {
+
+			secrets = append(secrets, secretFunc(key, util.Must(val.GetValue(nil))))
+			continue
+		}
+
+		value, err := val.GetValue(tpl)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if util.IsBlank(&value) {
+			continue
+		}
+
+		envvars = append(envvars, envVarFunc(key, value))
+	}
+
+	return envvars, secrets, nil
 }

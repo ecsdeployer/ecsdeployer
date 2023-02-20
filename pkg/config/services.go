@@ -21,6 +21,8 @@ type Service struct {
 	// Capacity *Capacity `yaml:"capacity,omitempty" json:"capacity,omitempty" jsonschema:"-"`
 }
 
+var _ IsTaskStruct = &Service{}
+
 func (svc *Service) IsWorker() bool {
 	return len(svc.LoadBalancers) == 0
 }

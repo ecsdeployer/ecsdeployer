@@ -83,7 +83,7 @@ func SchemaNamer(t reflect.Type) string {
 	return name
 }
 
-func GenerateSchema(v interface{}) *jsonschema.Schema {
+func GenerateSchema(v any) *jsonschema.Schema {
 	// https://www.schemastore.org/json/
 	reflector := &jsonschema.Reflector{
 		AllowAdditionalProperties: false,
@@ -123,7 +123,7 @@ type PropertyChain struct {
 	orderedMap *orderedmap.OrderedMap
 }
 
-func (obj *PropertyChain) Set(key string, value interface{}) *PropertyChain {
+func (obj *PropertyChain) Set(key string, value any) *PropertyChain {
 	obj.orderedMap.Set(key, value)
 	return obj
 }

@@ -1,11 +1,15 @@
 package taskdef
 
 import (
+	"errors"
+
 	"ecsdeployer.com/ecsdeployer/internal/builders/pipeline"
 	"ecsdeployer.com/ecsdeployer/internal/builders/taskdef/containers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
+	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -15,21 +19,18 @@ type PrimaryContainerBuilder struct {
 	Resource config.IsTaskStruct
 }
 
-func (pc *PrimaryContainerBuilder) Apply(obj *pipeline.PipeItem[ecsTypes.ContainerDefinition]) error {
+func (pc *PrimaryContainerBuilder) Apply(obj *pipeline.PipeItem[ecs.RegisterTaskDefinitionInput]) error {
 
-	cont := obj.Data
-	if cont == nil {
-		cont = &ecsTypes.ContainerDefinition{}
-	}
+	primaryContainerPipe := pipeline.NewPipeItem(obj.Context, &ecsTypes.ContainerDefinition{})
 
 	common, err := config.ExtractCommonTaskAttrs(pc.Resource)
 	if err != nil {
 		return err
 	}
-	_ = common
 
 	ctx := obj.Context
 	project := ctx.Project
+	taskDefaults := project.TaskDefaults
 
 	containerName, err := pc.Tpl.Apply(*project.Templates.ContainerName)
 	if err != nil {
@@ -37,17 +38,28 @@ func (pc *PrimaryContainerBuilder) Apply(obj *pipeline.PipeItem[ecsTypes.Contain
 	}
 	pc.Tpl = pc.Tpl.WithExtraField("ContainerName", containerName)
 
-	contPi := pipeline.NewPipeItem(cont)
-
-	err = contPi.Apply(&containers.ConsoleBuilder{})
+	err = primaryContainerPipe.Apply(
+		&containers.ContainerDefaultsBuilder{Resource: common.CommonContainerAttrs},
+		&containers.ConsoleBuilder{Resource: pc.Resource},
+		&containers.PortMappingsBuilder{Resource: pc.Resource},
+	)
 	if err != nil {
 		return err
 	}
 
-	cont = contPi.GetData()
+	image := util.Coalesce(common.Image, taskDefaults.Image, project.Image)
+	if image == nil {
+		return errors.New("You have not specified an image to deploy")
+	}
 
-	cont.Name = aws.String(containerName)
+	primaryContainerPipe.Data.Image = aws.String(image.Value())
 
-	obj.Data = cont
-	return ErrNotImplemented
+	primaryContainerPipe.Data.Name = aws.String(containerName)
+
+	if obj.Data.ContainerDefinitions == nil {
+		obj.Data.ContainerDefinitions = make([]ecsTypes.ContainerDefinition, 0)
+	}
+	obj.Data.ContainerDefinitions = append(obj.Data.ContainerDefinitions, *primaryContainerPipe.GetData())
+
+	return nil
 }
