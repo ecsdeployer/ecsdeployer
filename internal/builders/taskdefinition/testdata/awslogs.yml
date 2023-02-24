@@ -1,0 +1,65 @@
+project: dummy
+image: fake:latest
+cluster: fakecluster
+
+role: faketask
+execution_role: fakeexec
+cron_launcher_role: fakecron
+
+network:
+  subnets:
+    - subnet-2222222222
+  security_groups:
+    - sg-11111111111
+  public_ip: false
+
+logging:
+  awslogs:
+    retention: 14
+
+predeploy:
+  - name: pd1
+    command: "something"
+  
+  - name: pd2
+    command: ["another", "thing"]
+
+console: true
+
+services:
+  - name: svc1
+    desired: 1
+    command: bundle exec puma -C config/puma.rb
+    load_balancer:
+      target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
+      port: 1234
+  
+  - name: svc2
+    desired: 1
+
+  - name: svc3
+    desired: 1
+    load_balancer:
+      grace: 55
+      target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
+      port: 1234
+  
+  - name: svc4
+    desired: 1
+    load_balancer:
+      - target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
+        port: 1234
+      - target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
+        port: 1222
+        grace: 122
+      - target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
+        port: 1225
+        grace: 60
+
+    
+cronjobs:
+  - name: cron1
+    disabled: true
+    schedule: "cron(0 9 * * ? *)"
+    command: ["bundle", "exec", "rake", "cron:whatever"]
+    description: "Whatever: this does stuff"

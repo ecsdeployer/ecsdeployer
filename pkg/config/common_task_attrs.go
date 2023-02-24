@@ -15,8 +15,17 @@ type CommonTaskAttrs struct {
 	Sidecars        []*Sidecar            `yaml:"sidecars,omitempty" json:"sidecars,omitempty" jsonschema:"-"`
 }
 
+func (obj *CommonTaskAttrs) GetCommonContainerAttrs() CommonContainerAttrs {
+	return obj.CommonContainerAttrs
+}
+
+func (obj *CommonTaskAttrs) GetCommonTaskAttrs() CommonTaskAttrs {
+	return *obj
+}
+
 type IsTaskStruct interface {
-	// CommonTaskAttrs
+	GetCommonTaskAttrs() CommonTaskAttrs
+	GetCommonContainerAttrs() CommonContainerAttrs
 	IsTaskStruct() bool
 }
 

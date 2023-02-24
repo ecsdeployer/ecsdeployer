@@ -11,6 +11,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestCommonTaskAttrs(t *testing.T) {
+	t.Run("InterfaceUsage", func(t *testing.T) {
+
+		type hasCommonTaskAttrs interface {
+			GetCommonTaskAttrs() config.CommonTaskAttrs
+		}
+
+		require.Implements(t, (*hasCommonTaskAttrs)(nil), &config.Service{}, "Service")
+		require.Implements(t, (*hasCommonTaskAttrs)(nil), &config.ConsoleTask{}, "ConsoleTask")
+		require.Implements(t, (*hasCommonTaskAttrs)(nil), &config.PreDeployTask{}, "PreDeployTask")
+		require.Implements(t, (*hasCommonTaskAttrs)(nil), &config.CronJob{}, "CronJob")
+		require.Implements(t, (*hasCommonTaskAttrs)(nil), &config.CommonTaskAttrs{}, "CommonTaskAttrs")
+		require.Implements(t, (*hasCommonTaskAttrs)(nil), &config.FargateDefaults{}, "FargateDefaults")
+	})
+}
+
 func TestCommonTaskAttrs_Smoke(t *testing.T) {
 	common := &config.CommonTaskAttrs{
 		Architecture: util.Ptr(config.ArchitectureARM64),

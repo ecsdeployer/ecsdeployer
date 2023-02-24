@@ -21,6 +21,14 @@ type Service struct {
 	// Capacity *Capacity `yaml:"capacity,omitempty" json:"capacity,omitempty" jsonschema:"-"`
 }
 
+func (obj *Service) GetCommonContainerAttrs() CommonContainerAttrs {
+	return obj.CommonContainerAttrs
+}
+
+func (obj *Service) GetCommonTaskAttrs() CommonTaskAttrs {
+	return obj.CommonTaskAttrs
+}
+
 var _ IsTaskStruct = &Service{}
 
 func (svc *Service) IsWorker() bool {

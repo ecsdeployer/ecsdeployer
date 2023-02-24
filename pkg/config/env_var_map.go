@@ -51,13 +51,13 @@ func MergeEnvVarMaps(values ...EnvVarMap) EnvVarMap {
 	return newMap
 }
 
-type EnvVarExportFunc func(string, string) any
+type EnvVarExportFunc[T any] func(string, string) T
 
-func (obj EnvVarMap) Export(tpl templater, envVarFunc EnvVarExportFunc, secretFunc EnvVarExportFunc) (any, any, error) {
-	var envvars = []any{}
-	var secrets = []any{}
+func ExportEnvVarMap[Te any, Ts any](varMap EnvVarMap, tpl templater, envVarFunc EnvVarExportFunc[Te], secretFunc EnvVarExportFunc[Ts]) ([]Te, []Ts, error) {
+	var envvars = []Te{}
+	var secrets = []Ts{}
 
-	for key, val := range obj.Filter() {
+	for key, val := range varMap.Filter() {
 		if val.IsSSM() {
 
 			secrets = append(secrets, secretFunc(key, util.Must(val.GetValue(nil))))

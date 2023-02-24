@@ -34,3 +34,26 @@ func (b *Builder) applyTaskResources() error {
 
 	return nil
 }
+
+// this is meant for containers OTHER than the primary
+func (b *Builder) applyContainerResources(cdef *ecsTypes.ContainerDefinition, thing hasContainerAttrs) error {
+
+	common := thing.GetCommonContainerAttrs()
+
+	if common.Cpu != nil {
+		cdef.Cpu = common.Cpu.Shares()
+	}
+
+	if common.Memory != nil {
+		memoryValue, err := common.Memory.MegabytesFromCpu(common.Cpu)
+		if err != nil {
+			return err
+		}
+
+		if memoryValue > 0 {
+			cdef.MemoryReservation = aws.Int32(memoryValue)
+		}
+	}
+
+	return nil
+}

@@ -115,7 +115,7 @@ If you do not specify any logging configuration, then CloudWatch logs will be us
 
 [`options`](#firelens.options){ #firelens.options }
 
-:   Allows you to specify options to provide to the FireLens Router.
+:   Allows you to specify options to provide for the individual task container log configurations.
 
     Options can be specified identically to how [Environment Variables](envvars.md) are specified. Values that reference an SSM Parameter will be added to the `SecretOptions` field on the container. All others will be added to `Options`.
 
@@ -127,12 +127,32 @@ If you do not specify any logging configuration, then CloudWatch logs will be us
           firelens:
             type: fluentbit
             options:
-              enable-ecs-log-metadata: true
               Name: thing
               region: "us-east-1"
               delivery_stream: "my-stream"
               log-driver-buffer-limit: "2097152"
               whatever: {template: "{{ .Date }}"}
+        ```
+
+[`router_options`](#firelens.router_options){ #firelens.router_options }
+
+:   Allows you to specify options that will be passed to the Firelens **router container only**. These are not applied to the task containers.
+
+    Options can be specified identically to how [Environment Variables](envvars.md) are specified, **but you cannot specify any SSM parameters**.
+
+    You generally will not need to configure this. This is meant for advanced customization of Firelens.
+
+    !!! example "Usage example"
+        ```yaml
+        logging:
+          firelens:
+            type: fluentbit
+            options:
+              Name: thing
+              region: "us-east-1"
+              delivery_stream: "my-stream"
+            router_options:
+              enable-ecs-log-metadata: true
         ```    
 
 [`memory`](#firelens.memory){ #firelens.memory }

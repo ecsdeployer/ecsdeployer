@@ -19,6 +19,14 @@ type ConsoleTask struct {
 	Path        *string      `yaml:"path,omitempty" json:"path,omitempty"`
 }
 
+func (obj *ConsoleTask) GetCommonContainerAttrs() CommonContainerAttrs {
+	return obj.CommonContainerAttrs
+}
+
+func (obj *ConsoleTask) GetCommonTaskAttrs() CommonTaskAttrs {
+	return obj.CommonTaskAttrs
+}
+
 func (obj *ConsoleTask) IsEnabled() bool {
 	if obj.Enabled == nil {
 		return defaultConsoleEnabled

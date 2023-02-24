@@ -10,15 +10,16 @@ import (
 )
 
 type FirelensConfig struct {
-	Disabled    bool        `yaml:"disabled,omitempty" json:"disabled,omitempty"`
-	Type        *string     `yaml:"type,omitempty" json:"type,omitempty"`
-	Name        *string     `yaml:"container_name,omitempty" json:"container_name,omitempty"`
-	Options     EnvVarMap   `yaml:"options,omitempty" json:"options,omitempty"`
-	EnvVars     EnvVarMap   `yaml:"environment,omitempty" json:"environment,omitempty"`
-	Credentials *string     `yaml:"credentials,omitempty" json:"credentials,omitempty"`
-	InheritEnv  *bool       `yaml:"inherit_env,omitempty" json:"inherit_env,omitempty"`
-	Image       *ImageUri   `yaml:"image,omitempty" json:"image,omitempty"`
-	Memory      *MemorySpec `yaml:"memory,omitempty" json:"memory,omitempty"`
+	Disabled      bool        `yaml:"disabled,omitempty" json:"disabled,omitempty"`
+	Type          *string     `yaml:"type,omitempty" json:"type,omitempty"`
+	Name          *string     `yaml:"container_name,omitempty" json:"container_name,omitempty"`
+	Options       EnvVarMap   `yaml:"options,omitempty" json:"options,omitempty"`
+	RouterOptions EnvVarMap   `yaml:"router_options,omitempty" json:"router_options,omitempty"`
+	EnvVars       EnvVarMap   `yaml:"environment,omitempty" json:"environment,omitempty"`
+	Credentials   *string     `yaml:"credentials,omitempty" json:"credentials,omitempty"`
+	InheritEnv    *bool       `yaml:"inherit_env,omitempty" json:"inherit_env,omitempty"`
+	Image         *ImageUri   `yaml:"image,omitempty" json:"image,omitempty"`
+	Memory        *MemorySpec `yaml:"memory,omitempty" json:"memory,omitempty"`
 	// Logging     *TaskLoggingConfig `yaml:"logging,omitempty" json:"logging,omitempty"`
 
 	// should we log the firelens container to AWSLogs (not the app logs, but firelens itself)
@@ -73,10 +74,8 @@ func (obj *FirelensConfig) Validate() error {
 		return NewValidationError("you must provide an image URI for the firelens configuration")
 	}
 
-	for _, v := range obj.Options {
-		if v.IsSSM() {
-			return NewValidationError("you cannot have SSM options in Firelens configuration")
-		}
+	if obj.RouterOptions.HasSSM() {
+		return NewValidationError("you cannot have SSM options in Firelens configuration")
 	}
 
 	return nil
@@ -109,6 +108,10 @@ func (obj *FirelensConfig) ApplyDefaults() {
 
 	if obj.Options == nil {
 		obj.Options = make(EnvVarMap)
+	}
+
+	if obj.RouterOptions == nil {
+		obj.RouterOptions = make(EnvVarMap)
 	}
 
 	if obj.Image == nil && !obj.IsDisabled() {

@@ -14,6 +14,14 @@ type FargateDefaults struct {
 	SpotOverride *SpotOverrides `yaml:"spot,omitempty" json:"spot,omitempty"`
 }
 
+func (obj *FargateDefaults) GetCommonContainerAttrs() CommonContainerAttrs {
+	return obj.CommonContainerAttrs
+}
+
+func (obj *FargateDefaults) GetCommonTaskAttrs() CommonTaskAttrs {
+	return obj.CommonTaskAttrs
+}
+
 func (obj *FargateDefaults) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	type t FargateDefaults // prevent recursive overflow
 	var defo = t{}

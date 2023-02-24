@@ -17,6 +17,10 @@ type CommonContainerAttrs struct {
 	HealthCheck   *HealthCheck       `yaml:"healthcheck,omitempty" json:"healthcheck,omitempty"`
 }
 
+func (obj *CommonContainerAttrs) GetCommonContainerAttrs() CommonContainerAttrs {
+	return *obj
+}
+
 func (cta *CommonContainerAttrs) Validate() error {
 
 	return nil

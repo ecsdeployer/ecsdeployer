@@ -13,6 +13,10 @@ type Sidecar struct {
 	Essential         *bool         `yaml:"essential,omitempty" json:"essential,omitempty"`
 }
 
+func (obj *Sidecar) GetCommonContainerAttrs() CommonContainerAttrs {
+	return obj.CommonContainerAttrs
+}
+
 func (obj *Sidecar) Validate() error {
 
 	if obj.Name == "" {
