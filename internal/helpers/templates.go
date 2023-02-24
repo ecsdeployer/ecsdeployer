@@ -41,7 +41,7 @@ func GetDefaultTaskTemplateFields(ctx *config.Context, common *config.CommonTask
 
 	arch := util.Coalesce(common.Architecture, project.TaskDefaults.Architecture)
 	if arch != nil {
-		fields["Arch"] = string(*arch)
+		fields["Arch"] = arch.String()
 	}
 
 	return fields, nil

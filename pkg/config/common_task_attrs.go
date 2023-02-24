@@ -4,13 +4,6 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-type Architecture string
-
-const (
-	ArchitectureARM64 Architecture = "arm64"
-	ArchitectureAMD64 Architecture = "amd64"
-)
-
 type CommonTaskAttrs struct {
 	CommonContainerAttrs `yaml:",inline" json:",inline"`
 
@@ -32,13 +25,6 @@ func (c *CommonTaskAttrs) IsTaskStruct() bool {
 }
 
 func (cta *CommonTaskAttrs) Validate() error {
-
-	if cta.Architecture != nil {
-		if *cta.Architecture != ArchitectureAMD64 && *cta.Architecture != ArchitectureARM64 {
-			return NewValidationError("'%s' is not a valid architecture", *cta.Architecture)
-		}
-	}
-
 	if err := cta.CommonContainerAttrs.Validate(); err != nil {
 		return err
 	}
@@ -64,8 +50,9 @@ func (cta *CommonTaskAttrs) TemplateFields() map[string]interface{} {
 
 	fields := make(map[string]interface{})
 	maps.Copy(fields, cta.CommonContainerAttrs.TemplateFields())
+	fields["TaskName"] = cta.Name
 	if cta.Architecture != nil {
-		fields["Arch"] = string(*cta.Architecture)
+		fields["Arch"] = cta.Architecture.String()
 	}
 
 	return fields

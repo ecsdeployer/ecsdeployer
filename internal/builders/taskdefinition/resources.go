@@ -1,0 +1,36 @@
+package taskdefinition
+
+import (
+	"fmt"
+
+	"ecsdeployer.com/ecsdeployer/internal/fargate"
+	"ecsdeployer.com/ecsdeployer/internal/util"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
+)
+
+func (b *Builder) applyTaskResources() error {
+	storage := util.Coalesce(b.commonTask.Storage, b.taskDefaults.Storage)
+	if storage != nil {
+		b.taskDef.EphemeralStorage = &ecsTypes.EphemeralStorage{
+			SizeInGiB: int32(*storage),
+		}
+	}
+
+	// select fargate resources
+	cpu := util.Coalesce(b.commonTask.Cpu, b.taskDefaults.Cpu)
+	memory := util.Coalesce(b.commonTask.Memory, b.taskDefaults.Memory)
+	if cpu == nil || memory == nil {
+		return fmt.Errorf("You need to specify the CPU/Memory on the task defaults")
+	}
+	memoryValue, err := memory.MegabytesFromCpu(cpu)
+	if err != nil {
+		return err
+	}
+
+	fargateResource := fargate.FindFargateBestFit(cpu.Shares(), memoryValue)
+	b.taskDef.Cpu = aws.String(fargateResource.CpuString())
+	b.taskDef.Memory = aws.String(fargateResource.MemoryString())
+
+	return nil
+}

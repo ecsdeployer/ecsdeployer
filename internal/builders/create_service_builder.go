@@ -32,7 +32,7 @@ func BuildCreateService(ctx *config.Context, resource *config.Service) (*ecs.Cre
 
 	commonTplFields := tmpl.Fields{
 		"Name": resource.Name,
-		"Arch": string(*arch),
+		"Arch": arch.String(),
 	}
 
 	tpl := tmpl.New(ctx).WithExtraFields(commonTplFields)

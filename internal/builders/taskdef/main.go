@@ -30,11 +30,12 @@ func Build(ctx *config.Context, resource config.IsTaskStruct) (*ecs.RegisterTask
 	templates := project.Templates
 
 	// task architecture
-	taskArch := ecsTypes.CPUArchitectureX8664
-	arch := util.Coalesce(common.Architecture, taskDefaults.Architecture)
-	if *arch == config.ArchitectureARM64 {
-		taskArch = ecsTypes.CPUArchitectureArm64
-	}
+	// taskArch := ecsTypes.CPUArchitectureX8664
+	// arch := util.Coalesce(common.Architecture, taskDefaults.Architecture)
+	// if *arch == config.ArchitectureARM64 {
+	// 	taskArch = ecsTypes.CPUArchitectureArm64
+	// }
+	arch := util.Coalesce(common.Architecture, taskDefaults.Architecture, util.Ptr(config.ArchitectureDefault))
 
 	clusterName, err := project.Cluster.Name(ctx)
 	if err != nil {
@@ -79,13 +80,13 @@ func Build(ctx *config.Context, resource config.IsTaskStruct) (*ecs.RegisterTask
 
 	// task baseline
 	taskDef := &ecs.RegisterTaskDefinitionInput{
-		NetworkMode: ecsTypes.NetworkModeAwsvpc,
-		Family:      aws.String(familyName),
+		NetworkMode:             ecsTypes.NetworkModeAwsvpc,
+		Family:                  aws.String(familyName),
+		RequiresCompatibilities: []ecsTypes.Compatibility{ecsTypes.CompatibilityFargate},
 		RuntimePlatform: &ecsTypes.RuntimePlatform{
 			OperatingSystemFamily: ecsTypes.OSFamilyLinux,
-			CpuArchitecture:       taskArch,
+			CpuArchitecture:       arch.ToAws(),
 		},
-		RequiresCompatibilities: []ecsTypes.Compatibility{ecsTypes.CompatibilityFargate},
 	}
 
 	if project.ExecutionRole != nil {
@@ -272,8 +273,6 @@ func Build(ctx *config.Context, resource config.IsTaskStruct) (*ecs.RegisterTask
 
 	for _, pipelineFunc := range []TaskDefPipelineApplierFunc{
 		SidecarPipeline,
-		ApplyAppmeshToTask,
-		ApplyDatadogToTask,
 		ApplyLoggingConfiguration,
 		ContainerImagePipeline, // should be very last
 	} {

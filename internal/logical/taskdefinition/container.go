@@ -5,24 +5,43 @@ import (
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
-type ContainerDefinition struct {
-	ParentTaskDef *TaskDefinition
+type Container struct {
+	ParentTask *Task
+
+	IsPrimary bool
 
 	Name       string
 	Command    *config.ShellCommand
 	EntryPoint *config.ShellCommand
 	Image      config.ImageUri
 	Labels     map[string]string
+	DependsOn  map[string]ecsTypes.ContainerCondition
+
+	Environment config.EnvVarMap
 
 	Cpu    *config.CpuSpec
 	Memory *config.MemorySpec
 
 	Credentials *string
 
+	StartTimeout *config.Duration
+	StopTimeout  *config.Duration
+
 	HealthCheck *config.HealthCheck
+
+	Firelens  *FirelensConfig
+	LogConfig *LogConfig
 }
 
-func (td *ContainerDefinition) Export() (*ecsTypes.ContainerDefinition, error) {
+func (cd *Container) ctx() *config.Context {
+	return cd.ParentTask.Context
+}
+
+func (cd *Container) EvalTpl(tplStr string) (string, error) {
+	return cd.ParentTask.EvalTpl(tplStr)
+}
+
+func (cd *Container) Export() (*ecsTypes.ContainerDefinition, error) {
 	cdef := &ecsTypes.ContainerDefinition{
 		Command:               []string{},
 		Cpu:                   0,

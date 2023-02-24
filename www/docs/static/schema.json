@@ -2,6 +2,16 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecsdeployer.com/ecsdeployer/pkg/config/project",
   "$defs": {
+   "Architecture": {
+    "type": "string",
+    "enum": [
+     "amd64",
+     "arm64",
+     "x86_64"
+    ],
+    "description": "Specify CPU Architecture",
+    "default": "amd64"
+   },
    "AwsLogConfig": {
     "oneOf": [
      {
@@ -105,11 +115,7 @@
         "$ref": "#/$defs/Storage"
        },
        "arch": {
-        "type": "string",
-        "enum": [
-         "arm64",
-         "amd64"
-        ],
+        "$ref": "#/$defs/Architecture",
         "description": "Task CPU Architecture"
        },
        "platform_version": {
@@ -196,11 +202,7 @@
       "$ref": "#/$defs/Storage"
      },
      "arch": {
-      "type": "string",
-      "enum": [
-       "arm64",
-       "amd64"
-      ],
+      "$ref": "#/$defs/Architecture",
       "description": "Task CPU Architecture"
      },
      "platform_version": {
@@ -975,11 +977,7 @@
       "$ref": "#/$defs/Storage"
      },
      "arch": {
-      "type": "string",
-      "enum": [
-       "arm64",
-       "amd64"
-      ],
+      "$ref": "#/$defs/Architecture",
       "description": "Task CPU Architecture"
      },
      "platform_version": {
@@ -1127,11 +1125,7 @@
       "$ref": "#/$defs/Storage"
      },
      "arch": {
-      "type": "string",
-      "enum": [
-       "arm64",
-       "amd64"
-      ],
+      "$ref": "#/$defs/Architecture",
       "description": "Task CPU Architecture"
      },
      "platform_version": {
@@ -1329,11 +1323,7 @@
       "$ref": "#/$defs/Storage"
      },
      "arch": {
-      "type": "string",
-      "enum": [
-       "arm64",
-       "amd64"
-      ],
+      "$ref": "#/$defs/Architecture",
       "description": "Task CPU Architecture",
       "default": "amd64"
      },

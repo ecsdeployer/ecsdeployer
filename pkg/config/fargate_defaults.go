@@ -81,7 +81,7 @@ func (obj *FargateDefaults) ApplyDefaults() {
 	}
 
 	if obj.Architecture == nil {
-		obj.Architecture = (*Architecture)(aws.String(string(ArchitectureAMD64)))
+		obj.Architecture = util.Ptr(ArchitectureDefault)
 	}
 
 	if obj.SpotOverride == nil {
@@ -105,7 +105,7 @@ func (FargateDefaults) JSONSchemaExtend(base *jsonschema.Schema) {
 	base.Properties.Delete("network")
 
 	configschema.SchemaPropMerge(base, "arch", func(s *jsonschema.Schema) {
-		s.Default = ArchitectureAMD64
+		s.Default = ArchitectureDefault.String()
 	})
 
 	platVer, _ := base.Properties.Get("platform_version")

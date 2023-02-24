@@ -48,7 +48,7 @@ func TestCronJob(t *testing.T) {
 			{&config.CronJob{Schedule: "rate(1 minute)"}, ""},
 
 			// also validates the common stuff
-			{&config.CronJob{Schedule: "rate(1 minute)", CommonTaskAttrs: config.CommonTaskAttrs{Architecture: util.Ptr(config.Architecture("wrong"))}}, "not a valid arch"},
+			// {&config.CronJob{Schedule: "rate(1 minute)", CommonTaskAttrs: config.CommonTaskAttrs{Architecture: util.Ptr(config.Architecture("wrong"))}}, "not a valid arch"},
 		}
 		for _, table := range tables {
 			err := table.obj.Validate()

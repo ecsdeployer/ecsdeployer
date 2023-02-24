@@ -1,9 +1,12 @@
 package config_test
 
 import (
+	"fmt"
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -34,27 +37,34 @@ func TestCommonTaskAttrs_Smoke(t *testing.T) {
 
 func TestCommonTaskAttrs_Validate(t *testing.T) {
 	t.Run("invalid", func(t *testing.T) {
-		goodArch := config.ArchitectureAMD64
-		badArch := config.Architecture("badbad")
 		tables := []struct {
-			obj         *config.CommonTaskAttrs
+			str         string
 			expectedErr string
 		}{
-			{&config.CommonTaskAttrs{Architecture: &goodArch}, ""},
-			{&config.CommonTaskAttrs{Architecture: &badArch}, "not a valid arch"},
+			{
+				str: `name: testing`,
+			},
+			{
+				str: `
+				name: thing2
+				arch: fake`,
+				expectedErr: config.ErrInvalidArchitecture.Reason,
+			},
 		}
 
-		for _, table := range tables {
+		for testNum, table := range tables {
+			t.Run(fmt.Sprintf("test_%02d", testNum+1), func(t *testing.T) {
+				cleanStr := testutil.CleanTestYaml(table.str)
+				_, err := yaml.ParseYAMLString[config.CommonTaskAttrs](cleanStr)
 
-			err := table.obj.Validate()
-
-			if table.expectedErr == "" {
-				require.NoError(t, err)
-				continue
-			}
-			require.Error(t, err)
-			require.ErrorContains(t, err, table.expectedErr)
-			require.ErrorIs(t, err, config.ErrValidation)
+				if table.expectedErr == "" {
+					require.NoError(t, err)
+					return
+				}
+				require.Error(t, err)
+				require.ErrorContains(t, err, table.expectedErr)
+				require.ErrorIs(t, err, config.ErrValidation)
+			})
 		}
 	})
 }

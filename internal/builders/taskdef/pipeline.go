@@ -29,11 +29,7 @@ func PipelineBuild(ctx *config.Context, resource config.IsTaskStruct) (*ecs.Regi
 	taskDefaults := project.TaskDefaults
 	templates := project.Templates
 
-	taskArch := ecsTypes.CPUArchitectureX8664
-	arch := util.Coalesce(common.Architecture, taskDefaults.Architecture)
-	if *arch == config.ArchitectureARM64 {
-		taskArch = ecsTypes.CPUArchitectureArm64
-	}
+	arch := util.Coalesce(common.Architecture, taskDefaults.Architecture, util.Ptr(config.ArchitectureDefault))
 
 	commonTplFields, err := helpers.GetDefaultTaskTemplateFields(ctx, common)
 	if err != nil {
@@ -59,7 +55,7 @@ func PipelineBuild(ctx *config.Context, resource config.IsTaskStruct) (*ecs.Regi
 		Tags:                    tagList,
 		RuntimePlatform: &ecsTypes.RuntimePlatform{
 			OperatingSystemFamily: ecsTypes.OSFamilyLinux,
-			CpuArchitecture:       taskArch,
+			CpuArchitecture:       arch.ToAws(),
 		},
 	}
 
