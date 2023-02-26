@@ -1,0 +1,29 @@
+project: dummy
+image: fake:latest
+cluster: fakecluster
+
+role: faketask
+execution_role: fakeexec
+
+network:
+  subnets:
+    - subnet-2222222222
+  security_groups:
+    - sg-11111111111
+  public_ip: false
+
+task_defaults:
+  volumes:
+    - testbind
+    - name: someefsvol
+      efs:
+        file_system_id: fs-121334
+        access_point_id: fsap-1234
+
+console: false
+
+services:
+  - name: svc1
+    desired: 1
+    command: blah test
+  
