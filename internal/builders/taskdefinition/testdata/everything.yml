@@ -20,7 +20,16 @@ task_defaults:
     - name: datadog
       image: datadog:latest
       cpu: 10
-      # logging: false
+      logging: false
+
+    - name: envoy
+      image: envoy
+      cpu: 512
+      memory: 512
+      logging:
+        custom: splunk
+        options:
+          thing: blah
   volumes:
     - testbind
     - name: someefsvol
