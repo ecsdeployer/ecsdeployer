@@ -13,7 +13,6 @@ import (
 type NameTemplates struct {
 	TaskFamily         *string `yaml:"task_family,omitempty" json:"task_family,omitempty" jsonschema:"minLength=1"`
 	ServiceName        *string `yaml:"service_name,omitempty" json:"service_name,omitempty" jsonschema:"minLength=1"`
-	ContainerName      *string `yaml:"container,omitempty" json:"container,omitempty" jsonschema:"minLength=1"`
 	CronGroup          *string `yaml:"cron_group,omitempty" json:"cron_group,omitempty"`
 	ScheduleGroupName  *string `yaml:"schedule_group,omitempty" json:"schedule_group,omitempty" jsonschema:"minLength=1"`
 	ScheduleName       *string `yaml:"schedule,omitempty" json:"schedule,omitempty" jsonschema:"minLength=1"`
@@ -28,6 +27,9 @@ type NameTemplates struct {
 	// old
 	CronRule   *string `yaml:"cron_rule,omitempty" json:"cron_rule,omitempty" jsonschema:"minLength=1" jsonschema_extras:"deprecated=true"`
 	CronTarget *string `yaml:"cron_target,omitempty" json:"cron_target,omitempty" jsonschema:"minLength=1" jsonschema_extras:"deprecated=true"`
+
+	// removed
+	ContainerName *string `yaml:"container,omitempty" json:"container,omitempty" jsonschema:"-"`
 }
 
 func (def *NameTemplates) ApplyDefaults() {
@@ -71,11 +73,11 @@ func (def *NameTemplates) ApplyDefaults() {
 		def.LogGroup = aws.String("/ecsdeployer/app/{{ .Project }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}")
 	}
 	if def.LogStreamPrefix == nil {
-		def.LogStreamPrefix = aws.String("{{ .Name }}")
+		def.LogStreamPrefix = aws.String("{{ .ContainerName }}")
 	}
 
 	if def.ContainerName == nil {
-		def.ContainerName = aws.String("{{ .Name }}")
+		def.ContainerName = aws.String("{{ .ContainerName }}")
 	}
 
 	if def.MarkerTagKey == nil {

@@ -9,6 +9,10 @@ import (
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
+const (
+	containerNameTplField = "ContainerName"
+)
+
 type hasContainerAttrs interface {
 	GetCommonContainerAttrs() config.CommonContainerAttrs
 }
@@ -90,6 +94,15 @@ func (builder *Builder) tplEval(tplStr string) (string, error) {
 	return retval, nil
 }
 
+func (builder *Builder) containerTplEval(containerName, tplStr string) (string, error) {
+	// inefficient, but safer and we dont need efficiency
+	retval, err := builder.tpl().WithExtraField(containerNameTplField, containerName).Apply(tplStr)
+	if err != nil {
+		return "", err
+	}
+	return retval, nil
+}
+
 type taskLevelFunc func() error
 
 func (builder *Builder) Build() (*ecs.RegisterTaskDefinitionInput, error) {
@@ -111,6 +124,8 @@ func (builder *Builder) Build() (*ecs.RegisterTaskDefinitionInput, error) {
 
 		builder.applySidecarContainers,
 		builder.applyContainers,
+
+		builder.applyVolumes,
 
 		builder.applyCleanup,
 	} {

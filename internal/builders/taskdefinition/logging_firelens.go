@@ -1,8 +1,6 @@
 package taskdefinition
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -12,7 +10,8 @@ func (b *Builder) applyContainerLoggingFirelens(cdef *ecsTypes.ContainerDefiniti
 
 	logConfig := b.project.Logging.FirelensConfig
 	if logConfig.IsDisabled() {
-		return errors.New("Dont disable awslogs and firelens and leave global enabled")
+		return nil
+		// return errors.New("Dont disable awslogs and firelens and leave global enabled")
 	}
 
 	taskLogConfig := &config.TaskLoggingConfig{

@@ -10,8 +10,9 @@ func (b *Builder) applyContainerLoggingAwsLogs(cdef *ecsTypes.ContainerDefinitio
 
 	logConfig := b.project.Logging.AwsLogConfig
 	if logConfig.IsDisabled() {
-		panic("Dont disable awslogs and firelens and leave global enabled")
+		// panic("Dont disable awslogs and firelens and leave global enabled")
 		// return nil, nil, nil
+		return nil
 	}
 
 	logOptions := config.MergeEnvVarMaps(config.EnvVarMap{

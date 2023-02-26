@@ -111,6 +111,30 @@
        "healthcheck": {
         "$ref": "#/$defs/HealthCheck"
        },
+       "mounts": {
+        "items": {
+         "$ref": "#/$defs/Mount"
+        },
+        "type": "array"
+       },
+       "ulimits": {
+        "items": {
+         "$ref": "#/$defs/Ulimit"
+        },
+        "type": "array"
+       },
+       "user": {
+        "type": "string"
+       },
+       "workdir": {
+        "type": "string"
+       },
+       "volumes_from": {
+        "items": {
+         "$ref": "#/$defs/VolumeFrom"
+        },
+        "type": "array"
+       },
        "storage": {
         "$ref": "#/$defs/Storage"
        },
@@ -131,6 +155,9 @@
        },
        "network": {
         "$ref": "#/$defs/Network"
+       },
+       "volumes": {
+        "$ref": "#/$defs/VolumeList"
        },
        "port": {
         "$ref": "#/$defs/PortMapping"
@@ -198,6 +225,30 @@
      "healthcheck": {
       "$ref": "#/$defs/HealthCheck"
      },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
+     },
      "storage": {
       "$ref": "#/$defs/Storage"
      },
@@ -218,6 +269,9 @@
      },
      "network": {
       "$ref": "#/$defs/Network"
+     },
+     "volumes": {
+      "$ref": "#/$defs/VolumeList"
      },
      "disabled": {
       "type": "boolean"
@@ -255,6 +309,18 @@
      "schedule",
      "name"
     ]
+   },
+   "CustomLogConfig": {
+    "properties": {
+     "driver": {
+      "type": "string"
+     },
+     "options": {
+      "$ref": "#/$defs/EnvVarMap"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object"
    },
    "DependsOn": {
     "oneOf": [
@@ -440,6 +506,9 @@
         "default": "log_router"
        },
        "options": {
+        "$ref": "#/$defs/EnvVarMap"
+       },
+       "router_options": {
         "$ref": "#/$defs/EnvVarMap"
        },
        "environment": {
@@ -658,6 +727,9 @@
        },
        "awslogs": {
         "$ref": "#/$defs/AwsLogConfig"
+       },
+       "custom": {
+        "$ref": "#/$defs/CustomLogConfig"
        }
       },
       "additionalProperties": false,
@@ -684,6 +756,25 @@
      }
     ],
     "title": "Memory requirements"
+   },
+   "Mount": {
+    "properties": {
+     "path": {
+      "type": "string"
+     },
+     "source": {
+      "type": "string"
+     },
+     "readonly": {
+      "type": "boolean"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "path",
+     "source"
+    ]
    },
    "NameTemplates": {
     "properties": {
@@ -973,6 +1064,30 @@
      "healthcheck": {
       "$ref": "#/$defs/HealthCheck"
      },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
+     },
      "storage": {
       "$ref": "#/$defs/Storage"
      },
@@ -993,6 +1108,9 @@
      },
      "network": {
       "$ref": "#/$defs/Network"
+     },
+     "volumes": {
+      "$ref": "#/$defs/VolumeList"
      },
      "timeout": {
       "$ref": "#/$defs/Duration",
@@ -1121,6 +1239,30 @@
      "healthcheck": {
       "$ref": "#/$defs/HealthCheck"
      },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
+     },
      "storage": {
       "$ref": "#/$defs/Storage"
      },
@@ -1141,6 +1283,9 @@
      },
      "network": {
       "$ref": "#/$defs/Network"
+     },
+     "volumes": {
+      "$ref": "#/$defs/VolumeList"
      },
      "desired": {
       "type": "integer",
@@ -1319,6 +1464,30 @@
      "healthcheck": {
       "$ref": "#/$defs/HealthCheck"
      },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
+     },
      "storage": {
       "$ref": "#/$defs/Storage"
      },
@@ -1337,6 +1506,9 @@
        "$ref": "#/$defs/NameValuePair"
       },
       "type": "array"
+     },
+     "volumes": {
+      "$ref": "#/$defs/VolumeList"
      },
      "spot": {
       "$ref": "#/$defs/SpotOverrides"
@@ -1370,10 +1542,107 @@
      }
     ]
    },
+   "Ulimit": {
+    "properties": {
+     "name": {
+      "type": "string"
+     },
+     "hard": {
+      "type": "integer"
+     },
+     "soft": {
+      "type": "integer"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "name",
+     "hard",
+     "soft"
+    ]
+   },
    "VersionConstraint": {
     "$comment": "https://pkg.go.dev/github.com/Masterminds/semver/v3#readme-checking-version-constraints",
     "type": "string",
     "description": "Specify a constraint on a semantic version"
+   },
+   "Volume": {
+    "oneOf": [
+     {
+      "type": "string",
+      "description": "Shorthand to specify a default bind volume"
+     },
+     {
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "efs": {
+        "$ref": "#/$defs/VolumeEFSConfig"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+       "name"
+      ]
+     }
+    ]
+   },
+   "VolumeEFSConfig": {
+    "properties": {
+     "file_system_id": {
+      "type": "string"
+     },
+     "access_point_id": {
+      "type": "string"
+     },
+     "root": {
+      "type": "string"
+     },
+     "use_iam": {
+      "type": "boolean"
+     },
+     "transit_encryption": {
+      "type": "boolean"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "file_system_id",
+     "access_point_id"
+    ]
+   },
+   "VolumeFrom": {
+    "oneOf": [
+     {
+      "type": "string",
+      "description": "Shorthand to specify a container name"
+     },
+     {
+      "properties": {
+       "source": {
+        "type": "string"
+       },
+       "readonly": {
+        "type": "boolean"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+       "source"
+      ]
+     }
+    ]
+   },
+   "VolumeList": {
+    "items": {
+     "$ref": "#/$defs/Volume"
+    },
+    "type": "array"
    },
    "WaitForStable": {
     "oneOf": [

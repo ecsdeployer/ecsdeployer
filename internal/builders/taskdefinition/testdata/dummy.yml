@@ -13,6 +13,15 @@ network:
     - sg-11111111111
   public_ip: false
 
+task_defaults:
+  volumes:
+    - testbind
+    - name: someefsvol
+      efs:
+        file_system_id: fs-121334
+        access_point_id: fsap-1234
+
+
 predeploy:
   - name: pd1
     command: "something"

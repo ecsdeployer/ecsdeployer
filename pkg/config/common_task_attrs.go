@@ -13,6 +13,7 @@ type CommonTaskAttrs struct {
 	Tags            []NameValuePair       `yaml:"tags,omitempty" json:"tags,omitempty"`
 	Network         *NetworkConfiguration `yaml:"network,omitempty" json:"network,omitempty"`
 	Sidecars        []*Sidecar            `yaml:"sidecars,omitempty" json:"sidecars,omitempty" jsonschema:"-"`
+	Volumes         VolumeList            `yaml:"volumes,omitempty" json:"volumes,omitempty"`
 }
 
 func (obj *CommonTaskAttrs) GetCommonContainerAttrs() CommonContainerAttrs {
@@ -49,6 +50,12 @@ func (cta *CommonTaskAttrs) Validate() error {
 			if err := sc.Validate(); err != nil {
 				return err
 			}
+		}
+	}
+
+	if cta.Volumes != nil {
+		if err := cta.Volumes.Validate(); err != nil {
+			return err
 		}
 	}
 

@@ -45,21 +45,23 @@ func (b *Builder) createTaskEnvVars() error {
 	return nil
 }
 
-func (b *Builder) buildEnvVarMap(newVars config.EnvVarMap, inheritEnv bool) config.EnvVarMap {
-	if newVars == nil {
-		newVars = make(config.EnvVarMap)
-	}
+// func (b *Builder) buildEnvVarMap(newVars config.EnvVarMap, inheritEnv bool) config.EnvVarMap {
+// 	if newVars == nil {
+// 		newVars = make(config.EnvVarMap)
+// 	}
 
-	if inheritEnv {
-		newVars = config.MergeEnvVarMaps(b.baseEnvVars, newVars)
-	}
+// 	if inheritEnv {
+// 		newVars = config.MergeEnvVarMaps(b.baseEnvVars, newVars)
+// 	}
 
-	return newVars
-}
+// 	return newVars
+// }
 
 func (b *Builder) addEnvVarsToContainer(cdef *ecsTypes.ContainerDefinition, varMap config.EnvVarMap) error {
 
-	envvars, secrets, err := config.ExportEnvVarMap(varMap, b.tpl(), ecsKeyValuePair, ecsSecret)
+	envTpl := b.tpl().WithExtraField(containerNameTplField, *cdef.Name)
+
+	envvars, secrets, err := config.ExportEnvVarMap(varMap, envTpl, ecsKeyValuePair, ecsSecret)
 	if err != nil {
 		return err
 	}

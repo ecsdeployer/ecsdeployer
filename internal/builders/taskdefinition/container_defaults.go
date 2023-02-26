@@ -35,6 +35,28 @@ func (b *Builder) applyContainerDefaults(cdef *ecsTypes.ContainerDefinition, thi
 		}
 	}
 
+	if common.User != nil {
+		cdef.User = common.User
+	}
+
+	if common.Workdir != nil {
+		cdef.WorkingDirectory = common.Workdir
+	}
+
+	if common.Ulimits != nil && len(common.Ulimits) > 0 {
+		cdef.Ulimits = make([]ecsTypes.Ulimit, 0, len(common.Ulimits))
+		for _, ulimit := range common.Ulimits {
+			cdef.Ulimits = append(cdef.Ulimits, ulimit.ToAws())
+		}
+	}
+
+	if common.MountPoints != nil && len(common.MountPoints) > 0 {
+		cdef.MountPoints = make([]ecsTypes.MountPoint, 0, len(common.MountPoints))
+		for _, mount := range common.MountPoints {
+			cdef.MountPoints = append(cdef.MountPoints, mount.ToAws())
+		}
+	}
+
 	if common.Command != nil {
 		cdef.Command = *common.Command
 	}
@@ -50,6 +72,10 @@ func (b *Builder) applyContainerDefaults(cdef *ecsTypes.ContainerDefinition, thi
 	}
 
 	if err := b.applyContainerHealthCheck(cdef, common.HealthCheck); err != nil {
+		return err
+	}
+
+	if err := b.applyContainerResources(cdef, thing); err != nil {
 		return err
 	}
 

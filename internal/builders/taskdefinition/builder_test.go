@@ -189,4 +189,61 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
 		require.NoError(t, err)
 	})
+
+	t.Run("console with splunk", func(t *testing.T) {
+		ctx, err := config.NewFromYAML("testdata/customlog.yml")
+		require.NoError(t, err)
+
+		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
+			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
+			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
+		}
+		task := ctx.Project.ConsoleTask
+
+		builder, err := taskdefinition.NewBuilder(ctx, task)
+		require.NoError(t, err)
+
+		taskDefinition, err := builder.Build()
+		require.NoError(t, err)
+
+		_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
+		require.NoError(t, err)
+	})
+
+	t.Run("everything", func(t *testing.T) {
+		ctx, err := config.NewFromYAML("testdata/everything.yml")
+		require.NoError(t, err)
+
+		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
+			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
+			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
+		}
+
+		tables := []struct {
+			entity config.IsTaskStruct
+		}{
+			{ctx.Project.ConsoleTask},
+			{ctx.Project.PreDeployTasks[0]},
+			{ctx.Project.PreDeployTasks[1]},
+			{ctx.Project.Services[0]},
+			{ctx.Project.Services[1]},
+			{ctx.Project.Services[2]},
+			{ctx.Project.Services[3]},
+			{ctx.Project.CronJobs[0]},
+		}
+
+		for _, table := range tables {
+			t.Run(fmt.Sprintf("sub_%T_%s", table.entity, table.entity.GetCommonContainerAttrs().Name), func(t *testing.T) {
+				builder, err := taskdefinition.NewBuilder(ctx, table.entity)
+				require.NoError(t, err)
+
+				taskDefinition, err := builder.Build()
+				require.NoError(t, err)
+
+				_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
+				require.NoError(t, err)
+			})
+		}
+
+	})
 }

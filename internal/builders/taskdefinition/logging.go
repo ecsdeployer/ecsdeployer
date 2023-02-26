@@ -30,6 +30,10 @@ func (b *Builder) applyContainerLogging(cdef *ecsTypes.ContainerDefinition, thin
 func (b *Builder) applyContainerLoggingDefault(cdef *ecsTypes.ContainerDefinition, thing hasContainerAttrs) error {
 	logConfig := b.project.Logging
 
+	if !logConfig.Custom.IsDisabled() {
+		return b.applyContainerLoggingCustom(cdef, thing)
+	}
+
 	if !logConfig.FirelensConfig.IsDisabled() {
 		return b.applyContainerLoggingFirelens(cdef, thing)
 	}
@@ -52,7 +56,7 @@ func (b *Builder) buildContainerLogging(cdef *ecsTypes.ContainerDefinition, logC
 		SecretOptions: make([]ecsTypes.Secret, 0),
 	}
 
-	tpl := b.tpl()
+	tpl := b.tpl().WithExtraField(containerNameTplField, *cdef.Name)
 
 	for lk, lv := range logConfig.Options.Filter() {
 		if lv.IsSSM() {
@@ -68,6 +72,14 @@ func (b *Builder) buildContainerLogging(cdef *ecsTypes.ContainerDefinition, logC
 			return err
 		}
 		conf.Options[lk] = val
+	}
+
+	if len(conf.Options) == 0 {
+		conf.Options = nil
+	}
+
+	if len(conf.SecretOptions) == 0 {
+		conf.SecretOptions = nil
 	}
 
 	cdef.LogConfiguration = conf

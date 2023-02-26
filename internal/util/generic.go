@@ -17,3 +17,11 @@ func Must[T any](v T, err error) T {
 	}
 	return v
 }
+
+func Ternary[T any](expr bool, trueVal T, falseVal T) T {
+	if expr {
+		return trueVal
+	} else {
+		return falseVal
+	}
+}
