@@ -73,11 +73,11 @@ func (def *NameTemplates) ApplyDefaults() {
 		def.LogGroup = aws.String("/ecsdeployer/app/{{ .Project }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}")
 	}
 	if def.LogStreamPrefix == nil {
-		def.LogStreamPrefix = aws.String("{{ .ContainerName }}")
+		def.LogStreamPrefix = aws.String("{{ .Container }}")
 	}
 
 	if def.ContainerName == nil {
-		def.ContainerName = aws.String("{{ .ContainerName }}")
+		def.ContainerName = aws.String("{{ .Container }}")
 	}
 
 	if def.MarkerTagKey == nil {

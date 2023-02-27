@@ -27,7 +27,7 @@ task_defaults:
       cpu: 512
       memory: 512
       logging:
-        custom: splunk
+        driver: splunk
         options:
           thing: blah
   volumes:

@@ -8,7 +8,13 @@ import (
 
 type VolumeList map[string]Volume
 
-func (VolumeList) Validate() error {
+func (list VolumeList) Validate() error {
+
+	for _, vol := range list {
+		if err := vol.Validate(); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

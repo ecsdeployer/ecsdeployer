@@ -29,7 +29,6 @@ func (obj *CommonContainerAttrs) GetCommonContainerAttrs() CommonContainerAttrs 
 }
 
 func (cta *CommonContainerAttrs) Validate() error {
-
 	return nil
 }
 

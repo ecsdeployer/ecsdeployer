@@ -37,13 +37,18 @@
   "LoggingConfig": {
     "disabled": "false"
   },
+  "Mount": {
+    "path": "",
+    "readonly": "false",
+    "source": ""
+  },
   "NameTemplates": {
-    "container": "{{ .Name }}",
+    "container": "{{ .Container }}",
     "cron_group": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}",
     "cron_rule": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}",
     "cron_target": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
     "log_group": "/ecsdeployer/app/{{ .Project }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}",
-    "log_stream_prefix": "{{ .Name }}",
+    "log_stream_prefix": "{{ .Container }}",
     "marker_tag_key": "ecsdeployer/project",
     "marker_tag_value": "{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{end}}",
     "predeploy_group": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}",
@@ -79,40 +84,45 @@
     "use_old_cron_eventbus": "false"
   },
   "TplDefault": {
-    "container": "{NAME}",
-    "cron_group": "ecsd:{PROJECT}:cron:{NAME}",
-    "cron_rule": "{PROJECT}-rule-{NAME}",
-    "cron_target": "{PROJECT}-target-{NAME}",
-    "log_group": "/ecsdeployer/app/{PROJECT}/{NAME}",
-    "log_stream_prefix": "{NAME}",
+    "container": "{CONTAINER}",
+    "cron_group": "ecsd:{PROJECT}:cron:{TASK}",
+    "cron_rule": "{PROJECT}-rule-{TASK}",
+    "cron_target": "{PROJECT}-target-{TASK}",
+    "log_group": "/ecsdeployer/app/{PROJECT}/{TASK}",
+    "log_stream_prefix": "{CONTAINER}",
     "marker_tag_key": "ecsdeployer/project",
     "marker_tag_value": "{PROJECT}",
-    "predeploy_group": "ecsd:{PROJECT}:pd:{NAME}",
+    "predeploy_group": "ecsd:{PROJECT}:pd:{TASK}",
     "predeploy_started_by": "ecsd:{PROJECT}:deployer",
-    "schedule": "ecsd-cron-{PROJECT}-{NAME}",
+    "schedule": "ecsd-cron-{PROJECT}-{TASK}",
     "schedule_group": "{PROJECT}",
-    "service_name": "{PROJECT}-{NAME}",
+    "service_name": "{PROJECT}-{TASK}",
     "ssm_import__path": "/ecsdeployer/secrets/{PROJECT}",
-    "target_group": "{PROJECT}-target-{NAME}",
-    "task_family": "{PROJECT}-{NAME}"
+    "target_group": "{PROJECT}-target-{TASK}",
+    "task_family": "{PROJECT}-{TASK}"
   },
   "TplDefaultStage": {
-    "container": "{NAME}",
-    "cron_group": "ecsd:{PROJECT}:{STAGE}:cron:{NAME}",
-    "cron_rule": "{PROJECT}-{STAGE}-rule-{NAME}",
-    "cron_target": "{PROJECT}-{STAGE}-target-{NAME}",
-    "log_group": "/ecsdeployer/app/{PROJECT}/{STAGE}/{NAME}",
-    "log_stream_prefix": "{NAME}",
+    "container": "{CONTAINER}",
+    "cron_group": "ecsd:{PROJECT}:{STAGE}:cron:{TASK}",
+    "cron_rule": "{PROJECT}-{STAGE}-rule-{TASK}",
+    "cron_target": "{PROJECT}-{STAGE}-target-{TASK}",
+    "log_group": "/ecsdeployer/app/{PROJECT}/{STAGE}/{TASK}",
+    "log_stream_prefix": "{CONTAINER}",
     "marker_tag_key": "ecsdeployer/project",
     "marker_tag_value": "{PROJECT}/{STAGE}",
-    "predeploy_group": "ecsd:{PROJECT}:{STAGE}:pd:{NAME}",
+    "predeploy_group": "ecsd:{PROJECT}:{STAGE}:pd:{TASK}",
     "predeploy_started_by": "ecsd:{PROJECT}:{STAGE}:deployer",
-    "schedule": "ecsd-cron-{PROJECT}-{STAGE}-{NAME}",
+    "schedule": "ecsd-cron-{PROJECT}-{STAGE}-{TASK}",
     "schedule_group": "{PROJECT}-{STAGE}",
-    "service_name": "{PROJECT}-{STAGE}-{NAME}",
+    "service_name": "{PROJECT}-{STAGE}-{TASK}",
     "ssm_import__path": "/ecsdeployer/secrets/{PROJECT}/{STAGE}",
-    "target_group": "{PROJECT}-{STAGE}-target-{NAME}",
-    "task_family": "{PROJECT}-{STAGE}-{NAME}"
+    "target_group": "{PROJECT}-{STAGE}-target-{TASK}",
+    "task_family": "{PROJECT}-{STAGE}-{TASK}"
+  },
+  "VolumeEFSConfig": {
+    "file_system_id": "",
+    "transit_encryption": "true",
+    "use_iam": "true"
   },
   "WaitForStable": {
     "disabled": "false",

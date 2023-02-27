@@ -15,9 +15,11 @@ const templatePrefixSentinel = "@ECSD_REPLACE@"
 // reference a service/name/task
 func GetTemplatedPrefix(ctx *config.Context, tplStr string) (string, error) {
 	tpl := tmpl.New(ctx).WithExtraFields(tmpl.Fields{
-		"Name":        templatePrefixSentinel,
-		"TaskName":    templatePrefixSentinel,
-		"ServiceName": templatePrefixSentinel,
+		"Name":          templatePrefixSentinel,
+		"TaskName":      templatePrefixSentinel,
+		"ServiceName":   templatePrefixSentinel,
+		"Container":     templatePrefixSentinel,
+		"ContainerName": templatePrefixSentinel,
 	})
 
 	tplValue, err := tpl.Apply(tplStr)

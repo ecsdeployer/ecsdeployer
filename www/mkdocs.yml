@@ -88,6 +88,7 @@ nav:
     - Remote Shell: config/console.md
     - Networking: config/network.md
     - Logging: config/logging.md
+    - Volumes: config/volumes.md
     - Naming: config/naming.md
     - Tags: config/tags.md
     - Spot Containers: config/spot.md

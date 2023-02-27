@@ -788,11 +788,6 @@
       "minLength": 1,
       "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
      },
-     "container": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Name }}"
-     },
      "cron_group": {
       "type": "string",
       "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}"
@@ -823,7 +818,7 @@
      "log_stream_prefix": {
       "type": "string",
       "minLength": 1,
-      "default": "{{ .Name }}"
+      "default": "{{ .Container }}"
      },
      "target_group": {
       "type": "string",

@@ -56,7 +56,7 @@ func (b *Builder) buildContainerLogging(cdef *ecsTypes.ContainerDefinition, logC
 		SecretOptions: make([]ecsTypes.Secret, 0),
 	}
 
-	tpl := b.tpl().WithExtraField(containerNameTplField, *cdef.Name)
+	tpl := b.containerTpl(cdef)
 
 	for lk, lv := range logConfig.Options.Filter() {
 		if lv.IsSSM() {

@@ -94,14 +94,35 @@ func (builder *Builder) tplEval(tplStr string) (string, error) {
 	return retval, nil
 }
 
-func (builder *Builder) containerTplEval(containerName, tplStr string) (string, error) {
-	// inefficient, but safer and we dont need efficiency
-	retval, err := builder.tpl().WithExtraField(containerNameTplField, containerName).Apply(tplStr)
-	if err != nil {
-		return "", err
+func (builder *Builder) containerTpl(container any) *tmpl.Template {
+	containerName := builder.entity.GetCommonContainerAttrs().Name
+
+	switch val := container.(type) {
+	case string:
+		containerName = val
+	case *string:
+		containerName = *val
+	case *ecsTypes.ContainerDefinition:
+		containerName = *val.Name
+	case ecsTypes.ContainerDefinition:
+		containerName = *val.Name
+	case hasContainerAttrs:
+		containerName = val.GetCommonContainerAttrs().Name
+	default:
+		panic("BAD ENTITY GIVEN TO containerTpl")
 	}
-	return retval, nil
+
+	return builder.tpl().WithExtraField(containerNameTplField, containerName)
 }
+
+// func (builder *Builder) containerTplEval(containerName, tplStr string) (string, error) {
+// 	// inefficient, but safer and we dont need efficiency
+// 	retval, err := builder.containerTpl(containerName).Apply(tplStr)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return retval, nil
+// }
 
 type taskLevelFunc func() error
 

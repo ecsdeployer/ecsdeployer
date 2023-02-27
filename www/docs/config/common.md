@@ -150,6 +150,10 @@ Key | Description
 
     _Default_: `{{schema:default:FargateDefaults.memory}}`
 
+[`mounts`](#common.mounts){ #common.mounts }
+
+:   Specify mount points. See [Volumes/Mounts](volumes.md).
+
 [`network`](#common.network){ #common.network }
 
 :   Override network settings. See [Network](network.md)
@@ -180,7 +184,23 @@ Key | Description
 
 [`tags`](#common.tags){ #common.tags }
 
-:   Additional tags to apply to this task. Same format as in the [Tags Documentation](tags.md)
+:   Additional tags to apply to this task. Same format as in the [Tags Documentation](tags.md).
+
+[`ulimits`](#common.ulimits){ #common.ulimits }
+
+:   Specify limit overrides per container. See [Ulimits](#ulimits) for more details.
+
+[`user`](#common.user){ #common.user }
+
+:   Override the user to run your container as. Specify as username or UID or UID:GID.
+
+[`volumes`](#common.volumes){ #common.volumes }
+
+:   Specify volumes that can be mounted. See [Volumes/Mounts](volumes.md).
+
+[`workdir`](#common.workdir){ #common.workdir }
+
+:   Override the working directory to run your container in.
 
 ----
 
@@ -277,6 +297,10 @@ For the official documentation on specifying health checks, see [AWS ECS HealthC
 [`timeout`](#healthcheck.timeout){ #healthcheck.timeout }
 
 :   The time period in seconds to wait for a health check to succeed before it is considered a failure.
+
+----
+
+## Ulimits
 
 ----
 

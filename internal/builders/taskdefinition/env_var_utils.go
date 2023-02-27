@@ -59,7 +59,7 @@ func (b *Builder) createTaskEnvVars() error {
 
 func (b *Builder) addEnvVarsToContainer(cdef *ecsTypes.ContainerDefinition, varMap config.EnvVarMap) error {
 
-	envTpl := b.tpl().WithExtraField(containerNameTplField, *cdef.Name)
+	envTpl := b.containerTpl(cdef)
 
 	envvars, secrets, err := config.ExportEnvVarMap(varMap, envTpl, ecsKeyValuePair, ecsSecret)
 	if err != nil {
