@@ -9,6 +9,7 @@ import (
 // parent function to append any sidecars
 func (b *Builder) applySidecarContainers() error {
 
+	// do not merge from task defaults. if they specify sidecars, then that is the only sidecar list
 	sidecars := util.CoalesceArray(b.commonTask.Sidecars, b.taskDefaults.Sidecars)
 
 	if sidecars == nil || len(sidecars) == 0 {
@@ -32,12 +33,17 @@ func (b *Builder) applySidecarContainer(sidecar *config.Sidecar) error {
 		return err
 	}
 
+	cdef.Essential = sidecar.Essential
+
 	if sidecar.InheritEnv {
 		if err := b.addEnvVarsToContainer(cdef, b.baseEnvVars); err != nil {
 			return err
 		}
 	}
 
+	if err := b.applySidecarPortMappings(cdef, sidecar); err != nil {
+		return err
+	}
 	if err := b.applyContainerLogging(cdef, sidecar); err != nil {
 		return err
 	}

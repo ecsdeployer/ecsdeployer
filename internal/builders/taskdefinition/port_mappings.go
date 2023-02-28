@@ -26,3 +26,20 @@ func (b *Builder) applyServicePortMappings() error {
 
 	return nil
 }
+
+func (b *Builder) applySidecarPortMappings(cdef *ecsTypes.ContainerDefinition, sidecar *config.Sidecar) error {
+
+	if sidecar.PortMappings == nil || len(sidecar.PortMappings) == 0 {
+		return nil
+	}
+
+	if cdef.PortMappings == nil {
+		cdef.PortMappings = make([]ecsTypes.PortMapping, 0)
+	}
+
+	for _, pm := range sidecar.PortMappings {
+		cdef.PortMappings = append(cdef.PortMappings, pm.ToAwsPortMapping())
+	}
+
+	return nil
+}

@@ -39,6 +39,8 @@ func GetDefaultTaskTemplateFields(ctx *config.Context, common *config.CommonTask
 	fields := tmpl.Fields{
 		"TaskName": common.Name,
 		"Name":     common.Name,
+		// "Container": common.Name,
+		"Container": "!!!!DEFAULT!!!",
 	}
 
 	arch := util.Coalesce(common.Architecture, project.TaskDefaults.Architecture, util.Ptr(config.ArchitectureDefault))

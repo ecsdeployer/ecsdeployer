@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	containerNameTplField = "ContainerName"
+	containerNameTplField = "Container"
 )
 
 type hasContainerAttrs interface {

@@ -68,7 +68,7 @@ func (b *Builder) applyContainerDefaults(cdef *ecsTypes.ContainerDefinition, thi
 	cdef.DockerLabels = make(map[string]string)
 	srcLabels := helpers.NameValuePairMerger(b.taskDefaults.DockerLabels, common.DockerLabels)
 	for _, dl := range srcLabels {
-		cdef.DockerLabels[aws.ToString(dl.Name)] = aws.ToString(dl.Value)
+		cdef.DockerLabels[*dl.Name] = *dl.Value
 	}
 
 	if err := b.applyContainerHealthCheck(cdef, common.HealthCheck); err != nil {
