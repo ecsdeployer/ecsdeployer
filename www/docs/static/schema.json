@@ -156,6 +156,12 @@
        "network": {
         "$ref": "#/$defs/Network"
        },
+       "sidecars": {
+        "items": {
+         "$ref": "#/$defs/Sidecar"
+        },
+        "type": "array"
+       },
        "volumes": {
         "$ref": "#/$defs/VolumeList"
        },
@@ -269,6 +275,12 @@
      },
      "network": {
       "$ref": "#/$defs/Network"
+     },
+     "sidecars": {
+      "items": {
+       "$ref": "#/$defs/Sidecar"
+      },
+      "type": "array"
      },
      "volumes": {
       "$ref": "#/$defs/VolumeList"
@@ -1104,6 +1116,12 @@
      "network": {
       "$ref": "#/$defs/Network"
      },
+     "sidecars": {
+      "items": {
+       "$ref": "#/$defs/Sidecar"
+      },
+      "type": "array"
+     },
      "volumes": {
       "$ref": "#/$defs/VolumeList"
      },
@@ -1279,6 +1297,12 @@
      "network": {
       "$ref": "#/$defs/Network"
      },
+     "sidecars": {
+      "items": {
+       "$ref": "#/$defs/Sidecar"
+      },
+      "type": "array"
+     },
      "volumes": {
       "$ref": "#/$defs/VolumeList"
      },
@@ -1355,6 +1379,105 @@
       "type": "array",
       "description": "Command array. Preferred"
      }
+    ]
+   },
+   "Sidecar": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
+     },
+     "command": {
+      "$ref": "#/$defs/ShellCommand"
+     },
+     "entrypoint": {
+      "$ref": "#/$defs/ShellCommand"
+     },
+     "image": {
+      "$ref": "#/$defs/ImageUri"
+     },
+     "credentials": {
+      "type": "string"
+     },
+     "cpu": {
+      "$ref": "#/$defs/CPUShares"
+     },
+     "memory": {
+      "$ref": "#/$defs/Memory"
+     },
+     "environment": {
+      "$ref": "#/$defs/EnvVarMap"
+     },
+     "start_timeout": {
+      "$ref": "#/$defs/Duration"
+     },
+     "stop_timeout": {
+      "$ref": "#/$defs/Duration"
+     },
+     "labels": {
+      "items": {
+       "$ref": "#/$defs/NameValuePair"
+      },
+      "type": "array"
+     },
+     "depends_on": {
+      "items": {
+       "$ref": "#/$defs/DependsOn"
+      },
+      "type": "array"
+     },
+     "logging": {
+      "$ref": "#/$defs/TaskLoggingConfig"
+     },
+     "healthcheck": {
+      "$ref": "#/$defs/HealthCheck"
+     },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
+     },
+     "inherit_env": {
+      "type": "boolean",
+      "default": false
+     },
+     "port_mappings": {
+      "items": {
+       "$ref": "#/$defs/PortMapping"
+      },
+      "type": "array"
+     },
+     "memory_reservation": {
+      "$ref": "#/$defs/Memory"
+     },
+     "essential": {
+      "type": "boolean",
+      "default": true
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "name"
     ]
    },
    "SpotOverrides": {
@@ -1499,6 +1622,12 @@
      "tags": {
       "items": {
        "$ref": "#/$defs/NameValuePair"
+      },
+      "type": "array"
+     },
+     "sidecars": {
+      "items": {
+       "$ref": "#/$defs/Sidecar"
       },
       "type": "array"
      },

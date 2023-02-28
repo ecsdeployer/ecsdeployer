@@ -1,7 +1,9 @@
 package config
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/invopop/jsonschema"
 )
 
 type Sidecar struct {
@@ -61,4 +63,23 @@ func (obj *Sidecar) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	return nil
+}
+
+func (Sidecar) JSONSchemaExtend(base *jsonschema.Schema) {
+
+	def := &Sidecar{}
+	def.ApplyDefaults()
+
+	configschema.SchemaPropMerge(base, "essential", func(s *jsonschema.Schema) {
+		s.Default = def.Essential
+	})
+
+	configschema.SchemaPropMerge(base, "inherit_env", func(s *jsonschema.Schema) {
+		s.Default = def.InheritEnv
+	})
+
+	if base.Required == nil {
+		base.Required = make([]string, 0)
+	}
+	base.Required = append(base.Required, "name")
 }

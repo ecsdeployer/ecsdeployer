@@ -12,7 +12,7 @@ type CommonTaskAttrs struct {
 	PlatformVersion *string               `yaml:"platform_version,omitempty" json:"platform_version,omitempty" jsonschema:"description=Fargate Platform Version,default=LATEST"`
 	Tags            []NameValuePair       `yaml:"tags,omitempty" json:"tags,omitempty"`
 	Network         *NetworkConfiguration `yaml:"network,omitempty" json:"network,omitempty"`
-	Sidecars        []*Sidecar            `yaml:"sidecars,omitempty" json:"sidecars,omitempty" jsonschema:"-"`
+	Sidecars        []*Sidecar            `yaml:"sidecars,omitempty" json:"sidecars,omitempty"`
 	Volumes         VolumeList            `yaml:"volumes,omitempty" json:"volumes,omitempty"`
 }
 
