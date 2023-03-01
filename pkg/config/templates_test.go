@@ -18,8 +18,8 @@ func TestNameTemplates_Defaults(t *testing.T) {
 	ctxStage.Stage = "princess"
 
 	sharedFields := tmpl.Fields{
-		"Name": "thing",
-		// "TaskName": "thing",
+		"Name":      "thing",
+		"Container": "thing",
 	}
 
 	tplNoStage := tmpl.New(ctxNoStage).WithExtraFields(sharedFields)

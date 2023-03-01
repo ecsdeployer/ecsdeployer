@@ -35,7 +35,7 @@ func (cta *CommonContainerAttrs) Validate() error {
 func (cta *CommonContainerAttrs) TemplateFields() map[string]interface{} {
 	return map[string]interface{}{
 		"Container": cta.Name,
-		"Name":      cta.Name,
+		// "Name":      cta.Name,
 	}
 }
 

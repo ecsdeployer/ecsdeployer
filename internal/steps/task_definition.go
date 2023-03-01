@@ -2,7 +2,7 @@ package steps
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
-	taskBuilder "ecsdeployer.com/ecsdeployer/internal/builders/taskdef"
+	taskBuilder "ecsdeployer.com/ecsdeployer/internal/builders/taskdefinition"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 )

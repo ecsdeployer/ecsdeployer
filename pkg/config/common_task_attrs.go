@@ -67,6 +67,7 @@ func (cta *CommonTaskAttrs) TemplateFields() map[string]interface{} {
 	fields := make(map[string]interface{})
 	maps.Copy(fields, cta.CommonContainerAttrs.TemplateFields())
 	fields["TaskName"] = cta.Name
+	fields["Name"] = cta.Name
 	if cta.Architecture != nil {
 		fields["Arch"] = cta.Architecture.String()
 	}

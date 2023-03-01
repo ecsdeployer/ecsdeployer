@@ -23,17 +23,7 @@ func BuildCreateService(ctx *config.Context, resource *config.Service) (*ecs.Cre
 		return nil, err
 	}
 
-	// task architecture
-	// taskArch := ecstypes.CPUArchitectureX8664
-	arch := util.Coalesce(resource.Architecture, taskDefaults.Architecture)
-	// if *arch == config.ArchitectureARM64 {
-	// 	taskArch = ecstypes.CPUArchitectureArm64
-	// }
-
-	commonTplFields := tmpl.Fields{
-		"Name": resource.Name,
-		"Arch": arch.String(),
-	}
+	commonTplFields := resource.TemplateFields()
 
 	tpl := tmpl.New(ctx).WithExtraFields(commonTplFields)
 
@@ -47,10 +37,6 @@ func BuildCreateService(ctx *config.Context, resource *config.Service) (*ecs.Cre
 	if err != nil {
 		return nil, err
 	}
-	commonTplFields["ContainerName"] = containerName
-
-	// update the fields
-	// tpl = tmpl.New(ctx).WithExtraFields(commonTplFields)
 
 	platformVersion := util.Coalesce(resource.PlatformVersion, taskDefaults.PlatformVersion, aws.String("LATEST"))
 
@@ -115,16 +101,18 @@ func BuildCreateService(ctx *config.Context, resource *config.Service) (*ecs.Cre
 		createServiceInput.HealthCheckGracePeriodSeconds = resource.LoadBalancers.GetHealthCheckGracePeriod()
 	}
 
-	tagList, _, err := helpers.NameValuePair_Build_Tags(ctx, resource.Tags, commonTplFields, func(s1, s2 string) ecsTypes.Tag {
-		return ecsTypes.Tag{
-			Key:   &s1,
-			Value: &s2,
-		}
-	})
+	tagList, _, err := helpers.NameValuePair_Build_Tags(ctx, resource.Tags, commonTplFields, ecsTag)
 	if err != nil {
 		return nil, err
 	}
 	createServiceInput.Tags = tagList
 
 	return createServiceInput, nil
+}
+
+func ecsTag(s1, s2 string) ecsTypes.Tag {
+	return ecsTypes.Tag{
+		Key:   &s1,
+		Value: &s2,
+	}
 }

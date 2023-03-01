@@ -83,10 +83,15 @@ func TestLoggingConfig_Unmarshal(t *testing.T) {
 		},
 
 		{
-			label:                   "Using firelens with ssm",
-			str:                     "firelens:\n  options:\n    Thing:\n      ssm: someval",
+			label:                   "Using firelens with ssm router opts",
+			str:                     "firelens:\n  router_options:\n    Thing:\n      ssm: someval",
 			invalid:                 true,
 			validationErrorContains: "you cannot have SSM options",
+		},
+
+		{
+			label: "Using firelens with ssm opts",
+			str:   "firelens:\n  options:\n    Thing:\n      ssm: someval",
 		},
 
 		{

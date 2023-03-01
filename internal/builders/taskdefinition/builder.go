@@ -44,6 +44,15 @@ type Builder struct {
 	taskDef *ecs.RegisterTaskDefinitionInput
 }
 
+func Build(ctx *config.Context, entity config.IsTaskStruct) (*ecs.RegisterTaskDefinitionInput, error) {
+	builder, err := NewBuilder(ctx, entity)
+	if err != nil {
+		return nil, err
+	}
+
+	return builder.Build()
+}
+
 func NewBuilder(ctx *config.Context, entity config.IsTaskStruct) (*Builder, error) {
 	builder := &Builder{
 		ctx:    ctx,
