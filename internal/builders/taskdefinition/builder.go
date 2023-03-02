@@ -152,6 +152,8 @@ func (builder *Builder) Build() (*ecs.RegisterTaskDefinitionInput, error) {
 		builder.applyServicePortMappings,
 		builder.applyRemoteShell,
 
+		builder.applyProxyConfiguration,
+
 		builder.applySidecarContainers,
 		builder.applyContainers,
 

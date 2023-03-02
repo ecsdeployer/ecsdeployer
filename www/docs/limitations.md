@@ -20,7 +20,7 @@
 
 ## Planned Features
 * [ ] ECS Service Registries
-* [ ] AppMesh/Envoy Proxies
+* [x] AppMesh/Envoy Proxies
 * [ ] Additional Sidecars
 * [ ] Autoscaling 
 * [x] EFS Volume Mounts

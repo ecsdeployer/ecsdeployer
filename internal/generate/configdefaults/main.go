@@ -176,7 +176,7 @@ func main() {
 	defaultValues := map[string]typeDefaults{
 		"NameTemplates":     templates,
 		"SSMImport":         ssmImport,
-		"AppMesh":           exportStructValues(&config.AppMesh{}),
+		"ProxyConfig":       exportStructValues(&config.ProxyConfig{}),
 		"Settings":          exportStructValues(&config.Settings{}),
 		"FargateDefaults":   exportStructValues(&config.FargateDefaults{}),
 		"WaitForStable":     exportStructValues(&config.WaitForStable{}),

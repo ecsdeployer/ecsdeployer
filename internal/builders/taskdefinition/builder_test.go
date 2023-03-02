@@ -8,6 +8,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/builders/taskdefinition"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -315,6 +316,43 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		}
 
 	})
+
+	t.Run("with proxy", func(t *testing.T) {
+		ctx, err := config.NewFromYAML("testdata/everything.yml")
+		require.NoError(t, err)
+
+		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
+			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
+			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
+		}
+
+		pdTest1Yaml := `
+		name: testpd1
+		command: "something something"
+		proxy:
+			properties:
+				Blah: yar
+		`
+
+		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](testutil.CleanTestYaml(pdTest1Yaml))
+		require.NoError(t, err)
+
+		taskDefinition, err := taskdefinition.Build(ctx, pdTask)
+		require.NoError(t, err)
+
+		_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
+		require.NoError(t, err)
+
+		require.NotNil(t, taskDefinition.ProxyConfiguration)
+		require.EqualValues(t, "APPMESH", taskDefinition.ProxyConfiguration.Type, "ProxyType")
+		require.EqualValues(t, "envoy", *taskDefinition.ProxyConfiguration.ContainerName, "ProxyContainer")
+
+		propMap := kvListToMap(taskDefinition.ProxyConfiguration.Properties, func(x ecsTypes.KeyValuePair) (string, string) { return *x.Name, *x.Value })
+
+		require.Contains(t, propMap, "Blah")
+		require.Equal(t, "yar", propMap["Blah"])
+
+	})
 }
 
 func getContainer(taskDef *ecs.RegisterTaskDefinitionInput, containerName string) (ecsTypes.ContainerDefinition, error) {
@@ -330,4 +368,17 @@ func getContainer(taskDef *ecs.RegisterTaskDefinitionInput, containerName string
 	}
 
 	return ecsTypes.ContainerDefinition{}, fmt.Errorf("could not find container '%s'", containerName)
+}
+
+type kvToMapFunc[T any] func(T) (string, string)
+
+func kvListToMap[T any](kvList []T, mapFunc kvToMapFunc[T]) map[string]string {
+	newMap := make(map[string]string, len(kvList))
+
+	for _, entry := range kvList {
+		k, v := mapFunc(entry)
+		newMap[k] = v
+	}
+
+	return newMap
 }

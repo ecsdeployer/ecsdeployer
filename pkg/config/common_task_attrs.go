@@ -14,6 +14,7 @@ type CommonTaskAttrs struct {
 	Network         *NetworkConfiguration `yaml:"network,omitempty" json:"network,omitempty"`
 	Sidecars        []*Sidecar            `yaml:"sidecars,omitempty" json:"sidecars,omitempty"`
 	Volumes         VolumeList            `yaml:"volumes,omitempty" json:"volumes,omitempty"`
+	ProxyConfig     *ProxyConfig          `yaml:"proxy,omitempty" json:"proxy,omitempty"`
 }
 
 func (obj *CommonTaskAttrs) GetCommonContainerAttrs() CommonContainerAttrs {
@@ -55,6 +56,12 @@ func (cta *CommonTaskAttrs) Validate() error {
 
 	if cta.Volumes != nil {
 		if err := cta.Volumes.Validate(); err != nil {
+			return err
+		}
+	}
+
+	if cta.ProxyConfig != nil {
+		if err := cta.ProxyConfig.Validate(); err != nil {
 			return err
 		}
 	}
