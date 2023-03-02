@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
-	"ecsdeployer.com/ecsdeployer/internal/builders"
+	runTaskBuilder "ecsdeployer.com/ecsdeployer/internal/builders/runtask"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -57,7 +57,7 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 	predeployTask := (step.Resource).(*config.PreDeployTask)
 	logger := step.Logger
 
-	runTaskInput, err := builders.BuildRunTask(ctx, predeployTask)
+	runTaskInput, err := runTaskBuilder.Build(ctx, predeployTask)
 	if err != nil {
 		return nil, err
 	}

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
-	"ecsdeployer.com/ecsdeployer/internal/builders"
+	serviceBuilder "ecsdeployer.com/ecsdeployer/internal/builders/service"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -71,7 +71,7 @@ func stepServiceCreate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 		return nil, ErrTaskDefNotCreated
 	}
 
-	createServiceInput, err := builders.BuildCreateService(ctx, svc)
+	createServiceInput, err := serviceBuilder.BuildCreate(ctx, svc)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func stepServiceUpdate(ctx *config.Context, step *Step, meta *StepMetadata) (Out
 		return nil, ErrTaskDefNotCreated
 	}
 
-	updateServiceInput, err := builders.BuildUpdateService(ctx, svc)
+	updateServiceInput, err := serviceBuilder.BuildUpdate(ctx, svc)
 	if err != nil {
 		return nil, err
 	}
