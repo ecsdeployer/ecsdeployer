@@ -1,6 +1,8 @@
 package config
 
 import (
+	"errors"
+
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -9,6 +11,8 @@ import (
 )
 
 type ProxyConfig struct {
+	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
+
 	Type          *string   `yaml:"type,omitempty" json:"type,omitempty"`
 	ContainerName *string   `yaml:"container_name,omitempty" json:"container_name,omitempty"`
 	Properties    EnvVarMap `yaml:"properties,omitempty" json:"properties,omitempty"`
@@ -31,6 +35,10 @@ func (nc *ProxyConfig) ApplyDefaults() {
 
 func (nc *ProxyConfig) Validate() error {
 
+	if nc.Disabled {
+		return nil
+	}
+
 	if util.IsBlank(nc.Type) {
 		return NewValidationError("proxy type is required")
 	}
@@ -47,6 +55,24 @@ func (nc *ProxyConfig) Validate() error {
 }
 
 func (obj *ProxyConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+
+	var boolVal bool
+	if err := unmarshal(&boolVal); err == nil {
+
+		if boolVal {
+			return NewValidationError("you cannot set a proxy configuration to true, you must specify the parameters.")
+		}
+
+		*obj = ProxyConfig{
+			Disabled: true,
+		}
+
+		return nil
+
+	} else if errors.Is(err, ErrValidation) {
+		return err
+	}
+
 	type tProxyConfig ProxyConfig
 	var defo = tProxyConfig{}
 	if err := unmarshal(&defo); err != nil {
@@ -78,6 +104,19 @@ func (ProxyConfig) JSONSchemaExtend(base *jsonschema.Schema) {
 		s.Default = defo.ContainerName
 		s.Description = "Name of the sidecar that provides the proxy"
 	})
+
+	orig := *base
+	newBase := &jsonschema.Schema{
+		OneOf: []*jsonschema.Schema{
+			{
+				Type:        "boolean",
+				Description: "Disable proxy configuration for a specific task",
+				Const:       false,
+			},
+			&orig,
+		},
+	}
+	*base = *newBase
 
 }
 

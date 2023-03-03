@@ -13,6 +13,10 @@ func (b *Builder) applyContainerHealthCheck(cdef *ecsTypes.ContainerDefinition, 
 		return nil
 	}
 
+	if check.Disabled {
+		return nil
+	}
+
 	value := &ecsTypes.HealthCheck{
 		Command: check.Command,
 	}

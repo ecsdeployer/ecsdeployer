@@ -554,30 +554,40 @@
     ]
    },
    "HealthCheck": {
-    "properties": {
-     "command": {
-      "items": {
-       "type": "string"
+    "oneOf": [
+     {
+      "type": "boolean",
+      "const": false,
+      "description": "Disable a healthcheck for a specific task"
+     },
+     {
+      "properties": {
+       "disabled": {
+        "type": "boolean"
+       },
+       "command": {
+        "$ref": "#/$defs/ShellCommand"
+       },
+       "interval": {
+        "$ref": "#/$defs/Duration",
+        "minimum": 0
+       },
+       "retries": {
+        "type": "integer"
+       },
+       "start_period": {
+        "$ref": "#/$defs/Duration"
+       },
+       "timeout": {
+        "$ref": "#/$defs/Duration"
+       }
       },
-      "type": "array"
-     },
-     "interval": {
-      "$ref": "#/$defs/Duration"
-     },
-     "retries": {
-      "type": "integer"
-     },
-     "start_period": {
-      "$ref": "#/$defs/Duration"
-     },
-     "timeout": {
-      "$ref": "#/$defs/Duration"
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+       "command"
+      ]
      }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "command"
     ]
    },
    "ImageUri": {

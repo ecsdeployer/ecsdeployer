@@ -210,14 +210,8 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		}
 		lbService := ctx.Project.Services[0]
 
-		builder, err := taskdefinition.NewBuilder(ctx, lbService)
-		require.NoError(t, err)
-
-		taskDefinition, err := builder.Build()
-		require.NoError(t, err)
-
-		_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-		require.NoError(t, err)
+		taskDefinition := genTaskDef(t, ctx, lbService)
+		require.NotNil(t, taskDefinition)
 	})
 
 	t.Run("console with firelens", func(t *testing.T) {
@@ -230,14 +224,8 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		}
 		task := ctx.Project.ConsoleTask
 
-		builder, err := taskdefinition.NewBuilder(ctx, task)
-		require.NoError(t, err)
-
-		taskDefinition, err := builder.Build()
-		require.NoError(t, err)
-
-		_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-		require.NoError(t, err)
+		taskDefinition := genTaskDef(t, ctx, task)
+		require.NotNil(t, taskDefinition)
 	})
 
 	t.Run("console with awslogs", func(t *testing.T) {
@@ -250,14 +238,8 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		}
 		task := ctx.Project.ConsoleTask
 
-		builder, err := taskdefinition.NewBuilder(ctx, task)
-		require.NoError(t, err)
-
-		taskDefinition, err := builder.Build()
-		require.NoError(t, err)
-
-		_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-		require.NoError(t, err)
+		taskDefinition := genTaskDef(t, ctx, task)
+		require.NotNil(t, taskDefinition)
 	})
 
 	t.Run("console with splunk", func(t *testing.T) {
@@ -270,14 +252,8 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		}
 		task := ctx.Project.ConsoleTask
 
-		builder, err := taskdefinition.NewBuilder(ctx, task)
-		require.NoError(t, err)
-
-		taskDefinition, err := builder.Build()
-		require.NoError(t, err)
-
-		_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-		require.NoError(t, err)
+		taskDefinition := genTaskDef(t, ctx, task)
+		require.NotNil(t, taskDefinition)
 	})
 
 	t.Run("everything", func(t *testing.T) {
@@ -304,14 +280,8 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 
 		for _, table := range tables {
 			t.Run(fmt.Sprintf("sub_%T_%s", table.entity, table.entity.GetCommonContainerAttrs().Name), func(t *testing.T) {
-				builder, err := taskdefinition.NewBuilder(ctx, table.entity)
-				require.NoError(t, err)
-
-				taskDefinition, err := builder.Build()
-				require.NoError(t, err)
-
-				_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-				require.NoError(t, err)
+				taskDefinition := genTaskDef(t, ctx, table.entity)
+				require.NotNil(t, taskDefinition)
 			})
 		}
 
@@ -337,11 +307,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](testutil.CleanTestYaml(pdTest1Yaml))
 		require.NoError(t, err)
 
-		taskDefinition, err := taskdefinition.Build(ctx, pdTask)
-		require.NoError(t, err)
-
-		_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-		require.NoError(t, err)
+		taskDefinition := genTaskDef(t, ctx, pdTask)
 
 		require.NotNil(t, taskDefinition.ProxyConfiguration)
 		require.EqualValues(t, "APPMESH", taskDefinition.ProxyConfiguration.Type, "ProxyType")
@@ -353,6 +319,17 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		require.Equal(t, "yar", propMap["Blah"])
 
 	})
+}
+
+func genTaskDef(t *testing.T, ctx *config.Context, entity config.IsTaskStruct) *ecs.RegisterTaskDefinitionInput {
+	t.Helper()
+	taskDefinition, err := taskdefinition.Build(ctx, entity)
+	require.NoError(t, err)
+
+	_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
+	require.NoError(t, err)
+
+	return taskDefinition
 }
 
 func getContainer(taskDef *ecs.RegisterTaskDefinitionInput, containerName string) (ecsTypes.ContainerDefinition, error) {

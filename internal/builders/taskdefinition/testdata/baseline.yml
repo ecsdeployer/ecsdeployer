@@ -1,0 +1,16 @@
+project: dummy
+image: fake:latest
+cluster: fakecluster
+
+role: faketask
+execution_role: fakeexec
+cron_launcher_role: fakecron
+
+network:
+  subnets:
+    - subnet-2222222222
+  security_groups:
+    - sg-11111111111
+  public_ip: false
+
+console: true

@@ -13,6 +13,10 @@ func (b *Builder) applyProxyConfiguration() error {
 		return nil
 	}
 
+	if proxyConf.Disabled {
+		return nil
+	}
+
 	b.taskDef.ProxyConfiguration = &ecsTypes.ProxyConfiguration{}
 
 	b.taskDef.ProxyConfiguration.Type = ecsTypes.ProxyConfigurationType(*proxyConf.Type)
