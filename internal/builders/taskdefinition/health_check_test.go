@@ -19,7 +19,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("when not defined", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/everything.yml")
+		ctx, err := config.NewFromYAML("testdata/baseline.yml")
 		require.NoError(t, err)
 
 		pdYaml := `
