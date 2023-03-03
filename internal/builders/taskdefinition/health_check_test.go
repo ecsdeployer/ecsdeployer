@@ -22,12 +22,7 @@ func TestHealthCheck(t *testing.T) {
 		ctx, err := config.NewFromYAML("testdata/baseline.yml")
 		require.NoError(t, err)
 
-		pdYaml := `
-		name: testpd1
-		command: "something something"
-		`
-
-		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](testutil.CleanTestYaml(pdYaml))
+		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](`name: testpd1`)
 		require.NoError(t, err)
 
 		taskDefinition := genTaskDef(t, ctx, pdTask)

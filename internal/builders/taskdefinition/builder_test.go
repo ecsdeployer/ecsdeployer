@@ -10,7 +10,6 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/jmespath/go-jmespath"
 	"github.com/stretchr/testify/require"
@@ -313,49 +312,10 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		require.EqualValues(t, "APPMESH", taskDefinition.ProxyConfiguration.Type, "ProxyType")
 		require.EqualValues(t, "envoy", *taskDefinition.ProxyConfiguration.ContainerName, "ProxyContainer")
 
-		propMap := kvListToMap(taskDefinition.ProxyConfiguration.Properties, func(x ecsTypes.KeyValuePair) (string, string) { return *x.Name, *x.Value })
+		propMap := kvListToMap(taskDefinition.ProxyConfiguration.Properties, kvListToMap_KVP)
 
 		require.Contains(t, propMap, "Blah")
 		require.Equal(t, "yar", propMap["Blah"])
 
 	})
-}
-
-func genTaskDef(t *testing.T, ctx *config.Context, entity config.IsTaskStruct) *ecs.RegisterTaskDefinitionInput {
-	t.Helper()
-	taskDefinition, err := taskdefinition.Build(ctx, entity)
-	require.NoError(t, err)
-
-	_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-	require.NoError(t, err)
-
-	return taskDefinition
-}
-
-func getContainer(taskDef *ecs.RegisterTaskDefinitionInput, containerName string) (ecsTypes.ContainerDefinition, error) {
-
-	for _, container := range taskDef.ContainerDefinitions {
-		if container.Name == nil {
-			continue
-		}
-
-		if *container.Name == containerName {
-			return container, nil
-		}
-	}
-
-	return ecsTypes.ContainerDefinition{}, fmt.Errorf("could not find container '%s'", containerName)
-}
-
-type kvToMapFunc[T any] func(T) (string, string)
-
-func kvListToMap[T any](kvList []T, mapFunc kvToMapFunc[T]) map[string]string {
-	newMap := make(map[string]string, len(kvList))
-
-	for _, entry := range kvList {
-		k, v := mapFunc(entry)
-		newMap[k] = v
-	}
-
-	return newMap
 }

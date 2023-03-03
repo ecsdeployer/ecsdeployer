@@ -22,16 +22,12 @@ func (b *Builder) applyProxyConfiguration() error {
 	b.taskDef.ProxyConfiguration.Type = ecsTypes.ProxyConfigurationType(*proxyConf.Type)
 	b.taskDef.ProxyConfiguration.ContainerName = proxyConf.ContainerName
 
-	propList, _, err := config.ExportEnvVarMap(proxyConf.Properties, b.tpl(), envExportKVP, envExportIgnore)
+	propList, _, err := config.ExportEnvVarMap(proxyConf.Properties, b.tpl(), envExportKVP, envExportKVP)
 	if err != nil {
 		return err
 	}
 	b.taskDef.ProxyConfiguration.Properties = propList
 
-	return nil
-}
-
-func envExportIgnore(k, v string) any {
 	return nil
 }
 

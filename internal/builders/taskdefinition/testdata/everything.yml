@@ -48,6 +48,19 @@ predeploy:
   
   - name: pd2
     command: ["another", "thing"]
+  
+  - name: pd-sc-inherit
+    environment:
+      SC_TEST_VAR: blah
+    sidecars:
+      - name: sc1
+        image: fake
+        inherit_env: true
+      - name: scno
+        image: fake
+        inherit_env: false
+      - name: scdef
+        image: fake
 
 console: true
 
@@ -83,6 +96,16 @@ services:
       - target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
         port: 1225
         grace: 60
+    
+  - name: svc-sidecar-ports
+    sidecars:
+      - name: noport
+        image: fake
+        
+      - name: sideport
+        image: fake
+        port_mappings:
+          - 8080/tcp
 
     
 cronjobs:
