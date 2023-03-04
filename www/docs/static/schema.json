@@ -583,10 +583,7 @@
        }
       },
       "additionalProperties": false,
-      "type": "object",
-      "required": [
-       "command"
-      ]
+      "type": "object"
      }
     ]
    },
@@ -1179,13 +1176,13 @@
        },
        "type": {
         "type": "string",
-        "description": "Proxy type. You should omit this unless you know what you are doing.",
-        "default": "APPMESH",
-        "examples": [
+        "enum": [
          "APPMESH"
-        ]
+        ],
+        "description": "Proxy type. You should omit this unless you know what you are doing.",
+        "default": "APPMESH"
        },
-       "container_name": {
+       "container": {
         "type": "string",
         "description": "Name of the sidecar that provides the proxy",
         "default": "envoy"
@@ -1877,6 +1874,9 @@
     "$ref": "#/$defs/RoleRef"
    },
    "cron_launcher_role": {
+    "$ref": "#/$defs/RoleRef"
+   },
+   "service_role": {
     "$ref": "#/$defs/RoleRef"
    },
    "services": {

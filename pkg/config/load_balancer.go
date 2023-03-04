@@ -7,7 +7,6 @@ import (
 )
 
 type LoadBalancer struct {
-	// ContainerName *string         `yaml:"container_name,omitempty" json:"container_name,omitempty"`
 	PortMapping *PortMapping    `yaml:"port" json:"port" jsonschema:"required"`
 	TargetGroup *TargetGroupArn `yaml:"target_group" json:"target_group" jsonschema:"required"`
 	GracePeriod *Duration       `yaml:"grace,omitempty" json:"grace,omitempty"`

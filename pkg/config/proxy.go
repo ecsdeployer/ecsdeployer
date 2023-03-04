@@ -12,7 +12,7 @@ type ProxyConfig struct {
 	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
 
 	Type          *string   `yaml:"type,omitempty" json:"type,omitempty"`
-	ContainerName *string   `yaml:"container_name,omitempty" json:"container_name,omitempty"`
+	ContainerName *string   `yaml:"container,omitempty" json:"container,omitempty"`
 	Properties    EnvVarMap `yaml:"properties,omitempty" json:"properties,omitempty"`
 }
 
@@ -42,7 +42,7 @@ func (nc *ProxyConfig) Validate() error {
 	}
 
 	if util.IsBlank(nc.ContainerName) {
-		return NewValidationError("proxy container_name is required")
+		return NewValidationError("proxy container is required")
 	}
 
 	if nc.Properties.HasSSM() {
@@ -96,7 +96,7 @@ func (ProxyConfig) JSONSchemaExtend(base *jsonschema.Schema) {
 		s.Description = "Proxy type. You should omit this unless you know what you are doing."
 	})
 
-	configschema.SchemaPropMerge(base, "container_name", func(s *jsonschema.Schema) {
+	configschema.SchemaPropMerge(base, "container", func(s *jsonschema.Schema) {
 		s.Default = defo.ContainerName
 		s.Description = "Name of the sidecar that provides the proxy"
 	})

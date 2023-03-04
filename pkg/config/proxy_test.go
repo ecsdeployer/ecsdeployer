@@ -48,7 +48,7 @@ func TestProxyConfig_Unmarshal(t *testing.T) {
 				label: "everything",
 				str: `
 				type: APPMESH
-				container_name: proxywoxy
+				container: proxywoxy
 				properties:
 					BlahThing: 1234`,
 				cname: "proxywoxy",
@@ -82,11 +82,11 @@ func TestProxyConfig_Unmarshal(t *testing.T) {
 			{
 				label: "blank container",
 				str: `
-				container_name: ""
+				container: ""
 				properties:
 					BlahThing: 1234`,
 				invalid:       true,
-				errorContains: "container_name is required",
+				errorContains: "container is required",
 			},
 
 			{
@@ -97,6 +97,15 @@ func TestProxyConfig_Unmarshal(t *testing.T) {
 					BlahThing: 1234`,
 				invalid:       true,
 				errorContains: "type is required",
+			},
+
+			{
+				label: "bad type",
+				str: `
+				type: FARTS
+				properties:
+					BlahThing: 1234`,
+				ptype: "FARTS",
 			},
 		}
 

@@ -333,7 +333,7 @@ Specify ulimits as an array of objects with the following properties:
     ```yaml
     task_defaults:
       proxy:
-        container_name: envoy
+        container: envoy
         properties:
           AppPorts: 5000
           IgnoredUID: 1000
@@ -352,11 +352,11 @@ Specify ulimits as an array of objects with the following properties:
 
     _Default_: `{{schema:default:ProxyConfig.type}}`
 
-[`container_name`](#proxy.container_name){ #proxy.container_name }
+[`container`](#proxy.container){ #proxy.container }
 
 :   The name of the container that is providing the proxy.
 
-    _Default_: `{{schema:default:ProxyConfig.container_name}}`
+    _Default_: `{{schema:default:ProxyConfig.container}}`
 
 [`properties`](#proxy.properties){ #proxy.properties } - **(required)**
 

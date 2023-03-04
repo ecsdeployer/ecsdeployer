@@ -33,7 +33,7 @@ predeploy:
 
   - name: pd-values
     proxy:
-      container_name: blah
+      container: blah
       type: WRONG
       properties:
         SomeInt: 1234
