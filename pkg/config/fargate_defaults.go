@@ -9,7 +9,6 @@ import (
 
 type FargateDefaults struct {
 	CommonTaskAttrs `yaml:",inline" json:",inline"`
-	// NetworkedTaskAttrs `yaml:",inline" json:",inline"`
 
 	SpotOverride *SpotOverrides `yaml:"spot,omitempty" json:"spot,omitempty"`
 }
@@ -23,8 +22,8 @@ func (obj *FargateDefaults) GetCommonTaskAttrs() CommonTaskAttrs {
 }
 
 func (obj *FargateDefaults) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t FargateDefaults // prevent recursive overflow
-	var defo = t{}
+	type tFargateDefaults FargateDefaults // prevent recursive overflow
+	var defo = tFargateDefaults{}
 	if err := unmarshal(&defo); err != nil {
 		return err
 	} else {
@@ -109,7 +108,6 @@ func (FargateDefaults) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	base.Properties.Delete("name")
 	base.Properties.Delete("logging")
-	// base.Properties.Delete("port")
 	base.Properties.Delete("network")
 
 	configschema.SchemaPropMerge(base, "arch", func(s *jsonschema.Schema) {

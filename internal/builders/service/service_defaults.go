@@ -6,13 +6,6 @@ import (
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
-func tagBuilder2(k, v string) ecsTypes.Tag {
-	return ecsTypes.Tag{
-		Key:   &k,
-		Value: &v,
-	}
-}
-
 func (b *Builder) applyServiceDefaults() error {
 
 	clusterArn, err := b.project.Cluster.Arn(b.ctx)
@@ -44,6 +37,14 @@ func (b *Builder) applyServiceDefaults() error {
 
 	platformVersion := util.Coalesce(b.entity.PlatformVersion, b.taskDefaults.PlatformVersion, aws.String("LATEST"))
 	b.serviceDef.PlatformVersion = platformVersion
+
+	if b.project.ServiceRole != nil {
+		serviceRoleArn, err := b.project.ServiceRole.Arn(b.ctx)
+		if err != nil {
+			return err
+		}
+		b.serviceDef.Role = &serviceRoleArn
+	}
 
 	return nil
 }

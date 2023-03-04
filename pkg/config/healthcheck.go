@@ -1,15 +1,13 @@
 package config
 
 import (
-	"errors"
-
 	"github.com/invopop/jsonschema"
 )
 
 type HealthCheck struct {
 	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
 
-	Command     ShellCommand `yaml:"command" json:"command"`
+	Command     ShellCommand `yaml:"command,omitempty" json:"command,omitempty"`
 	Interval    *Duration    `yaml:"interval,omitempty" json:"interval,omitempty"`
 	Retries     *int32       `yaml:"retries,omitempty" json:"retries,omitempty" jsonschema_extras:"minimum=1"`
 	StartPeriod *Duration    `yaml:"start_period,omitempty" json:"start_period,omitempty"`
@@ -55,8 +53,6 @@ func (obj *HealthCheck) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 		return nil
 
-	} else if errors.Is(err, ErrValidation) {
-		return err
 	}
 
 	type tHealthCheck HealthCheck

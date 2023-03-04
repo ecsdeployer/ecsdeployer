@@ -1,8 +1,6 @@
 package config
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -69,8 +67,6 @@ func (obj *ProxyConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 		return nil
 
-	} else if errors.Is(err, ErrValidation) {
-		return err
 	}
 
 	type tProxyConfig ProxyConfig

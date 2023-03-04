@@ -21,6 +21,7 @@ type Project struct {
 	Role             *RoleArn              `yaml:"role,omitempty" json:"role,omitempty"`
 	ExecutionRole    *RoleArn              `yaml:"execution_role,omitempty" json:"execution_role,omitempty"`
 	CronLauncherRole *RoleArn              `yaml:"cron_launcher_role,omitempty" json:"cron_launcher_role,omitempty"`
+	ServiceRole      *RoleArn              `yaml:"service_role,omitempty" json:"service_role,omitempty"`
 	Services         []*Service            `yaml:"services,omitempty" json:"services,omitempty"`
 	CronJobs         []*CronJob            `yaml:"cronjobs,omitempty" json:"cronjobs,omitempty"`
 	PreDeployTasks   []*PreDeployTask      `yaml:"predeploy,omitempty" json:"predeploy,omitempty"`
@@ -242,7 +243,6 @@ func (project *Project) Validate() error {
 		return NewValidationError("you must provide a cluster")
 	}
 
-	// TODO: have enabled Firelens, but LogDriver is not set to awsfirelens
 	return nil
 }
 
