@@ -3,6 +3,7 @@ package taskdefinition
 import (
 	"errors"
 
+	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -26,7 +27,10 @@ func (b *Builder) applyLoggingFirelensContainer() error {
 	// 	return err
 	// }
 	// This is resolved already for us in the PreflightStep
-	flImageUri := firelensConfig.Image.Value()
+	flImageUri, err := helpers.ResolveImageUri(b.ctx, firelensConfig.Image)
+	if err != nil {
+		return err
+	}
 
 	flConfig := &ecsTypes.FirelensConfiguration{
 		Type: ecsTypes.FirelensConfigurationType(*firelensConfig.Type),

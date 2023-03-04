@@ -89,6 +89,7 @@ nav:
     - Networking: config/network.md
     - Logging: config/logging.md
     - Volumes: config/volumes.md
+    - Sidecars: config/sidecars.md
     - Naming: config/naming.md
     - Tags: config/tags.md
     - Spot Containers: config/spot.md

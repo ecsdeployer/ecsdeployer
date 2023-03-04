@@ -26,14 +26,14 @@ func BuildCronTarget(ctx *config.Context, resource *config.CronJob, taskDefArn s
 	// }
 
 	ecsParams := &eventTypes.EcsParameters{
-		TaskDefinitionArn:        aws.String(taskDefArn),
-		TaskCount:                aws.Int32(1),
-		EnableECSManagedTags:     true,
-		EnableExecuteCommand:     false,
-		LaunchType:               eventTypes.LaunchTypeFargate,
-		PlatformVersion:          resource.PlatformVersion,
-		PropagateTags:            eventTypes.PropagateTagsTaskDefinition,
-		CapacityProviderStrategy: config.NewSpotOnDemand().ExportCapacityStrategyEventBridge(),
+		TaskDefinitionArn:    aws.String(taskDefArn),
+		TaskCount:            aws.Int32(1),
+		EnableECSManagedTags: true,
+		EnableExecuteCommand: false,
+		PlatformVersion:      resource.PlatformVersion,
+		PropagateTags:        eventTypes.PropagateTagsTaskDefinition,
+		LaunchType:           eventTypes.LaunchTypeFargate,
+		// CapacityProviderStrategy: config.NewSpotOnDemand().ExportCapacityStrategyEventBridge(),
 	}
 
 	cronGroupName, err := tpl.Apply(*templates.CronGroup)

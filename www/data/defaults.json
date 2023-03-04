@@ -32,7 +32,9 @@
     "memory": "50",
     "type": "fluentbit"
   },
-  "HealthCheck": {},
+  "HealthCheck": {
+    "disabled": "false"
+  },
   "LoggingConfig": {
     "disabled": "false"
   },
@@ -59,6 +61,9 @@
     "target_group": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
     "task_family": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
   },
+  "PortMapping": {
+    "protocol": "tcp"
+  },
   "PreDeployTask": {
     "disabled": "false",
     "ignore_failure": "false",
@@ -66,6 +71,7 @@
   },
   "ProxyConfig": {
     "container_name": "envoy",
+    "disabled": "false",
     "type": "APPMESH"
   },
   "SSMImport": {
@@ -85,6 +91,11 @@
     "skip_cron_env_vars": "false",
     "skip_deployment_env_vars": "false",
     "use_old_cron_eventbus": "false"
+  },
+  "Sidecar": {
+    "essential": "true",
+    "inherit_env": "false",
+    "name": ""
   },
   "TplDefault": {
     "container": "{CONTAINER}",

@@ -569,11 +569,11 @@
         "$ref": "#/$defs/ShellCommand"
        },
        "interval": {
-        "$ref": "#/$defs/Duration",
-        "minimum": 0
+        "$ref": "#/$defs/Duration"
        },
        "retries": {
-        "type": "integer"
+        "type": "integer",
+        "minimum": 1
        },
        "start_period": {
         "$ref": "#/$defs/Duration"
@@ -1166,26 +1166,38 @@
     ]
    },
    "ProxyConfig": {
-    "properties": {
-     "type": {
-      "type": "string",
-      "description": "Proxy type. You should omit this unless you know what you are doing.",
-      "default": "APPMESH",
-      "examples": [
-       "APPMESH"
-      ]
+    "oneOf": [
+     {
+      "type": "boolean",
+      "const": false,
+      "description": "Disable proxy configuration for a specific task"
      },
-     "container_name": {
-      "type": "string",
-      "description": "Name of the sidecar that provides the proxy",
-      "default": "envoy"
-     },
-     "properties": {
-      "$ref": "#/$defs/EnvVarMap"
+     {
+      "properties": {
+       "disabled": {
+        "type": "boolean"
+       },
+       "type": {
+        "type": "string",
+        "description": "Proxy type. You should omit this unless you know what you are doing.",
+        "default": "APPMESH",
+        "examples": [
+         "APPMESH"
+        ]
+       },
+       "container_name": {
+        "type": "string",
+        "description": "Name of the sidecar that provides the proxy",
+        "default": "envoy"
+       },
+       "properties": {
+        "$ref": "#/$defs/EnvVarMap"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object"
      }
-    },
-    "additionalProperties": false,
-    "type": "object"
+    ]
    },
    "RoleRef": {
     "type": "string",

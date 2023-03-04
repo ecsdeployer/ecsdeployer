@@ -318,4 +318,14 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		require.Equal(t, "yar", propMap["Blah"])
 
 	})
+
+	t.Run("storage", func(t *testing.T) {
+		ctx, err := config.NewFromYAML("testdata/everything.yml")
+		require.NoError(t, err)
+
+		taskDefinition := genTaskDef(t, ctx, getPredeployTask(ctx.Project, "pd-storage"))
+
+		require.NotNil(t, taskDefinition.EphemeralStorage)
+		require.EqualValues(t, 50, taskDefinition.EphemeralStorage.SizeInGiB)
+	})
 }

@@ -61,6 +61,9 @@ predeploy:
         inherit_env: false
       - name: scdef
         image: fake
+    
+  - name: pd-storage
+    storage: 50
 
 console: true
 
@@ -101,7 +104,7 @@ services:
     sidecars:
       - name: noport
         image: fake
-        
+
       - name: sideport
         image: fake
         port_mappings:

@@ -11,7 +11,6 @@ func (b *Builder) applyContainerLoggingFirelens(cdef *ecsTypes.ContainerDefiniti
 	logConfig := b.project.Logging.FirelensConfig
 	if logConfig.IsDisabled() {
 		return nil
-		// return errors.New("Dont disable awslogs and firelens and leave global enabled")
 	}
 
 	taskLogConfig := &config.TaskLoggingConfig{
