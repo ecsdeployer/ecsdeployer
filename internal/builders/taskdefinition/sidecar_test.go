@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 	"github.com/webdestroya/awsmocker"
 )
@@ -17,8 +16,8 @@ func TestSidecars(t *testing.T) {
 	})
 
 	t.Run("inherit_env", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/everything.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "everything.yml")
+
 		task := getPredeployTask(ctx.Project, "pd-sc-inherit")
 		taskDefinition := genTaskDef(t, ctx, task)
 
@@ -49,8 +48,7 @@ func TestSidecars(t *testing.T) {
 	})
 
 	t.Run("port_mappings", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/everything.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "everything.yml")
 		task := getServiceTask(ctx.Project, "svc-sidecar-ports")
 		taskDefinition := genTaskDef(t, ctx, task)
 

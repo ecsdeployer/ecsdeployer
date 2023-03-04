@@ -19,8 +19,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("when not defined", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/baseline.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "baseline.yml")
 
 		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](`name: testpd1`)
 		require.NoError(t, err)
@@ -32,8 +31,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("inherit task defaults", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/healthcheck.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "healthcheck.yml")
 
 		taskDefinition := genTaskDef(t, ctx, ctx.Project.Services[1])
 
@@ -43,8 +41,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("task override", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/healthcheck.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "healthcheck.yml")
 
 		taskDefinition := genTaskDef(t, ctx, ctx.Project.Services[0])
 
@@ -54,8 +51,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("task override disabled", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/healthcheck.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "healthcheck.yml")
 
 		taskDefinition := genTaskDef(t, ctx, ctx.Project.Services[2])
 
@@ -63,8 +59,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("sidecar", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/healthcheck.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "healthcheck.yml")
 
 		taskDefinition := genTaskDef(t, ctx, ctx.Project.Services[0])
 
@@ -76,8 +71,7 @@ func TestHealthCheck(t *testing.T) {
 	})
 
 	t.Run("proper values", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/healthcheck.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "healthcheck.yml")
 
 		taskDefinition := genTaskDef(t, ctx, ctx.Project.PreDeployTasks[0])
 

@@ -6,10 +6,13 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/builders/taskdefinition"
+	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/jmespath/go-jmespath"
 	"github.com/stretchr/testify/require"
+	"github.com/webdestroya/awsmocker"
 )
 
 func genTaskDef(t *testing.T, ctx *config.Context, entity config.IsTaskStruct) *ecs.RegisterTaskDefinitionInput {
@@ -89,4 +92,30 @@ func getServiceTask(project *config.Project, name string) *config.Service {
 	}
 
 	panic("FAILED TO FIND SERVICE TASK")
+}
+
+func mock_ECS_RegisterTaskDefinition_Dump(t *testing.T) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "ecs",
+			Action:  "RegisterTaskDefinition",
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+
+				prettyJSON, _ := util.JsonifyPretty(rr.JsonPayload)
+				t.Log("JSON PAYLOAD:", prettyJSON)
+
+				taskName, _ := jmespath.Search("family", rr.JsonPayload)
+
+				payload, _ := util.Jsonify(map[string]interface{}{
+					"taskDefinition": map[string]interface{}{
+						"taskDefinitionArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:999", rr.Region, awsmocker.DefaultAccountId, taskName.(string)),
+					},
+				})
+
+				return payload
+			},
+		},
+	}
 }

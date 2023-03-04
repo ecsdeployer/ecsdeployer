@@ -13,6 +13,10 @@ network:
     - sg-11111111111
   public_ip: false
 
+environment:
+  TPL_MULTI_TEST: 
+    template: "{{.Project}}-{{.Name}}"
+
 task_defaults:
   user: 123
   workdir: /var/blah/whatever

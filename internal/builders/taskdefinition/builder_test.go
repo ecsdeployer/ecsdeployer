@@ -4,14 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/awsclients"
-	"ecsdeployer.com/ecsdeployer/internal/builders/taskdefinition"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	"github.com/jmespath/go-jmespath"
 	"github.com/stretchr/testify/require"
 	"github.com/webdestroya/awsmocker"
 )
@@ -33,127 +29,19 @@ TESTS TO DO:
 
 func TestTaskDefinitionBuilder(t *testing.T) {
 
-	// requestBodies := make([]map[string]any, 0)
-	var lastRequest map[string]any = nil
-
 	testutil.StartMocker(t, &awsmocker.MockerOptions{
 		Mocks: []*awsmocker.MockedEndpoint{
-			{
-				Request: &awsmocker.MockedRequest{
-					Service: "ecs",
-					Action:  "RegisterTaskDefinition",
-				},
-				Response: &awsmocker.MockedResponse{
-					Body: func(rr *awsmocker.ReceivedRequest) string {
-
-						// prettyJSON, _ := util.JsonifyPretty(rr.JsonPayload)
-						// t.Log("JSON PAYLOAD:", prettyJSON)
-
-						// requestBodies = append(requestBodies, rr.JsonPayload.(map[string]any))
-						lastRequest = rr.JsonPayload.(map[string]any)
-
-						taskName, _ := jmespath.Search("family", rr.JsonPayload)
-
-						payload, _ := util.Jsonify(map[string]interface{}{
-							"taskDefinition": map[string]interface{}{
-								"taskDefinitionArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:999", rr.Region, awsmocker.DefaultAccountId, taskName.(string)),
-							},
-						})
-
-						return payload
-					},
-				},
-			},
+			// mock_ECS_RegisterTaskDefinition_Dump(t),
+			testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
 		},
 	})
 
-	/*
-		t.Run("load balanced service jmespath", func(t *testing.T) {
-			ctx, err := config.NewFromYAML("testdata/dummy.yml")
-			require.NoError(t, err)
-
-			ctx.Cache.SSMSecrets = map[string]config.EnvVar{
-				"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
-				"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
-				"SSM_VAR_3": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret3"),
-				"SSM_VAR_4": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret4"),
-			}
-			lbService := ctx.Project.Services[0]
-
-			taskDefinition, err := taskdefinition.Build(ctx, lbService)
-			require.NoError(t, err)
-
-			lastRequest = nil
-			_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-			require.NoError(t, err)
-			require.NotNil(t, lastRequest)
-
-			t.Log(util.JsonifyPretty(lastRequest))
-
-			require.Equal(t, "dummy-svc1", testutil.JmesSearchOrNil(lastRequest, "family"))
-			require.Equal(t, "arn:aws:iam::555555555555:role/faketask", testutil.JmesSearchOrNil(lastRequest, "taskRoleArn"))
-			require.Equal(t, "arn:aws:iam::555555555555:role/fakeexec", testutil.JmesSearchOrNil(lastRequest, "executionRoleArn"))
-			require.Equal(t, "awsvpc", testutil.JmesSearchOrNil(lastRequest, "networkMode"))
-			require.Equal(t, "awsvpc", testutil.JmesSearchOrNil(lastRequest, "networkMode"))
-
-			require.Equal(t, ecsTypes.NetworkModeAwsvpc, taskDefinition.NetworkMode)
-			require.Contains(t, taskDefinition.RequiresCompatibilities, ecsTypes.CompatibilityFargate)
-
-			require.NotNil(t, taskDefinition.Cpu, "Cpu")
-			require.Equal(t, "1024", *taskDefinition.Cpu)
-
-			require.NotNil(t, taskDefinition.Memory, "Memory")
-			require.Equal(t, "2048", *taskDefinition.Memory)
-
-			require.GreaterOrEqual(t, len(taskDefinition.ContainerDefinitions), 1, "number of containers")
-			primaryCont := taskDefinition.ContainerDefinitions[0]
-			require.NotNil(t, primaryCont, "primaryCont")
-			require.Equal(t, []string{"bundle", "exec", "puma", "-C", "config/puma.rb"}, primaryCont.Command)
-
-			require.Len(t, primaryCont.PortMappings, 1)
-			require.NotNil(t, primaryCont.PortMappings[0].HostPort, "HostPort")
-			require.EqualValues(t, 1234, *primaryCont.PortMappings[0].HostPort)
-			require.EqualValues(t, "tcp", primaryCont.PortMappings[0].Protocol)
-
-			require.NotNil(t, primaryCont.Image, "ImageURI")
-			require.Equal(t, "fake:latest", *primaryCont.Image)
-
-			require.EqualValues(t, 0, primaryCont.Cpu)
-			require.Nil(t, primaryCont.Memory)
-			require.Nil(t, primaryCont.MemoryReservation)
-
-			// jsonOld, err := util.Jsonify(taskDefinitionOld)
-			// require.NoError(t, err)
-
-			// require.JSONEq(t, jsonOld, jsonNew)
-
-		})
-	*/
-
 	t.Run("load balanced service", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/dummy.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "dummy.yml", optSetNumSSMVars(4))
 
-		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
-			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
-			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
-			"SSM_VAR_3": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret3"),
-			"SSM_VAR_4": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret4"),
-		}
 		lbService := ctx.Project.Services[0]
 
-		taskDefinition, err := taskdefinition.Build(ctx, lbService)
-		require.NoError(t, err)
-
-		// jsonNew, err := util.JsonifyPretty(taskDefinition)
-		// require.NoError(t, err)
-		// t.Log("JSON: ", jsonNew)
-
-		_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-		require.NoError(t, err)
-		require.NotNil(t, lastRequest)
-
-		t.Log(util.JsonifyPretty(lastRequest))
+		taskDefinition := genTaskDef(t, ctx, lbService)
 
 		require.NotNil(t, taskDefinition.Family, "Family")
 		require.EqualValues(t, "dummy-svc1", *taskDefinition.Family)
@@ -189,52 +77,11 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		require.EqualValues(t, 0, primaryCont.Cpu)
 		require.Nil(t, primaryCont.Memory)
 		require.Nil(t, primaryCont.MemoryReservation)
-
-		// jsonOld, err := util.Jsonify(taskDefinitionOld)
-		// require.NoError(t, err)
-
-		// require.JSONEq(t, jsonOld, jsonNew)
-
-	})
-
-	t.Run("service with firelens", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/firelens.yml")
-		require.NoError(t, err)
-
-		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
-			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
-			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
-			"SSM_VAR_3": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret3"),
-			"SSM_VAR_4": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret4"),
-		}
-		lbService := ctx.Project.Services[0]
-
-		taskDefinition := genTaskDef(t, ctx, lbService)
-		require.NotNil(t, taskDefinition)
-	})
-
-	t.Run("console with firelens", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/firelens.yml")
-		require.NoError(t, err)
-
-		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
-			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
-			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
-		}
-		task := ctx.Project.ConsoleTask
-
-		taskDefinition := genTaskDef(t, ctx, task)
-		require.NotNil(t, taskDefinition)
 	})
 
 	t.Run("console with awslogs", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/awslogs.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "awslogs.yml", optSetNumSSMVars(2))
 
-		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
-			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
-			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
-		}
 		task := ctx.Project.ConsoleTask
 
 		taskDefinition := genTaskDef(t, ctx, task)
@@ -242,13 +89,8 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("console with splunk", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/customlog.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "customlog.yml", optSetNumSSMVars(2))
 
-		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
-			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
-			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
-		}
 		task := ctx.Project.ConsoleTask
 
 		taskDefinition := genTaskDef(t, ctx, task)
@@ -256,13 +98,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("everything", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/everything.yml")
-		require.NoError(t, err)
-
-		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
-			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
-			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
-		}
+		ctx := loadProjectConfig(t, "everything.yml", optSetNumSSMVars(2))
 
 		tables := []struct {
 			entity config.IsTaskStruct
@@ -287,13 +123,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("with proxy", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/everything.yml")
-		require.NoError(t, err)
-
-		ctx.Cache.SSMSecrets = map[string]config.EnvVar{
-			"SSM_VAR_1": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret1"),
-			"SSM_VAR_2": config.NewEnvVar(config.EnvVarTypeSSM, "/fake/path/secret2"),
-		}
+		ctx := loadProjectConfig(t, "everything.yml", optSetNumSSMVars(2))
 
 		pdTest1Yaml := `
 		name: testpd1
@@ -320,8 +150,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("storage", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/everything.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "everything.yml")
 
 		taskDefinition := genTaskDef(t, ctx, getPredeployTask(ctx.Project, "pd-storage"))
 

@@ -19,8 +19,7 @@ func TestProxyConfig(t *testing.T) {
 	})
 
 	t.Run("when not defined", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/baseline.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "baseline.yml")
 
 		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](`name: testpd1`)
 		require.NoError(t, err)
@@ -32,8 +31,7 @@ func TestProxyConfig(t *testing.T) {
 	})
 
 	t.Run("inherit task defaults", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/proxy.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "proxy.yml")
 
 		taskDefinition := genTaskDef(t, ctx, getPredeployTask(ctx.Project, "pd-def"))
 
@@ -48,8 +46,7 @@ func TestProxyConfig(t *testing.T) {
 	})
 
 	t.Run("task override", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/proxy.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "proxy.yml")
 
 		taskDefinition := genTaskDef(t, ctx, getPredeployTask(ctx.Project, "pd-override"))
 
@@ -64,8 +61,7 @@ func TestProxyConfig(t *testing.T) {
 	})
 
 	t.Run("task override disabled", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/proxy.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "proxy.yml")
 
 		taskDefinition := genTaskDef(t, ctx, getPredeployTask(ctx.Project, "pd-no"))
 
@@ -73,8 +69,7 @@ func TestProxyConfig(t *testing.T) {
 	})
 
 	t.Run("proper values", func(t *testing.T) {
-		ctx, err := config.NewFromYAML("testdata/proxy.yml")
-		require.NoError(t, err)
+		ctx := loadProjectConfig(t, "proxy.yml")
 
 		taskDefinition := genTaskDef(t, ctx, getPredeployTask(ctx.Project, "pd-values"))
 
