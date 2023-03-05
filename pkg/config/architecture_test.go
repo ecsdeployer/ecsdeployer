@@ -66,4 +66,16 @@ func TestArchitecture(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("String", func(t *testing.T) {
+		require.Equal(t, "amd64", config.ArchitectureAMD64.String())
+		require.Equal(t, "arm64", config.ArchitectureARM64.String())
+		require.Equal(t, "invalid", config.Architecture(uint8(127)).String())
+	})
+
+	t.Run("ToAws", func(t *testing.T) {
+		require.Equal(t, ecsTypes.CPUArchitectureX8664, config.ArchitectureAMD64.ToAws())
+		require.Equal(t, ecsTypes.CPUArchitectureArm64, config.ArchitectureARM64.ToAws())
+		require.Equal(t, ecsTypes.CPUArchitecture("invalid"), config.Architecture(uint8(127)).ToAws())
+	})
 }

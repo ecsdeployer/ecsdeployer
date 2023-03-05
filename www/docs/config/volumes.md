@@ -68,19 +68,19 @@ Volumes are specified as an array of objects with the following fields:
 
     Do not specify this if you are using an AccessPoint.
 
-[`use_iam`](#efs.use_iam){ #efs.use_iam }
+[`disable_iam`](#efs.disable_iam){ #efs.disable_iam }
 
-:   Whether to use the task's role when mounting the EFS Volume.
+:   Disable using the task's role when mounting the EFS Volume.
 
-    _Default_: `{{schema:default:VolumeEFSConfig.use_iam}}`
+    _Default_: `{{schema:default:VolumeEFSConfig.disable_iam}}`
 
-[`transit_encryption`](#efs.transit_encryption){ #efs.transit_encryption }
+[`disable_encryption`](#efs.disable_encryption){ #efs.disable_encryption }
 
-:   Whether or not to enable encryption for data in transit. This will be forcibly enabled if [`use_iam`](#volumes.use_iam) or [`access_point_id`](#volumes.access_point_id) are set.
+:   Disable encryption for data in transit. Encryption is required if you use IAM or [`access_point_id`](#volumes.access_point_id) are set.
 
-    You should leave this enabled. There is no reason to ever disable it.
+    You should leave encryption enabled, always. There's no good reason to disable encryption.
 
-    _Default_: `{{schema:default:VolumeEFSConfig.transit_encryption}}`
+    _Default_: `{{schema:default:VolumeEFSConfig.disable_encryption}}`
 
 
 ## Specifying Mount Points

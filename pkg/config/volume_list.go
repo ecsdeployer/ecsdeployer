@@ -46,11 +46,7 @@ func (obj *VolumeList) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 	*obj = newMap
 
-	if err := obj.Validate(); err != nil {
-		return err
-	}
-
-	return nil
+	return obj.Validate()
 }
 
 func (VolumeList) JSONSchemaExtend(base *jsonschema.Schema) {

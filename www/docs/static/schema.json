@@ -1176,11 +1176,11 @@
        },
        "type": {
         "type": "string",
-        "enum": [
-         "APPMESH"
-        ],
         "description": "Proxy type. You should omit this unless you know what you are doing.",
-        "default": "APPMESH"
+        "default": "APPMESH",
+        "examples": [
+         "APPMESH"
+        ]
        },
        "container": {
         "type": "string",
@@ -1723,24 +1723,79 @@
     ]
    },
    "Ulimit": {
-    "properties": {
-     "name": {
-      "type": "string"
+    "oneOf": [
+     {
+      "properties": {
+       "name": {
+        "type": "string",
+        "enum": [
+         "core",
+         "cpu",
+         "data",
+         "fsize",
+         "locks",
+         "memlock",
+         "msgqueue",
+         "nice",
+         "nofile",
+         "nproc",
+         "rss",
+         "rtprio",
+         "rttime",
+         "sigpending",
+         "stack"
+        ]
+       },
+       "limit": {
+        "type": "integer"
+       }
+      },
+      "type": "object",
+      "required": [
+       "name",
+       "limit"
+      ],
+      "description": "Single value used for both hard and soft limits"
      },
-     "hard": {
-      "type": "integer"
-     },
-     "soft": {
-      "type": "integer"
+     {
+      "properties": {
+       "name": {
+        "type": "string",
+        "enum": [
+         "core",
+         "cpu",
+         "data",
+         "fsize",
+         "locks",
+         "memlock",
+         "msgqueue",
+         "nice",
+         "nofile",
+         "nproc",
+         "rss",
+         "rtprio",
+         "rttime",
+         "sigpending",
+         "stack"
+        ]
+       },
+       "hard": {
+        "type": "integer"
+       },
+       "soft": {
+        "type": "integer"
+       }
+      },
+      "type": "object",
+      "required": [
+       "name",
+       "hard",
+       "soft"
+      ],
+      "description": "Define both hard and soft limit values"
      }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "name",
-     "hard",
-     "soft"
-    ]
+    ],
+    "description": "Ulimit overrides"
    },
    "VersionConstraint": {
     "$comment": "https://pkg.go.dev/github.com/Masterminds/semver/v3#readme-checking-version-constraints",
@@ -1781,18 +1836,17 @@
      "root": {
       "type": "string"
      },
-     "use_iam": {
+     "disable_iam": {
       "type": "boolean"
      },
-     "transit_encryption": {
+     "disable_encryption": {
       "type": "boolean"
      }
     },
     "additionalProperties": false,
     "type": "object",
     "required": [
-     "file_system_id",
-     "access_point_id"
+     "file_system_id"
     ]
    },
    "VolumeFrom": {

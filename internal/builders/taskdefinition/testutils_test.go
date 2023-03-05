@@ -58,6 +58,10 @@ func kvListToMap_KVP(val ecsTypes.KeyValuePair) (string, string) {
 	return *val.Name, *val.Value
 }
 
+func kvListToMap_Secret(val ecsTypes.Secret) (string, string) {
+	return *val.Name, *val.ValueFrom
+}
+
 type kvToSliceFunc[T any, K any] func(T) K
 
 func kvListToSlice[T any, K any](kvList []T, sliceFunc kvToSliceFunc[T, K]) []K {

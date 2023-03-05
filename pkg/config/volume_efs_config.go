@@ -8,10 +8,10 @@ import (
 
 type VolumeEFSConfig struct {
 	FileSystemId      string  `yaml:"file_system_id" json:"file_system_id"`
-	AccessPointId     *string `yaml:"access_point_id" json:"access_point_id"`
+	AccessPointId     *string `yaml:"access_point_id,omitempty" json:"access_point_id,omitempty"`
 	RootDirectory     *string `yaml:"root,omitempty" json:"root,omitempty"`
-	UseIAM            *bool   `yaml:"use_iam,omitempty" json:"use_iam,omitempty"`
-	TransitEncryption *bool   `yaml:"transit_encryption,omitempty" json:"transit_encryption,omitempty"`
+	DisableIAM        bool    `yaml:"disable_iam,omitempty" json:"disable_iam,omitempty"`
+	DisableEncryption bool    `yaml:"disable_encryption,omitempty" json:"disable_encryption,omitempty"`
 }
 
 func (obj *VolumeEFSConfig) Validate() error {
@@ -23,25 +23,16 @@ func (obj *VolumeEFSConfig) Validate() error {
 
 func (obj *VolumeEFSConfig) ApplyDefaults() {
 
-	if obj.UseIAM == nil {
-		obj.UseIAM = aws.Bool(true)
-	}
-	if obj.TransitEncryption == nil {
-		obj.TransitEncryption = aws.Bool(true)
-	}
-
-	// FORCING STUFF
-	if obj.AccessPointId != nil || *obj.UseIAM {
-		obj.TransitEncryption = aws.Bool(true)
-	}
-
 }
 
 func (obj *VolumeEFSConfig) ToAws() *ecsTypes.EFSVolumeConfiguration {
 	out := &ecsTypes.EFSVolumeConfiguration{
 		FileSystemId:      aws.String(obj.FileSystemId),
-		RootDirectory:     obj.RootDirectory,
-		TransitEncryption: util.Ternary(*obj.TransitEncryption, ecsTypes.EFSTransitEncryptionEnabled, ecsTypes.EFSTransitEncryptionDisabled),
+		TransitEncryption: util.Ternary(obj.DisableEncryption, ecsTypes.EFSTransitEncryptionDisabled, ecsTypes.EFSTransitEncryptionEnabled),
+	}
+
+	if obj.RootDirectory != nil {
+		out.RootDirectory = obj.RootDirectory
 	}
 
 	if obj.AccessPointId != nil {
@@ -49,7 +40,7 @@ func (obj *VolumeEFSConfig) ToAws() *ecsTypes.EFSVolumeConfiguration {
 			AccessPointId: obj.AccessPointId,
 			Iam:           ecsTypes.EFSAuthorizationConfigIAMEnabled,
 		}
-		if !*obj.UseIAM {
+		if obj.DisableIAM {
 			out.AuthorizationConfig.Iam = ecsTypes.EFSAuthorizationConfigIAMDisabled
 		}
 	}
