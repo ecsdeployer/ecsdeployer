@@ -98,7 +98,7 @@ func getServiceTask(project *config.Project, name string) *config.Service {
 	panic("FAILED TO FIND SERVICE TASK")
 }
 
-func mock_ECS_RegisterTaskDefinition_Dump(t *testing.T) *awsmocker.MockedEndpoint {
+func Mock_ECS_RegisterTaskDefinition_Dump(t *testing.T) *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{
 			Service: "ecs",

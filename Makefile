@@ -22,7 +22,7 @@ tidy:
 .PHONY: lint-install
 lint-install:
 	@echo "Installing golangci-lint"
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
 
 .PHONY: lint
 lint:
@@ -103,9 +103,17 @@ outdated:
 .PHONY: coverage
 coverage:
 	@mkdir -p coverage
-	@./scripts/run_with_test_env.sh go test $(gopkgs) -cover -coverprofile=coverage/c.out -covermode=count
-	@#./scripts/run_with_test_env.sh go test $(gopkgs) -coverpkg=./... -coverprofile=coverage/c.out -covermode=count
-	@go tool cover -html=coverage/c.out -o coverage/index.html
+	
+	@# This is only within the package itself
+	@#./scripts/run_with_test_env.sh go test $(gopkgs) -cover -coverprofile=coverage/c.out -covermode=count
+
+	@# will do coverage over the whole project
+	@./scripts/run_with_test_env.sh go test $(gopkgs) -coverpkg=./... -coverprofile=coverage/c.out -covermode=count
+
+	@# ignore testutil
+	@cat coverage/c.out | grep -v ecsdeployer/internal/testutil/ > coverage/c_notest.out
+	@#go tool cover -html=coverage/c.out -o coverage/index.html
+	@go tool cover -html=coverage/c_notest.out -o coverage/index.html
 
 .PHONY: htmltest
 htmltest:

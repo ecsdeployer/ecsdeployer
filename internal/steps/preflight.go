@@ -78,7 +78,7 @@ func stepPreflightCreate(ctx *config.Context, step *Step, meta *StepMetadata) (O
 	// NETWORK
 	for _, network := range util.DeepFindInStruct[config.NetworkConfiguration](ctx.Project) {
 		step.Logger.Debugf("Validating Network")
-		if _, err := network.ResolveECS(ctx); err != nil {
+		if err := network.Resolve(ctx, nil); err != nil {
 			return nil, err
 		}
 	}

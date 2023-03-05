@@ -12,7 +12,7 @@ func (b *Builder) applySidecarContainers() error {
 	// do not merge from task defaults. if they specify sidecars, then that is the only sidecar list
 	sidecars := util.CoalesceArray(b.commonTask.Sidecars, b.taskDefaults.Sidecars)
 
-	if sidecars == nil || len(sidecars) == 0 {
+	if len(sidecars) == 0 {
 		return nil
 	}
 

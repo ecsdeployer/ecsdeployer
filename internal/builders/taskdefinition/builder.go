@@ -17,11 +17,6 @@ type hasContainerAttrs interface {
 	GetCommonContainerAttrs() config.CommonContainerAttrs
 }
 
-type hasTaskAttrs interface {
-	hasContainerAttrs
-	GetCommonTaskAttrs() config.CommonTaskAttrs
-}
-
 type Builder struct {
 	ctx    *config.Context
 	entity config.IsTaskStruct
@@ -104,7 +99,8 @@ func (builder *Builder) tplEval(tplStr string) (string, error) {
 }
 
 func (builder *Builder) containerTpl(container any) *tmpl.Template {
-	containerName := builder.entity.GetCommonContainerAttrs().Name
+	// containerName := builder.entity.GetCommonContainerAttrs().Name
+	var containerName string
 
 	switch val := container.(type) {
 	case string:

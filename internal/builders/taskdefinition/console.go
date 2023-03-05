@@ -36,8 +36,8 @@ func (b *Builder) applyRemoteShell() error {
 	if network == nil {
 		return errors.New("No network configuration provided")
 	}
-	networkConfig, err := network.ResolveECS(b.ctx)
-	if err != nil {
+	networkConfig := &ecsTypes.NetworkConfiguration{}
+	if err := network.Resolve(b.ctx, networkConfig); err != nil {
 		return err
 	}
 

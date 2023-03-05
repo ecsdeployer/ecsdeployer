@@ -8,19 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 )
 
-const (
-	containerNameTplField = "Container"
-)
-
-type hasContainerAttrs interface {
-	GetCommonContainerAttrs() config.CommonContainerAttrs
-}
-
-type hasTaskAttrs interface {
-	hasContainerAttrs
-	GetCommonTaskAttrs() config.CommonTaskAttrs
-}
-
 type Builder struct {
 	ctx    *config.Context
 	entity *config.PreDeployTask

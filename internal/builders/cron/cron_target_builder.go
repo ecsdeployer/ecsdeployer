@@ -33,6 +33,7 @@ func BuildCronTarget(ctx *config.Context, resource *config.CronJob, taskDefArn s
 		PlatformVersion:      resource.PlatformVersion,
 		PropagateTags:        eventTypes.PropagateTagsTaskDefinition,
 		LaunchType:           eventTypes.LaunchTypeFargate,
+		NetworkConfiguration: &eventTypes.NetworkConfiguration{},
 		// CapacityProviderStrategy: config.NewSpotOnDemand().ExportCapacityStrategyEventBridge(),
 	}
 
@@ -83,11 +84,9 @@ func BuildCronTarget(ctx *config.Context, resource *config.CronJob, taskDefArn s
 		return nil, errors.New("Unable to resolve network configuration!")
 	}
 
-	ecsNetworkConfig, err := network.ResolveCWE(ctx)
-	if err != nil {
+	if err := network.Resolve(ctx, ecsParams.NetworkConfiguration); err != nil {
 		return nil, err
 	}
-	ecsParams.NetworkConfiguration = ecsNetworkConfig
 
 	// The target
 	targetDef := eventTypes.Target{

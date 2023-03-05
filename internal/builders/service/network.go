@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
 func (b *Builder) applyNetworking() error {
@@ -11,11 +12,11 @@ func (b *Builder) applyNetworking() error {
 	if network == nil {
 		return errors.New("Unable to resolve network configuration!")
 	}
-	ecsNetworkConfig, err := network.ResolveECS(b.ctx)
-	if err != nil {
+
+	b.serviceDef.NetworkConfiguration = &ecsTypes.NetworkConfiguration{}
+	if err := network.Resolve(b.ctx, b.serviceDef.NetworkConfiguration); err != nil {
 		return err
 	}
-	b.serviceDef.NetworkConfiguration = ecsNetworkConfig
 
 	return nil
 }

@@ -5,7 +5,7 @@ import ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 func hasContainerDependency(cdef *ecsTypes.ContainerDefinition, dependsOn string) bool {
 	depList := cdef.DependsOn
 
-	if depList == nil || len(depList) == 0 {
+	if len(depList) == 0 {
 		return false
 	}
 
