@@ -29,7 +29,7 @@ func (obj *Service) GetCommonTaskAttrs() CommonTaskAttrs {
 	return obj.CommonTaskAttrs
 }
 
-var _ IsTaskStruct = &Service{}
+var _ IsTaskStruct = (*Service)(nil)
 
 func (svc *Service) IsWorker() bool {
 	return len(svc.LoadBalancers) == 0
@@ -37,10 +37,6 @@ func (svc *Service) IsWorker() bool {
 
 func (svc *Service) IsLoadBalanced() bool {
 	return len(svc.LoadBalancers) > 0
-}
-
-func (obj *Service) IsTaskStruct() bool {
-	return true
 }
 
 func (a *Service) UnmarshalYAML(unmarshal func(interface{}) error) error {

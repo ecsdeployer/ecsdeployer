@@ -13,15 +13,10 @@ import (
 )
 
 var (
-	nfSubnetOrSGId *regexp.Regexp
-
-	ErrNetworkFilterFormatError error
-)
-
-func init() {
 	nfSubnetOrSGId = regexp.MustCompile("^(subnet|sg)-[a-f0-9]{3,}$")
+
 	ErrNetworkFilterFormatError = errors.New("NetworkFilters must have both a value and a name")
-}
+)
 
 type NetworkFilter struct {
 	ID     *string  `yaml:"id" json:"id,omitempty"`

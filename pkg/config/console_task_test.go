@@ -18,7 +18,7 @@ func TestConsoleTask(t *testing.T) {
 	})
 
 	t.Run("IsTaskStruct", func(t *testing.T) {
-		require.True(t, (&config.ConsoleTask{}).IsTaskStruct())
+		require.Implements(t, (*config.IsTaskStruct)(nil), &config.ConsoleTask{})
 	})
 
 	t.Run("ApplyDefaults", func(t *testing.T) {

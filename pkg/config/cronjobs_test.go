@@ -14,7 +14,7 @@ import (
 
 func TestCronJob(t *testing.T) {
 	t.Run("IsTaskStruct", func(t *testing.T) {
-		require.True(t, (&config.CronJob{}).IsTaskStruct())
+		require.Implements(t, (*config.IsTaskStruct)(nil), &config.CronJob{})
 	})
 
 	t.Run("ApplyDefaults", func(t *testing.T) {

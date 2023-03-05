@@ -43,8 +43,7 @@ func TestCommonTaskAttrs_Smoke(t *testing.T) {
 	}
 
 	require.NoError(t, common.Validate())
-
-	require.Truef(t, common.IsTaskStruct(), "IsTaskStruct")
+	require.Implements(t, (*config.IsTaskStruct)(nil), common)
 
 	fields := common.TemplateFields()
 	require.Equalf(t, "test", fields["Name"], "Name")

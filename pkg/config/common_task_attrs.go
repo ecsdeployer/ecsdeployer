@@ -28,11 +28,6 @@ func (obj *CommonTaskAttrs) GetCommonTaskAttrs() CommonTaskAttrs {
 type IsTaskStruct interface {
 	GetCommonTaskAttrs() CommonTaskAttrs
 	GetCommonContainerAttrs() CommonContainerAttrs
-	IsTaskStruct() bool
-}
-
-func (c *CommonTaskAttrs) IsTaskStruct() bool {
-	return true
 }
 
 func (cta *CommonTaskAttrs) Validate() error {

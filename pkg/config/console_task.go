@@ -95,10 +95,6 @@ func (con *ConsoleTask) Validate() error {
 	return nil
 }
 
-func (obj ConsoleTask) IsTaskStruct() bool {
-	return true
-}
-
 func (ConsoleTask) JSONSchemaExtend(base *jsonschema.Schema) {
 	console := *base
 	newBase := &jsonschema.Schema{

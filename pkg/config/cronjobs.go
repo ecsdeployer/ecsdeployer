@@ -31,10 +31,6 @@ func (obj *CronJob) GetCommonTaskAttrs() CommonTaskAttrs {
 	return obj.CommonTaskAttrs
 }
 
-func (obj *CronJob) IsTaskStruct() bool {
-	return true
-}
-
 func (obj *CronJob) IsDisabled() bool {
 	return obj.Disabled
 }
