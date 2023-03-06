@@ -243,6 +243,29 @@ func Mock_ECS_DescribeServices_jmespath(jmesMatches map[string]any, svc ecsTypes
 // 	}
 // }
 
+func Mock_ECS_CreateService_Generic() *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "ecs",
+			Action:  "CreateService",
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+				serviceName, _ := jmespath.Search("serviceName", rr.JsonPayload)
+				cluster, _ := jmespath.Search("cluster", rr.JsonPayload)
+
+				return jsonify(map[string]interface{}{
+					"service": map[string]interface{}{
+						"serviceName": serviceName.(string),
+						"serviceArn":  fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s/%s", rr.Region, awsmocker.DefaultAccountId, cluster.(string), serviceName.(string)),
+					},
+				})
+
+			},
+		},
+	}
+}
+
 func Mock_ECS_CreateService_jmespath(jmesMatchers map[string]any, service ecsTypes.Service) *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{

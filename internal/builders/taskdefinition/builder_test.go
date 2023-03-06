@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/stretchr/testify/require"
-	"github.com/webdestroya/awsmocker"
 )
 
 /*
@@ -29,19 +29,14 @@ TESTS TO DO:
 
 func TestTaskDefinitionBuilder(t *testing.T) {
 
-	testutil.StartMocker(t, &awsmocker.MockerOptions{
-		Mocks: []*awsmocker.MockedEndpoint{
-			// Mock_ECS_RegisterTaskDefinition_Dump(t),
-			testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
-		},
-	})
+	buildtestutils.StartMocker(t)
 
 	t.Run("load balanced service", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "dummy.yml", optSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "dummy.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		lbService := ctx.Project.Services[0]
 
-		taskDefinition := genTaskDef(t, ctx, lbService)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, lbService)
 
 		require.NotNil(t, taskDefinition.Family, "Family")
 		require.EqualValues(t, "dummy-svc1", *taskDefinition.Family)
@@ -80,7 +75,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("everything", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "everything.yml", optSetNumSSMVars(2))
+		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml", buildtestutils.OptSetNumSSMVars(2))
 
 		tables := []struct {
 			entity config.IsTaskStruct
@@ -97,7 +92,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 
 		for _, table := range tables {
 			t.Run(fmt.Sprintf("sub_%T_%s", table.entity, table.entity.GetCommonContainerAttrs().Name), func(t *testing.T) {
-				taskDefinition := genTaskDef(t, ctx, table.entity)
+				taskDefinition := buildtestutils.GenTaskDef(t, ctx, table.entity)
 				require.NotNil(t, taskDefinition)
 			})
 		}
@@ -105,7 +100,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("with proxy", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "everything.yml", optSetNumSSMVars(2))
+		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml", buildtestutils.OptSetNumSSMVars(2))
 
 		pdTest1Yaml := `
 		name: testpd1
@@ -118,13 +113,13 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](testutil.CleanTestYaml(pdTest1Yaml))
 		require.NoError(t, err)
 
-		taskDefinition := genTaskDef(t, ctx, pdTask)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, pdTask)
 
 		require.NotNil(t, taskDefinition.ProxyConfiguration)
 		require.EqualValues(t, "APPMESH", taskDefinition.ProxyConfiguration.Type, "ProxyType")
 		require.EqualValues(t, "envoy", *taskDefinition.ProxyConfiguration.ContainerName, "ProxyContainer")
 
-		propMap := kvListToMap(taskDefinition.ProxyConfiguration.Properties, kvListToMap_KVP)
+		propMap := buildtestutils.KVListToMap(taskDefinition.ProxyConfiguration.Properties, buildtestutils.KVListToMap_KVP)
 
 		require.Contains(t, propMap, "Blah")
 		require.Equal(t, "yar", propMap["Blah"])
@@ -132,22 +127,38 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("storage", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "everything.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml")
 
-		taskDefinition := genTaskDef(t, ctx, getPredeployTask(ctx.Project, "pd-storage"))
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-storage"))
 
 		require.NotNil(t, taskDefinition.EphemeralStorage)
 		require.EqualValues(t, 50, taskDefinition.EphemeralStorage.SizeInGiB)
 	})
 
 	t.Run("override defaults", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "everything.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml")
 
-		taskDefinition := genTaskDef(t, ctx, getPredeployTask(ctx.Project, "pd-override-defaults"))
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-override-defaults"))
 
-		container, err := getContainer(taskDefinition, "pd-override-defaults")
+		container, err := buildtestutils.GetContainer(taskDefinition, "pd-override-defaults")
 		require.NoError(t, err)
 
 		require.Nil(t, container.User)
+	})
+
+	t.Run("smoketest", func(t *testing.T) {
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/smoke.yml", buildtestutils.OptSetNumSSMVars(4))
+
+		lbService := buildtestutils.GetServiceTask(ctx.Project, "web")
+
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, lbService)
+
+		require.NotNil(t, taskDefinition.Family, "Family")
+		require.EqualValues(t, "deployer-test-web", *taskDefinition.Family)
+
+		container, _ := buildtestutils.GetContainer(taskDefinition, "web")
+		require.NotNil(t, container)
+		require.EqualValues(t, "web", *container.Name)
+
 	})
 }

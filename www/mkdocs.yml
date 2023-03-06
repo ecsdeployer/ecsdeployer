@@ -103,6 +103,8 @@ nav:
     - IAM Permissions: aws/iam.md
 
   - Templating: templating.md
+  - Limitations: limitations.md
+  - Getting Help: help.md
 
   - Command Line Usage:
     - ecsdeployer: cmd/ecsdeployer.md
@@ -113,7 +115,6 @@ nav:
     - ecsdeployer info: cmd/ecsdeployer_info.md
     - ecsdeployer jsonschema: cmd/ecsdeployer_jsonschema.md
 
-  - Limitations: limitations.md
 
 
 markdown_extensions:

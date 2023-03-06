@@ -6,6 +6,25 @@ import (
 	"github.com/webdestroya/awsmocker"
 )
 
+func Mock_ELBv2_DescribeTargetGroups_Generic_Success() *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "elasticloadbalancing",
+			Action:  "DescribeTargetGroups",
+		},
+		Response: &awsmocker.MockedResponse{
+			ContentType: awsmocker.ContentTypeXML,
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+				tgName := rr.HttpRequest.FormValue("Names.member.1")
+				return TemplateApply(mock_tpl_DescribeTargetGroupsResponse, map[string]interface{}{
+					"TargetGroupNames": []string{tgName},
+					"AccountId":        awsmocker.DefaultAccountId,
+				})
+			},
+		},
+	}
+}
+
 func Mock_ELBv2_DescribeTargetGroups_Single_Success(tgName string) *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{

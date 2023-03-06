@@ -3,49 +3,45 @@ package taskdefinition_test
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/stretchr/testify/require"
-	"github.com/webdestroya/awsmocker"
 )
 
 func TestLoggingFirelens(t *testing.T) {
-	testutil.StartMocker(t, &awsmocker.MockerOptions{
-		Mocks: []*awsmocker.MockedEndpoint{
-			mock_ECS_RegisterTaskDefinition_Dump(t),
-			testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
-		},
-	})
+
+	buildtestutils.StartMocker(t)
 
 	t.Run("service with firelens", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "firelens.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml")
 		lbService := ctx.Project.Services[0]
 
-		taskDefinition := genTaskDef(t, ctx, lbService)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, lbService)
 		require.NotNil(t, taskDefinition)
 
-		container, _ := getContainer(taskDefinition, lbService.Name)
+		container, _ := buildtestutils.GetContainer(taskDefinition, lbService.Name)
 		require.NotNil(t, container.LogConfiguration)
 		require.Equal(t, ecsTypes.LogDriverAwsfirelens, container.LogConfiguration.LogDriver)
 	})
 
 	t.Run("console with firelens", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "firelens.yml", optSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := genTaskDef(t, ctx, task)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
-		container, _ := getContainer(taskDefinition, "console")
+		container, _ := buildtestutils.GetContainer(taskDefinition, "console")
 		require.NotNil(t, container.LogConfiguration)
 		require.Equal(t, ecsTypes.LogDriverAwsfirelens, container.LogConfiguration.LogDriver)
 	})
 
 	t.Run("everything", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "firelens.yml", optSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		loggingYaml := `
 		firelens:
@@ -73,10 +69,10 @@ func TestLoggingFirelens(t *testing.T) {
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := genTaskDef(t, ctx, task)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
-		flContainer, err := getContainer(taskDefinition, "fartlog")
+		flContainer, err := buildtestutils.GetContainer(taskDefinition, "fartlog")
 		require.NoError(t, err)
 		require.NotNil(t, flContainer)
 
@@ -93,7 +89,7 @@ func TestLoggingFirelens(t *testing.T) {
 		require.Equal(t, "custom-container/dummy:latest", *flContainer.Image)
 		require.EqualValues(t, 128, *flContainer.MemoryReservation)
 
-		primary, err := getContainer(taskDefinition, "console")
+		primary, err := buildtestutils.GetContainer(taskDefinition, "console")
 		require.NoError(t, err)
 		require.NotNil(t, primary)
 
@@ -107,7 +103,7 @@ func TestLoggingFirelens(t *testing.T) {
 		require.Equal(t, "fakecluster-stream", pLogConf.Options["delivery_stream"])
 		require.Equal(t, "2097152", pLogConf.Options["log-driver-buffer-limit"])
 		// secret options
-		pLogSecrets := kvListToMap(pLogConf.SecretOptions, kvListToMap_Secret)
+		pLogSecrets := buildtestutils.KVListToMap(pLogConf.SecretOptions, buildtestutils.KVListToMap_Secret)
 		require.Equal(t, "/path/thing", pLogSecrets["somethingsomething"])
 
 		// check container dependency
@@ -130,7 +126,7 @@ func TestLoggingFirelens(t *testing.T) {
 	})
 
 	t.Run("firelens with awslogs", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "firelens.yml", optSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		loggingYaml := `
 		firelens:
@@ -143,10 +139,10 @@ func TestLoggingFirelens(t *testing.T) {
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := genTaskDef(t, ctx, task)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
-		flContainer, err := getContainer(taskDefinition, "log_router")
+		flContainer, err := buildtestutils.GetContainer(taskDefinition, "log_router")
 		require.NoError(t, err)
 		require.NotNil(t, flContainer)
 
@@ -157,7 +153,7 @@ func TestLoggingFirelens(t *testing.T) {
 	})
 
 	t.Run("firelens with awslogs stream hack", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "firelens.yml", optSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		loggingYaml := `
 		firelens:
@@ -170,10 +166,10 @@ func TestLoggingFirelens(t *testing.T) {
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := genTaskDef(t, ctx, task)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
-		flContainer, err := getContainer(taskDefinition, "log_router")
+		flContainer, err := buildtestutils.GetContainer(taskDefinition, "log_router")
 		require.NoError(t, err)
 		require.NotNil(t, flContainer)
 
@@ -185,7 +181,7 @@ func TestLoggingFirelens(t *testing.T) {
 	})
 
 	t.Run("firelens without awslogs", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "firelens.yml", optSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		loggingYaml := `
 		firelens:
@@ -198,10 +194,10 @@ func TestLoggingFirelens(t *testing.T) {
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := genTaskDef(t, ctx, task)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
-		flContainer, err := getContainer(taskDefinition, "log_router")
+		flContainer, err := buildtestutils.GetContainer(taskDefinition, "log_router")
 		require.NoError(t, err)
 		require.NotNil(t, flContainer)
 

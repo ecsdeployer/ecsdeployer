@@ -3,32 +3,26 @@ package taskdefinition_test
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/rshell"
-	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/stretchr/testify/require"
-	"github.com/webdestroya/awsmocker"
 )
 
 func TestConsole(t *testing.T) {
 
-	testutil.StartMocker(t, &awsmocker.MockerOptions{
-		Mocks: []*awsmocker.MockedEndpoint{
-			// Mock_ECS_RegisterTaskDefinition_Dump(t),
-			testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
-		},
-	})
+	buildtestutils.StartMocker(t)
 
 	t.Run("default", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "everything.yml", optSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		consoleTask := ctx.Project.ConsoleTask
 
-		taskDefinition := genTaskDef(t, ctx, consoleTask)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, consoleTask)
 
 		require.NotNil(t, taskDefinition)
 
-		primary, err := getContainer(taskDefinition, "console")
+		primary, err := buildtestutils.GetContainer(taskDefinition, "console")
 		require.NoError(t, err)
 
 		require.NotNil(t, primary.LinuxParameters)
@@ -49,20 +43,20 @@ func TestConsole(t *testing.T) {
 	})
 
 	t.Run("console with awslogs", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "awslogs.yml", optSetNumSSMVars(2))
+		ctx := buildtestutils.LoadProjectConfig(t, "awslogs.yml", buildtestutils.OptSetNumSSMVars(2))
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := genTaskDef(t, ctx, task)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 	})
 
 	t.Run("console with splunk", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "customlog.yml", optSetNumSSMVars(2))
+		ctx := buildtestutils.LoadProjectConfig(t, "customlog.yml", buildtestutils.OptSetNumSSMVars(2))
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := genTaskDef(t, ctx, task)
+		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 	})
 }

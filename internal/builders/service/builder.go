@@ -1,7 +1,6 @@
 package service
 
 import (
-	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -50,11 +49,12 @@ func (builder *Builder) init() error {
 	builder.templates = builder.project.Templates
 	builder.commonTask = util.Ptr(builder.entity.GetCommonTaskAttrs())
 
-	if commonTplFields, err := helpers.GetDefaultTaskTemplateFields(builder.ctx, builder.commonTask); err != nil {
-		return err
-	} else {
-		builder.commonTplFields = commonTplFields
-	}
+	// if commonTplFields, err := helpers.GetDefaultTaskTemplateFields(builder.ctx, builder.commonTask); err != nil {
+	// 	return err
+	// } else {
+	// 	builder.commonTplFields = commonTplFields
+	// }
+	builder.commonTplFields = tmpl.Fields(builder.commonTask.TemplateFields())
 
 	return nil
 }

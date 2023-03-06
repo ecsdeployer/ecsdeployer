@@ -1,7 +1,8 @@
-package taskdefinition_test
+package buildtestutils
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -14,16 +15,20 @@ type optsLoadProjectConfig struct {
 
 type optsLPCFunc func(*optsLoadProjectConfig)
 
-func optSetNumSSMVars(num int) optsLPCFunc {
+func OptSetNumSSMVars(num int) optsLPCFunc {
 	return func(opts *optsLoadProjectConfig) {
 		opts.NumSSMVars = num
 	}
 }
 
-func loadProjectConfig(t *testing.T, filepath string, optFuncs ...optsLPCFunc) *config.Context {
+func LoadProjectConfig(t *testing.T, filepath string, optFuncs ...optsLPCFunc) *config.Context {
 	t.Helper()
 
-	ctx, err := config.NewFromYAML(fmt.Sprintf("testdata/%s", filepath))
+	if !strings.Contains(filepath, "/") {
+		filepath = fmt.Sprintf("testdata/%s", filepath)
+	}
+
+	ctx, err := config.NewFromYAML(filepath)
 	require.NoError(t, err)
 
 	opts := &optsLoadProjectConfig{}
