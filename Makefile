@@ -104,15 +104,15 @@ outdated:
 coverage:
 	@mkdir -p coverage
 	
-	@# This is only within the package itself
-	@#./scripts/run_with_test_env.sh go test $(gopkgs) -cover -coverprofile=coverage/c.out -covermode=count
+#	@# This is only within the package itself
+#	@#./scripts/run_with_test_env.sh go test $(gopkgs) -cover -coverprofile=coverage/c.out -covermode=count
 
-	@# will do coverage over the whole project
-	@./scripts/run_with_test_env.sh go test $(gopkgs) -coverpkg=./... -coverprofile=coverage/c.out -covermode=count
+#	@# will do coverage over the whole project
+	@./scripts/run_with_test_env.sh go test $(gopkgs) -coverpkg=./... -coverprofile=coverage/c.out -covermode=count -short
 
-	@# ignore testutil
+#	@# ignore testutil
 	@cat coverage/c.out | grep -v ecsdeployer/internal/testutil/ > coverage/c_notest.out
-	@#go tool cover -html=coverage/c.out -o coverage/index.html
+#	@#go tool cover -html=coverage/c.out -o coverage/index.html
 	@go tool cover -html=coverage/c_notest.out -o coverage/index.html
 
 .PHONY: htmltest

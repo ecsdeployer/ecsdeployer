@@ -18,6 +18,10 @@
 
 :    Currently the "Operating System" option is forced to LINUX. Windows support will be added in the future.
 
+#### Only manages deployment-related infrastructure
+
+:    The focus of this app is to make repeated deployments easy and fast. It purposely does not try to manage the entirety of the infrastructure required for your app. You must create the constant resources (Load balancers, target groups, ECS cluster, ECR repository, roles, etc.). Managing those is outside the scope of this program for the time being.
+
 ## Planned Features
 * [ ] ECS Service Registries
 * [x] AppMesh/Envoy Proxies

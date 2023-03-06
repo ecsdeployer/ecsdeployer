@@ -76,6 +76,21 @@ func TestCronJob(t *testing.T) {
 			{
 				str: `
 				name: test
+				schedule: rate(1 hour)
+				start_date: 2023-99-02`,
+				errMatch: "Invalid format for start",
+			},
+			{
+				str: `
+				name: test
+				schedule: rate(1 hour)
+				end_date: 2023-01-02T09:12:55-08:00
+				start_date: 2024-01-02T09:12:55-08:00`,
+				errMatch: "end date cannot be before the start date",
+			},
+			{
+				str: `
+				name: test
 				schedule: rate(1 hour)`,
 				expSched: "rate(1 hour)",
 			},

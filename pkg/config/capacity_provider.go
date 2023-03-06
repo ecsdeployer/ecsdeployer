@@ -1,5 +1,6 @@
 package config
 
+/*
 type CapacityProvider struct {
 	Provider *string `yaml:"provider" json:"provider"`
 	Base     *int32  `yaml:"base" json:"base"`
@@ -12,3 +13,4 @@ func (obj *CapacityProvider) Validate() error {
 
 func (obj *CapacityProvider) ApplyDefaults() {
 }
+*/

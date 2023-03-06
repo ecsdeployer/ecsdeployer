@@ -89,6 +89,31 @@ func Mock_ECS_DescribeTasks_Pending(status string, maxCount int) *awsmocker.Mock
 	}
 }
 
+func Mock_ECS_DescribeTasks_Failure(maxCount int) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service:       "ecs",
+			Action:        "DescribeTasks",
+			MaxMatchCount: maxCount,
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+				taskArn := JmesPathSearch(rr.JsonPayload, "tasks[0]").(string)
+
+				return jsonify(map[string]interface{}{
+					"failures": []interface{}{
+						map[string]interface{}{
+							"arn":    taskArn,
+							"reason": "MISSING",
+						},
+					},
+					"tasks": []interface{}{},
+				})
+			},
+		},
+	}
+}
+
 func Mock_ECS_DescribeTasks_Stopped(stopCode ecsTypes.TaskStopCode, exitCode int, maxCount int) *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{

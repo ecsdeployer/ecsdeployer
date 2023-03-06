@@ -15,6 +15,10 @@ import (
 func TestSchemaCmd(t *testing.T) {
 
 	t.Run("writes file", func(t *testing.T) {
+		if testing.Short() {
+			t.SkipNow()
+			return
+		}
 		cmd := newSchemaCmd(defaultCmdMetadata()).cmd
 		dir := t.TempDir()
 		destination := path.Join(dir, "schema.json")

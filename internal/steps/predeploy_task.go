@@ -140,14 +140,14 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 	err = stoppedWaiter.Wait(ctx.Context, params, maxWaitTime)
 	if err != nil {
 		logger.Error("Failed")
-		return nil, err
+		return nil, fmt.Errorf("Failure waiting for task to stop: %w", err)
 	}
 
 	// it's stopped, so get the latest status
 	results, err := ecsClient.DescribeTasks(ctx.Context, params)
 	if err != nil {
 		logger.Error("Failed")
-		return nil, err
+		return nil, fmt.Errorf("Unable to describe task status: %w", err)
 	}
 
 	// check for failures
@@ -181,7 +181,7 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 
 	logger.Error("Task Failed")
 
-	return fields, err
+	return fields, fmt.Errorf("Task failed: %w", err)
 }
 
 func didTaskSucceed(result *ecsTypes.Task) error {

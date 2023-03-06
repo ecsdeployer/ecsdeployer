@@ -1,7 +1,7 @@
 package config
 
 // TODO: let them specify that they want an ondemand baseline of X tasks
-
+/*
 type CapacitySimple struct {
 	Base   int32 `yaml:"base" json:"base"`
 	Weight int32 `yaml:"weight" json:"weight"`
@@ -57,3 +57,4 @@ func (obj *Capacity) Validate() error {
 
 	return nil
 }
+*/
