@@ -13,13 +13,7 @@ type FargateDefaults struct {
 	SpotOverride *SpotOverrides `yaml:"spot,omitempty" json:"spot,omitempty"`
 }
 
-func (obj *FargateDefaults) GetCommonContainerAttrs() CommonContainerAttrs {
-	return obj.CommonContainerAttrs
-}
-
-func (obj *FargateDefaults) GetCommonTaskAttrs() CommonTaskAttrs {
-	return obj.CommonTaskAttrs
-}
+var _ IsTaskStruct = (*FargateDefaults)(nil)
 
 func (obj *FargateDefaults) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	type tFargateDefaults FargateDefaults // prevent recursive overflow
@@ -58,7 +52,7 @@ func (obj *FargateDefaults) Validate() error {
 func (obj *FargateDefaults) ApplyDefaults() {
 	obj.Name = ""
 	if obj.PlatformVersion == nil {
-		obj.PlatformVersion = aws.String("LATEST")
+		obj.PlatformVersion = aws.String(defaultPlatformVersion)
 	}
 
 	if obj.Cpu == nil {
@@ -114,6 +108,15 @@ func (FargateDefaults) JSONSchemaExtend(base *jsonschema.Schema) {
 		s.Default = ArchitectureDefault.String()
 	})
 
-	platVer, _ := base.Properties.Get("platform_version")
-	(platVer.(*jsonschema.Schema)).Default = "LATEST"
+	configschema.SchemaPropMerge(base, "platform_version", func(s *jsonschema.Schema) {
+		s.Default = defaultPlatformVersion
+	})
+
+	configschema.SchemaPropMerge(base, "cpu", func(s *jsonschema.Schema) {
+		s.Default = defaultTaskCpu
+	})
+
+	configschema.SchemaPropMerge(base, "memory", func(s *jsonschema.Schema) {
+		s.Default = defaultTaskMemory
+	})
 }

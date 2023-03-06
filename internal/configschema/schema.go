@@ -7,18 +7,26 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
-const (
-	stringLikeId          = "StringLike"
-	stringLikeWithBlankId = "StringLikeWithBlank"
-)
+// const (
+// 	stringLikeId          = "StringLike"
+// 	stringLikeWithBlankId = "StringLikeWithBlank"
+// )
+
+// var (
+// 	StringLikeRef          = "#/$defs/" + stringLikeId
+// 	StringLikeWithBlankRef = "#/$defs/" + stringLikeWithBlankId
+// )
 
 var (
-	StringLikeRef          = "#/$defs/" + stringLikeId
-	StringLikeWithBlankRef = "#/$defs/" + stringLikeWithBlankId
+	StringLike = NewStringLike()
+
+	StringLikeWithBlank = NewStringLikeWithBlank()
 )
 
-var (
-	StringLike = &jsonschema.Schema{
+type modifierFunc func(*jsonschema.Schema)
+
+func NewStringLike(modFuncs ...modifierFunc) *jsonschema.Schema {
+	result := &jsonschema.Schema{
 		Description: "Any value that can be cast to a string of at least one character long",
 		OneOf: []*jsonschema.Schema{
 			{
@@ -39,7 +47,15 @@ var (
 		},
 	}
 
-	StringLikeWithBlank = &jsonschema.Schema{
+	for _, modFunc := range modFuncs {
+		modFunc(result)
+	}
+
+	return result
+}
+
+func NewStringLikeWithBlank(modFuncs ...modifierFunc) *jsonschema.Schema {
+	result := &jsonschema.Schema{
 		// OneOf: []*jsonschema.Schema{
 		// 	{
 		// 		Type: "string",
@@ -56,9 +72,15 @@ var (
 		},
 		Description: "Any value that can be cast to a string, or blank",
 	}
-)
 
-func SchemaNamer(t reflect.Type) string {
+	for _, modFunc := range modFuncs {
+		modFunc(result)
+	}
+
+	return result
+}
+
+func schemaNamer(t reflect.Type) string {
 	name := t.Name()
 
 	switch name {
@@ -88,15 +110,15 @@ func GenerateSchema(v any) *jsonschema.Schema {
 	reflector := &jsonschema.Reflector{
 		AllowAdditionalProperties: false,
 		ExpandedStruct:            true,
-		Namer:                     SchemaNamer,
+		Namer:                     schemaNamer,
 	}
 
 	// schema := jsonschema.Reflect(&config.Project{})
 	schema := reflector.Reflect(v)
 	// AppendSchemaHelpers(schema)
 
-	schema.Definitions[stringLikeId] = StringLike
-	schema.Definitions[stringLikeWithBlankId] = StringLikeWithBlank
+	// schema.Definitions[stringLikeId] = StringLike
+	// schema.Definitions[stringLikeWithBlankId] = StringLikeWithBlank
 
 	return schema
 }

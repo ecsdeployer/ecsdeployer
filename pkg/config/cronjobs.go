@@ -23,13 +23,7 @@ type CronJob struct {
 	EndDate   *time.Time `yaml:"end_date,omitempty" json:"end_date,omitempty"`
 }
 
-func (obj *CronJob) GetCommonContainerAttrs() CommonContainerAttrs {
-	return obj.CommonContainerAttrs
-}
-
-func (obj *CronJob) GetCommonTaskAttrs() CommonTaskAttrs {
-	return obj.CommonTaskAttrs
-}
+var _ IsTaskStruct = (*CronJob)(nil)
 
 func (obj *CronJob) IsDisabled() bool {
 	return obj.Disabled

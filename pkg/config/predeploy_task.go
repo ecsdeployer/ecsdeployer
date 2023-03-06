@@ -12,13 +12,7 @@ type PreDeployTask struct {
 	IgnoreFailure bool      `yaml:"ignore_failure,omitempty" json:"ignore_failure,omitempty" jsonschema:"default=false,description=Ignore runtime failures of this task"`
 }
 
-func (obj *PreDeployTask) GetCommonContainerAttrs() CommonContainerAttrs {
-	return obj.CommonContainerAttrs
-}
-
-func (obj *PreDeployTask) GetCommonTaskAttrs() CommonTaskAttrs {
-	return obj.CommonTaskAttrs
-}
+var _ IsTaskStruct = (*PreDeployTask)(nil)
 
 func (obj *PreDeployTask) ApplyDefaults() {
 

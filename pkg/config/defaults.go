@@ -12,6 +12,8 @@ const (
 	defaultKeepInSync = true
 
 	defaultLogRetention = 180
+
+	defaultPlatformVersion = "LATEST"
 )
 
 var DefaultDeploymentEnvVars = map[string]string{

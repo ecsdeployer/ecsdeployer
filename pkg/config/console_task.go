@@ -19,13 +19,7 @@ type ConsoleTask struct {
 	Path        *string      `yaml:"path,omitempty" json:"path,omitempty"`
 }
 
-func (obj *ConsoleTask) GetCommonContainerAttrs() CommonContainerAttrs {
-	return obj.CommonContainerAttrs
-}
-
-func (obj *ConsoleTask) GetCommonTaskAttrs() CommonTaskAttrs {
-	return obj.CommonTaskAttrs
-}
+var _ IsTaskStruct = (*ConsoleTask)(nil)
 
 func (obj *ConsoleTask) IsEnabled() bool {
 	if obj.Enabled == nil {

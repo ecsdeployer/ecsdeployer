@@ -448,7 +448,12 @@
       "$comment": "Use a value verbatim",
       "properties": {
        "value": {
-        "$ref": "#/$defs/StringLikeWithBlank"
+        "description": "Any value that can be cast to a string, or blank",
+        "type": [
+         "number",
+         "string",
+         "boolean"
+        ]
        }
       },
       "additionalProperties": false,
@@ -472,8 +477,13 @@
       ]
      },
      {
-      "$ref": "#/$defs/StringLikeWithBlank",
-      "$comment": "Use a value verbatim"
+      "$comment": "Use a value verbatim",
+      "description": "Any value that can be cast to a string, or blank",
+      "type": [
+       "number",
+       "string",
+       "boolean"
+      ]
      }
     ]
    },
@@ -883,7 +893,19 @@
       "minLength": 1
      },
      "value": {
-      "$ref": "#/$defs/StringLike"
+      "oneOf": [
+       {
+        "type": "string",
+        "minLength": 1
+       },
+       {
+        "type": [
+         "number",
+         "boolean"
+        ]
+       }
+      ],
+      "description": "Any value that can be cast to a string of at least one character long"
      }
     },
     "additionalProperties": false,
@@ -1422,12 +1444,21 @@
    "ShellCommand": {
     "oneOf": [
      {
-      "$ref": "#/$defs/StringLikeWithBlank",
-      "description": "Shell-style command"
+      "description": "Shell-style command",
+      "type": [
+       "number",
+       "string",
+       "boolean"
+      ]
      },
      {
       "items": {
-       "$ref": "#/$defs/StringLikeWithBlank"
+       "description": "Any value that can be cast to a string, or blank",
+       "type": [
+        "number",
+        "string",
+        "boolean"
+       ]
       },
       "type": "array",
       "description": "Command array. Preferred"
@@ -1563,29 +1594,6 @@
     "description": "Size in GB of storage to add",
     "default": 20
    },
-   "StringLike": {
-    "oneOf": [
-     {
-      "type": "string",
-      "minLength": 1
-     },
-     {
-      "type": [
-       "number",
-       "boolean"
-      ]
-     }
-    ],
-    "description": "Any value that can be cast to a string of at least one character long"
-   },
-   "StringLikeWithBlank": {
-    "description": "Any value that can be cast to a string, or blank",
-    "type": [
-     "number",
-     "string",
-     "boolean"
-    ]
-   },
    "TargetGroupRef": {
     "type": "string",
     "minLength": 1,
@@ -1606,10 +1614,12 @@
       "type": "string"
      },
      "cpu": {
-      "$ref": "#/$defs/CPUShares"
+      "$ref": "#/$defs/CPUShares",
+      "default": 1024
      },
      "memory": {
-      "$ref": "#/$defs/Memory"
+      "$ref": "#/$defs/Memory",
+      "default": "2x"
      },
      "environment": {
       "$ref": "#/$defs/EnvVarMap"

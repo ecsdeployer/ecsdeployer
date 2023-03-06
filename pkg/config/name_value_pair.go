@@ -46,9 +46,7 @@ func (NameValuePair) JSONSchema() *jsonschema.Schema {
 		MinLength: 1,
 	})
 
-	properties.Set("value", &jsonschema.Schema{
-		Ref: configschema.StringLikeRef,
-	})
+	properties.Set("value", configschema.StringLike)
 
 	return &jsonschema.Schema{
 		Type:                 "object",

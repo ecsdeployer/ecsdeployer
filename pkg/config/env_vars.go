@@ -176,9 +176,7 @@ func (EnvVar) JSONSchema() *jsonschema.Schema {
 	}
 
 	valStrProps := orderedmap.New()
-	valStrProps.Set("value", &jsonschema.Schema{
-		Ref: configschema.StringLikeWithBlankRef,
-	})
+	valStrProps.Set("value", configschema.StringLikeWithBlank)
 	valStrSchema := &jsonschema.Schema{
 		Type:                 "object",
 		Properties:           valStrProps,
@@ -200,10 +198,13 @@ func (EnvVar) JSONSchema() *jsonschema.Schema {
 		AdditionalProperties: jsonschema.FalseSchema,
 	}
 
-	strLikeSchema := &jsonschema.Schema{
-		Ref:      configschema.StringLikeWithBlankRef,
-		Comments: "Use a value verbatim",
-	}
+	// strLikeSchema := &jsonschema.Schema{
+	// 	Ref:      configschema.StringLikeWithBlank,
+	// 	Comments: "Use a value verbatim",
+	// }
+	strLikeSchema := configschema.NewStringLikeWithBlank(func(o *jsonschema.Schema) {
+		o.Comments = "Use a value verbatim"
+	})
 
 	return &jsonschema.Schema{
 		OneOf: []*jsonschema.Schema{
