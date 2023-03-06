@@ -14,8 +14,12 @@ func (b *Builder) applyRunTaskDefaults() error {
 	}
 	b.runTaskDef.Cluster = &clusterArn
 
-	// THIS IS PURPOSELY LEFT BLANK. IT WILL BE FILLED IN BY CALLER
-	b.runTaskDef.TaskDefinition = new(string)
+	// THIS DEFAULTS TO THE LATEST. THE EXPECTATION IS THAT THE CALLER OF THIS WILL OVERRIDE THE ARN
+	taskFamily, err := b.tplEval(*b.templates.TaskFamily)
+	if err != nil {
+		return err
+	}
+	b.runTaskDef.TaskDefinition = &taskFamily
 
 	b.runTaskDef.Count = aws.Int32(1)
 

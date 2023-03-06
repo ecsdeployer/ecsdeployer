@@ -2,26 +2,11 @@ package buildtestutils
 
 import (
 	"fmt"
-	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/awsclients"
-	"ecsdeployer.com/ecsdeployer/internal/builders/taskdefinition"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	"github.com/stretchr/testify/require"
 )
-
-func GenTaskDef(t *testing.T, ctx *config.Context, entity config.IsTaskStruct) *ecs.RegisterTaskDefinitionInput {
-	t.Helper()
-	taskDefinition, err := taskdefinition.Build(ctx, entity)
-	require.NoError(t, err)
-
-	_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
-	require.NoError(t, err)
-
-	return taskDefinition
-}
 
 func GetContainer(taskDef *ecs.RegisterTaskDefinitionInput, containerName string) (ecsTypes.ContainerDefinition, error) {
 

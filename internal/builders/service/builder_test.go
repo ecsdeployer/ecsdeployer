@@ -4,19 +4,17 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
-	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
-	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/stretchr/testify/require"
 )
 
 func TestBuildCreate_Basic(t *testing.T) {
-	testutil.MockSimpleStsProxy(t)
+	buildtestutils.StartMocker(t)
 	// just a basic test to make sure we can pass the common stuff thru it
 
-	ctx, err := config.NewFromYAML("testdata/dummy.yml")
-	require.NoError(t, err)
+	ctx := buildtestutils.LoadProjectConfig(t, "../testdata/dummy.yml")
 
 	tables := []struct {
 		thing    *config.Service

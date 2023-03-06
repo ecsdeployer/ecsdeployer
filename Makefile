@@ -1,5 +1,5 @@
 # gopkgs := ./cmd/... ./internal/... ./pkg/...
-gopkgs := $(shell go list ./cmd/... ./internal/... ./pkg/... | grep -v testutil)
+gopkgs := $(shell go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/testutil)
 
 
 .PHONY: precommit
@@ -111,7 +111,7 @@ coverage:
 	@./scripts/run_with_test_env.sh go test $(gopkgs) -coverpkg=./... -coverprofile=coverage/c.out -covermode=count
 
 	@# ignore testutil
-	@cat coverage/c.out | grep -v ecsdeployer/internal/testutil/ | grep -v ecsdeployer/internal/builders/buildtestutils/ > coverage/c_notest.out
+	@cat coverage/c.out | grep -v ecsdeployer/internal/testutil/ > coverage/c_notest.out
 	@#go tool cover -html=coverage/c.out -o coverage/index.html
 	@go tool cover -html=coverage/c_notest.out -o coverage/index.html
 

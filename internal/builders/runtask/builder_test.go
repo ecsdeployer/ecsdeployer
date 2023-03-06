@@ -3,9 +3,12 @@ package runtask
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/stretchr/testify/require"
 )
@@ -14,10 +17,9 @@ func TestBuildRunTask_Basic(t *testing.T) {
 
 	// just a basic test to make sure we can pass the common stuff thru it
 
-	testutil.MockSimpleStsProxy(t)
+	buildtestutils.StartMocker(t)
 
-	ctx, err := config.NewFromYAML("testdata/dummy.yml")
-	require.NoError(t, err)
+	ctx := buildtestutils.LoadProjectConfig(t, "../testdata/dummy.yml")
 
 	tables := []struct {
 		thing *config.PreDeployTask
@@ -27,8 +29,7 @@ func TestBuildRunTask_Basic(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		runTask, err := Build(ctx, table.thing)
-		require.NoError(t, err)
+		runTask := genRunTaskDef(t, ctx, table.thing)
 		require.True(t, runTask.EnableECSManagedTags)
 
 	}
@@ -36,10 +37,9 @@ func TestBuildRunTask_Basic(t *testing.T) {
 }
 
 func TestBuild_Detailed(t *testing.T) {
-	testutil.MockSimpleStsProxy(t)
+	buildtestutils.StartMocker(t)
 
-	ctx, err := config.NewFromYAML("testdata/dummy.yml")
-	require.NoError(t, err)
+	ctx := buildtestutils.LoadProjectConfig(t, "../testdata/dummy.yml")
 
 	t.Run("normal", func(t *testing.T) {
 
@@ -51,8 +51,7 @@ func TestBuild_Detailed(t *testing.T) {
 		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](testutil.CleanTestYaml(pdTest1Yaml))
 		require.NoError(t, err)
 
-		runTask, err := Build(ctx, pdTask)
-		require.NoError(t, err)
+		runTask := genRunTaskDef(t, ctx, pdTask)
 
 		require.EqualValues(t, 1, *runTask.Count)
 
@@ -65,10 +64,21 @@ func TestBuild_Detailed(t *testing.T) {
 		require.Equal(t, "ecsd:dummy:deployer", *runTask.StartedBy, "StartedBy")
 		require.Equal(t, "ecsd:dummy:pd:testpd1", *runTask.Group, "Group")
 
-		require.Equal(t, "arn:aws:ecs:us-east-1:555555555555:cluster/fake", *runTask.Cluster, "Cluster")
+		require.Equal(t, "arn:aws:ecs:us-east-1:555555555555:cluster/fakecluster", *runTask.Cluster, "Cluster")
 
 		require.Equal(t, ecsTypes.AssignPublicIpDisabled, runTask.NetworkConfiguration.AwsvpcConfiguration.AssignPublicIp, "AssignPublicIp")
 		require.Contains(t, runTask.NetworkConfiguration.AwsvpcConfiguration.Subnets, "subnet-2222222222", "subnets")
 		require.Contains(t, runTask.NetworkConfiguration.AwsvpcConfiguration.SecurityGroups, "sg-11111111111", "security groups")
 	})
+}
+
+func genRunTaskDef(t *testing.T, ctx *config.Context, entity *config.PreDeployTask) *ecs.RunTaskInput {
+	t.Helper()
+	runTaskInput, err := Build(ctx, entity)
+	require.NoError(t, err)
+
+	_, err = awsclients.ECSClient().RunTask(ctx.Context, runTaskInput)
+	require.NoError(t, err)
+
+	return runTaskInput
 }

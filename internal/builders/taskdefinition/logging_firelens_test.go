@@ -3,8 +3,8 @@ package taskdefinition_test
 import (
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -16,10 +16,10 @@ func TestLoggingFirelens(t *testing.T) {
 	buildtestutils.StartMocker(t)
 
 	t.Run("service with firelens", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/firelens.yml")
 		lbService := ctx.Project.Services[0]
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, lbService)
+		taskDefinition := genTaskDef(t, ctx, lbService)
 		require.NotNil(t, taskDefinition)
 
 		container, _ := buildtestutils.GetContainer(taskDefinition, lbService.Name)
@@ -28,11 +28,11 @@ func TestLoggingFirelens(t *testing.T) {
 	})
 
 	t.Run("console with firelens", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
 		container, _ := buildtestutils.GetContainer(taskDefinition, "console")
@@ -41,7 +41,7 @@ func TestLoggingFirelens(t *testing.T) {
 	})
 
 	t.Run("everything", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		loggingYaml := `
 		firelens:
@@ -69,7 +69,7 @@ func TestLoggingFirelens(t *testing.T) {
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
 		flContainer, err := buildtestutils.GetContainer(taskDefinition, "fartlog")
@@ -126,7 +126,7 @@ func TestLoggingFirelens(t *testing.T) {
 	})
 
 	t.Run("firelens with awslogs", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		loggingYaml := `
 		firelens:
@@ -139,7 +139,7 @@ func TestLoggingFirelens(t *testing.T) {
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
 		flContainer, err := buildtestutils.GetContainer(taskDefinition, "log_router")
@@ -153,7 +153,7 @@ func TestLoggingFirelens(t *testing.T) {
 	})
 
 	t.Run("firelens with awslogs stream hack", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		loggingYaml := `
 		firelens:
@@ -166,7 +166,7 @@ func TestLoggingFirelens(t *testing.T) {
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
 		flContainer, err := buildtestutils.GetContainer(taskDefinition, "log_router")
@@ -181,7 +181,7 @@ func TestLoggingFirelens(t *testing.T) {
 	})
 
 	t.Run("firelens without awslogs", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "firelens.yml", buildtestutils.OptSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/firelens.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		loggingYaml := `
 		firelens:
@@ -194,7 +194,7 @@ func TestLoggingFirelens(t *testing.T) {
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 
 		flContainer, err := buildtestutils.GetContainer(taskDefinition, "log_router")

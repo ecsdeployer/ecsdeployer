@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
+	"ecsdeployer.com/ecsdeployer/internal/builders/taskdefinition"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
+	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/stretchr/testify/require"
 )
@@ -32,11 +35,11 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	buildtestutils.StartMocker(t)
 
 	t.Run("load balanced service", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "dummy.yml", buildtestutils.OptSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/dummy.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		lbService := ctx.Project.Services[0]
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, lbService)
+		taskDefinition := genTaskDef(t, ctx, lbService)
 
 		require.NotNil(t, taskDefinition.Family, "Family")
 		require.EqualValues(t, "dummy-svc1", *taskDefinition.Family)
@@ -75,7 +78,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("everything", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml", buildtestutils.OptSetNumSSMVars(2))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/everything.yml", buildtestutils.OptSetNumSSMVars(2))
 
 		tables := []struct {
 			entity config.IsTaskStruct
@@ -92,7 +95,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 
 		for _, table := range tables {
 			t.Run(fmt.Sprintf("sub_%T_%s", table.entity, table.entity.GetCommonContainerAttrs().Name), func(t *testing.T) {
-				taskDefinition := buildtestutils.GenTaskDef(t, ctx, table.entity)
+				taskDefinition := genTaskDef(t, ctx, table.entity)
 				require.NotNil(t, taskDefinition)
 			})
 		}
@@ -100,7 +103,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("with proxy", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml", buildtestutils.OptSetNumSSMVars(2))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/everything.yml", buildtestutils.OptSetNumSSMVars(2))
 
 		pdTest1Yaml := `
 		name: testpd1
@@ -113,7 +116,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](testutil.CleanTestYaml(pdTest1Yaml))
 		require.NoError(t, err)
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, pdTask)
+		taskDefinition := genTaskDef(t, ctx, pdTask)
 
 		require.NotNil(t, taskDefinition.ProxyConfiguration)
 		require.EqualValues(t, "APPMESH", taskDefinition.ProxyConfiguration.Type, "ProxyType")
@@ -127,18 +130,18 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 	})
 
 	t.Run("storage", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/everything.yml")
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-storage"))
+		taskDefinition := genTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-storage"))
 
 		require.NotNil(t, taskDefinition.EphemeralStorage)
 		require.EqualValues(t, 50, taskDefinition.EphemeralStorage.SizeInGiB)
 	})
 
 	t.Run("override defaults", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/everything.yml")
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-override-defaults"))
+		taskDefinition := genTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-override-defaults"))
 
 		container, err := buildtestutils.GetContainer(taskDefinition, "pd-override-defaults")
 		require.NoError(t, err)
@@ -151,7 +154,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 
 		lbService := buildtestutils.GetServiceTask(ctx.Project, "web")
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, lbService)
+		taskDefinition := genTaskDef(t, ctx, lbService)
 
 		require.NotNil(t, taskDefinition.Family, "Family")
 		require.EqualValues(t, "deployer-test-web", *taskDefinition.Family)
@@ -161,4 +164,15 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		require.EqualValues(t, "web", *container.Name)
 
 	})
+}
+
+func genTaskDef(t *testing.T, ctx *config.Context, entity config.IsTaskStruct) *ecs.RegisterTaskDefinitionInput {
+	t.Helper()
+	taskDefinition, err := taskdefinition.Build(ctx, entity)
+	require.NoError(t, err)
+
+	_, err = awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, taskDefinition)
+	require.NoError(t, err)
+
+	return taskDefinition
 }

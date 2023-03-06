@@ -3,7 +3,7 @@ package taskdefinition_test
 import (
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
+	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -14,21 +14,21 @@ func TestProxyConfig(t *testing.T) {
 	buildtestutils.StartMocker(t)
 
 	t.Run("when not defined", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "baseline.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/baseline.yml")
 
 		pdTask, err := yaml.ParseYAMLString[config.PreDeployTask](`name: testpd1`)
 		require.NoError(t, err)
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, pdTask)
+		taskDefinition := genTaskDef(t, ctx, pdTask)
 
 		require.Nil(t, taskDefinition.ProxyConfiguration)
 
 	})
 
 	t.Run("inherit task defaults", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "proxy.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/proxy.yml")
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-def"))
+		taskDefinition := genTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-def"))
 
 		require.NotNil(t, taskDefinition.ProxyConfiguration)
 		proxy := taskDefinition.ProxyConfiguration
@@ -41,9 +41,9 @@ func TestProxyConfig(t *testing.T) {
 	})
 
 	t.Run("task override", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "proxy.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/proxy.yml")
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-override"))
+		taskDefinition := genTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-override"))
 
 		require.NotNil(t, taskDefinition.ProxyConfiguration)
 		proxy := taskDefinition.ProxyConfiguration
@@ -56,17 +56,17 @@ func TestProxyConfig(t *testing.T) {
 	})
 
 	t.Run("task override disabled", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "proxy.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/proxy.yml")
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-no"))
+		taskDefinition := genTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-no"))
 
 		require.Nil(t, taskDefinition.ProxyConfiguration)
 	})
 
 	t.Run("proper values", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "proxy.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/proxy.yml")
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-values"))
+		taskDefinition := genTaskDef(t, ctx, buildtestutils.GetPredeployTask(ctx.Project, "pd-values"))
 
 		require.NotNil(t, taskDefinition.ProxyConfiguration)
 		proxy := taskDefinition.ProxyConfiguration

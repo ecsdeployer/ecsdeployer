@@ -3,7 +3,7 @@ package service
 import (
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
+	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -13,8 +13,7 @@ func TestBuildUpdate_Basic(t *testing.T) {
 	// just a basic test to make sure we can pass the common stuff thru it
 	buildtestutils.StartMocker(t)
 
-	ctx, err := config.NewFromYAML("testdata/dummy.yml")
-	require.NoError(t, err)
+	ctx := buildtestutils.LoadProjectConfig(t, "../testdata/dummy.yml")
 
 	tables := []struct {
 		thing    *config.Service

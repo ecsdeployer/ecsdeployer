@@ -3,7 +3,7 @@ package taskdefinition_test
 import (
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
+	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -12,10 +12,10 @@ func TestSidecars(t *testing.T) {
 	buildtestutils.StartMocker(t)
 
 	t.Run("inherit_env", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/everything.yml")
 
 		task := buildtestutils.GetPredeployTask(ctx.Project, "pd-sc-inherit")
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 
 		t.Run("enabled", func(t *testing.T) {
 			sc1, err := buildtestutils.GetContainer(taskDefinition, "sc1")
@@ -44,9 +44,9 @@ func TestSidecars(t *testing.T) {
 	})
 
 	t.Run("port_mappings", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/everything.yml")
 		task := buildtestutils.GetServiceTask(ctx.Project, "svc-sidecar-ports")
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 
 		t.Run("enabled", func(t *testing.T) {
 			sc1, err := buildtestutils.GetContainer(taskDefinition, "sideport")
@@ -66,9 +66,9 @@ func TestSidecars(t *testing.T) {
 	})
 
 	t.Run("depends_on", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml")
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/everything.yml")
 		task := buildtestutils.GetPredeployTask(ctx.Project, "pd-sc-inherit")
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 
 		sc1, err := buildtestutils.GetContainer(taskDefinition, "sc1")
 		require.NoError(t, err)

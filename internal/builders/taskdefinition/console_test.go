@@ -3,8 +3,8 @@ package taskdefinition_test
 import (
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/builders/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/rshell"
+	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/stretchr/testify/require"
 )
@@ -14,11 +14,11 @@ func TestConsole(t *testing.T) {
 	buildtestutils.StartMocker(t)
 
 	t.Run("default", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "everything.yml", buildtestutils.OptSetNumSSMVars(4))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/everything.yml", buildtestutils.OptSetNumSSMVars(4))
 
 		consoleTask := ctx.Project.ConsoleTask
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, consoleTask)
+		taskDefinition := genTaskDef(t, ctx, consoleTask)
 
 		require.NotNil(t, taskDefinition)
 
@@ -43,20 +43,20 @@ func TestConsole(t *testing.T) {
 	})
 
 	t.Run("console with awslogs", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "awslogs.yml", buildtestutils.OptSetNumSSMVars(2))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/awslogs.yml", buildtestutils.OptSetNumSSMVars(2))
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 	})
 
 	t.Run("console with splunk", func(t *testing.T) {
-		ctx := buildtestutils.LoadProjectConfig(t, "customlog.yml", buildtestutils.OptSetNumSSMVars(2))
+		ctx := buildtestutils.LoadProjectConfig(t, "../testdata/customlog.yml", buildtestutils.OptSetNumSSMVars(2))
 
 		task := ctx.Project.ConsoleTask
 
-		taskDefinition := buildtestutils.GenTaskDef(t, ctx, task)
+		taskDefinition := genTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
 	})
 }

@@ -3,6 +3,7 @@ package buildtestutils
 import (
 	"fmt"
 	"os"
+	"path"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
@@ -23,6 +24,7 @@ func StartMocker(t *testing.T) {
 	if val := os.Getenv("DEBUG_BUILDERS"); val != "" && testing.Verbose() {
 		mocks = append(mocks,
 			Mock_ECS_RegisterTaskDefinition_Dump(t),
+			Mock_ECS_RunTask_Dump(t),
 			Mock_ECS_CreateService_Dump(t),
 			Mock_ECS_UpdateService_Dump(t),
 		)
@@ -49,8 +51,7 @@ func Mock_ECS_RegisterTaskDefinition_Dump(t *testing.T) *awsmocker.MockedEndpoin
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 
-				prettyJSON, _ := util.JsonifyPretty(rr.JsonPayload)
-				t.Log("JSON PAYLOAD:", prettyJSON)
+				dumpAwsRequest(t, rr)
 
 				taskName, _ := jmespath.Search("family", rr.JsonPayload)
 
@@ -75,8 +76,7 @@ func Mock_ECS_CreateService_Dump(t *testing.T) *awsmocker.MockedEndpoint {
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 
-				prettyJSON, _ := util.JsonifyPretty(rr.JsonPayload)
-				t.Log("JSON PAYLOAD:", prettyJSON)
+				dumpAwsRequest(t, rr)
 
 				serviceName, _ := jmespath.Search("serviceName", rr.JsonPayload)
 				cluster, _ := jmespath.Search("cluster", rr.JsonPayload)
@@ -104,8 +104,7 @@ func Mock_ECS_UpdateService_Dump(t *testing.T) *awsmocker.MockedEndpoint {
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 
-				prettyJSON, _ := util.JsonifyPretty(rr.JsonPayload)
-				t.Log("JSON PAYLOAD:", prettyJSON)
+				dumpAwsRequest(t, rr)
 
 				serviceName, _ := jmespath.Search("service", rr.JsonPayload)
 				cluster, _ := jmespath.Search("cluster", rr.JsonPayload)
@@ -122,4 +121,39 @@ func Mock_ECS_UpdateService_Dump(t *testing.T) *awsmocker.MockedEndpoint {
 			},
 		},
 	}
+}
+
+func Mock_ECS_RunTask_Dump(t *testing.T) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "ecs",
+			Action:  "RunTask",
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+
+				dumpAwsRequest(t, rr)
+
+				cluster, _ := jmespath.Search("cluster", rr.JsonPayload)
+
+				clusterName := path.Base(cluster.(string))
+
+				payload, _ := util.Jsonify(map[string]interface{}{
+					"failures": []interface{}{},
+					"tasks": []interface{}{
+						map[string]interface{}{
+							"taskArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task/%s/deadbeefdeadbeefdeadbeefdeadbeef", rr.Region, awsmocker.DefaultAccountId, clusterName),
+						},
+					},
+				})
+
+				return payload
+			},
+		},
+	}
+}
+
+func dumpAwsRequest(t *testing.T, rr *awsmocker.ReceivedRequest) {
+	prettyJSON, _ := util.JsonifyPretty(rr.JsonPayload)
+	t.Log("JSON PAYLOAD:", prettyJSON)
 }
