@@ -134,9 +134,9 @@
     "task_family": "{PROJECT}-{STAGE}-{TASK}"
   },
   "VolumeEFSConfig": {
-    "file_system_id": "",
-    "transit_encryption": "true",
-    "use_iam": "true"
+    "disable_encryption": "false",
+    "disable_iam": "false",
+    "file_system_id": ""
   },
   "WaitForStable": {
     "disabled": "false",

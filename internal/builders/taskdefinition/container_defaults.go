@@ -35,11 +35,11 @@ func (b *Builder) applyContainerDefaults(cdef *ecsTypes.ContainerDefinition, thi
 		}
 	}
 
-	if common.User != nil {
+	if !util.IsBlank(common.User) {
 		cdef.User = common.User
 	}
 
-	if common.Workdir != nil {
+	if !util.IsBlank(common.Workdir) {
 		cdef.WorkingDirectory = common.Workdir
 	}
 
@@ -69,6 +69,12 @@ func (b *Builder) applyContainerDefaults(cdef *ecsTypes.ContainerDefinition, thi
 	srcLabels := helpers.NameValuePairMerger(b.taskDefaults.DockerLabels, common.DockerLabels)
 	for _, dl := range srcLabels {
 		cdef.DockerLabels[*dl.Name] = *dl.Value
+	}
+
+	if len(common.DependsOn) > 0 {
+		for _, dep := range common.DependsOn {
+			addContainerDependency(cdef, dep.Name, dep.Condition)
+		}
 	}
 
 	if err := b.applyContainerHealthCheck(cdef, common.HealthCheck); err != nil {

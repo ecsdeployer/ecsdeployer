@@ -11,6 +11,7 @@ import (
 func TestSidecars(t *testing.T) {
 	testutil.StartMocker(t, &awsmocker.MockerOptions{
 		Mocks: []*awsmocker.MockedEndpoint{
+			// Mock_ECS_RegisterTaskDefinition_Dump(t),
 			testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
 		},
 	})
@@ -67,5 +68,19 @@ func TestSidecars(t *testing.T) {
 			scPorts := kvListToSlice(sc1.PortMappings, kvListToSlice_PortMaps)
 			require.Len(t, scPorts, 0)
 		})
+	})
+
+	t.Run("depends_on", func(t *testing.T) {
+		ctx := loadProjectConfig(t, "everything.yml")
+		task := getPredeployTask(ctx.Project, "pd-sc-inherit")
+		taskDefinition := genTaskDef(t, ctx, task)
+
+		sc1, err := getContainer(taskDefinition, "sc1")
+		require.NoError(t, err)
+
+		scDeps := kvListToMap(sc1.DependsOn, kvListToMap_Depends)
+		require.Contains(t, scDeps, "scno")
+		require.Equal(t, "START", scDeps["scno"])
+
 	})
 }

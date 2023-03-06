@@ -143,7 +143,7 @@ func destroyService(ctx *config.Context, log *log.Entry, serviceArn string) erro
 
 	if svc.DesiredCount > 0 {
 		logger.Info("Service has desired count greater than 1, spinning down")
-		_, err := client.UpdateService(ctx.Context, &ecs.UpdateServiceInput{
+		_, err = client.UpdateService(ctx.Context, &ecs.UpdateServiceInput{
 			Service:            &serviceArn,
 			Cluster:            &clusterName,
 			DesiredCount:       aws.Int32(0),

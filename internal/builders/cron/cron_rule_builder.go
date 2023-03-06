@@ -33,9 +33,9 @@ func BuildCronRule(ctx *config.Context, resource *config.CronJob) (*events.PutRu
 	}
 
 	if resource.Description != "" {
-		ruleDesc, err := tpl.Apply(resource.Description)
-		if err != nil {
-			return nil, err
+		ruleDesc, err2 := tpl.Apply(resource.Description)
+		if err2 != nil {
+			return nil, err2
 		}
 		ruleDef.Description = aws.String(ruleDesc)
 	}

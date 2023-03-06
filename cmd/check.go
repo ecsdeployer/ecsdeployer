@@ -52,7 +52,7 @@ func newCheckCmd(metadata *cmdMetadata) *checkCmd {
 				return err
 			}
 
-			if err := validateConfigSchemaBytes(data); err != nil {
+			if err = validateConfigSchemaBytes(data); err != nil {
 				return err
 			}
 

@@ -2,8 +2,10 @@ package taskdefinition
 
 import (
 	"errors"
+	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
+	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -81,6 +83,35 @@ func (b *Builder) applyLoggingFirelensContainer() error {
 	}
 	if err := b.addEnvVarsToContainer(b.loggingContainer, containerEnv); err != nil {
 		return err
+	}
+
+	if firelensConfig.LogToAwsLogs != nil && firelensConfig.LogToAwsLogs.Enabled() {
+
+		awsLogOpts := config.EnvVarMap{
+			// "awslogs-group":         config.NewEnvVar(config.EnvVarTypeTemplated, firelensConfig.LogToAwsLogs.Path),
+			"awslogs-create-group":  config.NewEnvVar(config.EnvVarTypePlain, "true"),
+			"awslogs-region":        config.NewEnvVar(config.EnvVarTypeTemplated, "{{ AwsRegion }}"),
+			"awslogs-stream-prefix": config.NewEnvVar(config.EnvVarTypeTemplated, "firelens-{{.Name}}"),
+		}
+
+		logPathRaw, err := b.tplEval(firelensConfig.LogToAwsLogs.Path)
+		if err != nil {
+			return err
+		}
+		logPath, logStream, hasStream := strings.Cut(logPathRaw, ":")
+		awsLogOpts["awslogs-group"] = config.NewEnvVar(config.EnvVarTypePlain, logPath)
+		if hasStream {
+			awsLogOpts["awslogs-stream-prefix"] = config.NewEnvVar(config.EnvVarTypePlain, logStream)
+		}
+
+		awsLogConfig := &config.TaskLoggingConfig{
+			Driver:  util.Ptr(string(ecsTypes.LogDriverAwslogs)),
+			Options: awsLogOpts,
+		}
+
+		if err := b.buildContainerLogging(b.loggingContainer, awsLogConfig); err != nil {
+			return err
+		}
 	}
 
 	return nil

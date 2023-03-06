@@ -1750,6 +1750,7 @@
         "type": "integer"
        }
       },
+      "additionalProperties": false,
       "type": "object",
       "required": [
        "name",
@@ -1783,14 +1784,14 @@
         "type": "integer"
        },
        "soft": {
-        "type": "integer"
+        "type": "integer",
+        "default": 0
        }
       },
+      "additionalProperties": false,
       "type": "object",
       "required": [
-       "name",
-       "hard",
-       "soft"
+       "name"
       ],
       "description": "Define both hard and soft limit values"
      }

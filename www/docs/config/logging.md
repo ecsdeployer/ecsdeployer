@@ -29,13 +29,26 @@ If you do not specify any logging configuration, then CloudWatch logs will be us
           log-driver-buffer-limit: "2097152"
     ```
 
+=== "Using Custom Driver"
+
+    ```yaml
+    logging:
+      custom:
+        driver: "splunk"
+        options:
+          splunk-url: http://spunkysplunky.splunkcloud.com:8080/
+          splunk-insecureskipverify: "True"
+          splunk-token:
+            ssm: /secrets/splunktoken
+    ```
+
 ## Fields
+
+You should select **only one** of the following:
 
 [`awslogs`](#logging.awslogs){ #logging.awslogs }
 
 :   See [Using CloudWatch Logs](#using-cloudwatch-logs)
-
-    _Conflicts with [`firelens`](#logging.firelens)_
 
     **This is the default if you do not specify a `logging` block**
 
@@ -43,7 +56,9 @@ If you do not specify any logging configuration, then CloudWatch logs will be us
 
 :   See [Using FireLens](#using-firelens)
 
-    _Conflicts with [`awslogs`](#logging.awslogs)_
+[`custom`](#logging.custom){ #logging.custom }
+
+:   See [Using Custom Logging](#using-custom-logging)
 
 [`disabled`](#logging.disabled){ #logging.disabled }
 
@@ -52,7 +67,7 @@ If you do not specify any logging configuration, then CloudWatch logs will be us
     _Default_: `false`
 
 !!! note ""
-    **Note:** If you enable Firelens logging, then AwsLogs will be ignored. You cannot have both at the same time.
+    **Note:** If you specify multiple options, then the following order will be used: Custom, Firelens, Awslogs.
 
 ----
 
@@ -174,7 +189,7 @@ If you do not specify any logging configuration, then CloudWatch logs will be us
 
     If you are using **fluentd** then you must specify this.
 
-    See [Specifying Images](basic.md#specifying-container-image) for more information
+    See [Specifying Images](basic.md#specifying-container-image) for more information.
 
 [`inherit_env`](#firelens.inherit_env){ #firelens.inherit_env }
 
@@ -203,7 +218,7 @@ If you do not specify any logging configuration, then CloudWatch logs will be us
     This is either:
 
     * Boolean `false` - disable logging to Cloudwatch Logs (default)
-    * String (the log group you want to log to) - You are responsible for making this group.
+    * String (the log group you want to log to) - You are responsible for making this group. (Or allow the [`execution_role`](basic.md#root.execution_role) to create it)
 
     _Default_: `{{schema:default:FirelensConfig.log_to_awslogs}}`
 
@@ -217,3 +232,19 @@ If you do not specify any logging configuration, then CloudWatch logs will be us
 
     _Default_: `{{schema:default:FirelensConfig.disabled}}`
 
+
+----
+
+## Using Custom Logging
+
+### Fields
+
+[`driver`](#custom.driver){ #custom.driver }
+
+:   The log driver you want to use. (ex: `splunk`)
+
+    _Default_: blank (disabled)
+
+[`options`](#custom.options){ #custom.options }
+
+:   Allows you to specify extra options for the driver. Options are specific to the driver you selected.

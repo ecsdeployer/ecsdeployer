@@ -31,7 +31,7 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 
 	testutil.StartMocker(t, &awsmocker.MockerOptions{
 		Mocks: []*awsmocker.MockedEndpoint{
-			// mock_ECS_RegisterTaskDefinition_Dump(t),
+			// Mock_ECS_RegisterTaskDefinition_Dump(t),
 			testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
 		},
 	})
@@ -77,24 +77,6 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 		require.EqualValues(t, 0, primaryCont.Cpu)
 		require.Nil(t, primaryCont.Memory)
 		require.Nil(t, primaryCont.MemoryReservation)
-	})
-
-	t.Run("console with awslogs", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "awslogs.yml", optSetNumSSMVars(2))
-
-		task := ctx.Project.ConsoleTask
-
-		taskDefinition := genTaskDef(t, ctx, task)
-		require.NotNil(t, taskDefinition)
-	})
-
-	t.Run("console with splunk", func(t *testing.T) {
-		ctx := loadProjectConfig(t, "customlog.yml", optSetNumSSMVars(2))
-
-		task := ctx.Project.ConsoleTask
-
-		taskDefinition := genTaskDef(t, ctx, task)
-		require.NotNil(t, taskDefinition)
 	})
 
 	t.Run("everything", func(t *testing.T) {
@@ -156,5 +138,16 @@ func TestTaskDefinitionBuilder(t *testing.T) {
 
 		require.NotNil(t, taskDefinition.EphemeralStorage)
 		require.EqualValues(t, 50, taskDefinition.EphemeralStorage.SizeInGiB)
+	})
+
+	t.Run("override defaults", func(t *testing.T) {
+		ctx := loadProjectConfig(t, "everything.yml")
+
+		taskDefinition := genTaskDef(t, ctx, getPredeployTask(ctx.Project, "pd-override-defaults"))
+
+		container, err := getContainer(taskDefinition, "pd-override-defaults")
+		require.NoError(t, err)
+
+		require.Nil(t, container.User)
 	})
 }

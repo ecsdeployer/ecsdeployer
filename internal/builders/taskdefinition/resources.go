@@ -12,9 +12,7 @@ import (
 func (b *Builder) applyTaskResources() error {
 	storage := util.Coalesce(b.commonTask.Storage, b.taskDefaults.Storage)
 	if storage != nil {
-		b.taskDef.EphemeralStorage = &ecsTypes.EphemeralStorage{
-			SizeInGiB: storage.Gigabytes(),
-		}
+		b.taskDef.EphemeralStorage = storage.ToAws()
 	}
 
 	// select fargate resources

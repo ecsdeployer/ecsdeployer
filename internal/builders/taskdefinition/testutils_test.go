@@ -62,6 +62,10 @@ func kvListToMap_Secret(val ecsTypes.Secret) (string, string) {
 	return *val.Name, *val.ValueFrom
 }
 
+func kvListToMap_Depends(val ecsTypes.ContainerDependency) (string, string) {
+	return *val.ContainerName, string(val.Condition)
+}
+
 type kvToSliceFunc[T any, K any] func(T) K
 
 func kvListToSlice[T any, K any](kvList []T, sliceFunc kvToSliceFunc[T, K]) []K {
@@ -98,7 +102,8 @@ func getServiceTask(project *config.Project, name string) *config.Service {
 	panic("FAILED TO FIND SERVICE TASK")
 }
 
-func Mock_ECS_RegisterTaskDefinition_Dump(t *testing.T) *awsmocker.MockedEndpoint {
+//nolint:unused
+func mock_ECS_RegisterTaskDefinition_Dump(t *testing.T) *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{
 			Service: "ecs",

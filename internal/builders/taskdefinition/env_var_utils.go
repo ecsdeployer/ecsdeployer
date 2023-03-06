@@ -45,18 +45,6 @@ func (b *Builder) createTaskEnvVars() error {
 	return nil
 }
 
-// func (b *Builder) buildEnvVarMap(newVars config.EnvVarMap, inheritEnv bool) config.EnvVarMap {
-// 	if newVars == nil {
-// 		newVars = make(config.EnvVarMap)
-// 	}
-
-// 	if inheritEnv {
-// 		newVars = config.MergeEnvVarMaps(b.baseEnvVars, newVars)
-// 	}
-
-// 	return newVars
-// }
-
 func (b *Builder) addEnvVarsToContainer(cdef *ecsTypes.ContainerDefinition, varMap config.EnvVarMap) error {
 
 	envTpl := b.containerTpl(cdef)

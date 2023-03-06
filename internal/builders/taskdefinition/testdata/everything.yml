@@ -25,6 +25,8 @@ task_defaults:
       image: datadog:latest
       cpu: 10
       logging: false
+      depends_on:
+        - envoy:START
 
     - name: envoy
       image: envoy
@@ -60,6 +62,9 @@ predeploy:
       - name: sc1
         image: fake
         inherit_env: true
+        depends_on:
+          - scno:START
+          - scdef:START
       - name: scno
         image: fake
         inherit_env: false
@@ -68,6 +73,9 @@ predeploy:
     
   - name: pd-storage
     storage: 50
+  
+  - name: pd-override-defaults
+    user: ""
 
 console: true
 

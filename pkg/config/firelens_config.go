@@ -22,6 +22,9 @@ type FirelensConfig struct {
 	Memory        *MemorySpec `yaml:"memory,omitempty" json:"memory,omitempty"`
 	// Logging     *TaskLoggingConfig `yaml:"logging,omitempty" json:"logging,omitempty"`
 
+	// future?
+	// SkipContainer bool `yaml:"skip_container,omitempty" json:"skip_container,omitempty"`
+
 	// should we log the firelens container to AWSLogs (not the app logs, but firelens itself)
 	LogToAwsLogs *FirelensAwsLogGroup `yaml:"log_to_awslogs,omitempty" json:"log_to_awslogs,omitempty"`
 }
@@ -70,12 +73,12 @@ func (obj *FirelensConfig) Validate() error {
 		return nil
 	}
 
-	if obj.Image == nil {
-		return NewValidationError("you must provide an image URI for the firelens configuration")
-	}
-
 	if obj.RouterOptions.HasSSM() {
 		return NewValidationError("you cannot have SSM options in Firelens configuration")
+	}
+
+	if obj.Image == nil {
+		return NewValidationError("you must provide an image URI for the firelens configuration")
 	}
 
 	return nil

@@ -1,6 +1,8 @@
 package taskdefinition
 
 import (
+	"fmt"
+
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -30,15 +32,22 @@ func (b *Builder) applyContainerLogging(cdef *ecsTypes.ContainerDefinition, thin
 func (b *Builder) applyContainerLoggingDefault(cdef *ecsTypes.ContainerDefinition, thing hasContainerAttrs) error {
 	logConfig := b.project.Logging
 
-	if !logConfig.Custom.IsDisabled() {
-		return b.applyContainerLoggingCustom(cdef, thing)
-	}
+	switch logConfig.Type() {
+	case config.LoggingTypeAwslogs:
+		return b.applyContainerLoggingAwsLogs(cdef, thing)
 
-	if !logConfig.FirelensConfig.IsDisabled() {
+	case config.LoggingTypeFirelens:
 		return b.applyContainerLoggingFirelens(cdef, thing)
-	}
 
-	return b.applyContainerLoggingAwsLogs(cdef, thing)
+	case config.LoggingTypeCustom:
+		return b.applyContainerLoggingCustom(cdef, thing)
+
+	case config.LoggingTypeDisabled:
+		return nil
+
+	default:
+		return fmt.Errorf("Unknown logging type given??")
+	}
 }
 
 func (b *Builder) buildContainerLogging(cdef *ecsTypes.ContainerDefinition, logConfig *config.TaskLoggingConfig) error {

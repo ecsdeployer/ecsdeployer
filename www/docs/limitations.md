@@ -21,11 +21,11 @@
 ## Planned Features
 * [ ] ECS Service Registries
 * [x] AppMesh/Envoy Proxies
-* [ ] Additional Sidecars
+* [x] Additional Sidecars
 * [ ] Autoscaling 
 * [x] EFS Volume Mounts
 * [x] Custom Container Logging (splunk, fluentd, etc)
-* [ ] Linking Service with multiple load balancers
+* [x] Linking Service with multiple load balancers
 * [x] Ability to override every possible option on a task (User, Ulimits, WorkDir, etc)
 * [ ] Windows containers
 

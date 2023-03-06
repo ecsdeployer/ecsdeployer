@@ -14,7 +14,7 @@ import (
 func TestLoggingFirelens(t *testing.T) {
 	testutil.StartMocker(t, &awsmocker.MockerOptions{
 		Mocks: []*awsmocker.MockedEndpoint{
-			// mock_ECS_RegisterTaskDefinition_Dump(t),
+			mock_ECS_RegisterTaskDefinition_Dump(t),
 			testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
 		},
 	})
@@ -25,6 +25,10 @@ func TestLoggingFirelens(t *testing.T) {
 
 		taskDefinition := genTaskDef(t, ctx, lbService)
 		require.NotNil(t, taskDefinition)
+
+		container, _ := getContainer(taskDefinition, lbService.Name)
+		require.NotNil(t, container.LogConfiguration)
+		require.Equal(t, ecsTypes.LogDriverAwsfirelens, container.LogConfiguration.LogDriver)
 	})
 
 	t.Run("console with firelens", func(t *testing.T) {
@@ -34,6 +38,10 @@ func TestLoggingFirelens(t *testing.T) {
 
 		taskDefinition := genTaskDef(t, ctx, task)
 		require.NotNil(t, taskDefinition)
+
+		container, _ := getContainer(taskDefinition, "console")
+		require.NotNil(t, container.LogConfiguration)
+		require.Equal(t, ecsTypes.LogDriverAwsfirelens, container.LogConfiguration.LogDriver)
 	})
 
 	t.Run("everything", func(t *testing.T) {
@@ -54,6 +62,7 @@ func TestLoggingFirelens(t *testing.T) {
 				region: "us-east-1"
 				delivery_stream: {template: "{{.Cluster}}-stream"}
 				log-driver-buffer-limit: "2097152"
+				"@type": "cwlogs"
 				somethingsomething:
 					ssm: /path/thing
 		`
@@ -117,6 +126,86 @@ func TestLoggingFirelens(t *testing.T) {
 		// hacky check
 		require.Len(t, flContainer.Secrets, len(primary.Secrets))
 		require.Len(t, flContainer.Environment, len(primary.Environment))
+
+	})
+
+	t.Run("firelens with awslogs", func(t *testing.T) {
+		ctx := loadProjectConfig(t, "firelens.yml", optSetNumSSMVars(4))
+
+		loggingYaml := `
+		firelens:
+			log_to_awslogs: /something/something
+		`
+
+		loggingConf, err := yaml.ParseYAMLString[config.LoggingConfig](testutil.CleanTestYaml(loggingYaml))
+		require.NoError(t, err)
+		ctx.Project.Logging = loggingConf
+
+		task := ctx.Project.ConsoleTask
+
+		taskDefinition := genTaskDef(t, ctx, task)
+		require.NotNil(t, taskDefinition)
+
+		flContainer, err := getContainer(taskDefinition, "log_router")
+		require.NoError(t, err)
+		require.NotNil(t, flContainer)
+
+		require.NotNil(t, flContainer.LogConfiguration)
+		require.Equal(t, ecsTypes.LogDriverAwslogs, flContainer.LogConfiguration.LogDriver)
+		require.Equal(t, "/something/something", flContainer.LogConfiguration.Options["awslogs-group"])
+		require.Equal(t, "firelens-console", flContainer.LogConfiguration.Options["awslogs-stream-prefix"])
+	})
+
+	t.Run("firelens with awslogs stream hack", func(t *testing.T) {
+		ctx := loadProjectConfig(t, "firelens.yml", optSetNumSSMVars(4))
+
+		loggingYaml := `
+		firelens:
+			log_to_awslogs: "/path/{{.Project}}/flogs/etc:hacky-{{.Name}}"
+		`
+
+		loggingConf, err := yaml.ParseYAMLString[config.LoggingConfig](testutil.CleanTestYaml(loggingYaml))
+		require.NoError(t, err)
+		ctx.Project.Logging = loggingConf
+
+		task := ctx.Project.ConsoleTask
+
+		taskDefinition := genTaskDef(t, ctx, task)
+		require.NotNil(t, taskDefinition)
+
+		flContainer, err := getContainer(taskDefinition, "log_router")
+		require.NoError(t, err)
+		require.NotNil(t, flContainer)
+
+		require.NotNil(t, flContainer.LogConfiguration)
+		require.Equal(t, ecsTypes.LogDriverAwslogs, flContainer.LogConfiguration.LogDriver)
+		require.Equal(t, "/path/dummy/flogs/etc", flContainer.LogConfiguration.Options["awslogs-group"])
+		require.Equal(t, "hacky-console", flContainer.LogConfiguration.Options["awslogs-stream-prefix"])
+
+	})
+
+	t.Run("firelens without awslogs", func(t *testing.T) {
+		ctx := loadProjectConfig(t, "firelens.yml", optSetNumSSMVars(4))
+
+		loggingYaml := `
+		firelens:
+			type: fluentbit
+		`
+
+		loggingConf, err := yaml.ParseYAMLString[config.LoggingConfig](testutil.CleanTestYaml(loggingYaml))
+		require.NoError(t, err)
+		ctx.Project.Logging = loggingConf
+
+		task := ctx.Project.ConsoleTask
+
+		taskDefinition := genTaskDef(t, ctx, task)
+		require.NotNil(t, taskDefinition)
+
+		flContainer, err := getContainer(taskDefinition, "log_router")
+		require.NoError(t, err)
+		require.NotNil(t, flContainer)
+
+		require.Nil(t, flContainer.LogConfiguration)
 
 	})
 }

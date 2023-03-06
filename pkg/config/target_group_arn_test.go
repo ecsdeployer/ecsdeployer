@@ -45,11 +45,11 @@ func TestTargetGroupArn_Smoke(t *testing.T) {
 			require.Equalf(t, table.name, nameVal, "Name Mismatch")
 
 			if table.arn == "" {
-				_, err := tgArn.Arn(ctx)
+				_, err = tgArn.Arn(ctx)
 				require.Errorf(t, err, "arn eval")
 			} else {
-				arnVal, err := tgArn.Arn(ctx)
-				require.NoErrorf(t, err, "arn eval")
+				arnVal, err2 := tgArn.Arn(ctx)
+				require.NoErrorf(t, err2, "arn eval")
 				require.Equalf(t, table.arn, arnVal, "ARN Mismatch")
 			}
 
