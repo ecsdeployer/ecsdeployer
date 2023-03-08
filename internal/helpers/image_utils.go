@@ -18,7 +18,7 @@ func ResolveImageUri(ctx *config.Context, img *config.ImageUri) (string, error) 
 		return "", fmt.Errorf("failed to resolve Image URI: %w", err)
 	}
 
-	// log.WithField("image", newUri).Debugf("Resolved Image")
+	// log.WithField("image", newUri).Debug("Resolved Image")
 	img.SetResolved(newUri)
 
 	return newUri, nil

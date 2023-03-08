@@ -117,9 +117,9 @@ func validateConfigSchemaBytes(data []byte) error {
 	}
 
 	if !result.Valid() {
-		log.Errorf("The project configuration is not valid because:")
+		log.Error("The project configuration is not valid because:")
 		for _, err := range result.Errors() {
-			log.Errorf("- %s", err)
+			log.Error(fmt.Sprintf("- %s", err))
 		}
 		return errors.New("config does not adhere to schema")
 	}

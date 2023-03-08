@@ -3,8 +3,10 @@ package service
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,8 +30,7 @@ func TestBuildUpdate_Basic(t *testing.T) {
 
 	for _, table := range tables {
 		t.Run(table.thing.Name, func(t *testing.T) {
-			svcInput, err := BuildUpdate(ctx, table.thing)
-			require.NoError(t, err)
+			svcInput := genUpdateService(t, ctx, table.thing)
 
 			require.Truef(t, *svcInput.EnableECSManagedTags, "ECSManagedTags")
 
@@ -45,4 +46,15 @@ func TestBuildUpdate_Basic(t *testing.T) {
 		})
 	}
 
+}
+
+func genUpdateService(t *testing.T, ctx *config.Context, entity *config.Service) *ecs.UpdateServiceInput {
+	t.Helper()
+	obj, err := BuildUpdate(ctx, entity)
+	require.NoError(t, err)
+
+	_, err = awsclients.ECSClient().UpdateService(ctx.Context, obj)
+	require.NoError(t, err)
+
+	return obj
 }

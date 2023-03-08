@@ -34,6 +34,7 @@ func StartMocker(t *testing.T) {
 		testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
 		testutil.Mock_ECS_RunTask(),
 		testutil.Mock_ECS_CreateService_Generic(),
+		testutil.Mock_ECS_UpdateService_Generic(),
 	)
 
 	testutil.StartMocker(t, &awsmocker.MockerOptions{

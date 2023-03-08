@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
@@ -42,7 +43,7 @@ func (obj *EcsDeployerOptions) IsVersionAllowed(versionStr string) (bool, []erro
 	version, err := semver.NewVersion(versionStr)
 	if err != nil {
 		// uhhhhh
-		log.WithError(err).Warnf("Unable to validate version '%s' against required version spec '%s'. Continuing anyway...", versionStr, obj.RequiredVersion.String())
+		log.WithError(err).Warn(fmt.Sprintf("Unable to validate version '%s' against required version spec '%s'. Continuing anyway...", versionStr, obj.RequiredVersion.String()))
 
 		time.Sleep(10 * time.Second)
 

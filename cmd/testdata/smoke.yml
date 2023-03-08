@@ -103,6 +103,7 @@ environment:
 task_defaults:
   cpu: 512
   memory: 2x
+  spot: true
 
 services:
   - name: web
@@ -113,8 +114,8 @@ services:
       target_group: c87-deployer-test-web
       port: 5000
     rollout:
-      min: 0
-      max: 400
+      min: 100
+      max: 200
 
   # - name: worker
   #   desired: 0

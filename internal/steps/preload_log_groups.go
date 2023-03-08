@@ -51,7 +51,7 @@ func stepPreloadLogGroupsCreate(ctx *config.Context, step *Step, meta *StepMetad
 
 	ctx.Cache.LogGroups = logGroups
 
-	step.Logger.WithField("prefix", logGroupPrefix).WithField("numgroups", len(logGroups)).Debugf("Log preload completed")
+	step.Logger.WithField("prefix", logGroupPrefix).WithField("numgroups", len(logGroups)).Debug("Log preload completed")
 
 	return nil, nil
 }

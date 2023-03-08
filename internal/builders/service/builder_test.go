@@ -78,14 +78,3 @@ func genCreateService(t *testing.T, ctx *config.Context, entity *config.Service)
 
 	return obj
 }
-
-func genUpdateService(t *testing.T, ctx *config.Context, entity *config.Service) *ecs.UpdateServiceInput {
-	t.Helper()
-	obj, err := BuildUpdate(ctx, entity)
-	require.NoError(t, err)
-
-	_, err = awsclients.ECSClient().UpdateService(ctx.Context, obj)
-	require.NoError(t, err)
-
-	return obj
-}

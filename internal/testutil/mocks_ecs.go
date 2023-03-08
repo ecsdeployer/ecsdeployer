@@ -325,6 +325,29 @@ func Mock_ECS_UpdateService_jmespath(jmesMatchers map[string]any, service ecsTyp
 	}
 }
 
+func Mock_ECS_UpdateService_Generic() *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "ecs",
+			Action:  "UpdateService",
+		},
+		Response: &awsmocker.MockedResponse{
+			Body: func(rr *awsmocker.ReceivedRequest) string {
+				serviceName, _ := jmespath.Search("service", rr.JsonPayload)
+				cluster, _ := jmespath.Search("cluster", rr.JsonPayload)
+
+				return jsonify(map[string]interface{}{
+					"service": map[string]interface{}{
+						"serviceName": serviceName.(string),
+						"serviceArn":  fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s/%s", rr.Region, awsmocker.DefaultAccountId, cluster.(string), serviceName.(string)),
+					},
+				})
+
+			},
+		},
+	}
+}
+
 func Mock_ECS_DeleteService_jmespath(jmesMatchers map[string]any, service ecsTypes.Service) *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{

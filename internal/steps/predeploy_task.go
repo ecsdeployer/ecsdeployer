@@ -77,14 +77,14 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 	if len(runTaskOutput.Failures) > 0 {
 		for _, failure := range runTaskOutput.Failures {
 			logger.WithFields(log.Fields{
-				fieldReason: aws.ToString(failure.Reason),
-				fieldDetail: aws.ToString(failure.Detail),
+				fieldReason: *failure.Reason,
+				fieldDetail: *failure.Detail,
 			}).Error("Task Failed to Launch")
 		}
 		return nil, errors.New("task failed to launch")
 	}
 
-	taskArn := aws.ToString(runTaskOutput.Tasks[0].TaskArn)
+	taskArn := *runTaskOutput.Tasks[0].TaskArn
 	logger = logger.WithField(fieldTaskArn, taskArn)
 	logger.Info("Task launched")
 
@@ -92,7 +92,7 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 		fieldTaskArn: taskArn,
 	}
 
-	logger.Debugf("Waiting for task to complete")
+	logger.Debug("Waiting for task to complete")
 
 	params := &ecs.DescribeTasksInput{
 		Tasks:   []string{taskArn},
