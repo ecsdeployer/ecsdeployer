@@ -2,6 +2,23 @@ package taskdefinition
 
 import ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 
+func getContainerName(obj any) string {
+	switch val := obj.(type) {
+	case string:
+		return val
+	case *string:
+		return *val
+	case *ecsTypes.ContainerDefinition:
+		return *val.Name
+	case ecsTypes.ContainerDefinition:
+		return *val.Name
+	case hasContainerAttrs:
+		return val.GetCommonContainerAttrs().Name
+	default:
+		panic("BAD ENTITY GIVEN TO containerTpl")
+	}
+}
+
 func hasContainerDependency(cdef *ecsTypes.ContainerDefinition, dependsOn string) bool {
 	depList := cdef.DependsOn
 
@@ -21,20 +38,7 @@ func hasContainerDependency(cdef *ecsTypes.ContainerDefinition, dependsOn string
 // dependsOn can be string, *string, containerDef
 func addContainerDependency(cdef *ecsTypes.ContainerDefinition, dependsOn any, condition ecsTypes.ContainerCondition) {
 
-	depOnName := ""
-
-	switch val := dependsOn.(type) {
-	case string:
-		depOnName = val
-	case *string:
-		depOnName = *val
-	case *ecsTypes.ContainerDefinition:
-		depOnName = *val.Name
-	case ecsTypes.ContainerDefinition:
-		depOnName = *val.Name
-	default:
-		panic("wrong type for containerdependency.dependsOn")
-	}
+	depOnName := getContainerName(dependsOn)
 
 	if cdef.DependsOn == nil {
 		cdef.DependsOn = make([]ecsTypes.ContainerDependency, 0)
