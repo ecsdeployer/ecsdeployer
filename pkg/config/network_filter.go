@@ -97,24 +97,6 @@ type nfilterWhatever struct {
 	Values forcedStrArr `yaml:"values" json:"values,omitempty"`
 }
 
-// allows a string or []string to parse, but will force it to []string
-type forcedStrArr []string
-
-func (a *forcedStrArr) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var str string
-	if err := unmarshal(&str); err != nil {
-		var arr []string
-		if err := unmarshal(&arr); err != nil {
-			return err
-		}
-		*a = forcedStrArr(arr)
-	} else {
-		*a = forcedStrArr{str}
-	}
-
-	return nil
-}
-
 func (a *NetworkFilter) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	// Try to read it as a string, if a string, then try parsing
@@ -203,21 +185,21 @@ func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 		},
 	}
 
-	forcedStrArrSchema := &jsonschema.Schema{
-		OneOf: []*jsonschema.Schema{
-			{
-				Type: "array",
-				Items: &jsonschema.Schema{
-					Type: "string",
-				},
-				MinItems: 1,
-			},
-			{
-				Type: "string",
-			},
-		},
-		Description: "String or array of strings",
-	}
+	// forcedStrArrSchema := &jsonschema.Schema{
+	// 	OneOf: []*jsonschema.Schema{
+	// 		{
+	// 			Type: "array",
+	// 			Items: &jsonschema.Schema{
+	// 				Type: "string",
+	// 			},
+	// 			MinItems: 1,
+	// 		},
+	// 		{
+	// 			Type: "string",
+	// 		},
+	// 	},
+	// 	Description: "String or array of strings",
+	// }
 
 	lazyProps := orderedmap.New()
 	lazyProps.Set("name", &jsonschema.Schema{

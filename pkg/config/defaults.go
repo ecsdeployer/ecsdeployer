@@ -32,6 +32,12 @@ var DefaultCronEnvVars = map[string]string{
 	"ECSDEPLOYER_CRON_ATTEMPT":        "<aws.scheduler.attempt-number>",
 }
 
+var DefaultDeploymentLabels = map[string]string{
+	"com.ecsdeployer.project": "{{ .Project }}",
+	"com.ecsdeployer.task":    "{{ .Name }}",
+	"com.ecsdeployer.stage":   "{{ .Stage }}",
+}
+
 // Regex to validate names of things
 const shortCodeNameRegexStr = "^[a-z][-_a-z0-9]*$"
 
