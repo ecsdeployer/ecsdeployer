@@ -70,7 +70,9 @@ func JmesRequestMatcher(jmesMap map[string]interface{}) func(*awsmocker.Received
 
 	cleanMap := make(map[string]interface{}, len(jmesMap))
 	searchPaths := maps.Keys(jmesMap)
+	// searchPaths := make([]string, 0, len(jmesMap))
 	for k, v := range jmesMap {
+		// searchPaths = append(searchPaths, k)
 		switch val := v.(type) {
 		case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32:
 			cleanMap[k] = numberToFloat64(val)

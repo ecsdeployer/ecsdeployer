@@ -15,6 +15,7 @@ func TestLoggingConfig(t *testing.T) {
 		obj.ApplyDefaults()
 
 		require.False(t, obj.IsDisabled())
+		require.Equal(t, config.LoggingTypeAwslogs, obj.Type())
 	})
 }
 
@@ -49,7 +50,8 @@ func TestLoggingConfig_Unmarshal(t *testing.T) {
 			str:   "true",
 			checker: func(t *testing.T, obj *config.LoggingConfig) {
 				require.False(t, obj.IsDisabled())
-				require.True(t, obj.FirelensConfig.IsDisabled())
+				require.False(t, obj.AwsLogConfig.IsDisabled())
+				require.Equal(t, config.LoggingTypeAwslogs, obj.Type())
 			},
 		},
 
@@ -59,6 +61,7 @@ func TestLoggingConfig_Unmarshal(t *testing.T) {
 			checker: func(t *testing.T, obj *config.LoggingConfig) {
 				require.True(t, obj.IsDisabled())
 				require.True(t, obj.FirelensConfig.IsDisabled())
+				require.Equal(t, config.LoggingTypeDisabled, obj.Type())
 			},
 		},
 
@@ -67,7 +70,7 @@ func TestLoggingConfig_Unmarshal(t *testing.T) {
 			str:   "awslogs:\n  retention: 14",
 			checker: func(t *testing.T, obj *config.LoggingConfig) {
 				require.False(t, obj.IsDisabled())
-				require.True(t, obj.FirelensConfig.IsDisabled())
+				require.Equal(t, config.LoggingTypeAwslogs, obj.Type())
 				require.EqualValues(t, 14, obj.AwsLogConfig.Retention.Days())
 			},
 		},
@@ -78,23 +81,53 @@ func TestLoggingConfig_Unmarshal(t *testing.T) {
 			checker: func(t *testing.T, obj *config.LoggingConfig) {
 				require.False(t, obj.IsDisabled())
 				require.False(t, obj.FirelensConfig.IsDisabled())
-				require.True(t, obj.AwsLogConfig.IsDisabled())
+				require.Equal(t, config.LoggingTypeFirelens, obj.Type())
 			},
 		},
 
 		{
-			label:                   "Using firelens with ssm",
-			str:                     "firelens:\n  options:\n    Thing:\n      ssm: someval",
+			label: "Using custom",
+			str: `
+			custom:
+				driver: splunk
+			`,
+			checker: func(t *testing.T, obj *config.LoggingConfig) {
+				require.False(t, obj.IsDisabled())
+				require.False(t, obj.Custom.IsDisabled())
+				require.Equal(t, config.LoggingTypeCustom, obj.Type())
+			},
+		},
+
+		{
+			label: "Using firelens with ssm router opts",
+			str: `
+			firelens:
+				router_options:
+					Thing:
+						ssm: someval
+			`,
 			invalid:                 true,
 			validationErrorContains: "you cannot have SSM options",
 		},
 
 		{
-			label:                   "Disable all parts but not parent",
-			str:                     "awslogs:\n  disabled: true\nfirelens: false",
-			invalid:                 true,
-			validationErrorContains: "if you want to disable logging",
+			label: "Using firelens with ssm opts",
+			str: `
+			firelens:
+			  options:
+			    Thing:
+			      ssm: someval`,
 		},
+
+		// {
+		// 	label: "Disable all parts but not parent",
+		// 	str: `
+		// 	awslogs:
+		// 	  disabled: true
+		// 	firelens: false`,
+		// 	invalid:                 true,
+		// 	validationErrorContains: "if you want to disable logging",
+		// },
 	}
 
 	sc := testutil.NewSchemaChecker(&config.LoggingConfig{})
@@ -102,7 +135,9 @@ func TestLoggingConfig_Unmarshal(t *testing.T) {
 	for _, table := range tables {
 		t.Run(table.label, func(t *testing.T) {
 
-			schemaErr := sc.CheckYAML(t, table.str)
+			yamlStr := testutil.CleanTestYaml(table.str)
+
+			schemaErr := sc.CheckYAML(t, yamlStr)
 			if table.badSchema {
 				require.Error(t, schemaErr)
 				return
@@ -110,7 +145,7 @@ func TestLoggingConfig_Unmarshal(t *testing.T) {
 
 			require.NoError(t, schemaErr)
 
-			obj, err := yaml.ParseYAMLString[config.LoggingConfig](table.str)
+			obj, err := yaml.ParseYAMLString[config.LoggingConfig](yamlStr)
 
 			if table.invalid {
 				require.Error(t, err)

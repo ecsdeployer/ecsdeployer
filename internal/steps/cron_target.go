@@ -6,7 +6,6 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	cronBuilder "ecsdeployer.com/ecsdeployer/internal/builders/cron"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
 func CronTargetStep(resource *config.CronJob) *Step {
@@ -47,7 +46,7 @@ func stepCronTargetCreate(ctx *config.Context, step *Step, meta *StepMetadata) (
 
 	if result.FailedEntryCount > 0 {
 		for _, failEntry := range result.FailedEntries {
-			step.Logger.Errorf("TargetFailure: (%s) %s: %s", aws.ToString(failEntry.TargetId), aws.ToString(failEntry.ErrorCode), aws.ToString(failEntry.ErrorMessage))
+			step.Logger.Errorf("TargetFailure: (%s) %s: %s", *failEntry.TargetId, *failEntry.ErrorCode, *failEntry.ErrorMessage)
 		}
 		return nil, fmt.Errorf("%w: Failed to create Cron Targets", ErrStepFailed)
 	}

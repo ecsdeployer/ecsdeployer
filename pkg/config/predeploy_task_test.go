@@ -11,7 +11,7 @@ import (
 )
 
 func TestPreDeployTask(t *testing.T) {
-	require.True(t, (&config.PreDeployTask{}).IsTaskStruct())
+	require.Implements(t, (*config.IsTaskStruct)(nil), &config.PreDeployTask{})
 	require.NotPanics(t, func() {
 		(&config.PreDeployTask{}).ApplyDefaults()
 	})

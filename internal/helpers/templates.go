@@ -15,9 +15,11 @@ const templatePrefixSentinel = "@ECSD_REPLACE@"
 // reference a service/name/task
 func GetTemplatedPrefix(ctx *config.Context, tplStr string) (string, error) {
 	tpl := tmpl.New(ctx).WithExtraFields(tmpl.Fields{
-		"Name":        templatePrefixSentinel,
-		"TaskName":    templatePrefixSentinel,
-		"ServiceName": templatePrefixSentinel,
+		"Name":          templatePrefixSentinel,
+		"TaskName":      templatePrefixSentinel,
+		"ServiceName":   templatePrefixSentinel,
+		"Container":     templatePrefixSentinel,
+		"ContainerName": templatePrefixSentinel,
 	})
 
 	tplValue, err := tpl.Apply(tplStr)
@@ -37,11 +39,13 @@ func GetDefaultTaskTemplateFields(ctx *config.Context, common *config.CommonTask
 	fields := tmpl.Fields{
 		"TaskName": common.Name,
 		"Name":     common.Name,
+		// "Container": common.Name,
+		"Container": "!!!!DEFAULT!!!",
 	}
 
-	arch := util.Coalesce(common.Architecture, project.TaskDefaults.Architecture)
+	arch := util.Coalesce(common.Architecture, project.TaskDefaults.Architecture, util.Ptr(config.ArchitectureDefault))
 	if arch != nil {
-		fields["Arch"] = string(*arch)
+		fields["Arch"] = arch.String()
 	}
 
 	return fields, nil

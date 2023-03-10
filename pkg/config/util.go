@@ -5,6 +5,13 @@ import (
 )
 
 func ExtractCommonTaskAttrs(obj any) (*CommonTaskAttrs, error) {
+
+	if thing, ok := obj.(IsTaskStruct); ok {
+		cta := thing.GetCommonTaskAttrs()
+		return &cta, nil
+	}
+
+	// OLD VERSION
 	switch v := obj.(type) {
 	case *Service:
 		return &v.CommonTaskAttrs, nil

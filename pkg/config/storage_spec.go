@@ -1,11 +1,20 @@
 package config
 
-import "github.com/invopop/jsonschema"
+import (
+	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
+	"github.com/invopop/jsonschema"
+)
 
 type StorageSpec int32
 
 func (ss StorageSpec) Gigabytes() int32 {
 	return int32(ss)
+}
+
+func (ss StorageSpec) ToAws() *ecsTypes.EphemeralStorage {
+	return &ecsTypes.EphemeralStorage{
+		SizeInGiB: ss.Gigabytes(),
+	}
 }
 
 func NewStorageSpec(gb int32) (*StorageSpec, error) {

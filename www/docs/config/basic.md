@@ -2,7 +2,7 @@
 
 
 ```yaml
-# .ecsdeployer/production.yml
+# .ecsdeployer.yml
 project: myapp
 cluster: mycluster
 image: ...
@@ -70,6 +70,14 @@ settings: ...
     You can specify roles using the full ARN or the name of the role. Roles must already exist, they will not be created for you.
 
     An example policy can be seen on the [AWS IAM Permissions](../aws/iam.md) page.
+
+[`service_role`](#root.service_role){ #root.service_role }
+
+:   If you need to set a [Service-Linked role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using-service-linked-roles.html), you can specify it here.
+
+    Once you create a service with this role, you cannot change it. You will need to manually delete the service and redeploy.
+
+    Note: This is a very non-standard thing. Unless you explicitly need this, you should leave this field blank.
 
 [`network`](#root.network){ #root.network } - **(required)**
 

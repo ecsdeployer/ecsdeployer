@@ -1,7 +1,9 @@
 package config
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/invopop/jsonschema"
 )
 
 type Sidecar struct {
@@ -11,6 +13,10 @@ type Sidecar struct {
 	PortMappings      []PortMapping `yaml:"port_mappings,omitempty" json:"port_mappings,omitempty"`
 	MemoryReservation *MemorySpec   `yaml:"memory_reservation,omitempty" json:"memory_reservation,omitempty"`
 	Essential         *bool         `yaml:"essential,omitempty" json:"essential,omitempty"`
+}
+
+func (obj *Sidecar) GetCommonContainerAttrs() CommonContainerAttrs {
+	return obj.CommonContainerAttrs
 }
 
 func (obj *Sidecar) Validate() error {
@@ -57,4 +63,23 @@ func (obj *Sidecar) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	return nil
+}
+
+func (Sidecar) JSONSchemaExtend(base *jsonschema.Schema) {
+
+	def := &Sidecar{}
+	def.ApplyDefaults()
+
+	configschema.SchemaPropMerge(base, "essential", func(s *jsonschema.Schema) {
+		s.Default = def.Essential
+	})
+
+	configschema.SchemaPropMerge(base, "inherit_env", func(s *jsonschema.Schema) {
+		s.Default = def.InheritEnv
+	})
+
+	if base.Required == nil {
+		base.Required = make([]string, 0)
+	}
+	base.Required = append(base.Required, "name")
 }

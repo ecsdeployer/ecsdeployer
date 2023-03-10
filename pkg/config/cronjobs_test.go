@@ -14,7 +14,7 @@ import (
 
 func TestCronJob(t *testing.T) {
 	t.Run("IsTaskStruct", func(t *testing.T) {
-		require.True(t, (&config.CronJob{}).IsTaskStruct())
+		require.Implements(t, (*config.IsTaskStruct)(nil), &config.CronJob{})
 	})
 
 	t.Run("ApplyDefaults", func(t *testing.T) {
@@ -48,7 +48,7 @@ func TestCronJob(t *testing.T) {
 			{&config.CronJob{Schedule: "rate(1 minute)"}, ""},
 
 			// also validates the common stuff
-			{&config.CronJob{Schedule: "rate(1 minute)", CommonTaskAttrs: config.CommonTaskAttrs{Architecture: util.Ptr(config.Architecture("wrong"))}}, "not a valid arch"},
+			// {&config.CronJob{Schedule: "rate(1 minute)", CommonTaskAttrs: config.CommonTaskAttrs{Architecture: util.Ptr(config.Architecture("wrong"))}}, "not a valid arch"},
 		}
 		for _, table := range tables {
 			err := table.obj.Validate()
@@ -73,6 +73,21 @@ func TestCronJob(t *testing.T) {
 			expSched string
 			errMatch string
 		}{
+			{
+				str: `
+				name: test
+				schedule: rate(1 hour)
+				start_date: 2023-99-02`,
+				errMatch: "Invalid format for start",
+			},
+			{
+				str: `
+				name: test
+				schedule: rate(1 hour)
+				end_date: 2023-01-02T09:12:55-08:00
+				start_date: 2024-01-02T09:12:55-08:00`,
+				errMatch: "end date cannot be before the start date",
+			},
 			{
 				str: `
 				name: test

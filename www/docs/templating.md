@@ -38,10 +38,11 @@ The following sections denote fields that are only available in certain contexts
 
 <div class="tbl-nowrap-key" markdown>
 
-Key      | Description
----------|---------------
-`.Arch`  | The architecture of the task. `amd64` or `arm64`
-`.Name`  | the task name you are referencing
+Key          | Description
+-------------|---------------
+`.Arch`      | The architecture of the task. `amd64` or `arm64`
+`.Name`      | the task name you are referencing
+`.Container` | the name of the individual container (will be the same as `.Name` for the primary container)
 
 </div>
 

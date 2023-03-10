@@ -2,6 +2,16 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecsdeployer.com/ecsdeployer/pkg/config/project",
   "$defs": {
+   "Architecture": {
+    "type": "string",
+    "enum": [
+     "amd64",
+     "arm64",
+     "x86_64"
+    ],
+    "description": "Specify CPU Architecture",
+    "default": "amd64"
+   },
    "AwsLogConfig": {
     "oneOf": [
      {
@@ -101,15 +111,35 @@
        "healthcheck": {
         "$ref": "#/$defs/HealthCheck"
        },
+       "mounts": {
+        "items": {
+         "$ref": "#/$defs/Mount"
+        },
+        "type": "array"
+       },
+       "ulimits": {
+        "items": {
+         "$ref": "#/$defs/Ulimit"
+        },
+        "type": "array"
+       },
+       "user": {
+        "type": "string"
+       },
+       "workdir": {
+        "type": "string"
+       },
+       "volumes_from": {
+        "items": {
+         "$ref": "#/$defs/VolumeFrom"
+        },
+        "type": "array"
+       },
        "storage": {
         "$ref": "#/$defs/Storage"
        },
        "arch": {
-        "type": "string",
-        "enum": [
-         "arm64",
-         "amd64"
-        ],
+        "$ref": "#/$defs/Architecture",
         "description": "Task CPU Architecture"
        },
        "platform_version": {
@@ -125,6 +155,18 @@
        },
        "network": {
         "$ref": "#/$defs/Network"
+       },
+       "sidecars": {
+        "items": {
+         "$ref": "#/$defs/Sidecar"
+        },
+        "type": "array"
+       },
+       "volumes": {
+        "$ref": "#/$defs/VolumeList"
+       },
+       "proxy": {
+        "$ref": "#/$defs/ProxyConfig"
        },
        "port": {
         "$ref": "#/$defs/PortMapping"
@@ -192,15 +234,35 @@
      "healthcheck": {
       "$ref": "#/$defs/HealthCheck"
      },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
+     },
      "storage": {
       "$ref": "#/$defs/Storage"
      },
      "arch": {
-      "type": "string",
-      "enum": [
-       "arm64",
-       "amd64"
-      ],
+      "$ref": "#/$defs/Architecture",
       "description": "Task CPU Architecture"
      },
      "platform_version": {
@@ -216,6 +278,18 @@
      },
      "network": {
       "$ref": "#/$defs/Network"
+     },
+     "sidecars": {
+      "items": {
+       "$ref": "#/$defs/Sidecar"
+      },
+      "type": "array"
+     },
+     "volumes": {
+      "$ref": "#/$defs/VolumeList"
+     },
+     "proxy": {
+      "$ref": "#/$defs/ProxyConfig"
      },
      "disabled": {
       "type": "boolean"
@@ -253,6 +327,18 @@
      "schedule",
      "name"
     ]
+   },
+   "CustomLogConfig": {
+    "properties": {
+     "driver": {
+      "type": "string"
+     },
+     "options": {
+      "$ref": "#/$defs/EnvVarMap"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object"
    },
    "DependsOn": {
     "oneOf": [
@@ -362,7 +448,12 @@
       "$comment": "Use a value verbatim",
       "properties": {
        "value": {
-        "$ref": "#/$defs/StringLikeWithBlank"
+        "description": "Any value that can be cast to a string, or blank",
+        "type": [
+         "number",
+         "string",
+         "boolean"
+        ]
        }
       },
       "additionalProperties": false,
@@ -386,8 +477,13 @@
       ]
      },
      {
-      "$ref": "#/$defs/StringLikeWithBlank",
-      "$comment": "Use a value verbatim"
+      "$comment": "Use a value verbatim",
+      "description": "Any value that can be cast to a string, or blank",
+      "type": [
+       "number",
+       "string",
+       "boolean"
+      ]
      }
     ]
    },
@@ -440,6 +536,9 @@
        "options": {
         "$ref": "#/$defs/EnvVarMap"
        },
+       "router_options": {
+        "$ref": "#/$defs/EnvVarMap"
+       },
        "environment": {
         "$ref": "#/$defs/EnvVarMap"
        },
@@ -465,30 +564,37 @@
     ]
    },
    "HealthCheck": {
-    "properties": {
-     "command": {
-      "items": {
-       "type": "string"
+    "oneOf": [
+     {
+      "type": "boolean",
+      "const": false,
+      "description": "Disable a healthcheck for a specific task"
+     },
+     {
+      "properties": {
+       "disabled": {
+        "type": "boolean"
+       },
+       "command": {
+        "$ref": "#/$defs/ShellCommand"
+       },
+       "interval": {
+        "$ref": "#/$defs/Duration"
+       },
+       "retries": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "start_period": {
+        "$ref": "#/$defs/Duration"
+       },
+       "timeout": {
+        "$ref": "#/$defs/Duration"
+       }
       },
-      "type": "array"
-     },
-     "interval": {
-      "$ref": "#/$defs/Duration"
-     },
-     "retries": {
-      "type": "integer"
-     },
-     "start_period": {
-      "$ref": "#/$defs/Duration"
-     },
-     "timeout": {
-      "$ref": "#/$defs/Duration"
+      "additionalProperties": false,
+      "type": "object"
      }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "command"
     ]
    },
    "ImageUri": {
@@ -656,6 +762,9 @@
        },
        "awslogs": {
         "$ref": "#/$defs/AwsLogConfig"
+       },
+       "custom": {
+        "$ref": "#/$defs/CustomLogConfig"
        }
       },
       "additionalProperties": false,
@@ -683,6 +792,25 @@
     ],
     "title": "Memory requirements"
    },
+   "Mount": {
+    "properties": {
+     "path": {
+      "type": "string"
+     },
+     "source": {
+      "type": "string"
+     },
+     "readonly": {
+      "type": "boolean"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "path",
+     "source"
+    ]
+   },
    "NameTemplates": {
     "properties": {
      "task_family": {
@@ -694,11 +822,6 @@
       "type": "string",
       "minLength": 1,
       "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
-     },
-     "container": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Name }}"
      },
      "cron_group": {
       "type": "string",
@@ -730,7 +853,7 @@
      "log_stream_prefix": {
       "type": "string",
       "minLength": 1,
-      "default": "{{ .Name }}"
+      "default": "{{ .Container }}"
      },
      "target_group": {
       "type": "string",
@@ -770,7 +893,19 @@
       "minLength": 1
      },
      "value": {
-      "$ref": "#/$defs/StringLike"
+      "oneOf": [
+       {
+        "type": "string",
+        "minLength": 1
+       },
+       {
+        "type": [
+         "number",
+         "boolean"
+        ]
+       }
+      ],
+      "description": "Any value that can be cast to a string of at least one character long"
      }
     },
     "additionalProperties": false,
@@ -971,15 +1106,35 @@
      "healthcheck": {
       "$ref": "#/$defs/HealthCheck"
      },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
+     },
      "storage": {
       "$ref": "#/$defs/Storage"
      },
      "arch": {
-      "type": "string",
-      "enum": [
-       "arm64",
-       "amd64"
-      ],
+      "$ref": "#/$defs/Architecture",
       "description": "Task CPU Architecture"
      },
      "platform_version": {
@@ -995,6 +1150,18 @@
      },
      "network": {
       "$ref": "#/$defs/Network"
+     },
+     "sidecars": {
+      "items": {
+       "$ref": "#/$defs/Sidecar"
+      },
+      "type": "array"
+     },
+     "volumes": {
+      "$ref": "#/$defs/VolumeList"
+     },
+     "proxy": {
+      "$ref": "#/$defs/ProxyConfig"
      },
      "timeout": {
       "$ref": "#/$defs/Duration",
@@ -1015,6 +1182,40 @@
     "type": "object",
     "required": [
      "name"
+    ]
+   },
+   "ProxyConfig": {
+    "oneOf": [
+     {
+      "type": "boolean",
+      "const": false,
+      "description": "Disable proxy configuration for a specific task"
+     },
+     {
+      "properties": {
+       "disabled": {
+        "type": "boolean"
+       },
+       "type": {
+        "type": "string",
+        "description": "Proxy type. You should omit this unless you know what you are doing.",
+        "default": "APPMESH",
+        "examples": [
+         "APPMESH"
+        ]
+       },
+       "container": {
+        "type": "string",
+        "description": "Name of the sidecar that provides the proxy",
+        "default": "envoy"
+       },
+       "properties": {
+        "$ref": "#/$defs/EnvVarMap"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object"
+     }
     ]
    },
    "RoleRef": {
@@ -1123,15 +1324,35 @@
      "healthcheck": {
       "$ref": "#/$defs/HealthCheck"
      },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
+     },
      "storage": {
       "$ref": "#/$defs/Storage"
      },
      "arch": {
-      "type": "string",
-      "enum": [
-       "arm64",
-       "amd64"
-      ],
+      "$ref": "#/$defs/Architecture",
       "description": "Task CPU Architecture"
      },
      "platform_version": {
@@ -1147,6 +1368,18 @@
      },
      "network": {
       "$ref": "#/$defs/Network"
+     },
+     "sidecars": {
+      "items": {
+       "$ref": "#/$defs/Sidecar"
+      },
+      "type": "array"
+     },
+     "volumes": {
+      "$ref": "#/$defs/VolumeList"
+     },
+     "proxy": {
+      "$ref": "#/$defs/ProxyConfig"
      },
      "desired": {
       "type": "integer",
@@ -1211,78 +1444,33 @@
    "ShellCommand": {
     "oneOf": [
      {
-      "$ref": "#/$defs/StringLikeWithBlank",
-      "description": "Shell-style command"
+      "description": "Shell-style command",
+      "type": [
+       "number",
+       "string",
+       "boolean"
+      ]
      },
      {
       "items": {
-       "$ref": "#/$defs/StringLikeWithBlank"
+       "description": "Any value that can be cast to a string, or blank",
+       "type": [
+        "number",
+        "string",
+        "boolean"
+       ]
       },
       "type": "array",
       "description": "Command array. Preferred"
      }
     ]
    },
-   "SpotOverrides": {
-    "oneOf": [
-     {
-      "properties": {
-       "enabled": {
-        "type": "boolean",
-        "description": "Enable spot containers",
-        "default": false
-       },
-       "minimum_ondemand": {
-        "type": "integer"
-       },
-       "minimum_ondemand_percent": {
-        "type": "integer"
-       }
-      },
-      "type": "object"
-     },
-     {
-      "type": "boolean"
-     }
-    ],
-    "description": "Spot Capacity Overrides"
-   },
-   "Storage": {
-    "type": "integer",
-    "minimum": 20,
-    "description": "Size in GB of storage to add",
-    "default": 20
-   },
-   "StringLike": {
-    "oneOf": [
-     {
-      "type": "string",
-      "minLength": 1
-     },
-     {
-      "type": [
-       "number",
-       "boolean"
-      ]
-     }
-    ],
-    "description": "Any value that can be cast to a string of at least one character long"
-   },
-   "StringLikeWithBlank": {
-    "description": "Any value that can be cast to a string, or blank",
-    "type": [
-     "number",
-     "string",
-     "boolean"
-    ]
-   },
-   "TargetGroupRef": {
-    "type": "string",
-    "minLength": 1,
-    "description": "ARN or Name"
-   },
-   "TaskDefaults": {
+   "Sidecar": {
     "properties": {
+     "name": {
+      "type": "string",
+      "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
+     },
      "command": {
       "$ref": "#/$defs/ShellCommand"
      },
@@ -1322,18 +1510,170 @@
       },
       "type": "array"
      },
+     "logging": {
+      "$ref": "#/$defs/TaskLoggingConfig"
+     },
      "healthcheck": {
       "$ref": "#/$defs/HealthCheck"
+     },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
+     },
+     "inherit_env": {
+      "type": "boolean",
+      "default": false
+     },
+     "port_mappings": {
+      "items": {
+       "$ref": "#/$defs/PortMapping"
+      },
+      "type": "array"
+     },
+     "memory_reservation": {
+      "$ref": "#/$defs/Memory"
+     },
+     "essential": {
+      "type": "boolean",
+      "default": true
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "name"
+    ]
+   },
+   "SpotOverrides": {
+    "oneOf": [
+     {
+      "properties": {
+       "enabled": {
+        "type": "boolean",
+        "description": "Enable spot containers",
+        "default": false
+       },
+       "minimum_ondemand": {
+        "type": "integer"
+       },
+       "minimum_ondemand_percent": {
+        "type": "integer"
+       }
+      },
+      "type": "object"
+     },
+     {
+      "type": "boolean"
+     }
+    ],
+    "description": "Spot Capacity Overrides"
+   },
+   "Storage": {
+    "type": "integer",
+    "minimum": 20,
+    "description": "Size in GB of storage to add",
+    "default": 20
+   },
+   "TargetGroupRef": {
+    "type": "string",
+    "minLength": 1,
+    "description": "ARN or Name"
+   },
+   "TaskDefaults": {
+    "properties": {
+     "command": {
+      "$ref": "#/$defs/ShellCommand"
+     },
+     "entrypoint": {
+      "$ref": "#/$defs/ShellCommand"
+     },
+     "image": {
+      "$ref": "#/$defs/ImageUri"
+     },
+     "credentials": {
+      "type": "string"
+     },
+     "cpu": {
+      "$ref": "#/$defs/CPUShares",
+      "default": 1024
+     },
+     "memory": {
+      "$ref": "#/$defs/Memory",
+      "default": "2x"
+     },
+     "environment": {
+      "$ref": "#/$defs/EnvVarMap"
+     },
+     "start_timeout": {
+      "$ref": "#/$defs/Duration"
+     },
+     "stop_timeout": {
+      "$ref": "#/$defs/Duration"
+     },
+     "labels": {
+      "items": {
+       "$ref": "#/$defs/NameValuePair"
+      },
+      "type": "array"
+     },
+     "depends_on": {
+      "items": {
+       "$ref": "#/$defs/DependsOn"
+      },
+      "type": "array"
+     },
+     "healthcheck": {
+      "$ref": "#/$defs/HealthCheck"
+     },
+     "mounts": {
+      "items": {
+       "$ref": "#/$defs/Mount"
+      },
+      "type": "array"
+     },
+     "ulimits": {
+      "items": {
+       "$ref": "#/$defs/Ulimit"
+      },
+      "type": "array"
+     },
+     "user": {
+      "type": "string"
+     },
+     "workdir": {
+      "type": "string"
+     },
+     "volumes_from": {
+      "items": {
+       "$ref": "#/$defs/VolumeFrom"
+      },
+      "type": "array"
      },
      "storage": {
       "$ref": "#/$defs/Storage"
      },
      "arch": {
-      "type": "string",
-      "enum": [
-       "arm64",
-       "amd64"
-      ],
+      "$ref": "#/$defs/Architecture",
       "description": "Task CPU Architecture",
       "default": "amd64"
      },
@@ -1347,6 +1687,18 @@
        "$ref": "#/$defs/NameValuePair"
       },
       "type": "array"
+     },
+     "sidecars": {
+      "items": {
+       "$ref": "#/$defs/Sidecar"
+      },
+      "type": "array"
+     },
+     "volumes": {
+      "$ref": "#/$defs/VolumeList"
+     },
+     "proxy": {
+      "$ref": "#/$defs/ProxyConfig"
      },
      "spot": {
       "$ref": "#/$defs/SpotOverrides"
@@ -1380,10 +1732,162 @@
      }
     ]
    },
+   "Ulimit": {
+    "oneOf": [
+     {
+      "properties": {
+       "name": {
+        "type": "string",
+        "enum": [
+         "core",
+         "cpu",
+         "data",
+         "fsize",
+         "locks",
+         "memlock",
+         "msgqueue",
+         "nice",
+         "nofile",
+         "nproc",
+         "rss",
+         "rtprio",
+         "rttime",
+         "sigpending",
+         "stack"
+        ]
+       },
+       "limit": {
+        "type": "integer"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+       "name",
+       "limit"
+      ],
+      "description": "Single value used for both hard and soft limits"
+     },
+     {
+      "properties": {
+       "name": {
+        "type": "string",
+        "enum": [
+         "core",
+         "cpu",
+         "data",
+         "fsize",
+         "locks",
+         "memlock",
+         "msgqueue",
+         "nice",
+         "nofile",
+         "nproc",
+         "rss",
+         "rtprio",
+         "rttime",
+         "sigpending",
+         "stack"
+        ]
+       },
+       "hard": {
+        "type": "integer"
+       },
+       "soft": {
+        "type": "integer",
+        "default": 0
+       }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+       "name"
+      ],
+      "description": "Define both hard and soft limit values"
+     }
+    ],
+    "description": "Ulimit overrides"
+   },
    "VersionConstraint": {
     "$comment": "https://pkg.go.dev/github.com/Masterminds/semver/v3#readme-checking-version-constraints",
     "type": "string",
     "description": "Specify a constraint on a semantic version"
+   },
+   "Volume": {
+    "oneOf": [
+     {
+      "type": "string",
+      "description": "Shorthand to specify a default bind volume"
+     },
+     {
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "efs": {
+        "$ref": "#/$defs/VolumeEFSConfig"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+       "name"
+      ]
+     }
+    ]
+   },
+   "VolumeEFSConfig": {
+    "properties": {
+     "file_system_id": {
+      "type": "string"
+     },
+     "access_point_id": {
+      "type": "string"
+     },
+     "root": {
+      "type": "string"
+     },
+     "disable_iam": {
+      "type": "boolean"
+     },
+     "disable_encryption": {
+      "type": "boolean"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "file_system_id"
+    ]
+   },
+   "VolumeFrom": {
+    "oneOf": [
+     {
+      "type": "string",
+      "description": "Shorthand to specify a container name"
+     },
+     {
+      "properties": {
+       "source": {
+        "type": "string"
+       },
+       "readonly": {
+        "type": "boolean"
+       }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+       "source"
+      ]
+     }
+    ]
+   },
+   "VolumeList": {
+    "items": {
+     "$ref": "#/$defs/Volume"
+    },
+    "type": "array"
    },
    "WaitForStable": {
     "oneOf": [
@@ -1435,6 +1939,9 @@
     "$ref": "#/$defs/RoleRef"
    },
    "cron_launcher_role": {
+    "$ref": "#/$defs/RoleRef"
+   },
+   "service_role": {
     "$ref": "#/$defs/RoleRef"
    },
    "services": {

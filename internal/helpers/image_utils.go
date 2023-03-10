@@ -1,9 +1,10 @@
 package helpers
 
 import (
+	"fmt"
+
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/caarlos0/log"
 )
 
 func ResolveImageUri(ctx *config.Context, img *config.ImageUri) (string, error) {
@@ -14,10 +15,10 @@ func ResolveImageUri(ctx *config.Context, img *config.ImageUri) (string, error) 
 
 	newUri, err := tmpl.New(ctx).Apply(img.Value())
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to resolve Image URI: %w", err)
 	}
 
-	log.WithField("image", newUri).Debugf("Resolved Image")
+	// log.WithField("image", newUri).Debug("Resolved Image")
 	img.SetResolved(newUri)
 
 	return newUri, nil

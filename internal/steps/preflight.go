@@ -77,8 +77,8 @@ func stepPreflightCreate(ctx *config.Context, step *Step, meta *StepMetadata) (O
 
 	// NETWORK
 	for _, network := range util.DeepFindInStruct[config.NetworkConfiguration](ctx.Project) {
-		step.Logger.Debugf("Validating Network")
-		if _, err := network.ResolveECS(ctx); err != nil {
+		step.Logger.Debug("Validating Network")
+		if err := network.Resolve(ctx, nil); err != nil {
 			return nil, err
 		}
 	}
@@ -88,8 +88,9 @@ func stepPreflightCreate(ctx *config.Context, step *Step, meta *StepMetadata) (O
 
 func stepPreflight_CheckTemplates(ctx *config.Context) error {
 	tpl := tmpl.New(ctx).WithExtraFields(tmpl.Fields{
-		"Name": "THING",
-		"Arch": "amd64",
+		"Name":      "THING",
+		"Container": "THING",
+		"Arch":      "amd64",
 	})
 
 	for _, val := range util.DeepFindInStruct[string](ctx.Project.Templates) {

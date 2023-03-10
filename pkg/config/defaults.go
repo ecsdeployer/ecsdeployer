@@ -12,6 +12,8 @@ const (
 	defaultKeepInSync = true
 
 	defaultLogRetention = 180
+
+	defaultPlatformVersion = "LATEST"
 )
 
 var DefaultDeploymentEnvVars = map[string]string{
@@ -28,6 +30,12 @@ var DefaultCronEnvVars = map[string]string{
 	"ECSDEPLOYER_CRON_SCHEDULED_TIME": "<aws.scheduler.scheduled-time>",
 	"ECSDEPLOYER_CRON_EXECUTION_ID":   "<aws.scheduler.execution-id>",
 	"ECSDEPLOYER_CRON_ATTEMPT":        "<aws.scheduler.attempt-number>",
+}
+
+var DefaultDeploymentLabels = map[string]string{
+	"com.ecsdeployer.project": "{{ .Project }}",
+	"com.ecsdeployer.task":    "{{ .Name }}",
+	"com.ecsdeployer.stage":   "{{ .Stage }}",
 }
 
 // Regex to validate names of things

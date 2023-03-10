@@ -43,11 +43,11 @@ To make onboarding easier, ECS Deployer provides a few default values for you ou
 
 <div class="tbl-nowrap-key tbl-normal-font" markdown>
 
-Field | Default Value
-----|-----------
-[`arch`](common.md#common.arch) | `{{schema:default:FargateDefaults.arch}}`
-[`cpu`](common.md#common.cpu) | `{{schema:default:FargateDefaults.cpu}}`
-[`memory`](common.md#common.memory) | `{{schema:default:FargateDefaults.memory}}`
+Field                                                   | Default Value
+--------------------------------------------------------|-----------
+[`arch`](common.md#common.arch)                         | `{{schema:default:FargateDefaults.arch}}`
+[`cpu`](common.md#common.cpu)                           | `{{schema:default:FargateDefaults.cpu}}`
+[`memory`](common.md#common.memory)                     | `{{schema:default:FargateDefaults.memory}}`
 [`platform_version`](common.md#common.platform_version) | `{{schema:default:FargateDefaults.platform_version}}`
 
 </div>

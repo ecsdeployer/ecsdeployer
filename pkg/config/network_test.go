@@ -9,6 +9,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
+	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 	"github.com/stretchr/testify/require"
 	"github.com/webdestroya/awsmocker"
 )
@@ -115,12 +116,14 @@ func TestNetwork_NetworkConfigurationResolver_Full(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, network.resolve(ctx))
+	require.NoError(t, network.Resolve(ctx, nil))
 
-	ecsNetwork, err := network.ResolveECS(ctx)
-	require.NoError(t, err)
-
-	cweNetwork, err := network.ResolveCWE(ctx)
-	require.NoError(t, err)
+	schedNetworkGen := &schedulerTypes.NetworkConfiguration{}
+	ecsNetworkGen := &ecsTypes.NetworkConfiguration{}
+	cweNetworkGen := &eventTypes.NetworkConfiguration{}
+	require.NoError(t, network.Resolve(ctx, schedNetworkGen))
+	require.NoError(t, network.Resolve(ctx, ecsNetworkGen))
+	require.NoError(t, network.Resolve(ctx, cweNetworkGen))
 
 	tables := []struct {
 		subnets        []string
@@ -128,8 +131,10 @@ func TestNetwork_NetworkConfigurationResolver_Full(t *testing.T) {
 		publicIp       bool
 	}{
 		{result.subnets, result.securityGroups, result.publicIp},
-		{ecsNetwork.AwsvpcConfiguration.Subnets, ecsNetwork.AwsvpcConfiguration.SecurityGroups, ecsNetwork.AwsvpcConfiguration.AssignPublicIp == ecsTypes.AssignPublicIpEnabled},
-		{cweNetwork.AwsvpcConfiguration.Subnets, cweNetwork.AwsvpcConfiguration.SecurityGroups, cweNetwork.AwsvpcConfiguration.AssignPublicIp == eventTypes.AssignPublicIpEnabled},
+
+		{schedNetworkGen.AwsvpcConfiguration.Subnets, schedNetworkGen.AwsvpcConfiguration.SecurityGroups, schedNetworkGen.AwsvpcConfiguration.AssignPublicIp == schedulerTypes.AssignPublicIpEnabled},
+		{ecsNetworkGen.AwsvpcConfiguration.Subnets, ecsNetworkGen.AwsvpcConfiguration.SecurityGroups, ecsNetworkGen.AwsvpcConfiguration.AssignPublicIp == ecsTypes.AssignPublicIpEnabled},
+		{cweNetworkGen.AwsvpcConfiguration.Subnets, cweNetworkGen.AwsvpcConfiguration.SecurityGroups, cweNetworkGen.AwsvpcConfiguration.AssignPublicIp == eventTypes.AssignPublicIpEnabled},
 	}
 
 	for _, table := range tables {

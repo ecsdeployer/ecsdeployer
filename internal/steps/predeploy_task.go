@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
-	"ecsdeployer.com/ecsdeployer/internal/builders"
+	runTaskBuilder "ecsdeployer.com/ecsdeployer/internal/builders/runtask"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
@@ -57,7 +57,7 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 	predeployTask := (step.Resource).(*config.PreDeployTask)
 	logger := step.Logger
 
-	runTaskInput, err := builders.BuildRunTask(ctx, predeployTask)
+	runTaskInput, err := runTaskBuilder.Build(ctx, predeployTask)
 	if err != nil {
 		return nil, err
 	}
@@ -77,14 +77,14 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 	if len(runTaskOutput.Failures) > 0 {
 		for _, failure := range runTaskOutput.Failures {
 			logger.WithFields(log.Fields{
-				fieldReason: aws.ToString(failure.Reason),
-				fieldDetail: aws.ToString(failure.Detail),
+				fieldReason: *failure.Reason,
+				fieldDetail: *failure.Detail,
 			}).Error("Task Failed to Launch")
 		}
 		return nil, errors.New("task failed to launch")
 	}
 
-	taskArn := aws.ToString(runTaskOutput.Tasks[0].TaskArn)
+	taskArn := *runTaskOutput.Tasks[0].TaskArn
 	logger = logger.WithField(fieldTaskArn, taskArn)
 	logger.Info("Task launched")
 
@@ -92,7 +92,7 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 		fieldTaskArn: taskArn,
 	}
 
-	logger.Debugf("Waiting for task to complete")
+	logger.Debug("Waiting for task to complete")
 
 	params := &ecs.DescribeTasksInput{
 		Tasks:   []string{taskArn},
@@ -140,14 +140,14 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 	err = stoppedWaiter.Wait(ctx.Context, params, maxWaitTime)
 	if err != nil {
 		logger.Error("Failed")
-		return nil, err
+		return nil, fmt.Errorf("Failure waiting for task to stop: %w", err)
 	}
 
 	// it's stopped, so get the latest status
 	results, err := ecsClient.DescribeTasks(ctx.Context, params)
 	if err != nil {
 		logger.Error("Failed")
-		return nil, err
+		return nil, fmt.Errorf("Unable to describe task status: %w", err)
 	}
 
 	// check for failures
@@ -181,7 +181,7 @@ func stepPreDeployTaskCreate(ctx *config.Context, step *Step, meta *StepMetadata
 
 	logger.Error("Task Failed")
 
-	return fields, err
+	return fields, fmt.Errorf("Task failed: %w", err)
 }
 
 func didTaskSucceed(result *ecsTypes.Task) error {

@@ -31,18 +31,23 @@ func (a *ShellCommand) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (a ShellCommand) JSONSchema() *jsonschema.Schema {
 	return &jsonschema.Schema{
-		OneOf: []*jsonschema.Schema{{
-			// Type: "string",
-			Ref:         configschema.StringLikeWithBlankRef,
-			Description: "Shell-style command",
-		}, {
-			Type: "array",
-			Items: &jsonschema.Schema{
-				// Type: "string",
-				Ref: configschema.StringLikeWithBlankRef,
+		OneOf: []*jsonschema.Schema{
+			// {
+			// 	Ref:         configschema.StringLikeWithBlankRef,
+			// 	Description: "Shell-style command",
+			// },
+			configschema.NewStringLikeWithBlank(func(o *jsonschema.Schema) {
+				o.Description = "Shell-style command"
+			}),
+			{
+				Type: "array",
+				// Items: &jsonschema.Schema{
+				// 	Ref: "BLAH", // configschema.StringLikeWithBlankRef,
+				// },
+				Items:       configschema.StringLikeWithBlank,
+				Description: "Command array. Preferred",
 			},
-			Description: "Command array. Preferred",
-		}},
+		},
 	}
 }
 

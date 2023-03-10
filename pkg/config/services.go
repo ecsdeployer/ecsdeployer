@@ -21,16 +21,22 @@ type Service struct {
 	// Capacity *Capacity `yaml:"capacity,omitempty" json:"capacity,omitempty" jsonschema:"-"`
 }
 
+// func (obj *Service) GetCommonContainerAttrs() CommonContainerAttrs {
+// 	return obj.CommonContainerAttrs
+// }
+
+// func (obj *Service) GetCommonTaskAttrs() CommonTaskAttrs {
+// 	return obj.CommonTaskAttrs
+// }
+
+var _ IsTaskStruct = (*Service)(nil)
+
 func (svc *Service) IsWorker() bool {
 	return len(svc.LoadBalancers) == 0
 }
 
 func (svc *Service) IsLoadBalanced() bool {
 	return len(svc.LoadBalancers) > 0
-}
-
-func (obj *Service) IsTaskStruct() bool {
-	return true
 }
 
 func (a *Service) UnmarshalYAML(unmarshal func(interface{}) error) error {

@@ -1,0 +1,50 @@
+project: dummy
+image: fake:latest
+cluster: fakecluster
+
+role: faketask
+execution_role: fakeexec
+cron_launcher_role: fakecron
+
+network:
+  subnets:
+    - subnet-2222222222
+  security_groups:
+    - sg-11111111111
+  public_ip: false
+
+console: true
+
+task_defaults:
+  healthcheck:
+    command: CMD test healthcheck
+
+predeploy:
+  - name: pd1
+    command: blah
+    healthcheck:
+      command: CMD test2 blah
+      interval: 60
+      retries: 2
+      start_period: 120
+      timeout: 5
+
+services:
+  - name: svc-override
+    command: test
+    healthcheck:
+      command: CMD-SHELL blah yar
+    sidecars:
+      - name: sc1
+        command: blah
+        image: fake
+        healthcheck:
+          command: CMD sc1
+  
+  - name: svc-norm
+    command: test
+  
+  - name: svc-disable
+    command: test
+    healthcheck: false
+

@@ -12,6 +12,8 @@ type PreDeployTask struct {
 	IgnoreFailure bool      `yaml:"ignore_failure,omitempty" json:"ignore_failure,omitempty" jsonschema:"default=false,description=Ignore runtime failures of this task"`
 }
 
+var _ IsTaskStruct = (*PreDeployTask)(nil)
+
 func (obj *PreDeployTask) ApplyDefaults() {
 
 }
@@ -26,10 +28,6 @@ func (obj *PreDeployTask) Validate() error {
 	}
 
 	return nil
-}
-
-func (obj *PreDeployTask) IsTaskStruct() bool {
-	return true
 }
 
 func (PreDeployTask) JSONSchemaExtend(base *jsonschema.Schema) {

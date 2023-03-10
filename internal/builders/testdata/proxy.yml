@@ -1,0 +1,42 @@
+project: dummy
+image: fake:latest
+cluster: fakecluster
+
+role: faketask
+execution_role: fakeexec
+cron_launcher_role: fakecron
+
+network:
+  subnets:
+    - subnet-2222222222
+  security_groups:
+    - sg-11111111111
+  public_ip: false
+
+
+task_defaults:
+  proxy:
+    properties:
+      AppPorts: 1234
+      Farts: {template: "{{.Project}}"}
+
+predeploy:
+  - name: pd-def
+
+  - name: pd-no
+    proxy: false
+
+  - name: pd-override
+    proxy:
+      properties:
+        AppPorts: 5678
+
+  - name: pd-values
+    proxy:
+      container: blah
+      type: WRONG
+      properties:
+        SomeInt: 1234
+        SomeTpl: {template: "{{.Project}}"}
+        SomeStr: blah
+        SomeBool: true

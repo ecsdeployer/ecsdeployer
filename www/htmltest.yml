@@ -8,6 +8,7 @@ IgnoreURLs:
 - https://github.com/ecsdeployer/ecsdeployer/pkgs
 - https://github.com/ecsdeployer/ecsdeployer
 - https://github.com/ecsdeployer/ecsdeployer-action
+- ecsdeployer.com
 - docs.github.com
 - help.github.com
 IgnoreDirs:
@@ -16,7 +17,8 @@ IgnoreDirectoryMissingTrailingSlash: true
 IgnoreAltMissing: true
 ExternalTimeout: 60
 EnforceHTTPS: true
-LogLevel: 0
+# LogLevel: 0
+LogLevel: 1
 HTTPHeaders:
   "Range": "bytes=0-10"
   "Accept": "*/*"

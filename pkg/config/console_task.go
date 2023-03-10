@@ -19,6 +19,8 @@ type ConsoleTask struct {
 	Path        *string      `yaml:"path,omitempty" json:"path,omitempty"`
 }
 
+var _ IsTaskStruct = (*ConsoleTask)(nil)
+
 func (obj *ConsoleTask) IsEnabled() bool {
 	if obj.Enabled == nil {
 		return defaultConsoleEnabled
@@ -29,8 +31,8 @@ func (obj *ConsoleTask) IsEnabled() bool {
 func (con *ConsoleTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var boolval bool
 	if err := unmarshal(&boolval); err != nil {
-		type t ConsoleTask
-		var defo = t{}
+		type tConsoleTask ConsoleTask
+		var defo = tConsoleTask{}
 		if err := unmarshal(&defo); err != nil {
 			return err
 		}
@@ -85,10 +87,6 @@ func (con *ConsoleTask) Validate() error {
 	}
 
 	return nil
-}
-
-func (obj ConsoleTask) IsTaskStruct() bool {
-	return true
 }
 
 func (ConsoleTask) JSONSchemaExtend(base *jsonschema.Schema) {

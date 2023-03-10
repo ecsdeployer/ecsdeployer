@@ -194,7 +194,7 @@ func (s *Step) Apply(ctx *config.Context) error {
 	}
 
 	if s.PreApply != nil {
-		s.Logger.Debugf("Execute:PreApply")
+		s.Logger.Debug("Execute:PreApply")
 		if err := s.PreApply(ctx, s, s.buildMetadata()); err != nil {
 			// s.Logger.WithError(err).WithField("phase", "PreApply").Error("Failure")
 			s.Logger.WithField("phase", "PreApply").Error("Failure")
@@ -205,7 +205,7 @@ func (s *Step) Apply(ctx *config.Context) error {
 	// s.Logger.Debug("Applying step")
 
 	if len(s.Dependencies) > 0 {
-		s.Logger.Debugf("Applying Dependencies")
+		s.Logger.Debug("Applying Dependencies")
 		s.Indent()
 
 		if s.ParallelDeps {

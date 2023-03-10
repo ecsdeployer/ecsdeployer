@@ -75,7 +75,7 @@ func NameValuePairTemplater(ctx *config.Context, fields tmpl.Fields, pairs []con
 }
 
 // build up a list of tags using the various NVPs
-func NameValuePair_Build_Tags[T interface{}](ctx *config.Context, thisTags []config.NameValuePair, tplFields tmpl.Fields, buildFunc func(string, string) T, extraTags ...[]config.NameValuePair) ([]T, map[string]string, error) {
+func NameValuePair_Build_Tags[T any](ctx *config.Context, thisTags []config.NameValuePair, tplFields tmpl.Fields, buildFunc func(string, string) T, extraTags ...[]config.NameValuePair) ([]T, map[string]string, error) {
 
 	additionalTags := make([]config.NameValuePair, 0, len(extraTags)*5)
 

@@ -59,7 +59,7 @@ func ParseLogRetention[T int32 | int64 | int | string](value T) (LogRetention, e
 
 		days, err := strconv.ParseInt(strVal, 10, 32)
 		if err != nil {
-			// return LogRetention{}, err
+			//nolint:errorlint
 			return LogRetention{}, fmt.Errorf("%w: %s", ErrInvalidLogRetention, err.Error())
 		}
 

@@ -44,3 +44,17 @@ func CoalesceWithFunc[T any, PtrT *T](checkFunc CoalesceFunc[PtrT], values ...Pt
 
 	return nil, false
 }
+
+func CoalesceArray[T any, A []T](values ...A) A {
+	for _, value := range values {
+		if value == nil {
+			continue
+		}
+
+		if len(value) > 0 {
+			return value
+		}
+	}
+
+	return nil
+}

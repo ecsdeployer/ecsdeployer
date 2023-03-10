@@ -23,9 +23,7 @@ type CronJob struct {
 	EndDate   *time.Time `yaml:"end_date,omitempty" json:"end_date,omitempty"`
 }
 
-func (obj *CronJob) IsTaskStruct() bool {
-	return true
-}
+var _ IsTaskStruct = (*CronJob)(nil)
 
 func (obj *CronJob) IsDisabled() bool {
 	return obj.Disabled
@@ -60,7 +58,7 @@ func (obj *CronJob) Validate() error {
 	}
 
 	if obj.EndDate != nil && obj.StartDate != nil && obj.StartDate.After(*obj.EndDate) {
-		return NewValidationError("end date cannot be after the start date")
+		return NewValidationError("end date cannot be before the start date")
 	}
 
 	if err := obj.CommonTaskAttrs.Validate(); err != nil {

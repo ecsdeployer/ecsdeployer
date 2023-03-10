@@ -33,3 +33,8 @@ func TestPtr(t *testing.T) {
 	resp := Ptr(value)
 	require.Equal(t, value, *resp)
 }
+
+func TestTernary(t *testing.T) {
+	require.Equal(t, "A", Ternary(true, "A", "B"))
+	require.Equal(t, "B", Ternary(false, "A", "B"))
+}

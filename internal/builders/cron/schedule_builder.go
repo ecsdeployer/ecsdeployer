@@ -44,6 +44,7 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 		LaunchType:           schedulerTypes.LaunchTypeFargate,
 		PlatformVersion:      platformVersion,
 		PropagateTags:        schedulerTypes.PropagateTagsTaskDefinition,
+		NetworkConfiguration: &schedulerTypes.NetworkConfiguration{},
 
 		// this isnt needed since the launchtype is fargate
 		// CapacityProviderStrategy: config.NewSpotOnDemand().ExportCapacityStrategyScheduler(),
@@ -92,11 +93,9 @@ func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn str
 		return nil, errors.New("Unable to resolve network configuration!")
 	}
 
-	ecsNetworkConfig, err := network.ResolveSched(ctx)
-	if err != nil {
+	if err := network.Resolve(ctx, ecsParams.NetworkConfiguration); err != nil {
 		return nil, err
 	}
-	ecsParams.NetworkConfiguration = ecsNetworkConfig
 
 	// The target
 	targetParams := &schedulerTypes.Target{

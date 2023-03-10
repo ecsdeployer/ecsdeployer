@@ -154,3 +154,51 @@ func TestEnvVarMap_UnmarshalYAML(t *testing.T) {
 		})
 	}
 }
+
+func TestExportEnvVarMap(t *testing.T) {
+	varExporter := func(k, v string) string {
+		return fmt.Sprintf("%s=%s", k, v)
+	}
+
+	t.Run("everything", func(t *testing.T) {
+		obj := config.EnvVarMap{
+			"VAR1": config.NewEnvVar(config.EnvVarTypePlain, "someval"),
+			"VAR2": config.NewEnvVar(config.EnvVarTypeTemplated, "{{.Fake}}"),
+			"VAR3": config.NewEnvVar(config.EnvVarTypeSSM, "/path/to/param"),
+			"VAR4": config.NewEnvVar(config.EnvVarTypeUnset, ""),
+
+			// a blank var
+			"VAR5": config.NewEnvVar(config.EnvVarTypePlain, ""),
+		}
+
+		normals, secrets, err := config.ExportEnvVarMap(obj, testutil.TplDummy, varExporter, varExporter)
+		require.NoError(t, err)
+
+		require.Len(t, normals, 2)
+		require.Len(t, secrets, 1)
+
+		require.Contains(t, normals, "VAR1=someval")
+		require.Contains(t, normals, "VAR2={{.Fake}}")
+		require.Contains(t, secrets, "VAR3=/path/to/param")
+
+	})
+
+	t.Run("with failures", func(t *testing.T) {
+		obj := config.EnvVarMap{
+			"VAR1": config.NewEnvVar(config.EnvVarTypePlain, "someval"),
+			"VAR2": config.NewEnvVar(config.EnvVarTypeTemplated, "{{.Fake}}"),
+			"VAR3": config.NewEnvVar(config.EnvVarTypeSSM, "/path/to/param"),
+			"VAR4": config.NewEnvVar(config.EnvVarTypeUnset, ""),
+
+			// a blank var
+			"VAR5": config.NewEnvVar(config.EnvVarTypePlain, ""),
+		}
+
+		normals, secrets, err := config.ExportEnvVarMap(obj, testutil.TplDummyFailure, varExporter, varExporter)
+		require.Error(t, err)
+		require.ErrorIs(t, err, testutil.ErrTplDummyFailureError)
+
+		require.Nil(t, normals)
+		require.Nil(t, secrets)
+	})
+}

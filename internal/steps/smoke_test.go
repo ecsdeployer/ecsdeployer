@@ -62,7 +62,6 @@ func TestSmokeTest_StepFuncs(t *testing.T) {
 		{CronjobStep(project.CronJobs[0], false), "Cronjob"},
 		{DeploymentStep(&project), "Deployment"},
 		{DeregisterTaskDefinitionsStep(&project), "DeregisterTaskDefinitions"},
-		{FirelensStep(&project), "Firelens"},
 		{LogGroupStep(project.ConsoleTask), "LogGroup"},
 		{NoopStep(), "Noop"},
 		{PreDeployTaskStep(project.PreDeployTasks[0]), "PreDeployTask"},

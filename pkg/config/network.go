@@ -67,73 +67,50 @@ func (nc *NetworkConfiguration) resolve(ctx *Context) error {
 	return nil
 }
 
-func (nc *NetworkConfiguration) ResolveECS(ctx *Context) (*ecsTypes.NetworkConfiguration, error) {
+// Good thing AWS has a bunch of different incompatible, yet identical types. Neat
+func (nc *NetworkConfiguration) Resolve(ctx *Context, netConfRef any) error {
 	err := nc.resolve(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	vpcConfig := ecsTypes.AwsVpcConfiguration{
-		Subnets:        nc.resolvedConfig.subnets,
-		AssignPublicIp: ecsTypes.AssignPublicIpDisabled,
-		SecurityGroups: nc.resolvedConfig.securityGroups,
-	}
-	if nc.resolvedConfig.publicIp {
-		vpcConfig.AssignPublicIp = ecsTypes.AssignPublicIpEnabled
-	}
-
-	result := &ecsTypes.NetworkConfiguration{
-		AwsvpcConfiguration: &vpcConfig,
-	}
-
-	return result, nil
-}
-
-func (nc *NetworkConfiguration) ResolveCWE(ctx *Context) (*eventTypes.NetworkConfiguration, error) {
-	err := nc.resolve(ctx)
-	if err != nil {
-		return nil, err
-	}
-	vpcConfig := eventTypes.AwsVpcConfiguration{
-		Subnets:        nc.resolvedConfig.subnets,
-		AssignPublicIp: eventTypes.AssignPublicIpDisabled,
-		SecurityGroups: nc.resolvedConfig.securityGroups,
-	}
-	if nc.resolvedConfig.publicIp {
-		vpcConfig.AssignPublicIp = eventTypes.AssignPublicIpEnabled
-	}
-
-	result := &eventTypes.NetworkConfiguration{
-		AwsvpcConfiguration: &vpcConfig,
+	switch ref := netConfRef.(type) {
+	case *ecsTypes.NetworkConfiguration:
+		*ref = ecsTypes.NetworkConfiguration{
+			AwsvpcConfiguration: &ecsTypes.AwsVpcConfiguration{
+				Subnets:        nc.resolvedConfig.subnets,
+				AssignPublicIp: util.Ternary(nc.resolvedConfig.publicIp, ecsTypes.AssignPublicIpEnabled, ecsTypes.AssignPublicIpDisabled),
+				SecurityGroups: nc.resolvedConfig.securityGroups,
+			},
+		}
+	case *eventTypes.NetworkConfiguration:
+		*ref = eventTypes.NetworkConfiguration{
+			AwsvpcConfiguration: &eventTypes.AwsVpcConfiguration{
+				Subnets:        nc.resolvedConfig.subnets,
+				AssignPublicIp: util.Ternary(nc.resolvedConfig.publicIp, eventTypes.AssignPublicIpEnabled, eventTypes.AssignPublicIpDisabled),
+				SecurityGroups: nc.resolvedConfig.securityGroups,
+			},
+		}
+	case *schedulerTypes.NetworkConfiguration:
+		*ref = schedulerTypes.NetworkConfiguration{
+			AwsvpcConfiguration: &schedulerTypes.AwsVpcConfiguration{
+				Subnets:        nc.resolvedConfig.subnets,
+				AssignPublicIp: util.Ternary(nc.resolvedConfig.publicIp, schedulerTypes.AssignPublicIpEnabled, schedulerTypes.AssignPublicIpDisabled),
+				SecurityGroups: nc.resolvedConfig.securityGroups,
+			},
+		}
+	case nil:
+		// do nothing, they just want to validate that the config is valid
+	default:
+		return errors.New("unknown network configuration type??")
 	}
 
-	return result, nil
-}
-
-func (nc *NetworkConfiguration) ResolveSched(ctx *Context) (*schedulerTypes.NetworkConfiguration, error) {
-	err := nc.resolve(ctx)
-	if err != nil {
-		return nil, err
-	}
-	vpcConfig := schedulerTypes.AwsVpcConfiguration{
-		Subnets:        nc.resolvedConfig.subnets,
-		AssignPublicIp: schedulerTypes.AssignPublicIpDisabled,
-		SecurityGroups: nc.resolvedConfig.securityGroups,
-	}
-	if nc.resolvedConfig.publicIp {
-		vpcConfig.AssignPublicIp = schedulerTypes.AssignPublicIpEnabled
-	}
-
-	result := &schedulerTypes.NetworkConfiguration{
-		AwsvpcConfiguration: &vpcConfig,
-	}
-
-	return result, nil
+	return nil
 }
 
 func (a *NetworkConfiguration) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t NetworkConfiguration
-	var obj = t{}
+	type tNetworkConfiguration NetworkConfiguration
+	var obj = tNetworkConfiguration{}
 	if err := unmarshal(&obj); err != nil {
 		return err
 	}
@@ -141,11 +118,7 @@ func (a *NetworkConfiguration) UnmarshalYAML(unmarshal func(interface{}) error) 
 
 	a.ApplyDefaults()
 
-	if err := a.Validate(); err != nil {
-		return err
-	}
-
-	return nil
+	return a.Validate()
 }
 
 func (nc *NetworkConfiguration) ApplyDefaults() {

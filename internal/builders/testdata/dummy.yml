@@ -1,10 +1,10 @@
 project: dummy
 image: fake:latest
-cluster: fake
+cluster: fakecluster
 
-role: fake
-execution_role: fale
-cron_launcher_role: fale
+role: faketask
+execution_role: fakeexec
+cron_launcher_role: fakecron
 
 network:
   subnets:
@@ -12,6 +12,15 @@ network:
   security_groups:
     - sg-11111111111
   public_ip: false
+
+task_defaults:
+  volumes:
+    - testbind
+    - name: someefsvol
+      efs:
+        file_system_id: fs-121334
+        access_point_id: fsap-1234
+
 
 predeploy:
   - name: pd1
@@ -25,6 +34,7 @@ console: true
 services:
   - name: svc1
     desired: 1
+    command: bundle exec puma -C config/puma.rb
     load_balancer:
       target_group: arn:aws:elasticloadbalancing:us-east-1:12345678910:targetgroup/fake/xxxxxxxx
       port: 1234

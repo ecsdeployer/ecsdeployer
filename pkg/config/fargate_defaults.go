@@ -9,14 +9,15 @@ import (
 
 type FargateDefaults struct {
 	CommonTaskAttrs `yaml:",inline" json:",inline"`
-	// NetworkedTaskAttrs `yaml:",inline" json:",inline"`
 
 	SpotOverride *SpotOverrides `yaml:"spot,omitempty" json:"spot,omitempty"`
 }
 
+var _ IsTaskStruct = (*FargateDefaults)(nil)
+
 func (obj *FargateDefaults) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type t FargateDefaults // prevent recursive overflow
-	var defo = t{}
+	type tFargateDefaults FargateDefaults // prevent recursive overflow
+	var defo = tFargateDefaults{}
 	if err := unmarshal(&defo); err != nil {
 		return err
 	} else {
@@ -51,7 +52,7 @@ func (obj *FargateDefaults) Validate() error {
 func (obj *FargateDefaults) ApplyDefaults() {
 	obj.Name = ""
 	if obj.PlatformVersion == nil {
-		obj.PlatformVersion = aws.String("LATEST")
+		obj.PlatformVersion = aws.String(defaultPlatformVersion)
 	}
 
 	if obj.Cpu == nil {
@@ -81,7 +82,7 @@ func (obj *FargateDefaults) ApplyDefaults() {
 	}
 
 	if obj.Architecture == nil {
-		obj.Architecture = (*Architecture)(aws.String(string(ArchitectureAMD64)))
+		obj.Architecture = util.Ptr(ArchitectureDefault)
 	}
 
 	if obj.SpotOverride == nil {
@@ -101,13 +102,21 @@ func (FargateDefaults) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	base.Properties.Delete("name")
 	base.Properties.Delete("logging")
-	// base.Properties.Delete("port")
 	base.Properties.Delete("network")
 
 	configschema.SchemaPropMerge(base, "arch", func(s *jsonschema.Schema) {
-		s.Default = ArchitectureAMD64
+		s.Default = ArchitectureDefault.String()
 	})
 
-	platVer, _ := base.Properties.Get("platform_version")
-	(platVer.(*jsonschema.Schema)).Default = "LATEST"
+	configschema.SchemaPropMerge(base, "platform_version", func(s *jsonschema.Schema) {
+		s.Default = defaultPlatformVersion
+	})
+
+	configschema.SchemaPropMerge(base, "cpu", func(s *jsonschema.Schema) {
+		s.Default = defaultTaskCpu
+	})
+
+	configschema.SchemaPropMerge(base, "memory", func(s *jsonschema.Schema) {
+		s.Default = defaultTaskMemory
+	})
 }

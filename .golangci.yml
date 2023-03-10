@@ -1,3 +1,8 @@
+run:
+  timeout: 1m
+  skip-dirs:
+    - scripts
+
 linters:
   disable-all: true
   enable:
@@ -25,9 +30,9 @@ linters:
     - importas
 
 issues:
-  exclude:
-    - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*\\.Exit|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv|io\\.WriteString|io\\.Copy). is not checked"
-    - 'declaration of "err"'
+  # exclude:
+  #   - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*\\.Exit|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv|io\\.WriteString|io\\.Copy). is not checked"
+  #   - 'declaration of "err"'
   exclude-rules:
     - path: _test\.go
       linters:
@@ -96,8 +101,3 @@ linters-settings:
 
       - pkg: github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs
         alias: logs
-
-
-run:
-  skip-dirs:
-    - scripts

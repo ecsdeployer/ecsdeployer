@@ -139,31 +139,25 @@ func (PortMapping) JSONSchema() *jsonschema.Schema {
 		Default: ecsTypes.TransportProtocolTcp,
 	})
 
-	objSchema := &jsonschema.Schema{
-		Type:       "object",
-		Properties: properties,
-		Required:   []string{"port"},
-	}
-
-	strSchema := &jsonschema.Schema{
-		Type:        "string",
-		Pattern:     "^[0-9]+(/(tcp|udp))?$",
-		Description: "Docker style port mapping",
-	}
-
-	numSchema := &jsonschema.Schema{
-		Type:        "integer",
-		Minimum:     minimumPortNumber,
-		Maximum:     maximumPortNumber,
-		Description: "Simple TCP Port",
-	}
-
 	return &jsonschema.Schema{
 		Description: "Port specifications",
 		OneOf: []*jsonschema.Schema{
-			objSchema,
-			strSchema,
-			numSchema,
+			{
+				Type:       "object",
+				Properties: properties,
+				Required:   []string{"port"},
+			},
+			{
+				Type:        "string",
+				Pattern:     "^[0-9]+(/(tcp|udp))?$",
+				Description: "Docker style port mapping",
+			},
+			{
+				Type:        "integer",
+				Minimum:     minimumPortNumber,
+				Maximum:     maximumPortNumber,
+				Description: "Simple TCP Port",
+			},
 		},
 	}
 }

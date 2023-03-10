@@ -98,13 +98,13 @@ func timedRunE(verb string, runef func(cmd *cobra.Command, args []string) error)
 	return func(cmd *cobra.Command, args []string) error {
 		start := time.Now()
 
-		log.Infof(fmt.Sprintf("starting %s...", verb))
+		log.Info(fmt.Sprintf("starting %s...", verb))
 
 		if err := runef(cmd, args); err != nil {
 			return wrapError(err, fmt.Sprintf("%s failed after %s", verb, time.Since(start).Truncate(time.Second)))
 		}
 
-		log.Infof(fmt.Sprintf("%s succeeded after %s", verb, time.Since(start).Truncate(time.Second)))
+		log.Info(fmt.Sprintf("%s succeeded after %s", verb, time.Since(start).Truncate(time.Second)))
 		return nil
 	}
 }

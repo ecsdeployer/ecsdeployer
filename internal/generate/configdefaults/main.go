@@ -22,9 +22,10 @@ var (
 	memoryType              = reflect.ValueOf(&config.MemorySpec{}).Elem().Type()
 	logRetentionType        = reflect.ValueOf(&config.LogRetention{}).Elem().Type()
 	firelensAwsLogGroupType = reflect.ValueOf(&config.FirelensAwsLogGroup{}).Elem().Type()
+	architectureType        = reflect.ValueOf(config.ArchitectureDefault).Type()
 )
 
-type DefaultApplier interface {
+type defaultApplier interface {
 	ApplyDefaults()
 }
 
@@ -40,7 +41,7 @@ func jsonifyTrimmed(obj jsonMarshalable) string {
 	return strings.Replace(string(bytearr), `"`, "", 2)
 }
 
-func exportStructValues(obj DefaultApplier) typeDefaults {
+func exportStructValues(obj defaultApplier) typeDefaults {
 
 	obj.ApplyDefaults()
 
@@ -85,48 +86,49 @@ func exportStructValues(obj DefaultApplier) typeDefaults {
 
 		fname = jsonName
 
-		switch val.Kind() {
-		case reflect.String:
-			strMap[fname] = val.String()
+		switch val.Type() {
 
-		case reflect.Bool:
-			strMap[fname] = fmt.Sprintf("%t", val.Bool())
+		// Types with a .String() method:
+		case architectureType, durationType:
+			strMap[fname] = fmt.Sprintf("%s", f.MethodByName("String").Call([]reflect.Value{})[0])
 
-		case reflect.Int, reflect.Int32, reflect.Int64, reflect.Int8, reflect.Int16,
-			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			strMap[fname] = fmt.Sprintf("%d", val.Int())
+		case logRetentionType:
+			strMap[fname] = jsonifyTrimmed(val.Interface().(config.LogRetention))
 
-		case reflect.Float32, reflect.Float64:
-			strMap[fname] = strconv.FormatFloat(val.Float(), 'f', -1, 64)
+		case firelensAwsLogGroupType:
+			strMap[fname] = jsonifyTrimmed(val.Interface().(config.FirelensAwsLogGroup))
 
-		case reflect.Struct:
-			switch val.Type() {
-			case durationType:
-				strMap[fname] = fmt.Sprintf("%s", f.MethodByName("String").Call([]reflect.Value{})[0])
+		case memoryType:
+			// mt := val.Interface().(config.MemorySpec)
+			// bytearr := util.Must(mt.MarshalJSON())
+			// strMap[fname] = strings.Replace(string(bytearr), `"`, "", 2)
+			strMap[fname] = jsonifyTrimmed(val.Interface().(config.MemorySpec))
 
-			case logRetentionType:
-				// mt := val.Interface().(config.LogRetention)
-				// bytearr := util.Must(mt.MarshalJSON())
-				// strMap[fname] = strings.Replace(string(bytearr), `"`, "", 2)
-				strMap[fname] = jsonifyTrimmed(val.Interface().(config.LogRetention))
-
-			case firelensAwsLogGroupType:
-				// mt := val.Interface().(config.FirelensAwsLogGroup)
-				// bytearr := util.Must(mt.MarshalJSON())
-				// strMap[fname] = strings.Replace(string(bytearr), `"`, "", 2)
-				strMap[fname] = jsonifyTrimmed(val.Interface().(config.FirelensAwsLogGroup))
-
-			case memoryType:
-				// mt := val.Interface().(config.MemorySpec)
-				// bytearr := util.Must(mt.MarshalJSON())
-				// strMap[fname] = strings.Replace(string(bytearr), `"`, "", 2)
-				strMap[fname] = jsonifyTrimmed(val.Interface().(config.MemorySpec))
-
-			default:
-				// fmt.Printf("Skipping %s struct key=%s type=%s\n", structType.String(), field.Name, val.Type())
-			}
 		default:
-			fmt.Printf("Unhandled field %s key=%s/%s type=%s thing=%s\n", structType.String(), field.Name, fname, f.Kind().String(), val.Kind().String())
+			switch val.Kind() {
+			case reflect.String:
+				strMap[fname] = val.String()
+
+			case reflect.Bool:
+				strMap[fname] = fmt.Sprintf("%t", val.Bool())
+
+			case reflect.Int, reflect.Int32, reflect.Int64, reflect.Int8, reflect.Int16:
+				strMap[fname] = fmt.Sprintf("%d", val.Int())
+
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				strMap[fname] = fmt.Sprintf("%d", val.Uint())
+
+			case reflect.Float32, reflect.Float64:
+				strMap[fname] = strconv.FormatFloat(val.Float(), 'f', -1, 64)
+
+			case reflect.Struct:
+				// switch val.Type() {
+				// default:
+				// 	// fmt.Printf("Skipping %s struct key=%s type=%s\n", structType.String(), field.Name, val.Type())
+				// }
+			default:
+				fmt.Printf("Unhandled field %s key=%s/%s type=%s thing=%s\n", structType.String(), field.Name, fname, f.Kind().String(), val.Kind().String())
+			}
 		}
 
 	}
@@ -139,10 +141,12 @@ func generateTemplateExamples(tplMap typeDefaults, includeStage bool) typeDefaul
 	newTpl := make(typeDefaults, len(tplMap))
 
 	tplFields := map[string]interface{}{
-		"ProjectName": "{PROJECT}",
-		"Project":     "{PROJECT}",
-		"Stage":       nil,
-		"Name":        "{NAME}",
+		"ProjectName":   "{PROJECT}",
+		"Project":       "{PROJECT}",
+		"Stage":         nil,
+		"Name":          "{TASK}",
+		"Container":     "{CONTAINER}",
+		"ContainerName": "{CONTAINER}",
 	}
 	if includeStage {
 		tplFields["Stage"] = "{STAGE}"
@@ -172,7 +176,8 @@ func main() {
 	defaultValues := map[string]typeDefaults{
 		"NameTemplates":     templates,
 		"SSMImport":         ssmImport,
-		"AppMesh":           exportStructValues(&config.AppMesh{}),
+		"ProxyConfig":       exportStructValues(&config.ProxyConfig{}),
+		"Sidecar":           exportStructValues(&config.Sidecar{}),
 		"Settings":          exportStructValues(&config.Settings{}),
 		"FargateDefaults":   exportStructValues(&config.FargateDefaults{}),
 		"WaitForStable":     exportStructValues(&config.WaitForStable{}),
@@ -183,6 +188,9 @@ func main() {
 		"Service":           exportStructValues(&config.Service{}),
 		"LoggingConfig":     exportStructValues(&config.LoggingConfig{}),
 		"HealthCheck":       exportStructValues(&config.HealthCheck{}),
+		"VolumeEFSConfig":   exportStructValues(&config.VolumeEFSConfig{}),
+		"Mount":             exportStructValues(&config.Mount{}),
+		"PortMapping":       exportStructValues(&config.PortMapping{}),
 		"DeploymentEnvVars": config.DefaultDeploymentEnvVars,
 		// "NetworkConfiguration": exportStructValues(&config.NetworkConfiguration{}),
 		"TplDefault":      generateTemplateExamples(templates, false),

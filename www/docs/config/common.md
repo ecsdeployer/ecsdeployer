@@ -150,6 +150,10 @@ Key | Description
 
     _Default_: `{{schema:default:FargateDefaults.memory}}`
 
+[`mounts`](#common.mounts){ #common.mounts }
+
+:   Specify mount points. See [Volumes/Mounts](volumes.md).
+
 [`network`](#common.network){ #common.network }
 
 :   Override network settings. See [Network](network.md)
@@ -159,6 +163,10 @@ Key | Description
 :   Override the [Fargate Platform Version](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
 
     _Default_: `{{schema:default:FargateDefaults.platform_version}}`
+
+[`proxy`](#common.proxy){ #common.proxy }
+
+:   See [Proxy Configuration](#proxy-configuration)
 
 [`start_timeout`](#common.start_timeout){ #common.start_timeout }
 
@@ -180,7 +188,23 @@ Key | Description
 
 [`tags`](#common.tags){ #common.tags }
 
-:   Additional tags to apply to this task. Same format as in the [Tags Documentation](tags.md)
+:   Additional tags to apply to this task. Same format as in the [Tags Documentation](tags.md).
+
+[`ulimits`](#common.ulimits){ #common.ulimits }
+
+:   Specify limit overrides per container. See [Ulimits](#ulimits) for more details.
+
+[`user`](#common.user){ #common.user }
+
+:   Override the user to run your container as. Specify as username or UID or UID:GID.
+
+[`volumes`](#common.volumes){ #common.volumes }
+
+:   Specify volumes that can be mounted. See [Volumes/Mounts](volumes.md).
+
+[`workdir`](#common.workdir){ #common.workdir }
+
+:   Override the working directory to run your container in.
 
 ----
 
@@ -277,6 +301,78 @@ For the official documentation on specifying health checks, see [AWS ECS HealthC
 [`timeout`](#healthcheck.timeout){ #healthcheck.timeout }
 
 :   The time period in seconds to wait for a health check to succeed before it is considered a failure.
+
+----
+
+## Ulimits
+
+Specify ulimits as an array of objects with the following properties:
+
+[`name`](#ulimits.name){ #ulimits.name } - **(required)**
+
+:   The name of the ulimit to adjust. Possible values are shown in the [AWS ECS Documentation](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Ulimit.html). Note that Fargate may not allow you to adjust all ulimits.
+
+[`soft`](#ulimits.soft){ #ulimits.soft }
+
+:   The value for the soft limit. Specified as an integer.
+
+[`hard`](#ulimits.hard){ #ulimits.hard }
+
+:   The value for the hard limit. Specified as an integer.
+
+
+----
+
+## Proxy Configuration
+
+!!! warning ""
+    You must specify the proxy container as a sidecar. If you do not specify it, then your tasks will fail.
+
+=== "Example"
+
+    ```yaml
+    task_defaults:
+      proxy:
+        container: envoy
+        properties:
+          AppPorts: 5000
+          IgnoredUID: 1000
+          ...
+    ```
+
+=== "Shorthand Disable"
+
+    ```yaml
+    proxy: false
+    ```
+
+[`type`](#proxy.type){ #proxy.type }
+
+:   The only acceptable value for this is `APPMESH`. This is the default, so it's recommended that you just leave this blank.
+
+    _Default_: `{{schema:default:ProxyConfig.type}}`
+
+[`container`](#proxy.container){ #proxy.container }
+
+:   The name of the container that is providing the proxy.
+
+    _Default_: `{{schema:default:ProxyConfig.container}}`
+
+[`properties`](#proxy.properties){ #proxy.properties } - **(required)**
+
+:   The properties for the proxy configuration.
+
+    You can use the same syntax used for [defining environment variables](envvars.md), except you cannot specify any SSM parameters.
+
+    For a list of properties, see the [AWS ECS ProxyConfiguration](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ProxyConfiguration.html) docs.
+
+    _Default_: _empty_ (You must provide the required properties)
+
+[`disabled`](#proxy.disabled){ #proxy.disabled }
+
+:   If this is true, then the proxy configuration will be disabled for this task.
+
+    _Default_: `{{schema:default:ProxyConfig.disabled}}`
 
 ----
 

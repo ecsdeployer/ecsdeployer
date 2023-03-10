@@ -88,6 +88,8 @@ nav:
     - Remote Shell: config/console.md
     - Networking: config/network.md
     - Logging: config/logging.md
+    - Volumes: config/volumes.md
+    - Sidecars: config/sidecars.md
     - Naming: config/naming.md
     - Tags: config/tags.md
     - Spot Containers: config/spot.md
@@ -101,6 +103,8 @@ nav:
     - IAM Permissions: aws/iam.md
 
   - Templating: templating.md
+  - Limitations: limitations.md
+  - Getting Help: help.md
 
   - Command Line Usage:
     - ecsdeployer: cmd/ecsdeployer.md
@@ -111,7 +115,6 @@ nav:
     - ecsdeployer info: cmd/ecsdeployer_info.md
     - ecsdeployer jsonschema: cmd/ecsdeployer_jsonschema.md
 
-  - Limitations: limitations.md
 
 
 markdown_extensions:

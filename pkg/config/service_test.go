@@ -30,7 +30,7 @@ func TestService_Unmarshal_Basic(t *testing.T) {
 				require.Error(t, err)
 			}
 
-			require.Truef(t, svc.IsTaskStruct(), "IsTaskStruct")
+			require.Implements(t, (*config.IsTaskStruct)(nil), svc)
 			require.Equalf(t, table.isLB, svc.IsLoadBalanced(), "IsLoadBalanced")
 			require.Equalf(t, !table.isLB, svc.IsWorker(), "IsWorker")
 		})

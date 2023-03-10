@@ -52,7 +52,7 @@ func (obj *NameArn) AwsArn(ctx *Context, resolve resolverFunc) (*arn.ARN, error)
 	}
 
 	if !arn.IsARN(arnval) {
-		err := fmt.Errorf("unable to determine ARN from '%s'", obj.name)
+		err = fmt.Errorf("unable to determine ARN from '%s'", obj.name)
 		obj.arnError = &err
 		return nil, err
 	}

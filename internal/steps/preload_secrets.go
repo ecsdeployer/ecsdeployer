@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -24,7 +25,7 @@ func stepPreloadSecretsCreate(ctx *config.Context, step *Step, meta *StepMetadat
 
 	if !ssmImport.IsEnabled() {
 		// step.Logger.Warn("SSM Prefix is blank. Will not attempt to load secrets.")
-		step.Logger.Debugf("SSM Import is disabled. No secrets will be loaded.")
+		step.Logger.Debug("SSM Import is disabled. No secrets will be loaded.")
 		return nil, nil
 	}
 
@@ -38,7 +39,7 @@ func stepPreloadSecretsCreate(ctx *config.Context, step *Step, meta *StepMetadat
 
 	logger := step.Logger.WithField("prefix", ssmPrefix)
 
-	logger.Debugf("loading secrets from SSM")
+	logger.Debug("loading secrets from SSM")
 
 	ssmClient := awsclients.SSMClient()
 
@@ -69,7 +70,7 @@ func stepPreloadSecretsCreate(ctx *config.Context, step *Step, meta *StepMetadat
 
 	ctx.Cache.SSMSecrets = secrets
 
-	logger.Infof("loaded %d secrets from SSM", len(secrets))
+	logger.Info(fmt.Sprintf("loaded %d secrets from SSM", len(secrets)))
 
 	return nil, nil
 }

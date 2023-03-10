@@ -2,6 +2,7 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
@@ -9,6 +10,13 @@ import (
 type NameValuePair struct {
 	Name  *string `yaml:"name" json:"name"`
 	Value *string `yaml:"value" json:"value"`
+}
+
+func NewNameValuePair(k, v string) NameValuePair {
+	return NameValuePair{
+		Name:  aws.String(k),
+		Value: aws.String(v),
+	}
 }
 
 func (a *NameValuePair) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -46,9 +54,7 @@ func (NameValuePair) JSONSchema() *jsonschema.Schema {
 		MinLength: 1,
 	})
 
-	properties.Set("value", &jsonschema.Schema{
-		Ref: configschema.StringLikeRef,
-	})
+	properties.Set("value", configschema.StringLike)
 
 	return &jsonschema.Schema{
 		Type:                 "object",
