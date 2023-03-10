@@ -76,7 +76,7 @@ Volumes are specified as an array of objects with the following fields:
 
 [`disable_encryption`](#efs.disable_encryption){ #efs.disable_encryption }
 
-:   Disable encryption for data in transit. Encryption is required if you use IAM or [`access_point_id`](#volumes.access_point_id) are set.
+:   Disable encryption for data in transit. Encryption is required if you use IAM or [`access_point_id`](#efs.access_point_id) are set.
 
     You should leave encryption enabled, always. There's no good reason to disable encryption.
 
