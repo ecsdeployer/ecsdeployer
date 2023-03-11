@@ -35,7 +35,7 @@ lint:
 
 .PHONY: test-release
 test-release:
-	goreleaser release --skip-publish --clean --snapshot
+	@goreleaser release --skip-publish --clean --snapshot
 
 .PHONY: check
 check:
