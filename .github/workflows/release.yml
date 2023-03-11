@@ -61,14 +61,15 @@ jobs:
           ref: ${{ github.event.inputs.version }}
         
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: .go-version
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v3
+        uses: goreleaser/goreleaser-action@v4
         with:
-          args: release --rm-dist
+          args: release --clean
+          version: v1.16.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_SCOOP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_SCOOP_GITHUB_TOKEN }}
