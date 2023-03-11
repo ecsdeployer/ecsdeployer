@@ -3,9 +3,9 @@
 <h4 align="center">Easily deploy your containerized applications to AWS Fargate.</h4>
 
 <p align="center">
-  <!--<a href="https://github.com/ecsdeployer/ecsdeployer/releases/latest">
+  <a href="https://github.com/ecsdeployer/ecsdeployer/releases/latest">
     <img alt="Latest Release" src="https://img.shields.io/github/v/release/ecsdeployer/ecsdeployer">
-  </a>-->
+  </a>
   <a href="https://github.com/ecsdeployer/ecsdeployer/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
   </a>
