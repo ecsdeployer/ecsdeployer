@@ -32,16 +32,14 @@ builds:
       - -X ecsdeployer.com/ecsdeployer/pkg/version.BuildSHA={{.Commit}}
 
 archives:
-  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
-    id: homebrew
+  - id: homebrew
+    rlcp: true
     format_overrides:
       - goos: linux
         format: tar.gz
       - goos: windows
         format: zip
-    replacements:
-      386: i386
-      amd64: x86_64
+    name_template: '{{ .ProjectName }}_{{- tolower .Os }}_{{- if eq .Arch "amd64" }}x86_64{{- else if eq .Arch "386" }}i386{{- else }}{{ .Arch }}{{ end }}{{- if .Arm }}v{{ .Arm }}{{ end }}'
     files:
       - README.md
       - LICENSE
