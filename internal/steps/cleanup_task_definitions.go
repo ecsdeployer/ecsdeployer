@@ -15,7 +15,7 @@ import (
 
 func CleanupTaskDefinitionsStep(resource *config.KeepInSync) *Step {
 
-	if !*resource.TaskDefinitions {
+	if resource.GetTaskDefinitions() != config.KeepInSyncTaskDefinitionsEnabled {
 		return NoopStep()
 	}
 

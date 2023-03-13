@@ -19,9 +19,9 @@ var (
 )
 
 type NetworkFilter struct {
-	ID     *string  `yaml:"id" json:"id,omitempty"`
-	Name   *string  `yaml:"name" json:"name,omitempty"`
-	Values []string `yaml:"values" json:"values,omitempty"`
+	ID     *string  `yaml:"id,omitempty" json:"id,omitempty"`
+	Name   *string  `yaml:"name,omitempty" json:"name,omitempty"`
+	Values []string `yaml:"values,omitempty" json:"values,omitempty"`
 }
 
 func splitNetworkFiltersByType(input []NetworkFilter) ([]string, []NetworkFilter) {
@@ -162,6 +162,20 @@ func (obj *NetworkFilter) MarshalJSON() ([]byte, error) {
 
 	return []byte(res), nil
 }
+
+// func (obj *NetworkFilter) MarshalYAML() (any, error) {
+// 	if obj.IdSpecified() {
+// 		return *obj.ID, nil
+// 	}
+
+// 	type t NetworkFilter
+// 	res, err := yaml.Marshal(t(*obj))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return string(res), nil
+// }
 
 func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 

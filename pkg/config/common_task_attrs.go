@@ -25,6 +25,40 @@ func (obj *CommonTaskAttrs) GetCommonTaskAttrs() CommonTaskAttrs {
 	return *obj
 }
 
+// Determines if a task can just use an overrides when doing Predeploy/CronJobs
+// this lets us use a shared task definition, instead of making a new one for each task
+func (obj *CommonTaskAttrs) CanOverride() bool {
+	if obj.Architecture != nil {
+		return false
+	}
+
+	if obj.Network != nil {
+		return false
+	}
+
+	if obj.PlatformVersion != nil {
+		return false
+	}
+
+	if obj.ProxyConfig != nil {
+		return false
+	}
+
+	if len(obj.Sidecars) > 0 {
+		return false
+	}
+
+	if len(obj.Tags) > 0 {
+		return false
+	}
+
+	if len(obj.Volumes) > 0 {
+		return false
+	}
+
+	return obj.CommonContainerAttrs.CanOverride()
+}
+
 type IsTaskStruct interface {
 	GetCommonTaskAttrs() CommonTaskAttrs
 	GetCommonContainerAttrs() CommonContainerAttrs

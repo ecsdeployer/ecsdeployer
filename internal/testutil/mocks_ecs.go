@@ -165,6 +165,7 @@ func Mock_ECS_RegisterTaskDefinition_Generic() *awsmocker.MockedEndpoint {
 				return jsonify(map[string]interface{}{
 					"taskDefinition": map[string]interface{}{
 						"taskDefinitionArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:999", rr.Region, awsmocker.DefaultAccountId, taskName.(string)),
+						"family":            taskName,
 					},
 				})
 			},

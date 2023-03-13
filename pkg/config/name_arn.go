@@ -188,8 +188,16 @@ func (obj *NameArn) MarshalJSON() ([]byte, error) {
 	// }
 	// return []byte(result), nil
 }
-func (obj *NameArn) MarshalYAML() error {
-	return nil
+func (obj *NameArn) MarshalYAML() (interface{}, error) {
+	if obj.arnStr != "" {
+		return obj.arnStr, nil
+	}
+
+	if obj.name != "" {
+		return obj.name, nil
+	}
+
+	return nil, nil
 }
 
 func (NameArn) JSONSchema() *jsonschema.Schema {

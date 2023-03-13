@@ -17,6 +17,9 @@ environment:
   TPL_MULTI_TEST: 
     template: "{{.Project}}-{{.Name}}"
 
+settings:
+  ssm_import: /ecsdeployer/{{.Project}}/
+
 task_defaults:
   user: 123
   workdir: /var/blah/whatever

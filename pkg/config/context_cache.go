@@ -9,6 +9,8 @@ type ContextCache struct {
 
 	LogGroups []logTypes.LogGroup
 
+	RegisteredTaskDefArns []string
+
 	// TODO: secretsmanager secrets?
 	// TODO: task families?
 	// TODO: services?
@@ -16,4 +18,12 @@ type ContextCache struct {
 	// TODO: cron targets?
 
 	Meta map[string]interface{}
+}
+
+func newContextCache() *ContextCache {
+	return &ContextCache{
+		SSMSecrets:            make(map[string]EnvVar),
+		LogGroups:             make([]logTypes.LogGroup, 0),
+		RegisteredTaskDefArns: make([]string, 0),
+	}
 }

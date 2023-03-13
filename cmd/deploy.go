@@ -4,6 +4,12 @@ import (
 	"io"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/middleware/errhandler"
+	"ecsdeployer.com/ecsdeployer/internal/middleware/logging"
+	"ecsdeployer.com/ecsdeployer/internal/middleware/skip"
+	"ecsdeployer.com/ecsdeployer/internal/pipeline"
+	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/caarlos0/ctrlc"
 	"github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )
@@ -38,20 +44,26 @@ func newDeployCmd(metadata *cmdMetadata) *deployCmd {
 				log.Log = log.New(io.Discard)
 			}
 
-			opts := &configLoaderExtras{
-				configFile:  root.opts.config,
-				appVersion:  root.opts.version,
-				imageTag:    root.opts.imageTag,
-				imageUri:    root.opts.imageUri,
-				timeout:     root.opts.timeout,
-				cmdMetadata: root.opts.metadata,
-			}
-
-			err := stepRunner(opts, stepRunModeDeploy)
+			_, err := deployProject(root.opts)
 			if err != nil {
 				return err
 			}
 			return nil
+
+			// opts := &configLoaderExtras{
+			// 	configFile:  root.opts.config,
+			// 	appVersion:  root.opts.version,
+			// 	imageTag:    root.opts.imageTag,
+			// 	imageUri:    root.opts.imageUri,
+			// 	timeout:     root.opts.timeout,
+			// 	cmdMetadata: root.opts.metadata,
+			// }
+
+			// err := stepRunner(opts, stepRunModeDeploy)
+			// if err != nil {
+			// 	return err
+			// }
+			// return nil
 		}),
 	}
 
@@ -64,4 +76,31 @@ func newDeployCmd(metadata *cmdMetadata) *deployCmd {
 
 	root.cmd = cmd
 	return root
+}
+
+func deployProject(options deployOpts) (*config.Context, error) {
+	cfg, err := loadConfig(options.config)
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := config.NewWithTimeout(cfg, options.timeout)
+	defer cancel()
+	setupDeployContext(ctx, options)
+	return ctx, ctrlc.Default.Run(ctx, func() error {
+		for _, step := range pipeline.DeploymentPipeline {
+			if err := skip.Maybe(
+				step,
+				logging.Log(
+					step.String(),
+					errhandler.Handle(step.Run),
+				),
+			)(ctx); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func setupDeployContext(ctx *config.Context, options deployOpts) {
 }

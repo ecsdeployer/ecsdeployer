@@ -683,13 +683,35 @@
         "default": true
        },
        "task_definitions": {
-        "type": "boolean",
-        "description": "Deregisters old task definitions",
+        "oneOf": [
+         {
+          "type": "string",
+          "const": "ONLY_MANAGED",
+          "description": "Will only deregister previous definitions for tasks defined in project. Will not manage definitions for removed tasks."
+         },
+         {
+          "type": "boolean",
+          "const": true,
+          "description": "Enables keeping task definitions in sync. Previous definitions as well as removed tasks will be synced."
+         },
+         {
+          "type": "boolean",
+          "const": false,
+          "description": "Disables keeping all task definitions in sync. Previous definitions will not be deregistered."
+         }
+        ],
+        "description": "How to keep old task definitions in sync",
         "default": true
        }
       },
       "additionalProperties": false,
-      "type": "object"
+      "type": "object",
+      "required": [
+       "services",
+       "log_retention",
+       "cronjobs",
+       "task_definitions"
+      ]
      }
     ]
    },
@@ -881,6 +903,14 @@
       "minLength": 1,
       "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
       "deprecated": true
+     },
+     "shared_task_predeploy": {
+      "type": "string",
+      "default": "predeploy"
+     },
+     "shared_task_cron": {
+      "type": "string",
+      "default": "cron"
      }
     },
     "additionalProperties": false,
@@ -1432,6 +1462,9 @@
       "$ref": "#/$defs/WaitForStable"
      },
      "use_old_cron_eventbus": {
+      "type": "boolean"
+     },
+     "disable_shared_taskdefs": {
       "type": "boolean"
      },
      "ssm_import": {

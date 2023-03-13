@@ -21,6 +21,7 @@ type checkCmd struct {
 	config   string
 	quiet    bool
 	showJson bool
+	showYaml bool
 }
 
 func newCheckCmd(metadata *cmdMetadata) *checkCmd {
@@ -70,11 +71,18 @@ func newCheckCmd(metadata *cmdMetadata) *checkCmd {
 			log.Info("config is valid!")
 
 			if root.showJson {
-				sysJson, err := util.JsonifyPretty(cfg)
-				if err != nil {
+
+				if sysYaml, err := yaml.Marshal(cfg); err != nil {
 					return err
+				} else {
+					fmt.Fprintln(cmd.OutOrStdout(), string(sysYaml))
 				}
-				fmt.Println(sysJson)
+			} else if root.showJson {
+				if sysJson, err := util.JsonifyPretty(cfg); err != nil {
+					return err
+				} else {
+					fmt.Fprintln(cmd.OutOrStdout(), sysJson)
+				}
 			}
 
 			return nil
@@ -84,6 +92,7 @@ func newCheckCmd(metadata *cmdMetadata) *checkCmd {
 	cmd.Flags().StringVarP(&root.config, paramConfigFile, "c", "", "Configuration file to check")
 	cmd.Flags().BoolVarP(&root.quiet, "quiet", "q", false, "Quiet mode: no output")
 	cmd.Flags().BoolVar(&root.showJson, "show", false, "Show the JSONified project config. (How the deployer is interpreting it)")
+	cmd.Flags().BoolVar(&root.showYaml, "yaml", false, "Show the YAMLified project config. (How the deployer is interpreting it)")
 	_ = cmd.Flags().SetAnnotation(paramConfigFile, cobra.BashCompFilenameExt, []string{"yaml", "yml"})
 
 	root.cmd = cmd

@@ -22,6 +22,9 @@ type Settings struct {
 	// Use the older eventbridge target/rule style to do cronjobs
 	CronUsesEventing bool `yaml:"use_old_cron_eventbus,omitempty" json:"use_old_cron_eventbus,omitempty"`
 
+	// Block sharing task defs for cron/predeploy tasks
+	DisableSharedTaskDef bool `yaml:"disable_shared_taskdefs,omitempty" json:"disable_shared_taskdefs,omitempty"`
+
 	SSMImport *SSMImport `yaml:"ssm_import,omitempty" json:"ssm_import,omitempty"`
 }
 

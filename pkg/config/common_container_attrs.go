@@ -28,6 +28,29 @@ func (obj *CommonContainerAttrs) GetCommonContainerAttrs() CommonContainerAttrs 
 	return *obj
 }
 
+func (obj *CommonContainerAttrs) CanOverride() bool {
+	if obj.User != nil || obj.Workdir != nil || obj.EntryPoint != nil {
+		return false
+	}
+
+	if obj.HealthCheck != nil || obj.LoggingConfig != nil {
+		return false
+	}
+
+	if obj.StartTimeout != nil || obj.StopTimeout != nil {
+		return false
+	}
+
+	if obj.Credentials != nil || obj.Image != nil {
+		return false
+	}
+
+	if len(obj.DockerLabels) > 0 || len(obj.DependsOn) > 0 || len(obj.MountPoints) > 0 || len(obj.Ulimits) > 0 || len(obj.VolumesFrom) > 0 {
+		return false
+	}
+	return true
+}
+
 func (cta *CommonContainerAttrs) Validate() error {
 	return nil
 }

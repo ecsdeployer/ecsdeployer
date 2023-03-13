@@ -15,12 +15,15 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/scheduler v1.1.5
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.35.6
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.6
+	github.com/caarlos0/ctrlc v1.2.0
 	github.com/caarlos0/log v0.1.6
+	github.com/charmbracelet/lipgloss v0.6.1-0.20220911181249-6304a734e792
 	github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0
 	github.com/invopop/jsonschema v0.7.0
 	github.com/jmespath/go-jmespath v0.4.0
 	github.com/muesli/mango-cobra v1.2.0
 	github.com/muesli/roff v0.1.0
+	github.com/muesli/termenv v0.12.1-0.20220901123159-d729275e0977
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.2
 	github.com/webdestroya/awsmocker v0.2.6
@@ -43,7 +46,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.5 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
 	github.com/aymanbagabas/go-osc52 v1.0.3 // indirect
-	github.com/charmbracelet/lipgloss v0.6.1-0.20220911181249-6304a734e792 // indirect
 	github.com/clbanning/mxj v1.8.4 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -56,7 +58,6 @@ require (
 	github.com/muesli/mango v0.1.0 // indirect
 	github.com/muesli/mango-pflag v0.1.0 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
-	github.com/muesli/termenv v0.12.1-0.20220901123159-d729275e0977 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.2 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect

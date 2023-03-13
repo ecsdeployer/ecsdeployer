@@ -9,12 +9,30 @@ func PreDeploymentStep(resource *config.Project) *Step {
 	}
 
 	deps := make([]*Step, 0, len(resource.PreDeployTasks))
+	wantsSharedTaskDef := false
 	for i := range resource.PreDeployTasks {
-		deps = append(deps, PreDeployTaskStep(resource.PreDeployTasks[i]))
+		pdTask := resource.PreDeployTasks[i]
+		deps = append(deps, PreDeployTaskStep(pdTask))
+		if !pdTask.Disabled && pdTask.CanOverride() {
+			wantsSharedTaskDef = true
+		}
+	}
+
+	if wantsSharedTaskDef {
+		deps = append([]*Step{pdSharedTaskDefStep(resource)}, deps...)
 	}
 
 	return NewStep(&Step{
 		Label:        "PreDeployment",
 		Dependencies: deps,
+	})
+}
+
+func pdSharedTaskDefStep(project *config.Project) *Step {
+	return TaskDefinitionStep(&config.CommonTaskAttrs{
+		CommonContainerAttrs: config.CommonContainerAttrs{
+			Name:    *project.Templates.SharedTaskPD,
+			Command: &config.ShellCommand{"/bin/false"},
+		},
 	})
 }

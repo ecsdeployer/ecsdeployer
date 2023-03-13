@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"sync"
-	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/util"
@@ -13,7 +12,6 @@ import (
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
 	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
-	"github.com/caarlos0/log"
 )
 
 var networkResolverMutex = sync.Mutex{}
@@ -147,8 +145,8 @@ func networkConfigurationResolver(ctx *Context, network *NetworkConfiguration) (
 
 	// NOTE: Don't parallelize this. The security group finder sometimes depends on the subnet's response (to add the vpc filter)
 
-	log.Debug("resolving network configuration")
-	startTime := time.Now()
+	// log.Debug("resolving network configuration")
+	// startTime := time.Now()
 
 	defaultNetwork := ctx.Project.TaskDefaults.Network
 
@@ -201,7 +199,7 @@ func networkConfigurationResolver(ctx *Context, network *NetworkConfiguration) (
 	}
 	result.securityGroups = securityGroupIds
 
-	log.WithField("duration", time.Since(startTime).Truncate(time.Second)).Debug("resolved network configuration")
+	// log.WithField("duration", time.Since(startTime).Truncate(time.Second)).Debug("resolved network configuration")
 
 	return result, nil
 }

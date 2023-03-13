@@ -15,24 +15,23 @@ import (
 func TestKeepInSync_NewKeepInSyncFromBool_Fields(t *testing.T) {
 	// ensure that all fields are in the constructor
 
-	tables := []struct {
-		kis      config.KeepInSync
-		expected bool
-	}{
-		{config.NewKeepInSyncFromBool(true), true},
-		{config.NewKeepInSyncFromBool(false), false},
-	}
+	t.Run("true", func(t *testing.T) {
+		kis := config.NewKeepInSyncFromBool(true)
+		require.True(t, kis.GetServices())
+		require.True(t, kis.GetLogRetention())
+		require.True(t, kis.GetCronjobs())
+		require.Equal(t, config.KeepInSyncTaskDefinitionsEnabled, kis.GetTaskDefinitions())
+		require.False(t, kis.AllDisabled())
+	})
 
-	for _, table := range tables {
-		v := reflect.ValueOf(table.kis)
-
-		for _, field := range reflect.VisibleFields(v.Type()) {
-			kisVal := reflect.Indirect(v.FieldByIndex(field.Index)).Bool()
-
-			require.Equalf(t, table.expected, kisVal, "expected NewKeepInSyncFromBool to correctly set field %s to %v but it was %v", field.Name, table.expected, kisVal)
-		}
-	}
-
+	t.Run("false", func(t *testing.T) {
+		kis := config.NewKeepInSyncFromBool(false)
+		require.False(t, kis.GetServices())
+		require.False(t, kis.GetLogRetention())
+		require.False(t, kis.GetCronjobs())
+		require.Equal(t, config.KeepInSyncTaskDefinitionsDisabled, kis.GetTaskDefinitions())
+		require.True(t, kis.AllDisabled())
+	})
 }
 
 func TestKeepInSync_ApplyDefaults_Fields(t *testing.T) {
@@ -44,8 +43,13 @@ func TestKeepInSync_ApplyDefaults_Fields(t *testing.T) {
 	v := reflect.ValueOf(&kis).Elem()
 
 	for _, field := range reflect.VisibleFields(reflect.TypeOf(kis)) {
-		kisVal := reflect.Indirect(v.FieldByIndex(field.Index)).Bool()
-		require.Truef(t, kisVal, "expected ApplyDefaults to correctly set field %s but it did not", field.Name)
+		fieldVal := v.FieldByIndex(field.Index)
+		if fieldVal.Type().Kind() == reflect.Pointer {
+			kisVal := reflect.Indirect(fieldVal).Bool()
+			require.Truef(t, kisVal, "expected ApplyDefaults to correctly set field %s but it did not", field.Name)
+		} else {
+			require.Falsef(t, fieldVal.IsZero(), "field %s should not have been zero", field.Name)
+		}
 
 	}
 
@@ -78,11 +82,15 @@ func TestKeepInSync_Unmarshal(t *testing.T) {
 		expected *config.KeepInSync
 	}{
 
-		{"true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, &bTrue}},
-		{"false", &config.KeepInSync{&bFalse, &bFalse, &bFalse, &bFalse}},
-		{"services: true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, &bTrue}},
-		{"services: true\ncronjobs: false", &config.KeepInSync{&bTrue, &bTrue, &bFalse, &bTrue}},
-		{"services: true\ncronjobs: null", &config.KeepInSync{&bTrue, &bTrue, &bTrue, &bTrue}},
+		{"true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsEnabled}},
+		{"false", &config.KeepInSync{&bFalse, &bFalse, &bFalse, config.KeepInSyncTaskDefinitionsDisabled}},
+		{"services: true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsEnabled}},
+		{"services: true\ncronjobs: false", &config.KeepInSync{&bTrue, &bTrue, &bFalse, config.KeepInSyncTaskDefinitionsEnabled}},
+		{"services: true\ncronjobs: null", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsEnabled}},
+
+		{"task_definitions: false", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsDisabled}},
+		{"task_definitions: true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsEnabled}},
+		{"task_definitions: only_managed", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsOnlyManaged}},
 	}
 
 	for x, table := range tables {

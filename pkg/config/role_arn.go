@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
-	"github.com/caarlos0/log"
 )
 
 type RoleArn struct {
@@ -13,7 +12,7 @@ type RoleArn struct {
 
 func (obj *RoleArn) Arn(ctx *Context) (string, error) {
 	return obj.NameArn.superArn(ctx, func() (string, error) {
-		log.WithField("rolename", obj.name).Debug("resolving role arn")
+		// log.WithField("rolename", obj.name).Debug("resolving role arn")
 		clusterArn := arn.ARN{
 			Partition: "aws",
 			Service:   "iam",
