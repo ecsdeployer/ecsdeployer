@@ -2,6 +2,7 @@
 package cleanupservices
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/step"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
 
@@ -16,6 +17,6 @@ func (Step) Skip(ctx *config.Context) bool {
 }
 
 func (Step) Clean(ctx *config.Context) error {
-
-	return nil
+	return step.Skip("NOT FINISHED")
+	// return nil
 }

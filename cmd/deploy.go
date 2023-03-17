@@ -10,7 +10,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/pipeline"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/caarlos0/ctrlc"
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )
 

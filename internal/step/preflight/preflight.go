@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 )
 
 type Step struct{}

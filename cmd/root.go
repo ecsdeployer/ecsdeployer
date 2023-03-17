@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 	cobracompletefig "github.com/withfig/autocomplete-tools/integrations/cobra"
 )

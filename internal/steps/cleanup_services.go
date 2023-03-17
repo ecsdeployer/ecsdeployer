@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	tagging "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi"
 	taggingTypes "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types"
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 	"golang.org/x/exp/slices"
 )
 

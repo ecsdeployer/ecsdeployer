@@ -7,7 +7,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/steps"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )
 

@@ -6,14 +6,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 )
 
-type taskDefinitionRegistration struct {
+type TaskDefRegResult struct {
 	Arn    string
 	Family string
 	Input  *ecs.RegisterTaskDefinitionInput
 }
 
 // Builds a task definition and then registers it to AWS
-func Register(ctx *config.Context, entity config.IsTaskStruct) (*taskDefinitionRegistration, error) {
+func Register(ctx *config.Context, entity config.IsTaskStruct) (*TaskDefRegResult, error) {
 
 	taskInput, err := Build(ctx, entity)
 	if err != nil {
@@ -31,7 +31,7 @@ func Register(ctx *config.Context, entity config.IsTaskStruct) (*taskDefinitionR
 
 	ctx.Cache.RegisteredTaskDefArns = append(ctx.Cache.RegisteredTaskDefArns, taskDefArn)
 
-	return &taskDefinitionRegistration{
+	return &TaskDefRegResult{
 		Arn:    taskDefArn,
 		Family: *result.TaskDefinition.Family,
 		Input:  taskInput,

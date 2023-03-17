@@ -2,8 +2,9 @@
 package deregistertaskdefinitions
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 )
 
 type Step struct{}
@@ -20,7 +21,8 @@ func (Step) Skip(ctx *config.Context) bool {
 func (Step) Clean(ctx *config.Context) error {
 
 	for _, defArn := range ctx.Cache.RegisteredTaskDefArns {
-		log.Debug(defArn)
+		family := helpers.GetTaskDefFamilyFromArn(defArn)
+		log.WithField("family", family).Debug(defArn)
 	}
 
 	return nil

@@ -7,7 +7,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 	"github.com/invopop/jsonschema"
 	"golang.org/x/exp/maps"
 )

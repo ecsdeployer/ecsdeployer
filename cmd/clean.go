@@ -3,7 +3,7 @@ package cmd
 import (
 	"io"
 
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )
 

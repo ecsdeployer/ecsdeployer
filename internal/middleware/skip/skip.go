@@ -6,7 +6,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/middleware"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 )
 
 // Skipper defines a method to skip an entire Piper.

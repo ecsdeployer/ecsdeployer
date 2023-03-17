@@ -12,7 +12,7 @@ import (
 	"text/template"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/caarlos0/log"
+	log "github.com/caarlos0/log"
 	"github.com/jmespath/go-jmespath"
 	"github.com/webdestroya/awsmocker"
 	"golang.org/x/exp/maps"

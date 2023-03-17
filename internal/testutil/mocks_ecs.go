@@ -278,12 +278,15 @@ func Mock_ECS_CreateService_Generic() *awsmocker.MockedEndpoint {
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 				serviceName, _ := jmespath.Search("serviceName", rr.JsonPayload)
-				cluster, _ := jmespath.Search("cluster", rr.JsonPayload)
+				clusterArn, _ := jmespath.Search("cluster", rr.JsonPayload)
+
+				clusterName := path.Base(clusterArn.(string))
 
 				return jsonify(map[string]interface{}{
 					"service": map[string]interface{}{
 						"serviceName": serviceName.(string),
-						"serviceArn":  fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s/%s", rr.Region, awsmocker.DefaultAccountId, cluster.(string), serviceName.(string)),
+						"clusterArn":  clusterArn.(string),
+						"serviceArn":  fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s/%s", rr.Region, awsmocker.DefaultAccountId, clusterName, serviceName.(string)),
 					},
 				})
 
@@ -335,12 +338,15 @@ func Mock_ECS_UpdateService_Generic() *awsmocker.MockedEndpoint {
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 				serviceName, _ := jmespath.Search("service", rr.JsonPayload)
-				cluster, _ := jmespath.Search("cluster", rr.JsonPayload)
+				clusterArn, _ := jmespath.Search("cluster", rr.JsonPayload)
+
+				clusterName := path.Base(clusterArn.(string))
 
 				return jsonify(map[string]interface{}{
 					"service": map[string]interface{}{
 						"serviceName": serviceName.(string),
-						"serviceArn":  fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s/%s", rr.Region, awsmocker.DefaultAccountId, cluster.(string), serviceName.(string)),
+						"clusterArn":  clusterArn.(string),
+						"serviceArn":  fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s/%s", rr.Region, awsmocker.DefaultAccountId, clusterName, serviceName.(string)),
 					},
 				})
 

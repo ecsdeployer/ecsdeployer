@@ -1,4 +1,4 @@
-package cleanupcronjobs
+package loggroups
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/step"
@@ -8,14 +8,15 @@ import (
 type Step struct{}
 
 func (Step) String() string {
-	return "cleaning orphaned cronjobs"
+	return "creating log groups"
 }
 
 func (Step) Skip(ctx *config.Context) bool {
-	return !ctx.Project.Settings.KeepInSync.GetCronjobs()
+	// return len(ctx.Project.PreDeployTasks) == 0
+	return false
 }
 
-func (Step) Clean(ctx *config.Context) error {
+func (Step) Run(ctx *config.Context) error {
+
 	return step.Skip("NOT FINISHED")
-	// return nil
 }
