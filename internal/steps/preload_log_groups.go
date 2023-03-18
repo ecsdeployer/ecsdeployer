@@ -39,19 +39,23 @@ func stepPreloadLogGroupsCreate(ctx *config.Context, step *Step, meta *StepMetad
 
 	paginator := logs.NewDescribeLogGroupsPaginator(logsClient, request)
 
-	logGroups := make([]logTypes.LogGroup, 0, ctx.Project.ApproxNumTasks())
+	cache := make(map[string]logTypes.LogGroup) //, 0, ctx.Project.ApproxNumTasks())
 
 	for paginator.HasMorePages() {
 		output, err := paginator.NextPage(ctx.Context)
 		if err != nil {
 			return nil, err
 		}
-		logGroups = append(logGroups, output.LogGroups...)
+		for _, logGroup := range output.LogGroups {
+			cache[*logGroup.LogGroupName] = logGroup
+		}
+		// logGroups = append(logGroups, output.LogGroups...)
 	}
 
-	ctx.Cache.LogGroups = logGroups
+	ctx.Cache.LogGroups = cache
+	ctx.Cache.LogGroupsCached = true
 
-	step.Logger.WithField("prefix", logGroupPrefix).WithField("numgroups", len(logGroups)).Debug("Log preload completed")
+	step.Logger.WithField("prefix", logGroupPrefix).WithField("numgroups", len(cache)).Debug("Log preload completed")
 
 	return nil, nil
 }

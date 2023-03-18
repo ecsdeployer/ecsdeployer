@@ -2,14 +2,15 @@
 package taskdefinition
 
 import (
-	"errors"
 	"fmt"
 
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/builders/taskdefinition"
 	"ecsdeployer.com/ecsdeployer/internal/middleware/errhandler"
 	"ecsdeployer.com/ecsdeployer/internal/middleware/skip"
 	"ecsdeployer.com/ecsdeployer/internal/substep/loggroup"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	tieredlog "github.com/caarlos0/log"
 )
 
 type Substep struct {
@@ -22,6 +23,10 @@ func New(entity config.IsTaskStruct) *Substep {
 	}
 }
 
+func Register(ctx *config.Context, entity config.IsTaskStruct) (string, error) {
+	return New(entity).Register(ctx)
+}
+
 // will return the task definition arn
 func (s *Substep) Register(ctx *config.Context) (string, error) {
 
@@ -29,8 +34,11 @@ func (s *Substep) Register(ctx *config.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	// _ = registerTaskDefInput
 
-	_ = registerTaskDefInput
+	// for _, container := range registerTaskDefInput.ContainerDefinitions {
+	// 	if container.LogConfiguration != nil && container.LogConfiguration.LogDriver
+	// }
 
 	// TODO: iterate thru the task definition and find any groups?
 	// try to match them against ones we know about?
@@ -40,5 +48,13 @@ func (s *Substep) Register(ctx *config.Context) (string, error) {
 		return "", fmt.Errorf("Failed to provision log group: %w", err)
 	}
 
-	return "X", errors.New("NOT FINISHED")
+	result, err := awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, registerTaskDefInput)
+	if err != nil {
+		return "", err
+	}
+
+	taskDefArn := *result.TaskDefinition.TaskDefinitionArn
+
+	tieredlog.WithField("arn", taskDefArn).Debug("registered task definition")
+	return taskDefArn, nil
 }

@@ -1,9 +1,8 @@
 package console
 
 import (
-	"ecsdeployer.com/ecsdeployer/internal/builders/taskdefinition"
+	"ecsdeployer.com/ecsdeployer/internal/substep/taskdefinition"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
 )
 
 type Step struct{}
@@ -18,9 +17,9 @@ func (Step) Skip(ctx *config.Context) bool {
 
 func (Step) Run(ctx *config.Context) error {
 
-	result, err := taskdefinition.Register(ctx, ctx.Project.ConsoleTask)
+	_, err := taskdefinition.Register(ctx, ctx.Project.ConsoleTask)
 
-	log.WithField("arn", result.Arn).Debug("registered task definition")
+	// log.WithField("arn", result.Arn).Debug("registered task definition")
 
 	return err
 }

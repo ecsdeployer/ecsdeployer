@@ -1,4 +1,4 @@
-package servicedeployment
+package service
 
 import (
 	"fmt"
@@ -6,39 +6,41 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
-	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	log "github.com/caarlos0/log"
 )
 
-func describeService(ctx *config.Context, service *config.Service) (*ecsTypes.Service, error) {
-	serviceName, err := getServiceName(ctx, service)
-	if err != nil {
-		return nil, err
-	}
-	log.WithField("name", serviceName).Trace("checking existing service")
+func (s *Step) getExisting(ctx *config.Context) (bool, error) {
+
+	log.WithField("name", s.name).Trace("checking existing service")
 
 	clusterArn, err := ctx.Project.Cluster.Arn(ctx)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
 	ecsClient := awsclients.ECSClient()
 	result, err := ecsClient.DescribeServices(ctx.Context, &ecs.DescribeServicesInput{
-		Services: []string{serviceName},
+		Services: []string{s.name},
 		Cluster:  &clusterArn,
 	})
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 
 	if len(result.Failures) > 0 {
 		failReason := *result.Failures[0].Reason
 		if failReason == "MISSING" {
-			return nil, nil
+			return false, nil
 		}
 
-		return nil, fmt.Errorf("Unable to describe service: %s", failReason)
+		return false, fmt.Errorf("Unable to describe service: %s", failReason)
 	}
 
-	return &result.Services[0], nil
+	if len(result.Services) == 0 {
+		return false, nil
+	}
+
+	svc := result.Services[0]
+
+	return *svc.ServiceName == s.name, nil
 }

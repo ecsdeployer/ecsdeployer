@@ -66,6 +66,7 @@ func (Step) Preload(ctx *config.Context) error {
 	}
 
 	ctx.Cache.SSMSecrets = secrets
+	ctx.Cache.SSMSecretsCached = true
 
 	return nil
 }

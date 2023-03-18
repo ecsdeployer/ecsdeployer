@@ -1,4 +1,4 @@
-package cron
+package cronschedule
 
 import (
 	"encoding/json"
@@ -36,7 +36,7 @@ func TestBuildSchedule(t *testing.T) {
 
 	t.Run("with_cron_envvars", func(t *testing.T) {
 		for i, table := range tables {
-			schedule, err := BuildSchedule(ctx, ctx.Project.CronJobs[i], "faketask:1")
+			schedule, err := BuildCreate(ctx, ctx.Project.CronJobs[i], "faketask:1")
 			require.NoErrorf(t, err, "Index#%d", i)
 			require.EqualValuesf(t, table.name, *schedule.Name, "Index#%d, Name", i)
 
@@ -53,7 +53,7 @@ func TestBuildSchedule(t *testing.T) {
 
 	t.Run("without_cron_envvars", func(t *testing.T) {
 		for i, table := range tables {
-			schedule, err := BuildSchedule(ctxNoCronEnv, ctxNoCronEnv.Project.CronJobs[i], "faketask:1")
+			schedule, err := BuildCreate(ctxNoCronEnv, ctxNoCronEnv.Project.CronJobs[i], "faketask:1")
 			require.NoErrorf(t, err, "Index#%d", i)
 			require.EqualValuesf(t, table.name, *schedule.Name, "Index#%d, Name", i)
 

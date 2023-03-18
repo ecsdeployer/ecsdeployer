@@ -54,11 +54,13 @@ task_defaults:
 predeploy:
   - name: pd1
     command: "something"
+    ignore_failure: true
   
   - name: pd2
     command: ["another", "thing"]
   
   - name: pd-sc-inherit
+    do_not_wait: true
     environment:
       SC_TEST_VAR: blah
     sidecars:
@@ -75,10 +77,15 @@ predeploy:
         image: fake
     
   - name: pd-storage
+    do_not_wait: true
     storage: 50
   
   - name: pd-override-defaults
+    do_not_wait: true
     user: ""
+
+  - name: pd-disabled
+    disabled: true
 
 console: true
 

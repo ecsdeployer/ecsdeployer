@@ -2,12 +2,14 @@
 package loggroup
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	log "github.com/caarlos0/log"
 )
 
 type Substep struct {
-	entity config.IsTaskStruct
+	groupName string
+	entity    config.IsTaskStruct
 }
 
 func New(entity config.IsTaskStruct) *Substep {
@@ -30,7 +32,15 @@ func (s *Substep) Run(ctx *config.Context) error {
 		return nil
 	}
 
-	logGroup, err := s.describeLogGroup(ctx)
+	// figure out the group name
+	tpl := tmpl.New(ctx).WithExtraFields(common.TemplateFields())
+	logGroupname, err := tpl.Apply(*ctx.Project.Templates.LogGroup)
+	if err != nil {
+		return err
+	}
+	s.groupName = logGroupname
+
+	logGroup, err := s.describeLogGroup(ctx, false)
 	if err != nil {
 		return err
 	}

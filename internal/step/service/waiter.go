@@ -1,7 +1,6 @@
-package servicedeployment
+package service
 
 import (
-	"context"
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
@@ -24,7 +23,7 @@ func waitForStable(ctx *config.Context, service *ecsTypes.Service) error {
 	logger := log.WithField("name", *service.ServiceName)
 
 	if waitForStable.IsDisabled() {
-		logger.Info("skipping stability checks")
+		logger.Warn("skipping stability checks")
 		return nil
 	}
 
@@ -35,17 +34,17 @@ func waitForStable(ctx *config.Context, service *ecsTypes.Service) error {
 		sswo.MinDelay, sswo.MaxDelay = helpers.GetAwsWaiterDelays(10*time.Second, 45*time.Second)
 		sswo.LogWaitAttempts = false
 
-		oldRetryable := sswo.Retryable
-		sswo.Retryable = func(ctx context.Context, dsi *ecs.DescribeServicesInput, dso *ecs.DescribeServicesOutput, err error) (bool, error) {
+		// oldRetryable := sswo.Retryable
+		// sswo.Retryable = func(ctx context.Context, dsi *ecs.DescribeServicesInput, dso *ecs.DescribeServicesOutput, err error) (bool, error) {
 
-			if err != nil {
-				return false, err
-			}
+		// 	if err != nil {
+		// 		return false, err
+		// 	}
 
-			logger.WithField("runtime", time.Since(startTime).Round(time.Second).String()).Trace("waiting for stable")
+		// 	logger.WithField("runtime", time.Since(startTime).Round(time.Second).String()).Trace("waiting for stable")
 
-			return oldRetryable(ctx, dsi, dso, err)
-		}
+		// 	return oldRetryable(ctx, dsi, dso, err)
+		// }
 	})
 
 	params := &ecs.DescribeServicesInput{
@@ -55,13 +54,27 @@ func waitForStable(ctx *config.Context, service *ecsTypes.Service) error {
 
 	maxWaitTime := ctx.Project.Settings.WaitForStable.Timeout.ToDuration()
 
+	ticker := time.NewTicker(5 * time.Second)
+	done := make(chan bool)
+
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				logger.WithField("runtime", time.Since(startTime).Round(time.Second).String()).Trace("waiting for stable")
+			}
+		}
+	}()
+
 	err := waiter.Wait(ctx.Context, params, maxWaitTime)
 	if err != nil {
 		logger.Error("service unstable")
 		return err
 	}
 
-	logger.Info("deployed")
+	logger.Info("stable")
 
 	return nil
 }

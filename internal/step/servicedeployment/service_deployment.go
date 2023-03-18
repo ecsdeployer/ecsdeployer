@@ -2,6 +2,7 @@ package servicedeployment
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/semerrgroup"
+	"ecsdeployer.com/ecsdeployer/internal/step/service"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
 
@@ -19,27 +20,12 @@ func (Step) Run(ctx *config.Context) error {
 
 	g := semerrgroup.New(5)
 
-	for _, service := range ctx.Project.Services {
-		service := service
+	for _, svc := range ctx.Project.Services {
+		svc := svc
 		g.Go(func() error {
-			return deployService(ctx, service)
+			return service.New(svc).Run(ctx)
 		})
 	}
 
 	return g.Wait()
-}
-
-func deployService(ctx *config.Context, service *config.Service) error {
-	// log.WithField("name", service.Name).Debug("deploying")
-
-	existingSvc, err := describeService(ctx, service)
-	if err != nil {
-		return err
-	}
-
-	if existingSvc == nil {
-		return createService(ctx, service)
-	}
-
-	return updateService(ctx, service)
 }

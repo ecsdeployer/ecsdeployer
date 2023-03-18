@@ -51,13 +51,14 @@ func TestPreloadLogGroupsStep(t *testing.T) {
 		require.NoError(t, err)
 
 		require.Equal(t, len(logRetentionMap), len(ctx.Cache.LogGroups))
-
-		for _, logGroup := range ctx.Cache.LogGroups {
+		require.True(t, ctx.Cache.LogGroupsCached)
+		for logGroupKey, logGroup := range ctx.Cache.LogGroups {
 			require.NotNil(t, logGroup)
 			require.IsType(t, logTypes.LogGroup{}, logGroup)
 
 			require.NotNil(t, logGroup.Arn)
 			require.NotNil(t, logGroup.LogGroupName)
+			require.Equal(t, *logGroup.LogGroupName, logGroupKey)
 
 			logName := *logGroup.LogGroupName
 

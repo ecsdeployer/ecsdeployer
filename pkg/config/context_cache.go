@@ -5,9 +5,11 @@ import (
 )
 
 type ContextCache struct {
-	SSMSecrets map[string]EnvVar
+	SSMSecretsCached bool
+	SSMSecrets       map[string]EnvVar
 
-	LogGroups []logTypes.LogGroup
+	LogGroupsCached bool
+	LogGroups       map[string]logTypes.LogGroup
 
 	RegisteredTaskDefArns []string
 
@@ -23,7 +25,7 @@ type ContextCache struct {
 func newContextCache() *ContextCache {
 	return &ContextCache{
 		SSMSecrets:            make(map[string]EnvVar),
-		LogGroups:             make([]logTypes.LogGroup, 0),
+		LogGroups:             make(map[string]logTypes.LogGroup, 0),
 		RegisteredTaskDefArns: make([]string, 0),
 	}
 }

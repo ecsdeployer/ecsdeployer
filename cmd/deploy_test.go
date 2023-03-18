@@ -9,6 +9,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	dsmock "ecsdeployer.com/ecsdeployer/internal/testutil/mocks/ecs/describeservicemock"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	log "github.com/caarlos0/log"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
@@ -52,8 +53,23 @@ func TestDeploySmoke(t *testing.T) {
 			testutil.Mock_EC2_DescribeSecurityGroups_Simple(),
 			testutil.Mock_EC2_DescribeSubnets_Simple(),
 			testutil.Mock_ECS_RegisterTaskDefinition_Generic(),
+			// testutil.Mock_ECS_RunTask_FailToLaunch(1),
+			testutil.Mock_ECS_RunTask(),
+
+			testutil.Mock_ECS_DescribeTasks_Pending("PENDING", 1),
+			testutil.Mock_ECS_DescribeTasks_Pending("RUNNING", 1),
+			testutil.Mock_ECS_DescribeTasks_Stopped(ecsTypes.TaskStopCodeEssentialContainerExited, 1, 1),
+
+			testutil.Mock_ECS_DescribeTasks_Pending("PENDING", 1),
+			testutil.Mock_ECS_DescribeTasks_Pending("RUNNING", 1),
+			testutil.Mock_ECS_DescribeTasks_Stopped(ecsTypes.TaskStopCodeEssentialContainerExited, 0, 0),
 			testutil.Mock_ELBv2_DescribeTargetGroups_Generic_Success(),
 			testutil.Mock_Logs_DescribeLogGroups(map[string]int32{}),
+			// testutil.Mock_Logs_CreateLogGroup("/ecsdeployer/app/dummy/console"),
+			testutil.Mock_Logs_CreateLogGroup_AllowAny(),
+			testutil.Mock_Logs_PutRetentionPolicy_AllowAny(),
+			testutil.Mock_Scheduler_GetScheduleGroup_Missing("dummy"),
+			testutil.Mock_Scheduler_CreateScheduleGroup("dummy"),
 			testutil.Mock_SSM_GetParametersByPath("/ecsdeployer/dummy/", []string{"SSM_VAR1", "SSM_VAR2"}),
 			testutil.Mock_Tagging_GetResources("ecs:task-definition", map[string]string{"ecsdeployer/project": "dummy"}, []string{
 				fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/dummy-something-something:122", awsmocker.DefaultRegion, awsmocker.DefaultAccountId),
@@ -86,6 +102,7 @@ func TestDeploySmoke(t *testing.T) {
 	})
 
 	lipgloss.SetColorProfile(termenv.TrueColor)
+	log.SetLevel(log.TraceLevel)
 	cmd := newRootCmd("fake", func(i int) {}).cmd
 	log.Strings[log.DebugLevel] = "%"
 

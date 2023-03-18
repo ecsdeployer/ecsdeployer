@@ -1,4 +1,4 @@
-package cron
+package cronschedule
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 )
 
-func BuildSchedule(ctx *config.Context, resource *config.CronJob, taskDefArn string) (*scheduler.CreateScheduleInput, error) {
+func BuildCreate(ctx *config.Context, resource *config.CronJob, taskDefArn string) (*scheduler.CreateScheduleInput, error) {
 
 	project := ctx.Project
 	templates := project.Templates
