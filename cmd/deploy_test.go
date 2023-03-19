@@ -68,10 +68,19 @@ func TestDeploySmoke(t *testing.T) {
 		testutil.Mock_Scheduler_GetScheduleGroup_Missing("dummy"),
 		testutil.Mock_Scheduler_CreateScheduleGroup("dummy"),
 		testutil.Mock_SSM_GetParametersByPath("/ecsdeployer/dummy/", []string{"SSM_VAR1", "SSM_VAR2"}),
+
 		testutil.Mock_Tagging_GetResources("ecs:task-definition", map[string]string{"ecsdeployer/project": "dummy"}, []string{
 			fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/dummy-something-something:122", awsmocker.DefaultRegion, awsmocker.DefaultAccountId),
 			fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/dummy-something-something:123", awsmocker.DefaultRegion, awsmocker.DefaultAccountId),
 		}),
+
+		testutil.Mock_Tagging_GetResources("ecs:service", map[string]string{"ecsdeployer/project": "dummy"}, []string{
+			fmt.Sprintf("arn:aws:ecs:%s:%s:service/dummy/dummy-old-service", awsmocker.DefaultRegion, awsmocker.DefaultAccountId),
+			fmt.Sprintf("arn:aws:ecs:%s:%s:service/dummy/dummy-other-service", awsmocker.DefaultRegion, awsmocker.DefaultAccountId),
+		}),
+		dsmock.Mock(dsmock.WithMaxCount(0), dsmock.WithName("dummy-old-service")),
+		dsmock.Mock(dsmock.WithMaxCount(0), dsmock.WithName("dummy-other-service")),
+
 		testutil.Mock_ECS_DeregisterTaskDefinition("dummy-something-something", 122),
 		testutil.Mock_ECS_DeregisterTaskDefinition("dummy-something-something", 123),
 		dsmock.Mock(dsmock.WithMaxCount(1), dsmock.WithName("dummy-svc-sidecar-ports")),
@@ -106,8 +115,8 @@ func TestDeploySmoke(t *testing.T) {
 	}
 
 	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd1"), taskmock.WithExitCode(1))...)
-	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd2"), taskmock.WithExitCode(1))...)
-	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd-sc-inherit"), taskmock.WithExitCode(1))...)
+	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd2"), taskmock.WithExitCode(0))...)
+	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd-sc-inherit"), taskmock.WithExitCode(0))...)
 	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd-storage"))...)
 	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd-override-defaults"))...)
 	// mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd-disabled"))...)

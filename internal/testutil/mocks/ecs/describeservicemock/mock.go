@@ -2,6 +2,7 @@ package describeservicemock
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
@@ -22,19 +23,20 @@ func Mock(opts ...optFunc) *awsmocker.MockedEndpoint {
 		optFunc(options)
 	}
 
-	jmesMatches := map[string]any{}
-	if options.Name != "" {
-		jmesMatches["services[0]"] = options.Name
-	}
-
 	req := &awsmocker.MockedRequest{
 		Service:       "ecs",
 		Action:        "DescribeServices",
 		MaxMatchCount: options.MaxCount,
 	}
 
-	if len(jmesMatches) > 0 {
-		req.Matcher = testutil.JmesRequestMatcher(jmesMatches)
+	if options.Name != "" {
+		req.Matcher = func(rr *awsmocker.ReceivedRequest) bool {
+			svcNameArnRaw := testutil.JmesSearchOrNil(rr.JsonPayload, "services[0]")
+			if svcNameArnRaw == nil {
+				return false
+			}
+			return options.Name == filepath.Base(svcNameArnRaw.(string))
+		}
 	}
 
 	svc := options.Service
