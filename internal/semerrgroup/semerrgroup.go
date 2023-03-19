@@ -26,7 +26,7 @@ func New(size int) Group {
 
 var _ Group = &skipAwareGroup{}
 
-// NewSkipAware returns a new Group of a given size and aware of pipe skips.
+// NewSkipAware returns a new Group of a given size and aware of step skips.
 func NewSkipAware(g Group) Group {
 	return &skipAwareGroup{g: g}
 }

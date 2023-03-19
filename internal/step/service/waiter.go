@@ -69,6 +69,8 @@ func waitForStable(ctx *config.Context, service *ecsTypes.Service) error {
 	}()
 
 	err := waiter.Wait(ctx.Context, params, maxWaitTime)
+	ticker.Stop()
+	done <- true
 	if err != nil {
 		logger.Error("service unstable")
 		return err

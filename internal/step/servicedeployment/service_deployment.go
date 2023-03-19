@@ -18,7 +18,7 @@ func (Step) Skip(ctx *config.Context) bool {
 
 func (Step) Run(ctx *config.Context) error {
 
-	g := semerrgroup.New(5)
+	g := semerrgroup.New(ctx.Concurrency(5))
 
 	for _, svc := range ctx.Project.Services {
 		svc := svc

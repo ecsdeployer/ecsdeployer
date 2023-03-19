@@ -23,7 +23,7 @@ func (Step) Run(ctx *config.Context) error {
 		return err
 	}
 
-	g := semerrgroup.New(5)
+	g := semerrgroup.NewSkipAware(semerrgroup.New(ctx.Concurrency(5)))
 
 	for _, job := range ctx.Project.CronJobs {
 		job := job

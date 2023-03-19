@@ -74,7 +74,7 @@ func createGroup(ctx *config.Context, scheduleGroupName string) error {
 		return err
 	}
 
-	log.WithField("name", scheduleGroupName).Debug("created schedule group")
+	log.WithField("name", scheduleGroupName).Info("created schedule group")
 
 	return nil
 }

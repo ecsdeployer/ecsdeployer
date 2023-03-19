@@ -42,7 +42,7 @@ func New(task *config.PreDeployTask) *Step {
 }
 
 func (s *Step) String() string {
-	return s.pdTask.Name
+	return fmt.Sprintf("task:%s", s.pdTask.Name)
 }
 
 func (s *Step) Run(ctx *config.Context) error {
@@ -56,8 +56,8 @@ func (s *Step) Run(ctx *config.Context) error {
 		return err
 	}
 
-	logger := log.WithField("name", s.pdTask.Name)
-	logger.Info("running")
+	// logger := log.WithField("name", s.pdTask.Name)
+	log.Info("running")
 
 	runTaskInput, err := runTaskBuilder.Build(ctx, s.pdTask)
 	if err != nil {
@@ -76,7 +76,7 @@ func (s *Step) Run(ctx *config.Context) error {
 
 	if len(runTaskOutput.Failures) > 0 {
 		for _, failure := range runTaskOutput.Failures {
-			logger.WithFields(log.Fields{
+			log.WithFields(log.Fields{
 				fieldReason: *failure.Reason,
 				fieldDetail: *failure.Detail,
 			}).Error("failed to launch")
@@ -85,15 +85,14 @@ func (s *Step) Run(ctx *config.Context) error {
 	}
 
 	taskArn := *runTaskOutput.Tasks[0].TaskArn
-	logger = logger.WithField(fieldTaskArn, taskArn)
-	logger.Info("launched")
+	log.WithField(fieldTaskArn, taskArn).Info("launched")
 
 	if s.pdTask.DoNotWait {
-		logger.Warn("skip waiting")
+		log.Warn("skip waiting")
 		return nil
 	}
 
-	logger.Debug("waiting")
+	log.Debug("waiting")
 
 	params := &ecs.DescribeTasksInput{
 		Tasks:   []string{taskArn},
@@ -103,7 +102,7 @@ func (s *Step) Run(ctx *config.Context) error {
 	// determine the max wait time either specifically on this task or use the default
 	maxWaitTime := util.Coalesce(s.pdTask.Timeout, ctx.Project.Settings.PreDeployTimeout).ToDuration()
 
-	logger = logger.WithField("timeout", maxWaitTime)
+	logger := log.WithField("timeout", maxWaitTime)
 
 	// runningWaiter := ecs.NewTasksRunningWaiter(ecsClient, func(trwo *ecs.TasksRunningWaiterOptions) {
 	// 	trwo.MinDelay, trwo.MaxDelay = helpers.GetAwsWaiterDelays(5*time.Second, 60*time.Second)
@@ -130,7 +129,7 @@ func (s *Step) Run(ctx *config.Context) error {
 			logger.WithFields(log.Fields{
 				fieldRuntime: time.Since(startTime).Round(time.Second).String(),
 				fieldStatus:  aws.ToString(dto.Tasks[0].LastStatus),
-			}).Info("Waiting for task...")
+			}).Trace("waiting...")
 
 			return oldRetryable(ctx, dti, dto, err)
 		}
@@ -140,24 +139,24 @@ func (s *Step) Run(ctx *config.Context) error {
 	// wait for task to complete
 	err = stoppedWaiter.Wait(ctx.Context, params, maxWaitTime)
 	if err != nil {
-		logger.Error("failed")
+		log.Error("failed")
 		return fmt.Errorf("Failure waiting for task to stop: %w", err)
 	}
 
 	// it's stopped, so get the latest status
 	results, err := ecsClient.DescribeTasks(ctx.Context, params)
 	if err != nil {
-		logger.Error("failed")
+		log.Error("failed")
 		return fmt.Errorf("Unable to describe task status: %w", err)
 	}
 
 	// check for failures
 	if len(results.Failures) > 0 {
 		for _, failure := range results.Failures {
-			logger.WithFields(log.Fields{
+			log.WithFields(log.Fields{
 				fieldReason: aws.ToString(failure.Reason),
 				fieldDetail: aws.ToString(failure.Detail),
-			}).Error("Task describe failed")
+			}).Error("describe failed")
 		}
 
 		if !s.pdTask.IgnoreFailure {
@@ -171,16 +170,16 @@ func (s *Step) Run(ctx *config.Context) error {
 	err = didTaskSucceed(&result)
 
 	if err == nil {
-		logger.Info("finished")
+		log.Info("finished")
 		return nil
 	}
 
 	if s.pdTask.IgnoreFailure {
-		logger.WithError(err).Warn("failure (ignored)")
+		log.WithError(err).Warn("failure (ignored)")
 		return nil
 	}
 
-	logger.Error("Task Failed")
+	log.WithError(err).Error("failed!")
 
 	return fmt.Errorf("Task failed: %w", err)
 }
@@ -188,6 +187,7 @@ func (s *Step) Run(ctx *config.Context) error {
 func didTaskSucceed(result *ecsTypes.Task) error {
 
 	if aws.ToString(result.LastStatus) != string(ecsTypes.DesiredStatusStopped) {
+		fmt.Println("TASK: ", util.Must(util.JsonifyPretty(*result)))
 		return errTaskStillRunning
 	}
 

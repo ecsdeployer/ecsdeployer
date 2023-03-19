@@ -139,3 +139,13 @@ cronjobs:
     schedule: "cron(0 9 * * ? *)"
     command: ["bundle", "exec", "rake", "cron:whatever"]
     description: "Whatever: this does stuff"
+
+  - name: cron2
+    disabled: true
+    schedule: "cron(0 9 * * ? *)"
+    command: ["bundle", "exec", "rake", "cron:whatever2"]
+  
+  - name: cron-daily
+    disabled: true
+    schedule: "rate(1 day)"
+    command: ["bundle", "exec", "rake", "cron:whatever2"]
