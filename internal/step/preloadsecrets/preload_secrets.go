@@ -10,6 +10,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
+	log "github.com/caarlos0/log"
 )
 
 type Step struct{}
@@ -67,6 +68,8 @@ func (Step) Preload(ctx *config.Context) error {
 
 	ctx.Cache.SSMSecrets = secrets
 	ctx.Cache.SSMSecretsCached = true
+
+	log.WithField("total", len(ctx.Cache.SSMSecrets)).WithField("prefix", ssmPrefix).Info("imported secrets")
 
 	return nil
 }

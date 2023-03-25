@@ -3,6 +3,8 @@ package testutil
 import (
 	"bufio"
 	"bytes"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"reflect"
@@ -163,4 +165,12 @@ func StripIndentation(value string) string {
 	}
 
 	return regexp.MustCompile("(?m)^"+indent).ReplaceAllString(value, "")
+}
+
+func RandomHex(n int) string {
+	bytes := make([]byte, (n+1)/2)
+	if _, err := rand.Read(bytes); err != nil {
+		panic(err)
+	}
+	return hex.EncodeToString(bytes)
 }

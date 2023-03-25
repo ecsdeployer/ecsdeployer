@@ -68,7 +68,17 @@ func TestDeploySmoke(t *testing.T) {
 		testutil.Mock_Logs_PutRetentionPolicy_AllowAny(),
 		testutil.Mock_Scheduler_GetScheduleGroup_Missing("dummy"),
 		testutil.Mock_Scheduler_CreateScheduleGroup("dummy"),
-		testutil.Mock_SSM_GetParametersByPath("/ecsdeployer/dummy/", []string{"SSM_VAR1", "SSM_VAR2"}),
+		testutil.Mock_SSM_GetParametersByPath_Advanced(func(m *testutil.Mock_ECS_GetParametersByPathOpts) {
+			m.MaxCount = 2
+			m.NextToken = true
+			m.Path = "/ecsdeployer/dummy/"
+			m.NumParams = 10
+		}),
+		testutil.Mock_SSM_GetParametersByPath_Advanced(func(m *testutil.Mock_ECS_GetParametersByPathOpts) {
+			m.MaxCount = 1
+			m.Path = "/ecsdeployer/dummy/"
+			m.NumParams = 8
+		}),
 
 		testutil.Mock_Tagging_GetResources("ecs:task-definition", map[string]string{"ecsdeployer/project": "dummy"}, []string{
 			fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/dummy-something-something:122", awsmocker.DefaultRegion, awsmocker.DefaultAccountId),
@@ -154,7 +164,7 @@ func TestDeploySmoke(t *testing.T) {
 	// log.SetLevel(log.DebugLevel)
 	// cmd.Root().SetArgs([]string{"--debug"})
 	// cmd.SetArgs([]string{"deploy", "-c", "../internal/builders/testdata/smoke.yml", "--debug"})
-	cmd.SetArgs([]string{"deploy", "-c", "../internal/builders/testdata/everything.yml", "--debug"})
+	cmd.SetArgs([]string{"deploy", "-c", "../internal/builders/testdata/everything.yml", "--trace"})
 
 	_, _, err := executeCmdAndReturnOutput(cmd)
 	require.NoError(t, err)

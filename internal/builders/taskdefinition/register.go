@@ -29,7 +29,7 @@ func Register(ctx *config.Context, entity config.IsTaskStruct) (*TaskDefRegResul
 
 	taskDefArn := *result.TaskDefinition.TaskDefinitionArn
 
-	ctx.Cache.RegisteredTaskDefArns = append(ctx.Cache.RegisteredTaskDefArns, taskDefArn)
+	ctx.Cache.AddTaskDefinition(taskDefArn)
 
 	return &TaskDefRegResult{
 		Arn:    taskDefArn,

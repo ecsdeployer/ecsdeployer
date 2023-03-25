@@ -76,7 +76,7 @@ func waitForStable(ctx *config.Context, service *ecsTypes.Service) error {
 		return err
 	}
 
-	logger.Info("stable")
+	logger.Info("service is stable")
 
 	return nil
 }

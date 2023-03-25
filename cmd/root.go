@@ -35,6 +35,7 @@ func (cmd *rootCmd) Execute(args []string) {
 type rootCmd struct {
 	cmd   *cobra.Command
 	debug bool
+	trace bool
 	exit  func(int)
 }
 
@@ -70,7 +71,10 @@ Check out our website for more information, examples and documentation: https://
 			HiddenDefaultCmd: true,
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			if root.debug {
+			if root.trace {
+				log.SetLevel(log.TraceLevel)
+				log.Debug("trace logs enabled")
+			} else if root.debug {
 				log.SetLevel(log.DebugLevel)
 				log.Debug("debug logs enabled")
 			}
@@ -78,6 +82,8 @@ Check out our website for more information, examples and documentation: https://
 	}
 
 	cmd.PersistentFlags().BoolVar(&root.debug, "debug", false, "Enable debug mode")
+	cmd.PersistentFlags().BoolVar(&root.trace, "trace", false, "Enable trace mode")
+	cmd.PersistentFlags().MarkHidden("trace")
 
 	cmd.AddCommand(
 		newDeployCmd(metadata).cmd,

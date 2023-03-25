@@ -26,12 +26,12 @@ func (Step) Skip(ctx *config.Context) bool {
 
 func (Step) Clean(ctx *config.Context) error {
 	g := semerrgroup.NewSkipAware(semerrgroup.New(ctx.Concurrency(5)))
-	for _, defArn := range ctx.Cache.RegisteredTaskDefArns {
+	for _, defArn := range ctx.Cache.TaskDefinitions() {
 		family := helpers.GetTaskDefFamilyFromArn(defArn)
 		g.Go(func() error {
 			if err := deregisterPreviousTaskFamily(ctx, family); err != nil {
 				if step.IsSkip(err) {
-					return err
+					return nil
 				}
 				log.WithField("reason", err.Error()).WithField("family", family).Warn("failed to deregister task definition")
 			}
@@ -66,37 +66,31 @@ func deregisterPreviousTaskFamily(ctx *config.Context, family string) error {
 	}
 
 	if len(oldTaskDefs) == 0 {
+		// this should not happen... we just registered a task def earlier, how could we not have any
+		log.WithField("family", family).Warn("no task defs found???")
 		// logger.Debug("No task definitions found.")
 		return nil
 	}
 
 	if len(oldTaskDefs) == 1 {
+		log.WithField("family", family).Trace("nothing to deregister")
 		// logger.Debug("Only 1 task definition found.")
 		return nil
 	}
 
-	// latestArn, oldArns := oldTaskDefs[0], oldTaskDefs[1:]
-
-	// logger.WithField("latestArn", latestArn).Debug("Latest TaskDef")
-
 	for _, oldArn := range oldTaskDefs {
 
-		if slices.Contains(ctx.Cache.RegisteredTaskDefArns, oldArn) {
+		if slices.Contains(ctx.Cache.TaskDefinitions(), oldArn) {
 			continue
 		}
-
-		oldArn := oldArn
-		// logger.WithField("arn", oldArn).Debug("Deregistering")
-		// err := deregisterTaskDefinition(ctx, oldArn)
-		// if err != nil {
-		// 	// logger.WithField("arn", oldArn).WithError(err).Warn("Deregistering failed")
-		// }
 
 		_, err := ecsClient.DeregisterTaskDefinition(ctx.Context, &ecs.DeregisterTaskDefinitionInput{
 			TaskDefinition: &oldArn,
 		})
 		if err != nil {
-			log.WithField("arn", oldArn).WithError(err).Warn("Deregistering failed")
+			log.WithField("arn", oldArn).WithError(err).Warn("deregistering failed")
+		} else {
+			log.WithField("arn", oldArn).Trace("deregistered")
 		}
 
 	}
