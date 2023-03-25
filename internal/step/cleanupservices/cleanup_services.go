@@ -110,12 +110,7 @@ func destroyService(ctx *config.Context, serviceArn string) error {
 	clusterName := helpers.GetECSClusterNameFromArn(serviceArn)
 
 	if clusterName == "" {
-		cName, err := ctx.Project.Cluster.Name(ctx)
-		if err != nil {
-			return err
-		}
-
-		clusterName = cName
+		clusterName = ctx.ClusterName()
 	}
 
 	client := awsclients.ECSClient()
@@ -136,7 +131,8 @@ func destroyService(ctx *config.Context, serviceArn string) error {
 
 	// TODO: is this part even needed if we have force=true in delete?
 	if svc.DesiredCount > 0 {
-		logger.Trace("Service has desired count greater than 1, spinning down")
+		// logger.Trace("Service has desired count greater than 1, spinning down")
+		logger.Info("spinning service to zero...")
 		_, err = client.UpdateService(ctx.Context, &ecs.UpdateServiceInput{
 			Service:            &serviceArn,
 			Cluster:            &clusterName,

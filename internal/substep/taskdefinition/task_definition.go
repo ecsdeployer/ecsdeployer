@@ -44,7 +44,7 @@ func (s *Substep) Register(ctx *config.Context) (string, error) {
 	// try to match them against ones we know about?
 
 	logGroupStep := loggroup.New(s.entity)
-	if err := skip.Maybe(logGroupStep, errhandler.Handle(logGroupStep.Run))(ctx); err != nil {
+	if err = skip.Maybe(logGroupStep, errhandler.Handle(logGroupStep.Run))(ctx); err != nil {
 		return "", fmt.Errorf("Failed to provision log group: %w", err)
 	}
 
@@ -54,6 +54,8 @@ func (s *Substep) Register(ctx *config.Context) (string, error) {
 	}
 
 	taskDefArn := *result.TaskDefinition.TaskDefinitionArn
+
+	ctx.Cache.RegisteredTaskDefArns = append(ctx.Cache.RegisteredTaskDefArns, taskDefArn)
 
 	tieredlog.WithField("arn", taskDefArn).Debug("registered task definition")
 	return taskDefArn, nil

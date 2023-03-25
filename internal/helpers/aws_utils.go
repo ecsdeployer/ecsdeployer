@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -91,6 +92,21 @@ func GetTaskDefFamilyFromArn(str string) string {
 
 	before, _, _ := strings.Cut(strings.TrimPrefix(res, "task-definition/"), ":")
 	return before
+}
+
+func GetTaskIdFromArn(str string) string {
+	if !IsArnForService(str, "ecs") {
+		return ""
+	}
+	arn := util.Must(awsarn.Parse(str))
+
+	res := arn.Resource
+
+	if !strings.HasPrefix(res, "task/") {
+		return ""
+	}
+
+	return filepath.Base(res)
 }
 
 func IsArnForService(str string, serviceCode string) bool {

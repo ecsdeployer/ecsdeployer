@@ -7,8 +7,9 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 )
 
+// number must always be even
 func randomHex(n int) string {
-	bytes := make([]byte, n)
+	bytes := make([]byte, (n+1)/2)
 	if _, err := rand.Read(bytes); err != nil {
 		panic(err)
 	}

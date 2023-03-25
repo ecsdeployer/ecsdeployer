@@ -20,3 +20,18 @@ func Handle(action middleware.Action) middleware.Action {
 		return err
 	}
 }
+
+func Ignore(action middleware.Action) middleware.Action {
+	return func(ctx *config.Context) error {
+		err := action(ctx)
+		if err == nil {
+			return nil
+		}
+		if step.IsSkip(err) {
+			log.WithField("reason", err.Error()).Warn("step skipped")
+			return nil
+		}
+		log.WithField("reason", err.Error()).Error("step failed (continuing anyway)")
+		return nil
+	}
+}

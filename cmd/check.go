@@ -70,7 +70,7 @@ func newCheckCmd(metadata *cmdMetadata) *checkCmd {
 
 			log.Info("config is valid!")
 
-			if root.showJson {
+			if root.showYaml {
 
 				if sysYaml, err := yaml.Marshal(cfg); err != nil {
 					return err

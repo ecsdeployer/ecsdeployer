@@ -52,7 +52,8 @@ func (lc *lifecycle) describeTaskMock() *awsmocker.MockedEndpoint {
 					"lastStatus":    "PENDING",
 				}
 
-				if lc.callCount > stoppedCallStart {
+				switch {
+				case lc.callCount > stoppedCallStart:
 					taskResult["lastStatus"] = "STOPPED"
 					taskResult["desiredStatus"] = "STOPPED"
 					taskResult["stoppedAt"] = lc.stoppedAt()
@@ -64,10 +65,8 @@ func (lc *lifecycle) describeTaskMock() *awsmocker.MockedEndpoint {
 							"exitCode": lc.options.ExitCode,
 						},
 					}
-				} else if lc.callCount > runningCallStart {
+				case lc.callCount > runningCallStart:
 					taskResult["lastStatus"] = "RUNNING"
-				} else {
-					// pending
 				}
 
 				return jsonify(map[string]interface{}{

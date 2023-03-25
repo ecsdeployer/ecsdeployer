@@ -28,7 +28,6 @@ const (
 	fieldStatus  = "status"
 	fieldReason  = "reason"
 	fieldDetail  = "detail"
-	fieldTaskArn = "taskArn"
 )
 
 var (
@@ -85,7 +84,7 @@ func (s *Step) Run(ctx *config.Context) error {
 	}
 
 	taskArn := *runTaskOutput.Tasks[0].TaskArn
-	log.WithField(fieldTaskArn, taskArn).Info("launched")
+	log.WithField("taskId", helpers.GetTaskIdFromArn(taskArn)).Info("launched")
 
 	if s.pdTask.DoNotWait {
 		log.Warn("skip waiting")
@@ -187,7 +186,7 @@ func (s *Step) Run(ctx *config.Context) error {
 func didTaskSucceed(result *ecsTypes.Task) error {
 
 	if aws.ToString(result.LastStatus) != string(ecsTypes.DesiredStatusStopped) {
-		fmt.Println("TASK: ", util.Must(util.JsonifyPretty(*result)))
+		// fmt.Println("TASK: ", util.Must(util.JsonifyPretty(*result)))
 		return errTaskStillRunning
 	}
 

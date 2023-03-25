@@ -105,7 +105,7 @@ nav:
   - Templating: templating.md
   - Limitations: limitations.md
   - Getting Help: help.md
-
+  - Deprecations: deprecations.md
   - Command Line Usage:
     - ecsdeployer: cmd/ecsdeployer.md
     - ecsdeployer check: cmd/ecsdeployer_check.md

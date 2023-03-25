@@ -2,9 +2,15 @@
 package deregistertaskdefinitions
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
+	"ecsdeployer.com/ecsdeployer/internal/semerrgroup"
+	"ecsdeployer.com/ecsdeployer/internal/step"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/aws/aws-sdk-go-v2/service/ecs"
+	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	log "github.com/caarlos0/log"
+	"golang.org/x/exp/slices"
 )
 
 type Step struct{}
@@ -19,11 +25,80 @@ func (Step) Skip(ctx *config.Context) bool {
 }
 
 func (Step) Clean(ctx *config.Context) error {
-
+	g := semerrgroup.NewSkipAware(semerrgroup.New(ctx.Concurrency(5)))
 	for _, defArn := range ctx.Cache.RegisteredTaskDefArns {
 		family := helpers.GetTaskDefFamilyFromArn(defArn)
-		log.WithField("family", family).Debug(defArn)
+		g.Go(func() error {
+			if err := deregisterPreviousTaskFamily(ctx, family); err != nil {
+				if step.IsSkip(err) {
+					return err
+				}
+				log.WithField("reason", err.Error()).WithField("family", family).Warn("failed to deregister task definition")
+			}
+			return nil
+		})
 	}
 
+	return g.Wait()
+}
+
+func deregisterPreviousTaskFamily(ctx *config.Context, family string) error {
+	ecsClient := awsclients.ECSClient()
+
+	request := &ecs.ListTaskDefinitionsInput{
+		FamilyPrefix: &family,
+		Sort:         ecsTypes.SortOrderDesc,
+		Status:       ecsTypes.TaskDefinitionStatusActive,
+	}
+
+	paginator := ecs.NewListTaskDefinitionsPaginator(ecsClient, request)
+
+	oldTaskDefs := make([]string, 0, 10)
+
+	for paginator.HasMorePages() {
+		output, err := paginator.NextPage(ctx.Context)
+		if err != nil {
+			return step.Skipf("Failed to list task definitions: %s", err)
+			// return err
+		}
+
+		oldTaskDefs = append(oldTaskDefs, output.TaskDefinitionArns...)
+	}
+
+	if len(oldTaskDefs) == 0 {
+		// logger.Debug("No task definitions found.")
+		return nil
+	}
+
+	if len(oldTaskDefs) == 1 {
+		// logger.Debug("Only 1 task definition found.")
+		return nil
+	}
+
+	// latestArn, oldArns := oldTaskDefs[0], oldTaskDefs[1:]
+
+	// logger.WithField("latestArn", latestArn).Debug("Latest TaskDef")
+
+	for _, oldArn := range oldTaskDefs {
+
+		if slices.Contains(ctx.Cache.RegisteredTaskDefArns, oldArn) {
+			continue
+		}
+
+		oldArn := oldArn
+		// logger.WithField("arn", oldArn).Debug("Deregistering")
+		// err := deregisterTaskDefinition(ctx, oldArn)
+		// if err != nil {
+		// 	// logger.WithField("arn", oldArn).WithError(err).Warn("Deregistering failed")
+		// }
+
+		_, err := ecsClient.DeregisterTaskDefinition(ctx.Context, &ecs.DeregisterTaskDefinitionInput{
+			TaskDefinition: &oldArn,
+		})
+		if err != nil {
+			log.WithField("arn", oldArn).WithError(err).Warn("Deregistering failed")
+		}
+
+	}
 	return nil
 }

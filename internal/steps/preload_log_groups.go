@@ -39,7 +39,7 @@ func stepPreloadLogGroupsCreate(ctx *config.Context, step *Step, meta *StepMetad
 
 	paginator := logs.NewDescribeLogGroupsPaginator(logsClient, request)
 
-	cache := make(map[string]logTypes.LogGroup) //, 0, ctx.Project.ApproxNumTasks())
+	cache := make(map[string]logTypes.LogGroup) // , 0, ctx.Project.ApproxNumTasks())
 
 	for paginator.HasMorePages() {
 		output, err := paginator.NextPage(ctx.Context)

@@ -12,7 +12,7 @@ func (Step) String() string {
 }
 
 func (Step) Skip(ctx *config.Context) bool {
-	return !ctx.Project.Settings.KeepInSync.GetCronjobs()
+	return !ctx.Project.Settings.KeepInSync.GetCronjobs() || ctx.Project.Settings.CronUsesEventing
 }
 
 func (Step) Clean(ctx *config.Context) error {

@@ -11,6 +11,7 @@ import (
 	dsmock "ecsdeployer.com/ecsdeployer/internal/testutil/mocks/ecs/describeservicemock"
 	"ecsdeployer.com/ecsdeployer/internal/testutil/mocks/ecs/taskmock"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	log "github.com/caarlos0/log"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
@@ -79,7 +80,9 @@ func TestDeploySmoke(t *testing.T) {
 			fmt.Sprintf("arn:aws:ecs:%s:%s:service/dummy/dummy-other-service", awsmocker.DefaultRegion, awsmocker.DefaultAccountId),
 		}),
 		dsmock.Mock(dsmock.WithMaxCount(0), dsmock.WithName("dummy-old-service")),
-		dsmock.Mock(dsmock.WithMaxCount(0), dsmock.WithName("dummy-other-service")),
+		dsmock.Mock(dsmock.WithStable(), dsmock.WithName("dummy-other-service")),
+		testutil.Mock_ECS_DeleteService_jmespath(map[string]any{"service": "dummy-old-service"}, ecsTypes.Service{}),
+		testutil.Mock_ECS_DeleteService_jmespath(map[string]any{"service": "dummy-other-service"}, ecsTypes.Service{}),
 
 		testutil.Mock_ECS_DeregisterTaskDefinition("dummy-something-something", 122),
 		testutil.Mock_ECS_DeregisterTaskDefinition("dummy-something-something", 123),
@@ -112,6 +115,10 @@ func TestDeploySmoke(t *testing.T) {
 		testutil.Mock_Scheduler_CreateSchedule("dummy", "ecsd-cron-dummy-cron1"),
 		testutil.Mock_Scheduler_UpdateSchedule("dummy", "ecsd-cron-dummy-cron2"),
 		testutil.Mock_Scheduler_UpdateSchedule("dummy", "ecsd-cron-dummy-cron-daily"),
+
+		testutil.Mock_ECS_ListTaskDefinitions("dummy-svc-sidecar-ports", []int{997, 998, 999}),
+		testutil.Mock_ECS_DeregisterTaskDefinition("dummy-svc-sidecar-ports", 997),
+		testutil.Mock_ECS_DeregisterTaskDefinition("dummy-svc-sidecar-ports", 998),
 	}
 
 	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd1"), taskmock.WithExitCode(1))...)
@@ -120,6 +127,18 @@ func TestDeploySmoke(t *testing.T) {
 	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd-storage"))...)
 	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd-override-defaults"))...)
 	// mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd-disabled"))...)
+
+	for _, familyName := range []string{
+		"dummy-pd1", "dummy-pd2", "dummy-pd-sc-inherit", "dummy-pd-storage", "dummy-pd-override-defaults",
+		"dummy-console", "dummy-svc1", "dummy-svc2", "dummy-svc3", "dummy-svc4",
+		"dummy-cron1", "dummy-cron2", "dummy-cron-daily",
+	} {
+		mocks = append(mocks,
+			testutil.Mock_ECS_ListTaskDefinitions(familyName, []int{997, 998, 999}),
+			testutil.Mock_ECS_DeregisterTaskDefinition(familyName, 997),
+			testutil.Mock_ECS_DeregisterTaskDefinition(familyName, 998),
+		)
+	}
 
 	testutil.StartMocker(t, &awsmocker.MockerOptions{
 		Mocks: mocks,
