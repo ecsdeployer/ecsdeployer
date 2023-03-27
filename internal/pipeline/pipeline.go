@@ -31,3 +31,20 @@ var DeploymentPipeline = []Stepper{
 	servicedeployment.Step{},
 	cleanup.Step{},
 }
+
+/*
+func RunPipeline(ctx *config.Context, pipeline []Stepper) error {
+	for _, step := range pipeline {
+		if err := skip.Maybe(
+			step,
+			logging.Log(
+				step.String(),
+				errhandler.Handle(step.Run),
+			),
+		)(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+*/

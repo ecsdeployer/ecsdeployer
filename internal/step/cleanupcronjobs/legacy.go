@@ -1,5 +1,4 @@
-// this is for cleaning up the old style Target/Rule cronjobs
-package legacycleanupcronjobs
+package cleanupcronjobs
 
 import (
 	"sync"
@@ -18,24 +17,12 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-type Step struct{}
-
-func (Step) String() string {
-	return "cleaning orphaned cronjobs (legacy)"
-}
-
-func (Step) Skip(ctx *config.Context) bool {
-	// TODO: ONLY USE THIS FOR THE OLD EVENTING METHOD
-	return !ctx.Project.Settings.KeepInSync.GetCronjobs() // || !ctx.Project.Settings.CronUsesEventing
-}
-
-func (Step) Clean(ctx *config.Context) error {
-
+func runLegacyCleanup(ctx *config.Context) error {
 	deprecate.Deprecate_LegacyCron(ctx)
 
 	markerKey, markerVal, err := helpers.GetMarkerTag(ctx)
 	if err != nil {
-		return step.Skipf("Failed to determine marker tag. Unable to delete unused cron rules: %s", err.Error())
+		return step.Skipf("Failed to determine marker tag: %s", err.Error())
 	}
 
 	expectedRuleNames := make([]string, 0, len(ctx.Project.CronJobs))

@@ -1,6 +1,7 @@
 package crondeployment
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/deprecate"
 	"ecsdeployer.com/ecsdeployer/internal/semerrgroup"
 	"ecsdeployer.com/ecsdeployer/internal/step/cronjob"
 	"ecsdeployer.com/ecsdeployer/internal/step/schedulegroup"
@@ -18,6 +19,10 @@ func (Step) Skip(ctx *config.Context) bool {
 }
 
 func (Step) Run(ctx *config.Context) error {
+
+	if ctx.Project.Settings.CronUsesEventing {
+		deprecate.Deprecate_LegacyCron(ctx)
+	}
 
 	if err := (schedulegroup.Step{}).Run(ctx); err != nil {
 		return err

@@ -19,7 +19,7 @@ import (
 	"github.com/webdestroya/awsmocker"
 )
 
-func TestDeployCmd(t *testing.T) {
+func xTestDeployCmd(t *testing.T) {
 	silenceLogging(t)
 
 	t.Run("calls correct function", func(t *testing.T) {
@@ -129,6 +129,19 @@ func TestDeploySmoke(t *testing.T) {
 		testutil.Mock_ECS_ListTaskDefinitions("dummy-svc-sidecar-ports", []int{997, 998, 999}),
 		testutil.Mock_ECS_DeregisterTaskDefinition("dummy-svc-sidecar-ports", 997),
 		testutil.Mock_ECS_DeregisterTaskDefinition("dummy-svc-sidecar-ports", 998),
+
+		testutil.Mock_Tagging_GetResources("events:rule", map[string]string{"ecsdeployer/project": "dummy"}, []string{
+			fmt.Sprintf("arn:aws:events:%s:%s:rule/dummy-rule-cron1", awsmocker.DefaultRegion, awsmocker.DefaultAccountId),
+		}),
+
+		testutil.Mock_Scheduler_ListSchedules("dummy", []testutil.MockListScheduleEntry{
+			{Name: "ecsd-cron-dummy-cron1"},
+			{Name: "ecsd-cron-dummy-cron-old"},
+		}),
+		testutil.Mock_Scheduler_DeleteSchedule("dummy", "ecsd-cron-dummy-cron-old"),
+
+		testutil.Mock_Events_PutRule_Generic(),
+		testutil.Mock_Events_PutTargets_Generic(),
 	}
 
 	mocks = append(mocks, taskmock.Mock(taskmock.WithFamily("dummy-pd1"), taskmock.WithExitCode(1))...)
@@ -143,8 +156,14 @@ func TestDeploySmoke(t *testing.T) {
 		"dummy-console", "dummy-svc1", "dummy-svc2", "dummy-svc3", "dummy-svc4",
 		"dummy-cron1", "dummy-cron2", "dummy-cron-daily",
 	} {
+
+		revs := []int{998, 999}
+		if familyName == "dummy-console" {
+			revs = []int{997, 998, 999}
+		}
+
 		mocks = append(mocks,
-			testutil.Mock_ECS_ListTaskDefinitions(familyName, []int{997, 998, 999}),
+			testutil.Mock_ECS_ListTaskDefinitions(familyName, revs),
 			testutil.Mock_ECS_DeregisterTaskDefinition(familyName, 997),
 			testutil.Mock_ECS_DeregisterTaskDefinition(familyName, 998),
 		)

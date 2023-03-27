@@ -86,8 +86,15 @@ func deployProject(options deployOpts) (*config.Context, error) {
 	ctx, cancel := config.NewWithTimeout(cfg, options.timeout)
 	defer cancel()
 	setupDeployContext(ctx, options)
-	return ctx, ctrlc.Default.Run(ctx, func() error {
-		for _, step := range pipeline.DeploymentPipeline {
+	return ctx, runPipeline(ctx, pipeline.DeploymentPipeline)
+}
+
+func setupDeployContext(ctx *config.Context, options deployOpts) {
+}
+
+func runPipeline(ctx *config.Context, pline []pipeline.Stepper) error {
+	return ctrlc.Default.Run(ctx, func() error {
+		for _, step := range pline {
 			if err := skip.Maybe(
 				step,
 				logging.Log(
@@ -100,7 +107,4 @@ func deployProject(options deployOpts) (*config.Context, error) {
 		}
 		return nil
 	})
-}
-
-func setupDeployContext(ctx *config.Context, options deployOpts) {
 }

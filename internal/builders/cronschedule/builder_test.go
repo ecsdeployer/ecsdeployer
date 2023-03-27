@@ -14,10 +14,10 @@ import (
 func TestBuildSchedule(t *testing.T) {
 	testutil.MockSimpleStsProxy(t)
 
-	ctx, err := config.NewFromYAML("testdata/dummy.yml")
+	ctx, err := config.NewFromYAML("../cron/testdata/dummy.yml")
 	require.NoError(t, err)
 
-	ctxNoCronEnv, err := config.NewFromYAML("testdata/dummy.yml")
+	ctxNoCronEnv, err := config.NewFromYAML("../cron/testdata/dummy.yml")
 	require.NoError(t, err)
 	ctxNoCronEnv.Project.Settings.SkipCronEnvVars = true
 

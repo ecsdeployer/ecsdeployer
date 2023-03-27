@@ -1,0 +1,47 @@
+project: dummy
+image: fake:latest
+cluster: testcluster
+
+role: fakerole
+execution_role: fakerole
+cron_launcher_role: fakerole
+
+settings:
+  ssm_import: true
+
+network:
+  subnets:
+    - subnet-1111111111
+    - subnet-2222222222
+  
+  security_groups:
+    - sg-1111111111
+    - sg-2222222222
+
+predeploy:
+  - name: pd1
+    command: "something something"
+
+services:
+  # First service needs to be a web service
+  - name: web
+    command: "fake command"
+    desired: 3
+    load_balancer:
+      target_group: faketg
+      port: 1234
+  
+  # second needs to be a non-web
+  - name: worker
+    command: "whatever"
+    desired: 2
+  
+  # disabled worker
+  - name: offworker
+    command: "something"
+
+
+cronjobs:
+  - name: cron1
+    schedule: rate(1 minute)
+    description: somethingsomething

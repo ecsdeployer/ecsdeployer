@@ -19,7 +19,5 @@ func (Step) Run(ctx *config.Context) error {
 
 	_, err := taskdefinition.Register(ctx, ctx.Project.ConsoleTask)
 
-	// log.WithField("arn", result.Arn).Debug("registered task definition")
-
 	return err
 }

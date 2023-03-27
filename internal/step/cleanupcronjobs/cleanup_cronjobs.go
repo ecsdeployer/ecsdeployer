@@ -1,7 +1,6 @@
 package cleanupcronjobs
 
 import (
-	"ecsdeployer.com/ecsdeployer/internal/step"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
 
@@ -12,10 +11,14 @@ func (Step) String() string {
 }
 
 func (Step) Skip(ctx *config.Context) bool {
-	return !ctx.Project.Settings.KeepInSync.GetCronjobs() || ctx.Project.Settings.CronUsesEventing
+	return !ctx.Project.Settings.KeepInSync.GetCronjobs()
 }
 
 func (Step) Clean(ctx *config.Context) error {
-	return step.Skip("NOT FINISHED")
-	// return nil
+
+	if ctx.Project.Settings.CronUsesEventing {
+		return runLegacyCleanup(ctx)
+	}
+
+	return runSchedulerCleanup(ctx)
 }

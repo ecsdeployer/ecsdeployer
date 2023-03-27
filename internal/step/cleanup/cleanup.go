@@ -10,7 +10,6 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/step/cleanupservices"
 	"ecsdeployer.com/ecsdeployer/internal/step/cleanuptaskdefinitions"
 	"ecsdeployer.com/ecsdeployer/internal/step/deregistertaskdefinitions"
-	"ecsdeployer.com/ecsdeployer/internal/step/legacycleanupcronjobs"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
 
@@ -24,7 +23,6 @@ var cleaners = []cleaner{
 	cleanupservices.Step{},
 	cleanuptaskdefinitions.Step{},
 	cleanupcronjobs.Step{},
-	legacycleanupcronjobs.Step{},
 }
 
 type Step struct{}
