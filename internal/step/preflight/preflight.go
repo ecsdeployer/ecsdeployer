@@ -15,6 +15,7 @@ type preflightChecker interface {
 }
 
 var preflightChecks = []preflightChecker{
+	checkProject{},         // project validation
 	checkAccount{},         // acct restriction
 	checkTemplates{},       // templates
 	checkContainerImages{}, // container images

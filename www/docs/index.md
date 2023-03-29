@@ -23,6 +23,7 @@ Applications can easily and securely be deployed with a simple GitHub Action.
 
 #### Resources ECS Deployer DOES NOT manage
 * ECS Cluster
+* ECR Repositories/Registry
 * SSM Secrets
 * Load Balancers / Target Groups
 * IAM Roles

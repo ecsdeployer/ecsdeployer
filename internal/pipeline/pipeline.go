@@ -9,6 +9,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/step/predeployment"
 	"ecsdeployer.com/ecsdeployer/internal/step/preflight"
 	"ecsdeployer.com/ecsdeployer/internal/step/preload"
+	"ecsdeployer.com/ecsdeployer/internal/step/schedulegroup"
 	"ecsdeployer.com/ecsdeployer/internal/step/servicedeployment"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
@@ -27,6 +28,7 @@ var DeploymentPipeline = []Stepper{
 	preload.Step{},
 	console.Step{},
 	predeployment.Step{},
+	schedulegroup.Step{},
 	crondeployment.Step{},
 	servicedeployment.Step{},
 	cleanup.Step{},

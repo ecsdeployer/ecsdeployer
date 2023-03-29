@@ -83,7 +83,7 @@ Check out our website for more information, examples and documentation: https://
 
 	cmd.PersistentFlags().BoolVar(&root.debug, "debug", false, "Enable debug mode")
 	cmd.PersistentFlags().BoolVar(&root.trace, "trace", false, "Enable trace mode")
-	cmd.PersistentFlags().MarkHidden("trace")
+	_ = cmd.PersistentFlags().MarkHidden("trace")
 
 	cmd.AddCommand(
 		newDeployCmd(metadata).cmd,

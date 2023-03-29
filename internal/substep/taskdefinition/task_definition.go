@@ -34,14 +34,6 @@ func (s *Substep) Register(ctx *config.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// _ = registerTaskDefInput
-
-	// for _, container := range registerTaskDefInput.ContainerDefinitions {
-	// 	if container.LogConfiguration != nil && container.LogConfiguration.LogDriver
-	// }
-
-	// TODO: iterate thru the task definition and find any groups?
-	// try to match them against ones we know about?
 
 	logGroupStep := loggroup.New(s.entity)
 	if err = skip.Maybe(logGroupStep, errhandler.Handle(logGroupStep.Run))(ctx); err != nil {
@@ -55,6 +47,7 @@ func (s *Substep) Register(ctx *config.Context) (string, error) {
 
 	taskDefArn := *result.TaskDefinition.TaskDefinitionArn
 
+	// add to the global cache for later
 	ctx.Cache.AddTaskDefinition(taskDefArn)
 
 	tieredlog.WithField("arn", taskDefArn).Debug("registered task definition")

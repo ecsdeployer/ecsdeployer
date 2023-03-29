@@ -6,6 +6,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
+	"ecsdeployer.com/ecsdeployer/internal/step"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/scheduler"
@@ -20,6 +21,14 @@ func (Step) String() string {
 }
 
 func (Step) Run(ctx *config.Context) error {
+
+	if ctx.Project.Settings.CronUsesEventing {
+		return step.Skip("using legacy cronjob flow")
+	}
+
+	if len(ctx.Project.CronJobs) == 0 {
+		return step.Skip("no cronjobs")
+	}
 
 	scheduleGroupName, err := tmpl.New(ctx).Apply(*ctx.Project.Templates.ScheduleGroupName)
 	if err != nil {

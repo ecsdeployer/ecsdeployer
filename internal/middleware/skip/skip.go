@@ -1,4 +1,6 @@
 // Package skip can skip an entire Action.
+//
+// Mostly taken from goreleaser
 package skip
 
 import (
@@ -9,16 +11,16 @@ import (
 	log "github.com/caarlos0/log"
 )
 
-// Skipper defines a method to skip an entire Piper.
+// Skipper defines a method to skip an entire step.
 type Skipper interface {
-	// Skip returns true if the Piper should be skipped.
+	// Skip returns true if the step should be skipped.
 	Skip(ctx *config.Context) bool
 	fmt.Stringer
 }
 
-// Skipper defines a method to skip an entire Piper.
+// Skipper defines a method to skip an entire step.
 type ErrSkipper interface {
-	// Skip returns true if the Piper should be skipped.
+	// Skip returns true if the step should be skipped.
 	Skip(ctx *config.Context) (bool, error)
 	fmt.Stringer
 }

@@ -30,6 +30,32 @@ func Mock_Logs_CreateLogGroup(logGroupName string) *awsmocker.MockedEndpoint {
 	}
 }
 
+func Mock_Logs_CreateLogGroup_Deny(logGroupName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "logs",
+			Action:  "CreateLogGroup",
+			Matcher: JmesRequestMatcher(map[string]interface{}{
+				"logGroupName": logGroupName,
+			}),
+		},
+		Response: awsmocker.MockResponse_Error(400, "LimitExceededException", "You have reached the maximum number of resources that can be created."),
+	}
+}
+
+func Mock_Logs_CreateLogGroup_AlreadyExists(logGroupName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "logs",
+			Action:  "CreateLogGroup",
+			Matcher: JmesRequestMatcher(map[string]interface{}{
+				"logGroupName": logGroupName,
+			}),
+		},
+		Response: awsmocker.MockResponse_Error(400, "ResourceAlreadyExistsException", "The specified resource already exists."),
+	}
+}
+
 func Mock_Logs_PutRetentionPolicy_AllowAny() *awsmocker.MockedEndpoint {
 	return &awsmocker.MockedEndpoint{
 		Request: &awsmocker.MockedRequest{
@@ -98,6 +124,36 @@ func Mock_Logs_DescribeLogGroups(logGroupRetentions map[string]int32) *awsmocker
 			ContentType: awsmocker.ContentTypeJSON,
 			Body: jsonify(map[string]interface{}{
 				"logGroups": results,
+			}),
+		},
+	}
+}
+
+func Mock_Logs_DescribeLogGroups_Single(logGroupName string, retention int32) *awsmocker.MockedEndpoint {
+
+	entry := map[string]interface{}{
+		"arn":               fmt.Sprintf("arn:aws:logs:%s:%s:log-group:%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, logGroupName),
+		"logGroupName":      logGroupName,
+		"storedBytes":       0,
+		"creationTime":      time.Now().AddDate(0, -1, 0).UTC().Unix(),
+		"metricFilterCount": 0,
+	}
+	if retention > 0 {
+		entry["retentionInDays"] = retention
+	}
+
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service: "logs",
+			Action:  "DescribeLogGroups",
+			Matcher: JmesRequestMatcher(map[string]interface{}{
+				"logGroupNamePrefix": logGroupName,
+			}),
+		},
+		Response: &awsmocker.MockedResponse{
+			ContentType: awsmocker.ContentTypeJSON,
+			Body: jsonify(map[string]interface{}{
+				"logGroups": []interface{}{entry},
 			}),
 		},
 	}

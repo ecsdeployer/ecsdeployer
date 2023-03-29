@@ -2,7 +2,14 @@ package cmd
 
 import (
 	"io"
+	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/middleware/errhandler"
+	"ecsdeployer.com/ecsdeployer/internal/middleware/logging"
+	"ecsdeployer.com/ecsdeployer/internal/middleware/skip"
+	"ecsdeployer.com/ecsdeployer/internal/pipeline"
+	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/caarlos0/ctrlc"
 	log "github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )
@@ -59,4 +66,31 @@ from your environment that are no longer being referenced in your configuration 
 
 	root.cmd = cmd
 	return root
+}
+
+func cleanProject(options cleanOpts) (*config.Context, error) {
+	cfg, err := loadConfig(options.config)
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := config.NewWithTimeout(cfg, 30*time.Minute)
+	defer cancel()
+	setupCleanContext(ctx, options)
+	return ctx, ctrlc.Default.Run(ctx, func() error {
+		for _, step := range pipeline.CleanupPipeline {
+			if err := skip.Maybe(
+				step,
+				logging.Log(
+					step.String(),
+					errhandler.Handle(step.Run),
+				),
+			)(ctx); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func setupCleanContext(ctx *config.Context, options cleanOpts) {
 }

@@ -5,11 +5,15 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/step"
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
 
 func TestError(t *testing.T) {
+
+	testutil.DisableLoggingForTest(t)
+
 	t.Run("no errors", func(t *testing.T) {
 		require.NoError(t, Handle(func(ctx *config.Context) error {
 			return nil

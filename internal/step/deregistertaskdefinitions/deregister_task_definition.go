@@ -83,7 +83,7 @@ func deregisterPreviousTaskFamily(ctx *config.Context, family string) error {
 		if slices.Contains(ctx.Cache.TaskDefinitions(), oldArn) {
 			continue
 		}
-
+		oldArn := oldArn
 		_, err := ecsClient.DeregisterTaskDefinition(ctx.Context, &ecs.DeregisterTaskDefinitionInput{
 			TaskDefinition: &oldArn,
 		})

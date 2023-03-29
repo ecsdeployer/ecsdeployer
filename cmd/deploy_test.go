@@ -19,7 +19,8 @@ import (
 	"github.com/webdestroya/awsmocker"
 )
 
-func xTestDeployCmd(t *testing.T) {
+func TestDeployCmd(t *testing.T) {
+	t.SkipNow()
 	silenceLogging(t)
 
 	t.Run("calls correct function", func(t *testing.T) {

@@ -41,6 +41,7 @@ func (s *Substep) updateLogGroup(ctx *config.Context, current *logTypes.LogGroup
 		if err != nil {
 			return err
 		}
+		return nil
 	}
 
 	log.WithField("group", s.groupName).WithField("days", retention.Days()).Debug("updating log retention")
