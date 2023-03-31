@@ -1,6 +1,9 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/spf13/cobra"
+)
 
 const (
 	paramConfigFile = "config"
@@ -10,11 +13,30 @@ const (
 	// paramImageTag   = "image-tag"
 )
 
-func setCommonFlags(cmd *cobra.Command, configPtr, verPtr, imgTagPtr, imgPtr *string) {
-	cmd.Flags().StringVarP(configPtr, paramConfigFile, "c", "", "Configuration file to check")
-	cmd.Flags().StringVar(verPtr, paramAppVersion, "", "Set the application version. Useful for templates")
-	cmd.Flags().StringVar(imgTagPtr, paramImageTag, "", "Specify a custom image tag to use.")
-	cmd.Flags().StringVar(imgPtr, paramImage, "", "Specify a container image URI.")
+type commonOpts struct {
+	config     string
+	appVersion string
+	imageTag   string
+	imageUri   string
+}
+
+func setCommonFlags(cmd *cobra.Command, common *commonOpts) {
+	cmd.Flags().StringVarP(&common.config, paramConfigFile, "c", "", "Configuration file to check")
+	cmd.Flags().StringVar(&common.appVersion, paramAppVersion, "", "Set the application version. Useful for templates")
+	cmd.Flags().StringVar(&common.imageTag, paramImageTag, "", "Specify a custom image tag to use.")
+	cmd.Flags().StringVar(&common.imageUri, paramImage, "", "Specify a container image URI.")
 
 	_ = cmd.Flags().SetAnnotation(paramConfigFile, cobra.BashCompFilenameExt, []string{"yaml", "yml"})
+}
+
+func setupContextCommon(ctx *config.Context, options commonOpts) {
+	ctx.Version = options.appVersion
+	ctx.ImageTag = options.imageTag
+	if options.imageUri != "" {
+		ctx.ImageUriRef = options.imageUri
+	}
+
+	if ctx.Project.StageName != nil {
+		ctx.Stage = *ctx.Project.StageName
+	}
 }

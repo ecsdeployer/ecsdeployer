@@ -27,9 +27,8 @@ func TestCleanCmd(t *testing.T) {
 			return steps.NoopStep()
 		}
 
-		cmd := newCleanCmd(defaultCmdMetadata()).cmd
-		cmd.Root().SetArgs([]string{"-q"})
-		cmd.SetArgs([]string{"-c", "testdata/info_simple.yml"})
+		cmd := newRootCmd("testing", func(i int) {}).cmd
+		cmd.SetArgs([]string{"clean", "-q", "-c", "testdata/info_simple.yml"})
 
 		_, _, err := executeCmdAndReturnOutput(cmd)
 
@@ -59,7 +58,7 @@ func TestCleanCmd(t *testing.T) {
 			})
 		}
 
-		cmd := newCleanCmd(defaultCmdMetadata()).cmd
+		cmd := newCleanCmd().cmd
 		cmd.Root().SetArgs([]string{"-q"})
 		cmd.SetArgs([]string{"-c", "testdata/info_simple.yml"})
 

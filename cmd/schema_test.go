@@ -19,7 +19,7 @@ func TestSchemaCmd(t *testing.T) {
 			t.SkipNow()
 			return
 		}
-		cmd := newSchemaCmd(defaultCmdMetadata()).cmd
+		cmd := newSchemaCmd().cmd
 		dir := t.TempDir()
 		destination := path.Join(dir, "schema.json")
 		cmd.SetArgs([]string{"--output", destination})
@@ -36,7 +36,7 @@ func TestSchemaCmd(t *testing.T) {
 	})
 
 	t.Run("outputs to stdout", func(t *testing.T) {
-		cmd := newSchemaCmd(defaultCmdMetadata()).cmd
+		cmd := newSchemaCmd().cmd
 		cmd.SetArgs([]string{"--output", "-"})
 
 		osOut, _, err := executeCmdAndReturnOutput(cmd)

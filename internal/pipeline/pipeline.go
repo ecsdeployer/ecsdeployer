@@ -6,6 +6,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/step/cleanup"
 	"ecsdeployer.com/ecsdeployer/internal/step/console"
 	"ecsdeployer.com/ecsdeployer/internal/step/crondeployment"
+	"ecsdeployer.com/ecsdeployer/internal/step/deregistertaskdefinitions"
 	"ecsdeployer.com/ecsdeployer/internal/step/predeployment"
 	"ecsdeployer.com/ecsdeployer/internal/step/preflight"
 	"ecsdeployer.com/ecsdeployer/internal/step/preload"
@@ -31,22 +32,6 @@ var DeploymentPipeline = []Stepper{
 	schedulegroup.Step{},
 	crondeployment.Step{},
 	servicedeployment.Step{},
+	deregistertaskdefinitions.Step{},
 	cleanup.Step{},
 }
-
-/*
-func RunPipeline(ctx *config.Context, pipeline []Stepper) error {
-	for _, step := range pipeline {
-		if err := skip.Maybe(
-			step,
-			logging.Log(
-				step.String(),
-				errhandler.Handle(step.Run),
-			),
-		)(ctx); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-*/

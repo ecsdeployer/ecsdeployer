@@ -11,8 +11,8 @@ func TestInfoCmd(t *testing.T) {
 	silenceLogging(t)
 	testutil.StartMocker(t, nil)
 
-	cmd := newInfoCmd(defaultCmdMetadata()).cmd
-	cmd.SetArgs([]string{"-c", "testdata/info_simple.yml"})
+	cmd := newRootCmd("testing", func(i int) {}).cmd
+	cmd.SetArgs([]string{"info", "-c", "testdata/info_simple.yml", "--trace"})
 
 	_, _, err := executeCmdAndReturnOutput(cmd)
 

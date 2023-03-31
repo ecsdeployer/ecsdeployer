@@ -12,7 +12,7 @@ type manCmd struct {
 	cmd *cobra.Command
 }
 
-func newManCmd(metadata *cmdMetadata) *manCmd {
+func newManCmd() *manCmd {
 	root := &manCmd{}
 	cmd := &cobra.Command{
 		Use:                   "man",

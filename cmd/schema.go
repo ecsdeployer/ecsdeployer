@@ -16,7 +16,7 @@ type schemaCmd struct {
 	output string
 }
 
-func newSchemaCmd(metadata *cmdMetadata) *schemaCmd {
+func newSchemaCmd() *schemaCmd {
 	root := &schemaCmd{}
 	cmd := &cobra.Command{
 		Use:           "jsonschema",

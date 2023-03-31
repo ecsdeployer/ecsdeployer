@@ -9,7 +9,7 @@ type docsCmd struct {
 	cmd *cobra.Command
 }
 
-func newDocsCmd(metadata *cmdMetadata) *docsCmd {
+func newDocsCmd() *docsCmd {
 	root := &docsCmd{}
 	cmd := &cobra.Command{
 		Use:                   "docs",

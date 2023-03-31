@@ -10,7 +10,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/pipeline"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/caarlos0/ctrlc"
-	log "github.com/caarlos0/log"
+	"github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )
 
@@ -20,19 +20,13 @@ type deployCmd struct {
 }
 
 type deployOpts struct {
-	config   string
-	quiet    bool
-	timeout  time.Duration
-	version  string
-	imageTag string
-	imageUri string
-	metadata *cmdMetadata
-	// noValidate bool
+	commonOpts
+	quiet   bool
+	timeout time.Duration
 }
 
-func newDeployCmd(metadata *cmdMetadata) *deployCmd {
+func newDeployCmd() *deployCmd {
 	root := &deployCmd{}
-	root.opts.metadata = metadata
 	cmd := &cobra.Command{
 		Use:           "deploy",
 		Short:         "Deploys application",
@@ -44,33 +38,19 @@ func newDeployCmd(metadata *cmdMetadata) *deployCmd {
 				log.Log = log.New(io.Discard)
 			}
 
-			_, err := deployProject(root.opts)
+			ctx, err := deployProject(root.opts)
 			if err != nil {
 				return err
 			}
+			deprecateWarn(ctx)
 			return nil
-
-			// opts := &configLoaderExtras{
-			// 	configFile:  root.opts.config,
-			// 	appVersion:  root.opts.version,
-			// 	imageTag:    root.opts.imageTag,
-			// 	imageUri:    root.opts.imageUri,
-			// 	timeout:     root.opts.timeout,
-			// 	cmdMetadata: root.opts.metadata,
-			// }
-
-			// err := stepRunner(opts, stepRunModeDeploy)
-			// if err != nil {
-			// 	return err
-			// }
-			// return nil
 		}),
 	}
 
 	cmd.Flags().BoolVarP(&root.opts.quiet, "quiet", "q", false, "Quiet mode: no output")
 	cmd.Flags().DurationVar(&root.opts.timeout, "timeout", 2*time.Hour, "Timeout for the entire deploy process")
 
-	setCommonFlags(cmd, &root.opts.config, &root.opts.version, &root.opts.imageTag, &root.opts.imageUri)
+	setCommonFlags(cmd, &root.opts.commonOpts)
 	// cmd.Flags().BoolVar(&root.opts.noValidate, "no-validate", false, "Skips validating the config file against the schema")
 	// _ = cmd.Flags().SetAnnotation("config", cobra.BashCompFilenameExt, []string{"yaml", "yml"})
 
@@ -103,10 +83,5 @@ func deployProject(options deployOpts) (*config.Context, error) {
 }
 
 func setupDeployContext(ctx *config.Context, options deployOpts) {
-	ctx.Version = options.version
-	ctx.ImageTag = options.imageTag
-	if options.imageUri != "" {
-		ctx.ImageUriRef = options.imageUri
-	}
-	// TODO: STAGE
+	setupContextCommon(ctx, options.commonOpts)
 }

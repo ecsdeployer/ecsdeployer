@@ -37,7 +37,7 @@ func TestDeployCmd(t *testing.T) {
 			return steps.NoopStep()
 		}
 
-		cmd := newDeployCmd(defaultCmdMetadata()).cmd
+		cmd := newDeployCmd().cmd
 		cmd.Root().SetArgs([]string{"-q"})
 		cmd.SetArgs([]string{"-c", "testdata/info_simple.yml"})
 
@@ -179,7 +179,7 @@ func TestDeploySmoke(t *testing.T) {
 	cmd := newRootCmd("fake", func(i int) {}).cmd
 	log.Strings[log.DebugLevel] = "%"
 
-	// cmd := newDeployCmd(defaultCmdMetadata()).cmd
+	// cmd := newDeployCmd().cmd
 	// cmd.Root().SetArgs([]string{"-q"})
 	// log.SetLevel(log.DebugLevel)
 	// cmd.Root().SetArgs([]string{"--debug"})

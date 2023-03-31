@@ -11,7 +11,7 @@ func TestManCmd(t *testing.T) {
 
 	t.Run("calls correct function", func(t *testing.T) {
 
-		cmd := newManCmd(defaultCmdMetadata()).cmd
+		cmd := newManCmd().cmd
 		// cmd.Root().SetArgs([]string{"-q"})
 
 		_, _, err := executeCmdAndReturnOutput(cmd)

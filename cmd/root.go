@@ -5,9 +5,15 @@ import (
 	"fmt"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/pkg/config"
 	log "github.com/caarlos0/log"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	cobracompletefig "github.com/withfig/autocomplete-tools/integrations/cobra"
+)
+
+var (
+	boldStyle = lipgloss.NewStyle().Bold(true)
 )
 
 func Execute(version string, exit func(int), args []string) {
@@ -48,10 +54,6 @@ func newRootCmd(version string, exit func(int)) *rootCmd {
 		exit: exit,
 	}
 
-	metadata := &cmdMetadata{
-		version: version,
-	}
-
 	cmd := &cobra.Command{
 		Use:   "ecsdeployer",
 		Short: "Deploy applications to Fargate",
@@ -86,18 +88,24 @@ Check out our website for more information, examples and documentation: https://
 	_ = cmd.PersistentFlags().MarkHidden("trace")
 
 	cmd.AddCommand(
-		newDeployCmd(metadata).cmd,
-		newCheckCmd(metadata).cmd,
-		newSchemaCmd(metadata).cmd,
-		newManCmd(metadata).cmd,
-		newDocsCmd(metadata).cmd,
-		newCleanCmd(metadata).cmd,
-		newInfoCmd(metadata).cmd,
+		newDeployCmd().cmd,
+		newCheckCmd().cmd,
+		newSchemaCmd().cmd,
+		newManCmd().cmd,
+		newDocsCmd().cmd,
+		newCleanCmd().cmd,
+		newInfoCmd().cmd,
 		cobracompletefig.CreateCompletionSpecCommand(cobracompletefig.Opts{Visible: false}),
 	)
 
 	root.cmd = cmd
 	return root
+}
+
+func deprecateWarn(ctx *config.Context) {
+	if ctx.Deprecated {
+		log.Warn(boldStyle.Render("you are using deprecated features, check the log above for information"))
+	}
 }
 
 func timedRunE(verb string, runef func(cmd *cobra.Command, args []string) error) func(cmd *cobra.Command, args []string) error {

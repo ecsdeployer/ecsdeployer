@@ -24,7 +24,7 @@ type checkCmd struct {
 	showYaml bool
 }
 
-func newCheckCmd(metadata *cmdMetadata) *checkCmd {
+func newCheckCmd() *checkCmd {
 	root := &checkCmd{}
 	cmd := &cobra.Command{
 		Use:           "check",

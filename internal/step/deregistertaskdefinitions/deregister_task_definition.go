@@ -16,7 +16,7 @@ import (
 type Step struct{}
 
 func (Step) String() string {
-	return "cleaning previous task definitions"
+	return "deregistering previous task definitions"
 }
 
 func (Step) Skip(ctx *config.Context) bool {
@@ -24,7 +24,7 @@ func (Step) Skip(ctx *config.Context) bool {
 		ctx.Project.Settings.KeepInSync.GetTaskDefinitions() != config.KeepInSyncTaskDefinitionsOnlyManaged
 }
 
-func (Step) Clean(ctx *config.Context) error {
+func (Step) Run(ctx *config.Context) error {
 	g := semerrgroup.NewSkipAware(semerrgroup.New(ctx.Concurrency(5)))
 	for _, defArn := range ctx.Cache.TaskDefinitions() {
 		family := helpers.GetTaskDefFamilyFromArn(defArn)

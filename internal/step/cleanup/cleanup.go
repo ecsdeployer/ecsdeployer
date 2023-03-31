@@ -9,7 +9,6 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/step/cleanupcronjobs"
 	"ecsdeployer.com/ecsdeployer/internal/step/cleanupservices"
 	"ecsdeployer.com/ecsdeployer/internal/step/cleanuptaskdefinitions"
-	"ecsdeployer.com/ecsdeployer/internal/step/deregistertaskdefinitions"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
 
@@ -18,8 +17,8 @@ type cleaner interface {
 	Clean(ctx *config.Context) error
 }
 
+// These cleaner steps must be completely self-sufficient, and must not rely on the cache
 var cleaners = []cleaner{
-	deregistertaskdefinitions.Step{},
 	cleanupservices.Step{},
 	cleanuptaskdefinitions.Step{},
 	cleanupcronjobs.Step{},

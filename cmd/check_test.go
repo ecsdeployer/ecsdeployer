@@ -14,7 +14,7 @@ func TestCheckConfig(t *testing.T) {
 
 		testutil.MockSimpleStsProxy(t)
 
-		cmd := newCheckCmd(defaultCmdMetadata()).cmd
+		cmd := newCheckCmd().cmd
 		cmd.SetArgs([]string{"-c", "testdata/valid.yml"})
 		_, _, err := executeCmdAndReturnOutput(cmd)
 		require.NoError(t, err)
@@ -32,7 +32,7 @@ func TestCheckConfig(t *testing.T) {
 
 	for _, table := range tables {
 		t.Run("failure/"+table.name, func(t *testing.T) {
-			cmd := newCheckCmd(defaultCmdMetadata()).cmd
+			cmd := newCheckCmd().cmd
 			cmd.SetArgs([]string{"-c", table.filepath})
 			_, _, err := executeCmdAndReturnOutput(cmd)
 			require.EqualError(t, err, table.expectedError)
