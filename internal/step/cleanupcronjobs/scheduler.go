@@ -73,8 +73,7 @@ func runSchedulerCleanup(ctx *config.Context) error {
 
 			go func(groupName, schedName string) {
 				defer wg.Done()
-				err := destroySchedule(ctx, groupName, schedName)
-				if err != nil {
+				if err := destroySchedule(ctx, groupName, schedName); err != nil {
 					log.WithError(err).WithField("schedule", schedName).Warn("unable to delete (ignoring)")
 				}
 			}(scheduleGroupName, scheduleName)

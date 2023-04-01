@@ -25,6 +25,8 @@ type Context struct {
 	// maximum parallel goroutines to run in a given scenario
 	MaxConcurrency int
 
+	CleanOnlyFlow bool
+
 	// app info
 	Version     string
 	ImageTag    string

@@ -35,12 +35,19 @@ func (Step) Skip(ctx *config.Context) bool {
 }
 
 func (Step) Run(ctx *config.Context) error {
+
+	wrapRunner := errhandler.Ignore
+
+	if ctx.CleanOnlyFlow {
+		wrapRunner = errhandler.Handle
+	}
+
 	for _, cleaner := range cleaners {
 		if err := skip.Maybe(
 			cleaner,
 			logging.PadLog(
 				cleaner.String(),
-				errhandler.Ignore(cleaner.Clean),
+				wrapRunner(cleaner.Clean),
 			),
 		)(ctx); err != nil {
 

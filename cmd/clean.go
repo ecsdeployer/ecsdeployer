@@ -85,4 +85,5 @@ func cleanProject(options cleanOpts) (*config.Context, error) {
 
 func setupCleanContext(ctx *config.Context, options cleanOpts) {
 	setupContextCommon(ctx, options.commonOpts)
+	ctx.CleanOnlyFlow = true
 }

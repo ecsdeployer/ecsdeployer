@@ -43,3 +43,27 @@ func silenceLogging(t *testing.T) {
 	})
 	log.Log = log.New(io.Discard)
 }
+
+// Returns stdout, stderr, [error], exitcode
+type runCommandResult struct {
+	stdout   string
+	stderr   string
+	err      error
+	exitCode int
+}
+
+func runCommand(args ...string) *runCommandResult {
+
+	result := &runCommandResult{
+		exitCode: 0,
+	}
+
+	cmd := newRootCmd("testing", func(i int) {
+		result.exitCode = i
+	}).cmd
+	cmd.SetArgs(args)
+
+	result.stdout, result.stderr, result.err = executeCmdAndReturnOutput(cmd)
+
+	return result
+}
