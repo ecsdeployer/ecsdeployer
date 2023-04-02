@@ -47,6 +47,25 @@ func Maybe(skipper interface{}, next middleware.Action) middleware.Action {
 	return next
 }
 
+// func MaybeSilent(skipper interface{}, next middleware.Action) middleware.Action {
+// 	if skipper, ok := skipper.(Skipper); ok {
+// 		return MaybeSilent(wrapper{skipper}, next)
+// 	}
+// 	if skipper, ok := skipper.(ErrSkipper); ok {
+// 		return func(ctx *config.Context) error {
+// 			skip, err := skipper.Skip(ctx)
+// 			if err != nil {
+// 				return fmt.Errorf("skip %s: %w", skipper.String(), err)
+// 			}
+// 			if skip {
+// 				return nil
+// 			}
+// 			return next(ctx)
+// 		}
+// 	}
+// 	return next
+// }
+
 var _ ErrSkipper = wrapper{}
 
 type wrapper struct {

@@ -21,6 +21,7 @@ type Stepper interface {
 }
 
 var CleanupPipeline = []Stepper{
+	preflight.Step{},
 	cleanup.Step{},
 }
 

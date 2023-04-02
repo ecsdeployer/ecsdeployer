@@ -14,6 +14,10 @@ func TestSkipStep(t *testing.T) {
 	require.Equal(t, reason, err.Error())
 }
 
+func TestSkipf(t *testing.T) {
+	require.True(t, IsSkip(Skipf("whatever %s", "blah")))
+}
+
 func TestIsSkip(t *testing.T) {
 	require.True(t, IsSkip(Skip("whatever")))
 	require.False(t, IsSkip(errors.New("nope")))

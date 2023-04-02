@@ -18,7 +18,7 @@ func init() {
 
 func main() {
 	cmd.Execute(
-		version.Version,
+		version.String(),
 		os.Exit,
 		os.Args[1:],
 	)

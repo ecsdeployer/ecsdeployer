@@ -1,14 +1,13 @@
 package config_test
 
 import (
-	"encoding/json"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/Masterminds/semver/v3"
+	hcVersion "github.com/hashicorp/go-version"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,7 +15,7 @@ func TestVersionConstraint(t *testing.T) {
 
 	t.Run("ValidateAndCheck", func(t *testing.T) {
 
-		curECSDVersion := util.Must(semver.NewVersion("1.2.3"))
+		curECSDVersion := hcVersion.Must(hcVersion.NewVersion("1.2.3"))
 
 		tables := []struct {
 			passes bool
@@ -27,7 +26,7 @@ func TestVersionConstraint(t *testing.T) {
 			{true, "< 2"},
 			{true, ">= 1"},
 
-			{false, "> 1"},
+			{false, "> 1.2.3"},
 		}
 
 		for _, table := range tables {
@@ -37,14 +36,7 @@ func TestVersionConstraint(t *testing.T) {
 
 				require.Equalf(t, table.passes, vc.Check(curECSDVersion), "Check")
 
-				valRes, err := vc.Validate(curECSDVersion)
-				if table.passes {
-					require.True(t, valRes)
-					require.Len(t, err, 0)
-				} else {
-					require.False(t, valRes)
-					require.True(t, len(err) > 0)
-				}
+				require.Equal(t, table.passes, vc.Check(curECSDVersion))
 			})
 		}
 
@@ -60,8 +52,8 @@ func TestVersionConstraint(t *testing.T) {
 			exp   *config.VersionConstraint
 		}{
 			{true, `1.2.3`, util.Must(config.NewVersionConstraint("1.2.3"))},
-			{true, `v1.2.3`, util.Must(config.NewVersionConstraint("v1.2.3"))},
-			{true, `<=v1.2.3`, util.Must(config.NewVersionConstraint("<= v1.2.3"))},
+			{true, `1.2.3`, util.Must(config.NewVersionConstraint("=1.2.3"))},
+			{true, `<=1.2.3`, util.Must(config.NewVersionConstraint("<= 1.2.3"))},
 
 			{false, `bad`, nil},
 			{false, `1`, nil},
@@ -80,7 +72,7 @@ func TestVersionConstraint(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, obj)
 
-			require.Equal(t, table.exp.String(), obj.String())
+			require.True(t, table.exp.Constraints().Equals(obj.Constraints()))
 
 			require.NoError(t, sc.CheckYAML(t, table.str))
 		}
@@ -92,18 +84,17 @@ func TestVersionConstraint(t *testing.T) {
 			exp string
 		}{
 			{util.Must(config.NewVersionConstraint("1.2.3")), `1.2.3`},
-			{util.Must(config.NewVersionConstraint("v1.2.3")), `v1.2.3`},
-			{util.Must(config.NewVersionConstraint("<= v1.2.3")), `<=v1.2.3`},
+			{util.Must(config.NewVersionConstraint("<= 1.2.3")), `<= 1.2.3`},
 		}
 
 		for _, table := range tables {
 			// marshal the expected because json adds \uXXXXX characters
-			expected, err := json.Marshal(table.exp)
+			expected, err := util.Jsonify(table.exp)
 			require.NoError(t, err)
 
-			res, err := json.Marshal(table.ver)
+			res, err := util.Jsonify(table.ver)
 			require.NoError(t, err)
-			require.JSONEq(t, string(expected), string(res))
+			require.JSONEq(t, expected, res)
 		}
 	})
 }

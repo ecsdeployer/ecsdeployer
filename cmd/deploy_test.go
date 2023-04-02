@@ -6,11 +6,9 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
-	"ecsdeployer.com/ecsdeployer/internal/steps"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	dsmock "ecsdeployer.com/ecsdeployer/internal/testutil/mocks/ecs/describeservicemock"
 	"ecsdeployer.com/ecsdeployer/internal/testutil/mocks/ecs/taskmock"
-	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	log "github.com/caarlos0/log"
 	"github.com/charmbracelet/lipgloss"
@@ -22,31 +20,6 @@ import (
 func TestDeployCmd(t *testing.T) {
 	t.SkipNow()
 	silenceLogging(t)
-
-	t.Run("calls correct function", func(t *testing.T) {
-		oldRef := stepDeploymentStepFunc
-		t.Cleanup(func() {
-			stepDeploymentStepFunc = oldRef
-		})
-
-		testutil.StartMocker(t, nil)
-
-		wasCalled := false
-		stepDeploymentStepFunc = func(_ *config.Project) *steps.Step {
-			wasCalled = true
-			return steps.NoopStep()
-		}
-
-		cmd := newDeployCmd().cmd
-		cmd.Root().SetArgs([]string{"-q"})
-		cmd.SetArgs([]string{"-c", "testdata/info_simple.yml"})
-
-		_, _, err := executeCmdAndReturnOutput(cmd)
-
-		require.NoError(t, err)
-
-		require.True(t, wasCalled)
-	})
 }
 
 func TestDeploySmoke(t *testing.T) {

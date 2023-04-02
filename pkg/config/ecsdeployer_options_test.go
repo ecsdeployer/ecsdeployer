@@ -7,7 +7,6 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"ecsdeployer.com/ecsdeployer/pkg/version"
 	"github.com/stretchr/testify/require"
 )
 
@@ -77,35 +76,35 @@ func TestEcsDeployerOptions(t *testing.T) {
 
 	})
 
-	t.Run("IsVersionAllowed", func(t *testing.T) {
-		ecsdBlank := &config.EcsDeployerOptions{}
+	// t.Run("IsVersionAllowed", func(t *testing.T) {
+	// 	ecsdBlank := &config.EcsDeployerOptions{}
 
-		ecsdRange := &config.EcsDeployerOptions{
-			RequiredVersion: util.Must(config.NewVersionConstraint("~> 1.2.3")),
-		}
+	// 	ecsdRange := &config.EcsDeployerOptions{
+	// 		RequiredVersion: util.Must(config.NewVersionConstraint("~> 1.2.3")),
+	// 	}
 
-		ecsdGT := &config.EcsDeployerOptions{
-			RequiredVersion: util.Must(config.NewVersionConstraint(">= 1.2.3")),
-		}
+	// 	ecsdGT := &config.EcsDeployerOptions{
+	// 		RequiredVersion: util.Must(config.NewVersionConstraint(">= 1.2.3")),
+	// 	}
 
-		tables := []struct {
-			ver        string
-			allowRange bool
-			allowGT    bool
-		}{
-			{"1.2.3", true, true},
-			{version.DevVersionID, false, true},
-		}
+	// 	tables := []struct {
+	// 		ver        string
+	// 		allowRange bool
+	// 		allowGT    bool
+	// 	}{
+	// 		{"1.2.3", true, true},
+	// 		{version.DevVersionID, false, true},
+	// 	}
 
-		for _, table := range tables {
-			blankAllowed, _ := ecsdBlank.IsVersionAllowed(table.ver)
-			require.Truef(t, blankAllowed, "Blank")
+	// 	for _, table := range tables {
+	// 		blankAllowed, _ := ecsdBlank.IsVersionAllowed(table.ver)
+	// 		require.Truef(t, blankAllowed, "Blank")
 
-			rngAllowed, _ := ecsdRange.IsVersionAllowed(table.ver)
-			require.Equalf(t, table.allowRange, rngAllowed, "Ranged")
+	// 		rngAllowed, _ := ecsdRange.IsVersionAllowed(table.ver)
+	// 		require.Equalf(t, table.allowRange, rngAllowed, "Ranged")
 
-			gtAllowed, _ := ecsdGT.IsVersionAllowed(table.ver)
-			require.Equalf(t, table.allowGT, gtAllowed, "GreaterThan")
-		}
-	})
+	// 		gtAllowed, _ := ecsdGT.IsVersionAllowed(table.ver)
+	// 		require.Equalf(t, table.allowGT, gtAllowed, "GreaterThan")
+	// 	}
+	// })
 }

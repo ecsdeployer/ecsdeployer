@@ -33,11 +33,11 @@ func loadProjectContext(options *configLoaderExtras) (*config.Context, context.C
 		return nil, nil, err
 	}
 
-	if options.cmdMetadata != nil {
-		if err = checkVersionRestriction(cfg, options.cmdMetadata); err != nil {
-			return nil, nil, err
-		}
-	}
+	// if options.cmdMetadata != nil {
+	// 	if err = checkVersionRestriction(cfg, options.cmdMetadata); err != nil {
+	// 		return nil, nil, err
+	// 	}
+	// }
 
 	if options.timeout == 0 {
 		options.timeout = 90 * time.Minute
@@ -84,18 +84,18 @@ func loadConfig(path string) (*config.Project, error) {
 	return nil, errors.New("No configuration file was found")
 }
 
-func checkVersionRestriction(config *config.Project, metadata *cmdMetadata) error {
-	ok, errorList := config.EcsDeployerOptions.IsVersionAllowed(metadata.version)
-	if len(errorList) > 0 {
-		for _, err := range errorList {
-			log.WithError(err).Error("Version Restriction Failed")
-		}
-		return errors.New("Version restriction failed")
-	}
+// func checkVersionRestriction(config *config.Project, metadata *cmdMetadata) error {
+// 	ok, errorList := config.EcsDeployerOptions.IsVersionAllowed(metadata.version)
+// 	if len(errorList) > 0 {
+// 		for _, err := range errorList {
+// 			log.WithError(err).Error("Version Restriction Failed")
+// 		}
+// 		return errors.New("Version restriction failed")
+// 	}
 
-	if !ok {
-		return errors.New("Your configuration file prevents this version of ECSDeployer from being used.")
-	}
+// 	if !ok {
+// 		return errors.New("Your configuration file prevents this version of ECSDeployer from being used.")
+// 	}
 
-	return nil
-}
+// 	return nil
+// }

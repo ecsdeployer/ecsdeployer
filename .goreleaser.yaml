@@ -29,7 +29,9 @@ builds:
     ldflags:
       - "-s -w"
       - -X ecsdeployer.com/ecsdeployer/pkg/version.Version={{.Version}}
-      - -X ecsdeployer.com/ecsdeployer/pkg/version.BuildSHA={{.Commit}}
+      - -X ecsdeployer.com/ecsdeployer/pkg/version.BuildSHA={{.FullCommit}}
+      - -X ecsdeployer.com/ecsdeployer/pkg/version.ShortSHA={{.ShortCommit}}
+      - -X ecsdeployer.com/ecsdeployer/pkg/version.Prerelease={{.Prerelease}}
 
 archives:
   - id: homebrew
