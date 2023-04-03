@@ -8,7 +8,7 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
-const awsAccountIdRegexStr = `^[0-9]{12,}$`
+const awsAccountIdRegexStr = `^[0-9]{12}$`
 
 var (
 	awsAccountIdRegex = regexp.MustCompile(awsAccountIdRegexStr)
@@ -26,18 +26,29 @@ func (obj *EcsDeployerOptions) ApplyDefaults() {
 	// }
 }
 
-func (obj *EcsDeployerOptions) IsAllowedAccountId(acct string) bool {
-	if obj.AllowedAccountId == nil {
-		return true
-	}
-
-	return acct == *obj.AllowedAccountId
-}
-
 func (obj *EcsDeployerOptions) Validate() error {
 
 	if !util.IsBlank(obj.AllowedAccountId) {
-		awsAccountIdRegex.MatchString(*obj.AllowedAccountId)
+		if !awsAccountIdRegex.MatchString(*obj.AllowedAccountId) {
+			return NewValidationError("AWS AccountIDs must be exactly 12 digits.")
+		}
+	}
+
+	return nil
+}
+
+func (obj *EcsDeployerOptions) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	type tEcsDeployerOptions EcsDeployerOptions
+	var defo = tEcsDeployerOptions{}
+	if err := unmarshal(&defo); err != nil {
+		return err
+	}
+
+	*obj = EcsDeployerOptions(defo)
+
+	obj.ApplyDefaults()
+	if err := obj.Validate(); err != nil {
+		return err
 	}
 
 	return nil
@@ -67,33 +78,3 @@ func (EcsDeployerOptions) JSONSchema() *jsonschema.Schema {
 		Properties:           props,
 	}
 }
-
-// func (EcsDeployerOptions) JSONSchemaExtend(base *jsonschema.Schema) {
-// 	configschema.SchemaPropMerge(base, "required_version", func(s *jsonschema.Schema) {
-// 		s.Description = "Create a version constraint to prevent different versions of ECS Deployer from deploying this app."
-// 		// s.Comments = "https://github.com/Masterminds/semver"
-// 	})
-
-// 	configschema.SchemaPropMerge(base, "allowed_account_id", func(s *jsonschema.Schema) {
-// 		// s.Description = "Restrict to a specific AWS account ID."
-// 		// s.Pattern = "^[0-9]{12,}$"
-// 		// s.Extras = map[string]interface{}{
-// 		// 	"type": []string{"string", "integer"},
-// 		// }
-
-// 		*s = jsonschema.Schema{
-
-// 			Description: "Restrict to a specific AWS account ID.",
-// 			OneOf: []*jsonschema.Schema{
-// 				{
-// 					Type:    "string",
-// 					Pattern: awsAccountIdRegexStr,
-// 				},
-// 				{
-// 					Type: "integer",
-// 				},
-// 			},
-// 		}
-
-// 	})
-// }

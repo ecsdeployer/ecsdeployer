@@ -19,13 +19,11 @@ func TestSchemaCmd(t *testing.T) {
 			t.SkipNow()
 			return
 		}
-		cmd := newSchemaCmd().cmd
 		dir := t.TempDir()
 		destination := path.Join(dir, "schema.json")
-		cmd.SetArgs([]string{"--output", destination})
 
-		_, _, err := executeCmdAndReturnOutput(cmd)
-		require.NoError(t, err)
+		result := runCommand("schema", "--output", destination)
+		require.NoError(t, result.err)
 
 		outFile, err := os.Open(destination)
 		require.NoError(t, err)
@@ -36,14 +34,11 @@ func TestSchemaCmd(t *testing.T) {
 	})
 
 	t.Run("outputs to stdout", func(t *testing.T) {
-		cmd := newSchemaCmd().cmd
-		cmd.SetArgs([]string{"--output", "-"})
-
-		osOut, _, err := executeCmdAndReturnOutput(cmd)
-		require.NoError(t, err)
+		result := runCommand("schema", "--output", "-")
+		require.NoError(t, result.err)
 
 		schema := map[string]interface{}{}
-		require.NoError(t, json.NewDecoder(strings.NewReader(osOut)).Decode(&schema))
+		require.NoError(t, json.NewDecoder(strings.NewReader(result.stdout)).Decode(&schema))
 		require.Equal(t, "https://json-schema.org/draft/2020-12/schema", schema["$schema"].(string))
 	})
 }

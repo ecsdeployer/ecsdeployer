@@ -11,10 +11,6 @@ func TestInfoCmd(t *testing.T) {
 	silenceLogging(t)
 	testutil.StartMocker(t, nil)
 
-	cmd := newRootCmd("testing", func(i int) {}).cmd
-	cmd.SetArgs([]string{"info", "-c", "testdata/info_simple.yml", "--trace"})
-
-	_, _, err := executeCmdAndReturnOutput(cmd)
-
-	require.NoError(t, err)
+	result := runCommand("info", "-c", "testdata/info_simple.yml", "--trace")
+	require.NoError(t, result.err)
 }

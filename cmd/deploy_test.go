@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
@@ -10,26 +9,13 @@ import (
 	dsmock "ecsdeployer.com/ecsdeployer/internal/testutil/mocks/ecs/describeservicemock"
 	"ecsdeployer.com/ecsdeployer/internal/testutil/mocks/ecs/taskmock"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	log "github.com/caarlos0/log"
-	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/termenv"
 	"github.com/stretchr/testify/require"
 	"github.com/webdestroya/awsmocker"
 )
 
 func TestDeployCmd(t *testing.T) {
-	t.SkipNow()
-	silenceLogging(t)
-}
-
-func TestDeploySmoke(t *testing.T) {
 	helpers.IsTestingMode = true
-
-	orig := log.Log
-	t.Cleanup(func() {
-		log.Log = orig
-	})
-	log.Log = log.New(os.Stdout)
+	setupCmdOutput(t)
 
 	mocks := []*awsmocker.MockedEndpoint{
 		testutil.Mock_EC2_DescribeSecurityGroups_Simple(),
@@ -147,19 +133,6 @@ func TestDeploySmoke(t *testing.T) {
 		Mocks: mocks,
 	})
 
-	lipgloss.SetColorProfile(termenv.TrueColor)
-	log.SetLevel(log.TraceLevel)
-	cmd := newRootCmd("fake", func(i int) {}).cmd
-	log.Strings[log.DebugLevel] = "%"
-
-	// cmd := newDeployCmd().cmd
-	// cmd.Root().SetArgs([]string{"-q"})
-	// log.SetLevel(log.DebugLevel)
-	// cmd.Root().SetArgs([]string{"--debug"})
-	// cmd.SetArgs([]string{"deploy", "-c", "../internal/builders/testdata/smoke.yml", "--debug"})
-	cmd.SetArgs([]string{"deploy", "-c", "../internal/builders/testdata/everything.yml", "--trace"})
-
-	_, _, err := executeCmdAndReturnOutput(cmd)
-	require.NoError(t, err)
-
+	result := runCommand("deploy", "-c", "../internal/builders/testdata/everything.yml", "--trace")
+	require.NoError(t, result.err)
 }

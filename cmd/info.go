@@ -7,6 +7,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/step/preflight"
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	"ecsdeployer.com/ecsdeployer/pkg/config"
 	log "github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )
@@ -66,19 +67,13 @@ func projectInfo(cmd *cobra.Command, options infoOpts) error {
 		}
 	}()
 
-	ctx, cancel, err := loadProjectContext(&configLoaderExtras{
-		configFile: options.config,
-		appVersion: options.appVersion,
-		imageTag:   options.imageTag,
-		noValidate: false,
-		timeout:    10 * time.Minute,
-		imageUri:   options.imageUri,
-		// imageUri:    op,
-	})
+	cfg, err := loadConfig(options.config)
 	if err != nil {
 		return err
 	}
+	ctx, cancel := config.NewWithTimeout(cfg, 30*time.Minute)
 	defer cancel()
+	setupContextCommon(ctx, options.commonOpts)
 
 	cmd.Println(boldStyle.Render("ECS DEPLOYER"))
 	cmd.Println()

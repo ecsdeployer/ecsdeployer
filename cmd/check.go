@@ -33,7 +33,7 @@ func newCheckCmd() *checkCmd {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Args:          cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			if root.quiet {
 				log.Log = log.New(io.Discard)
 			}
@@ -127,8 +127,10 @@ func validateConfigSchemaBytes(data []byte) error {
 
 	if !result.Valid() {
 		log.Error("The project configuration is not valid because:")
+		log.IncreasePadding()
+		defer log.DecreasePadding()
 		for _, err := range result.Errors() {
-			log.Error(fmt.Sprintf("- %s", err))
+			log.Error(err.String())
 		}
 		return errors.New("config does not adhere to schema")
 	}

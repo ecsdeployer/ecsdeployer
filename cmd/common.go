@@ -10,9 +10,9 @@ const (
 	paramAppVersion = "app-version"
 	paramImageTag   = "tag"
 	paramImage      = "image"
-	// paramImageTag   = "image-tag"
 )
 
+// options that are generally available to all commands
 type commonOpts struct {
 	config     string
 	appVersion string
@@ -29,6 +29,7 @@ func setCommonFlags(cmd *cobra.Command, common *commonOpts) {
 	_ = cmd.Flags().SetAnnotation(paramConfigFile, cobra.BashCompFilenameExt, []string{"yaml", "yml"})
 }
 
+// process the common specific context modifications
 func setupContextCommon(ctx *config.Context, options commonOpts) {
 	ctx.Version = options.appVersion
 	ctx.ImageTag = options.imageTag

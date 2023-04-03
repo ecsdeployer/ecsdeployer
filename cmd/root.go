@@ -45,10 +45,6 @@ type rootCmd struct {
 	exit  func(int)
 }
 
-type cmdMetadata struct {
-	version string
-}
-
 func newRootCmd(version string, exit func(int)) *rootCmd {
 	root := &rootCmd{
 		exit: exit,
@@ -73,6 +69,8 @@ Check out our website for more information, examples and documentation: https://
 			HiddenDefaultCmd: true,
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+
+			log.Strings[log.DebugLevel] = "%"
 			if root.trace {
 				log.SetLevel(log.TraceLevel)
 				log.Debug("trace logs enabled")

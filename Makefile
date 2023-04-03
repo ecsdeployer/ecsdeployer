@@ -73,6 +73,10 @@ test:
 test-v:
 	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs)
 
+.PHONY: test-smokedeploy
+test-smokedeploy:
+	@./scripts/run_with_test_env.sh go test -timeout 180s -v ./cmd/ -run TestDeployCmd -- --dump-cmd-output
+
 .PHONY: test-testutil
 test-testutil:
 	@go test -timeout 180s ./internal/testutil

@@ -3,6 +3,7 @@ package preflight
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	hcVersion "github.com/hashicorp/go-version"
@@ -12,6 +13,33 @@ import (
 func TestVersionCheck(t *testing.T) {
 	t.Run("String", func(t *testing.T) {
 		require.Equal(t, "version requirements", checkVersion{}.String())
+	})
+
+	t.Run("CheckAndSkip", func(t *testing.T) {
+
+		t.Run("not set", func(t *testing.T) {
+			ctx := config.New(&config.Project{EcsDeployerOptions: &config.EcsDeployerOptions{}})
+			require.False(t, checkVersion{}.Skip(ctx))
+			require.NoError(t, checkVersion{}.Check(ctx))
+		})
+
+		t.Run("set same version", func(t *testing.T) {
+			ctx := config.New(&config.Project{EcsDeployerOptions: &config.EcsDeployerOptions{
+				RequiredVersion: util.Must(config.NewVersionConstraint(">= 0")),
+			}})
+			require.False(t, checkVersion{}.Skip(ctx))
+			require.NoError(t, checkVersion{}.Check(ctx))
+		})
+
+		t.Run("set diff version", func(t *testing.T) {
+			ctx := config.New(&config.Project{EcsDeployerOptions: &config.EcsDeployerOptions{
+				RequiredVersion: util.Must(config.NewVersionConstraint("~> 0.0.0")),
+			}})
+			require.False(t, checkVersion{}.Skip(ctx))
+			err := checkVersion{}.Check(ctx)
+			require.Error(t, err)
+			require.ErrorContains(t, err, "prevents this version")
+		})
 	})
 }
 
