@@ -4,7 +4,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	serviceBuilder "ecsdeployer.com/ecsdeployer/internal/builders/service"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 func (s *Step) createService(ctx *config.Context) error {

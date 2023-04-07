@@ -10,8 +10,8 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/pipeline"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/caarlos0/ctrlc"
-	log "github.com/caarlos0/log"
 	"github.com/spf13/cobra"
+	"github.com/webdestroya/go-log"
 )
 
 type cleanCmd struct {

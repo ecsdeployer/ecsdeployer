@@ -10,7 +10,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 type Step struct{}

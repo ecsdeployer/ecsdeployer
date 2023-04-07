@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
 	"github.com/stretchr/testify/require"
+	"github.com/webdestroya/go-log"
 )
 
 func TestLogging(t *testing.T) {

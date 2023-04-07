@@ -6,7 +6,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/middleware/errhandler"
 	"ecsdeployer.com/ecsdeployer/internal/middleware/skip"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 type Step struct{}

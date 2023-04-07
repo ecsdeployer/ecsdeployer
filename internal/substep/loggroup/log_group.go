@@ -4,7 +4,7 @@ package loggroup
 import (
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 type Substep struct {

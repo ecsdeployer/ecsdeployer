@@ -11,8 +11,8 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
 	"github.com/spf13/cobra"
+	"github.com/webdestroya/go-log"
 	"github.com/xeipuuv/gojsonschema"
 )
 

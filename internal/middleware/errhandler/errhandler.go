@@ -4,7 +4,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/middleware"
 	"ecsdeployer.com/ecsdeployer/internal/step"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 func Handle(action middleware.Action) middleware.Action {

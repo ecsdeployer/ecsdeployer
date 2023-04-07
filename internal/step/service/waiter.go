@@ -8,7 +8,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 func waitForStable(ctx *config.Context, service *ecsTypes.Service) error {

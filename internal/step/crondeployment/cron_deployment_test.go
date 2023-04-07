@@ -7,9 +7,9 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/testutil/steptestutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
 	"github.com/stretchr/testify/require"
 	"github.com/webdestroya/awsmocker"
+	"github.com/webdestroya/go-log"
 )
 
 func TestCronDeploymentStep(t *testing.T) {

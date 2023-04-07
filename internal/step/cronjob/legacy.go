@@ -7,7 +7,7 @@ import (
 	cronBuilder "ecsdeployer.com/ecsdeployer/internal/builders/cron"
 	"ecsdeployer.com/ecsdeployer/internal/substep/taskdefinition"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 func (s *Step) runLegacyVariant(ctx *config.Context) error {

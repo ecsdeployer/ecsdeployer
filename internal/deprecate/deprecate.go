@@ -7,8 +7,8 @@ import (
 	"text/template"
 
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/webdestroya/go-log"
 )
 
 const baseURL = "https://ecsdeployer.com/deprecations/#"

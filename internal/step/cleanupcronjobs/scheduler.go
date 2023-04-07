@@ -11,7 +11,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	scheduler "github.com/aws/aws-sdk-go-v2/service/scheduler"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 	"golang.org/x/exp/slices"
 )
 

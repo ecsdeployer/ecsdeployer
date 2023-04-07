@@ -8,7 +8,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/middleware"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 // Skipper defines a method to skip an entire step.

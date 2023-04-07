@@ -8,8 +8,8 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/step/preflight"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
 	"github.com/spf13/cobra"
+	"github.com/webdestroya/go-log"
 )
 
 type infoCmd struct {

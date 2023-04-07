@@ -10,7 +10,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/middleware/skip"
 	"ecsdeployer.com/ecsdeployer/internal/substep/loggroup"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	tieredlog "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 type Substep struct {
@@ -50,6 +50,6 @@ func (s *Substep) Register(ctx *config.Context) (string, error) {
 	// add to the global cache for later
 	ctx.Cache.AddTaskDefinition(taskDefArn)
 
-	tieredlog.WithField("arn", taskDefArn).Debug("registered task definition")
+	log.WithField("arn", taskDefArn).Debug("registered task definition")
 	return taskDefArn, nil
 }

@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
+	"github.com/webdestroya/go-log"
 	cobracompletefig "github.com/withfig/autocomplete-tools/integrations/cobra"
 )
 

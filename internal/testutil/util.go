@@ -14,9 +14,9 @@ import (
 	"text/template"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	log "github.com/caarlos0/log"
 	"github.com/jmespath/go-jmespath"
 	"github.com/webdestroya/awsmocker"
+	"github.com/webdestroya/go-log"
 	"golang.org/x/exp/maps"
 )
 

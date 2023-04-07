@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 var genericConfigPaths = [...]string{

@@ -6,7 +6,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 func (s *Step) getExisting(ctx *config.Context) (bool, error) {

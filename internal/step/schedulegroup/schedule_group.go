@@ -11,7 +11,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/scheduler"
 	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
-	log "github.com/caarlos0/log"
+	"github.com/webdestroya/go-log"
 )
 
 type Step struct{}

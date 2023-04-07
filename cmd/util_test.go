@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
-	log "github.com/caarlos0/log"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
+	"github.com/webdestroya/go-log"
 	"golang.org/x/exp/slices"
 )
 
