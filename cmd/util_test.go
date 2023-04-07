@@ -64,7 +64,9 @@ func executeCmdAndReturnOutput(cmd *cobra.Command) (string, string, error) {
 	return bufOut.String(), bufErr.String(), err
 }
 
+// send logs to the trash
 func silenceLogging(t *testing.T) {
+	t.Helper()
 	orig := log.Log
 	t.Cleanup(func() {
 		log.Log = orig
@@ -80,17 +82,64 @@ type runCommandResult struct {
 	exitCode int
 }
 
-func runCommand(args ...string) *runCommandResult {
+func (rc *runCommandResult) SetExitCode(c int) {
+	rc.exitCode = c
+}
+
+// runs a command from the root and catches all the in/out/err/exitcode
+func runCommand(t *testing.T, args ...string) *runCommandResult {
+	t.Helper()
+
 	result := &runCommandResult{
 		exitCode: 0,
 	}
 
-	cmd := newRootCmd(fakedTestVersionStr, func(i int) {
-		result.exitCode = i
-	}).cmd
-	cmd.SetArgs(args)
+	rcmd := newRootCmd(fakedTestVersionStr, result.SetExitCode)
 
-	result.stdout, result.stderr, result.err = executeCmdAndReturnOutput(cmd)
+	var bufOut bytes.Buffer
+	var bufErr bytes.Buffer
+	rcmd.cmd.SetOutput(&bufOut)
+	rcmd.cmd.SetErr(&bufErr)
+
+	origLog := log.Log
+	t.Cleanup(func() {
+		log.Log = origLog
+	})
+	log.Log = log.New(&bufOut)
+
+	// rcmd.Execute(args)
+
+	// result.stdout, result.stderr, result.err = executeCmdAndReturnOutput(cmd)
+	rcmd.cmd.SetArgs(args)
+	result.err = rcmd.cmd.Execute()
+
+	result.stdout = bufOut.String()
+	result.stderr = bufErr.String()
 
 	return result
+}
+
+// used for populating stdin or any other stream with data from a file
+func fillStreamWithConfig(t *testing.T, dst io.WriteSeeker, srcFile string) error {
+	t.Helper()
+
+	src, err := os.Open(srcFile)
+	if err != nil {
+		return err
+	}
+
+	defer src.Close()
+
+	data, err := io.ReadAll(src)
+	if err != nil {
+		return err
+	}
+
+	if _, err := dst.Write(data); err != nil {
+		return err
+	}
+	if _, err := dst.Seek(0, 0); err != nil {
+		return err
+	}
+	return nil
 }

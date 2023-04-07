@@ -3,7 +3,6 @@ module ecsdeployer.com/ecsdeployer
 go 1.20
 
 require (
-	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/aws/aws-sdk-go-v2 v1.17.6
 	github.com/aws/aws-sdk-go-v2/config v1.18.16
 	github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs v1.20.6
@@ -18,6 +17,7 @@ require (
 	github.com/caarlos0/ctrlc v1.2.0
 	github.com/caarlos0/log v0.1.6
 	github.com/charmbracelet/lipgloss v0.7.1
+	github.com/hashicorp/go-version v1.6.0
 	github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0
 	github.com/invopop/jsonschema v0.7.0
 	github.com/jmespath/go-jmespath v0.4.0
@@ -50,7 +50,6 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect

@@ -51,7 +51,7 @@ func TestCleanCmd(t *testing.T) {
 			},
 		})
 
-		result := runCommand("clean", "-q", "-c", "testdata/info_simple.yml")
+		result := runCommand(t, "clean", "-q", "-c", "testdata/info_simple.yml")
 
 		require.NoError(t, result.err)
 		require.Equal(t, 0, result.exitCode)

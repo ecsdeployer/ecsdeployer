@@ -15,13 +15,7 @@ func TestManCmd(t *testing.T) {
 	})
 
 	t.Run("calls correct function", func(t *testing.T) {
-
-		// cmd := newManCmd().cmd
-		// // cmd.Root().SetArgs([]string{"-q"})
-
-		// _, _, err := executeCmdAndReturnOutput(cmd)
-
-		result := runCommand("man")
+		result := runCommand(t, "man")
 		require.NoError(t, result.err)
 		require.Contains(t, result.stdout, ".TH ECSDEPLOYER")
 	})

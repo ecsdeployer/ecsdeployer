@@ -14,9 +14,27 @@ func TestCheckConfig(t *testing.T) {
 
 	t.Run("happy path", func(t *testing.T) {
 		testutil.MockSimpleStsProxy(t)
-		result := runCommand("check", "-c", "testdata/valid.yml")
-		require.NoError(t, result.err)
-		require.Equal(t, 0, result.exitCode)
+
+		const testFile = "testdata/valid.yml"
+
+		tables := []struct {
+			label string
+			args  []string
+		}{
+			{"normal", []string{"check", "-c", testFile}},
+			{"quiet", []string{"check", "-c", testFile, "-q"}},
+			{"show json", []string{"check", "-c", testFile, "--show"}},
+			{"show yaml", []string{"check", "-c", testFile, "--yaml"}},
+		}
+
+		for _, table := range tables {
+			t.Run(table.label, func(t *testing.T) {
+
+				result := runCommand(t, table.args...)
+				require.NoError(t, result.err)
+				require.Equal(t, 0, result.exitCode)
+			})
+		}
 	})
 
 	t.Run("failures", func(t *testing.T) {
@@ -33,7 +51,7 @@ func TestCheckConfig(t *testing.T) {
 
 		for _, table := range tables {
 			t.Run(table.name, func(t *testing.T) {
-				result := runCommand("check", "-c", table.filepath)
+				result := runCommand(t, "check", "-c", table.filepath)
 				require.Error(t, result.err)
 				require.EqualError(t, result.err, table.expectedError)
 			})

@@ -15,6 +15,16 @@ import (
 
 func TestDeployCmd(t *testing.T) {
 	helpers.IsTestingMode = true
+
+	t.Run("failure", func(t *testing.T) {
+		result := runCommand(t, "deploy", "-c", "badfile.yml")
+		require.Error(t, result.err)
+	})
+
+}
+
+func TestDeploySmoke(t *testing.T) {
+	helpers.IsTestingMode = true
 	setupCmdOutput(t)
 
 	mocks := []*awsmocker.MockedEndpoint{
@@ -133,6 +143,6 @@ func TestDeployCmd(t *testing.T) {
 		Mocks: mocks,
 	})
 
-	result := runCommand("deploy", "-c", "../internal/builders/testdata/everything.yml", "--trace")
+	result := runCommand(t, "deploy", "-c", "../internal/builders/testdata/everything.yml", "--trace")
 	require.NoError(t, result.err)
 }

@@ -11,8 +11,8 @@ import (
 var genericConfigPaths = [...]string{
 	".ecsdeployer.yml",
 	".ecsdeployer.yaml",
-	// "ecsdeployer.yml",
-	// "ecsdeployer.yaml",
+	"ecsdeployer.yml",
+	"ecsdeployer.yaml",
 }
 
 func loadConfig(path string) (*config.Project, error) {

@@ -22,7 +22,7 @@ func TestSchemaCmd(t *testing.T) {
 		dir := t.TempDir()
 		destination := path.Join(dir, "schema.json")
 
-		result := runCommand("schema", "--output", destination)
+		result := runCommand(t, "schema", "--output", destination)
 		require.NoError(t, result.err)
 
 		outFile, err := os.Open(destination)
@@ -34,7 +34,7 @@ func TestSchemaCmd(t *testing.T) {
 	})
 
 	t.Run("outputs to stdout", func(t *testing.T) {
-		result := runCommand("schema", "--output", "-")
+		result := runCommand(t, "schema", "--output", "-")
 		require.NoError(t, result.err)
 
 		schema := map[string]interface{}{}

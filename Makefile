@@ -75,7 +75,7 @@ test-v:
 
 .PHONY: test-smokedeploy
 test-smokedeploy:
-	@./scripts/run_with_test_env.sh go test -timeout 180s -v ./cmd/ -run TestDeployCmd -- --dump-cmd-output
+	@./scripts/run_with_test_env.sh go test -timeout 180s -v ./cmd/ -run TestDeploySmoke -- --dump-cmd-output
 
 .PHONY: test-testutil
 test-testutil:
