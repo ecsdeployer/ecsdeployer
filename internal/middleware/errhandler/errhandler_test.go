@@ -15,20 +15,29 @@ func TestError(t *testing.T) {
 	testutil.DisableLoggingForTest(t)
 
 	t.Run("no errors", func(t *testing.T) {
-		require.NoError(t, Handle(func(ctx *config.Context) error {
+		nilThrower := func(ctx *config.Context) error {
 			return nil
-		})(nil))
+		}
+
+		require.NoError(t, Handle(nilThrower)(nil))
+		require.NoError(t, Ignore(nilThrower)(nil))
 	})
 
 	t.Run("step skipped", func(t *testing.T) {
-		require.NoError(t, Handle(func(ctx *config.Context) error {
+		skipThrower := func(ctx *config.Context) error {
 			return step.Skip("some skipper error")
-		})(nil))
+		}
+
+		require.NoError(t, Handle(skipThrower)(nil))
+		require.NoError(t, Ignore(skipThrower)(nil))
 	})
 
 	t.Run("some err", func(t *testing.T) {
-		require.Error(t, Handle(func(ctx *config.Context) error {
+		errThrower := func(ctx *config.Context) error {
 			return fmt.Errorf("step errored")
-		})(nil))
+		}
+
+		require.Error(t, Handle(errThrower)(nil))
+		require.NoError(t, Ignore(errThrower)(nil))
 	})
 }
