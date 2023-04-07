@@ -9,7 +9,6 @@ import (
 	log "github.com/caarlos0/log"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
-	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
 )
 
@@ -48,20 +47,6 @@ func setupCmdOutput(t *testing.T) {
 	// silence output
 
 	silenceLogging(t)
-}
-
-// Outputs stdout, stderr, Error
-func executeCmdAndReturnOutput(cmd *cobra.Command) (string, string, error) {
-	var bufOut bytes.Buffer
-	var bufErr bytes.Buffer
-	cmd.SetOutput(&bufOut)
-	cmd.SetErr(&bufErr)
-	defer cmd.SetErr(os.Stderr)
-	defer cmd.SetOutput(os.Stdout)
-
-	err := cmd.Execute()
-
-	return bufOut.String(), bufErr.String(), err
 }
 
 // send logs to the trash
@@ -107,9 +92,6 @@ func runCommand(t *testing.T, args ...string) *runCommandResult {
 	})
 	log.Log = log.New(&bufOut)
 
-	// rcmd.Execute(args)
-
-	// result.stdout, result.stderr, result.err = executeCmdAndReturnOutput(cmd)
 	rcmd.cmd.SetArgs(args)
 	result.err = rcmd.cmd.Execute()
 
