@@ -14,6 +14,8 @@ import (
 
 func TestServiceStep(t *testing.T) {
 
+	require.Equal(t, "deploying services", Step{}.String())
+
 	clusterArn := fmt.Sprintf("arn:aws:ecs:%s:%s:cluster/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, "testcluster")
 	webServiceName := "dummy-web"
 
