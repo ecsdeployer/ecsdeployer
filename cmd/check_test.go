@@ -30,7 +30,7 @@ func TestCheckConfig(t *testing.T) {
 		for _, table := range tables {
 			t.Run(table.label, func(t *testing.T) {
 
-				result := runCommand(t, table.args...)
+				result := runCommand(t, nil, table.args...)
 				require.NoError(t, result.err)
 				require.Equal(t, 0, result.exitCode)
 			})
@@ -51,7 +51,7 @@ func TestCheckConfig(t *testing.T) {
 
 		for _, table := range tables {
 			t.Run(table.name, func(t *testing.T) {
-				result := runCommand(t, "check", "-c", table.filepath)
+				result := runCommand(t, nil, "check", "-c", table.filepath)
 				require.Error(t, result.err)
 				require.EqualError(t, result.err, table.expectedError)
 			})

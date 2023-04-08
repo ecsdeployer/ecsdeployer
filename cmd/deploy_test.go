@@ -17,13 +17,35 @@ func TestDeployCmd(t *testing.T) {
 	helpers.IsTestingMode = true
 
 	t.Run("failure", func(t *testing.T) {
-		result := runCommand(t, "deploy", "-c", "badfile.yml")
+		result := runCommand(t, nil, "deploy", "-c", "badfile.yml")
 		require.Error(t, result.err)
 	})
 
 }
 
+// This runs the whole pipeline and is mainly used for testing the output
+// but it also performs a pretty thorough runthrough of the deploy pipeline
 func TestDeploySmoke(t *testing.T) {
+
+	t.Run("Trace", func(t *testing.T) {
+		setupFullDeployMock(t)
+		require.NoError(t, runCommand(t, &rcConf{noWrapLog: true}, "deploy", "-c", "../internal/builders/testdata/everything.yml", "--trace").err)
+	})
+
+	t.Run("Debug", func(t *testing.T) {
+		setupFullDeployMock(t)
+		require.NoError(t, runCommand(t, &rcConf{noWrapLog: true}, "deploy", "-c", "../internal/builders/testdata/everything.yml", "--debug").err)
+	})
+
+	t.Run("Normal", func(t *testing.T) {
+		setupFullDeployMock(t)
+		require.NoError(t, runCommand(t, &rcConf{noWrapLog: true}, "deploy", "-c", "../internal/builders/testdata/everything.yml").err)
+	})
+
+}
+
+func setupFullDeployMock(t *testing.T) {
+	t.Helper()
 	helpers.IsTestingMode = true
 	setupCmdOutput(t)
 
@@ -142,7 +164,4 @@ func TestDeploySmoke(t *testing.T) {
 	testutil.StartMocker(t, &awsmocker.MockerOptions{
 		Mocks: mocks,
 	})
-
-	result := runCommand(t, "deploy", "-c", "../internal/builders/testdata/everything.yml", "--trace")
-	require.NoError(t, result.err)
 }

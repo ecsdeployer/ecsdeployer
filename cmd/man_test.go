@@ -15,7 +15,7 @@ func TestManCmd(t *testing.T) {
 	})
 
 	t.Run("calls correct function", func(t *testing.T) {
-		result := runCommand(t, "man")
+		result := runCommand(t, nil, "man")
 		require.NoError(t, result.err)
 		require.Contains(t, result.stdout, ".TH ECSDEPLOYER")
 	})

@@ -11,6 +11,6 @@ func TestInfoCmd(t *testing.T) {
 	silenceLogging(t)
 	testutil.StartMocker(t, nil)
 
-	result := runCommand(t, "info", "-c", "testdata/info_simple.yml", "--trace")
+	result := runCommand(t, nil, "info", "-c", "testdata/info_simple.yml", "--trace")
 	require.NoError(t, result.err)
 }

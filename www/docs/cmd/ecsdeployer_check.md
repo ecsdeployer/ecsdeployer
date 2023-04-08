@@ -17,6 +17,7 @@ ecsdeployer check [flags]
   -h, --help            help for check
   -q, --quiet           Quiet mode: no output
       --show            Show the JSONified project config. (How the deployer is interpreting it)
+      --yaml            Show the YAMLified project config. (How the deployer is interpreting it)
 ```
 
 ## Global Options

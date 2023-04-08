@@ -6,35 +6,26 @@ import (
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
 )
 
 // Controls if we delete unused services/cron/predeploy
 type KeepInSync struct {
-	Services        *bool                     `yaml:"services,omitempty" json:"services,omitempty" jsonschema:"description=Deletes services no longer referenced in stage file"`
-	LogRetention    *bool                     `yaml:"log_retention,omitempty" json:"log_retention,omitempty" jsonschema:"description=Ensures that log groups have the correct retention period set"`
-	Cronjobs        *bool                     `yaml:"cronjobs,omitempty" json:"cronjobs,omitempty" jsonschema:"description=Deletes cronjobs no longer referenced in stage file"`
-	TaskDefinitions KeepInSyncTaskDefinitions `yaml:"task_definitions,omitempty" json:"task_definitions,omitempty" jsonschema:"-"`
+	Services        *bool `yaml:"services,omitempty" json:"services,omitempty" jsonschema:"description=Deletes services no longer referenced in stage file"`
+	LogRetention    *bool `yaml:"log_retention,omitempty" json:"log_retention,omitempty" jsonschema:"description=Ensures that log groups have the correct retention period set"`
+	Cronjobs        *bool `yaml:"cronjobs,omitempty" json:"cronjobs,omitempty" jsonschema:"description=Deletes cronjobs no longer referenced in stage file"`
+	TaskDefinitions *bool `yaml:"task_definitions,omitempty" json:"task_definitions,omitempty" jsonschema:"description=Deregisters old task definitions"`
 	// LogGroups       *bool `yaml:"log_groups,omitempty" json:"log_groups,omitempty" jsonschema:"description=Deletes log groups for services that are no longer used"`
 }
 
 var ErrKISMissingAllAttributesError = NewValidationError("If you override keep_in_sync, then you must define ALL attributes")
 
-func (kis *KeepInSync) GetServices() bool     { return *kis.Services }
-func (kis *KeepInSync) GetLogRetention() bool { return *kis.LogRetention }
-func (kis *KeepInSync) GetCronjobs() bool     { return *kis.Cronjobs }
-
-func (kis *KeepInSync) GetTaskDefinitions() KeepInSyncTaskDefinitions {
-	return kis.TaskDefinitions
-}
+func (kis *KeepInSync) GetServices() bool        { return *kis.Services }
+func (kis *KeepInSync) GetLogRetention() bool    { return *kis.LogRetention }
+func (kis *KeepInSync) GetCronjobs() bool        { return *kis.Cronjobs }
+func (kis *KeepInSync) GetTaskDefinitions() bool { return *kis.TaskDefinitions }
 
 func (obj *KeepInSync) AllDisabled() bool {
-
-	if obj.TaskDefinitions != KeepInSyncTaskDefinitionsDisabled {
-		return false
-	}
-
 	v := reflect.ValueOf(obj).Elem()
 
 	for _, field := range reflect.VisibleFields(v.Type()) {
@@ -50,11 +41,6 @@ func (obj *KeepInSync) AllDisabled() bool {
 }
 
 func (obj *KeepInSync) Validate() error {
-
-	if obj.TaskDefinitions == 0 {
-		return ErrKISMissingAllAttributesError
-	}
-
 	v := reflect.ValueOf(obj).Elem()
 
 	for _, field := range reflect.VisibleFields(v.Type()) {
@@ -71,10 +57,6 @@ func (obj *KeepInSync) ApplyDefaults() {
 }
 
 func (obj *KeepInSync) setDefaultValue(defVal bool) {
-
-	if obj.TaskDefinitions == 0 {
-		obj.TaskDefinitions = util.Ternary(defVal, KeepInSyncTaskDefinitionsEnabled, KeepInSyncTaskDefinitionsDisabled)
-	}
 
 	v := reflect.ValueOf(obj).Elem()
 	def := reflect.ValueOf(&defVal)
@@ -150,10 +132,6 @@ func (KeepInSync) JSONSchemaExtend(base *jsonschema.Schema) {
 			s.Default = reflect.Indirect(f).Bool()
 		})
 	}
-
-	base.Properties.Set("task_definitions", KeepInSyncTaskDefinitionsEnabled.JSONSchema())
-
-	base.Required = base.Properties.Keys()
 
 	kisSchema := *base
 	newBase := &jsonschema.Schema{

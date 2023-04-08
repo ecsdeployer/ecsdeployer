@@ -71,9 +71,17 @@ func (rc *runCommandResult) SetExitCode(c int) {
 	rc.exitCode = c
 }
 
+type rcConf struct {
+	noWrapLog bool
+}
+
 // runs a command from the root and catches all the in/out/err/exitcode
-func runCommand(t *testing.T, args ...string) *runCommandResult {
+func runCommand(t *testing.T, conf *rcConf, args ...string) *runCommandResult {
 	t.Helper()
+
+	if conf == nil {
+		conf = &rcConf{}
+	}
 
 	result := &runCommandResult{
 		exitCode: 0,
@@ -86,11 +94,13 @@ func runCommand(t *testing.T, args ...string) *runCommandResult {
 	rcmd.cmd.SetOutput(&bufOut)
 	rcmd.cmd.SetErr(&bufErr)
 
-	origLog := log.Log
-	t.Cleanup(func() {
-		log.Log = origLog
-	})
-	log.Log = log.New(&bufOut)
+	if !conf.noWrapLog {
+		origLog := log.Log
+		t.Cleanup(func() {
+			log.Log = origLog
+		})
+		log.Log = log.New(&bufErr)
+	}
 
 	rcmd.cmd.SetArgs(args)
 	result.err = rcmd.cmd.Execute()

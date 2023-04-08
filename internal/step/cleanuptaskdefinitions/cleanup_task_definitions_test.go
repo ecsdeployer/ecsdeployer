@@ -12,6 +12,10 @@ import (
 
 func TestCleanupTaskDefinitionsStep(t *testing.T) {
 
+	t.Run("String", func(t *testing.T) {
+		require.Equal(t, "cleaning orphaned task definitions", Step{}.String())
+	})
+
 	tagMatcher := map[string]string{
 		"ecsdeployer/project": "dummy",
 	}

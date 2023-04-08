@@ -20,8 +20,7 @@ func (Step) String() string {
 }
 
 func (Step) Skip(ctx *config.Context) bool {
-	return ctx.Project.Settings.KeepInSync.GetTaskDefinitions() != config.KeepInSyncTaskDefinitionsEnabled &&
-		ctx.Project.Settings.KeepInSync.GetTaskDefinitions() != config.KeepInSyncTaskDefinitionsOnlyManaged
+	return false
 }
 
 func (Step) Run(ctx *config.Context) error {

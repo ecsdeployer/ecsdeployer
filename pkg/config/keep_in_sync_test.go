@@ -20,7 +20,7 @@ func TestKeepInSync_NewKeepInSyncFromBool_Fields(t *testing.T) {
 		require.True(t, kis.GetServices())
 		require.True(t, kis.GetLogRetention())
 		require.True(t, kis.GetCronjobs())
-		require.Equal(t, config.KeepInSyncTaskDefinitionsEnabled, kis.GetTaskDefinitions())
+		require.True(t, kis.GetTaskDefinitions())
 		require.False(t, kis.AllDisabled())
 	})
 
@@ -29,7 +29,7 @@ func TestKeepInSync_NewKeepInSyncFromBool_Fields(t *testing.T) {
 		require.False(t, kis.GetServices())
 		require.False(t, kis.GetLogRetention())
 		require.False(t, kis.GetCronjobs())
-		require.Equal(t, config.KeepInSyncTaskDefinitionsDisabled, kis.GetTaskDefinitions())
+		require.False(t, kis.GetTaskDefinitions())
 		require.True(t, kis.AllDisabled())
 	})
 }
@@ -82,15 +82,13 @@ func TestKeepInSync_Unmarshal(t *testing.T) {
 		expected *config.KeepInSync
 	}{
 
-		{"true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsEnabled}},
-		{"false", &config.KeepInSync{&bFalse, &bFalse, &bFalse, config.KeepInSyncTaskDefinitionsDisabled}},
-		{"services: true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsEnabled}},
-		{"services: true\ncronjobs: false", &config.KeepInSync{&bTrue, &bTrue, &bFalse, config.KeepInSyncTaskDefinitionsEnabled}},
-		{"services: true\ncronjobs: null", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsEnabled}},
-
-		{"task_definitions: false", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsDisabled}},
-		{"task_definitions: true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsEnabled}},
-		{"task_definitions: only_managed", &config.KeepInSync{&bTrue, &bTrue, &bTrue, config.KeepInSyncTaskDefinitionsOnlyManaged}},
+		{"true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, &bTrue}},
+		{"false", &config.KeepInSync{&bFalse, &bFalse, &bFalse, &bFalse}},
+		{"services: true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, &bTrue}},
+		{"services: true\ncronjobs: false", &config.KeepInSync{&bTrue, &bTrue, &bFalse, &bTrue}},
+		{"services: true\ncronjobs: null", &config.KeepInSync{&bTrue, &bTrue, &bTrue, &bTrue}},
+		{"task_definitions: false", &config.KeepInSync{&bTrue, &bTrue, &bTrue, &bFalse}},
+		{"task_definitions: true", &config.KeepInSync{&bTrue, &bTrue, &bTrue, &bTrue}},
 	}
 
 	for x, table := range tables {

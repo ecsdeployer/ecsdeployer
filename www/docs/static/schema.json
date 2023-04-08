@@ -403,7 +403,7 @@
           "oneOf": [
             {
               "type": "string",
-              "pattern": "^[0-9]{12,}$"
+              "pattern": "^[0-9]{12}$"
             },
             {
               "type": "integer"
@@ -684,35 +684,13 @@
               "default": true
             },
             "task_definitions": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "const": "ONLY_MANAGED",
-                  "description": "Will only deregister previous definitions for tasks defined in project. Will not manage definitions for removed tasks."
-                },
-                {
-                  "type": "boolean",
-                  "const": true,
-                  "description": "Enables keeping task definitions in sync. Previous definitions as well as removed tasks will be synced."
-                },
-                {
-                  "type": "boolean",
-                  "const": false,
-                  "description": "Disables keeping all task definitions in sync. Previous definitions will not be deregistered."
-                }
-              ],
-              "description": "How to keep old task definitions in sync",
+              "type": "boolean",
+              "description": "Deregisters old task definitions",
               "default": true
             }
           },
           "additionalProperties": false,
-          "type": "object",
-          "required": [
-            "services",
-            "log_retention",
-            "cronjobs",
-            "task_definitions"
-          ]
+          "type": "object"
         }
       ]
     },
