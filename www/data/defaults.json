@@ -96,7 +96,6 @@
   "Settings": {
     "disable_marker_tag": "false",
     "disable_shared_taskdefs": "false",
-    "predeploy_parallel": "false",
     "predeploy_timeout": "5400",
     "skip_cron_env_vars": "false",
     "skip_deployment_env_vars": "false",

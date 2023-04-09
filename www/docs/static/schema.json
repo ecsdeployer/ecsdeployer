@@ -1443,9 +1443,6 @@
     },
     "Settings": {
       "properties": {
-        "predeploy_parallel": {
-          "type": "boolean"
-        },
         "predeploy_timeout": {
           "$ref": "#/$defs/Duration"
         },
