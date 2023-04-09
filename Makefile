@@ -3,7 +3,7 @@ gopkgs := $(shell go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/
 
 
 .PHONY: precommit
-precommit: tidy lint test schema docs-pre
+precommit: tidy lint test docs-pre
 
 .PHONY: generate
 generate:
@@ -47,7 +47,6 @@ check:
 .PHONY: schema
 schema:
 	@go run . schema -o ./www/docs/static/schema.json
-	@cat ./www/docs/static/schema.json | jq -r .
 
 .PHONY: smokedeploy-debug
 smokedeploy-debug:
