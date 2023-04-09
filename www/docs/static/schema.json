@@ -1464,9 +1464,6 @@
         "use_old_cron_eventbus": {
           "type": "boolean"
         },
-        "disable_shared_taskdefs": {
-          "type": "boolean"
-        },
         "ssm_import": {
           "$ref": "#/$defs/SSMImport"
         }
