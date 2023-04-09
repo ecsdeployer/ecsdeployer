@@ -11,4 +11,6 @@ manpages/
 www/site/
 www/tmp
 /tmp
+.idea/
+.vscode/
 www/hooks/__pycache__/

@@ -18,6 +18,13 @@ type KeepInSync struct {
 	// LogGroups       *bool `yaml:"log_groups,omitempty" json:"log_groups,omitempty" jsonschema:"description=Deletes log groups for services that are no longer used"`
 }
 
+var ErrKISMissingAllAttributesError = NewValidationError("If you override keep_in_sync, then you must define ALL attributes")
+
+func (kis *KeepInSync) GetServices() bool        { return *kis.Services }
+func (kis *KeepInSync) GetLogRetention() bool    { return *kis.LogRetention }
+func (kis *KeepInSync) GetCronjobs() bool        { return *kis.Cronjobs }
+func (kis *KeepInSync) GetTaskDefinitions() bool { return *kis.TaskDefinitions }
+
 func (obj *KeepInSync) AllDisabled() bool {
 	v := reflect.ValueOf(obj).Elem()
 
@@ -34,15 +41,12 @@ func (obj *KeepInSync) AllDisabled() bool {
 }
 
 func (obj *KeepInSync) Validate() error {
-	// if obj.Services == nil || obj.Cronjobs == nil || obj.LogRetention == nil {
-	// 	return NewValidationError("All fields must be set")
-	// }
 	v := reflect.ValueOf(obj).Elem()
 
 	for _, field := range reflect.VisibleFields(v.Type()) {
 		f := v.FieldByIndex(field.Index)
 		if isKeepInSyncDefaultableField(field, f) && f.IsNil() {
-			return NewValidationError("If you override keep_in_sync, then you must define ALL attributes")
+			return ErrKISMissingAllAttributesError
 		}
 	}
 	return nil
@@ -53,6 +57,7 @@ func (obj *KeepInSync) ApplyDefaults() {
 }
 
 func (obj *KeepInSync) setDefaultValue(defVal bool) {
+
 	v := reflect.ValueOf(obj).Elem()
 	def := reflect.ValueOf(&defVal)
 
@@ -83,8 +88,8 @@ func (a *KeepInSync) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			return err
 		}
 
-		type t KeepInSync
-		var obj t // = t(NewKeepInSyncFromBool(defaultKeepInSync))
+		type _KeepInSync KeepInSync
+		var obj _KeepInSync
 		if err := unmarshal(&obj); err != nil {
 			return err
 		}

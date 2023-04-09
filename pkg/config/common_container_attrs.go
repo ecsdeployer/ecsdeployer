@@ -1,6 +1,8 @@
 package config
 
-import "ecsdeployer.com/ecsdeployer/internal/util"
+import (
+	"ecsdeployer.com/ecsdeployer/internal/util"
+)
 
 type CommonContainerAttrs struct {
 	Name          string             `yaml:"name,omitempty" json:"name,omitempty" jsonschema:"pattern=^[a-zA-Z][-_a-zA-Z0-9]*$"`
@@ -19,13 +21,36 @@ type CommonContainerAttrs struct {
 	HealthCheck   *HealthCheck       `yaml:"healthcheck,omitempty" json:"healthcheck,omitempty"`
 	MountPoints   []Mount            `yaml:"mounts,omitempty" json:"mounts,omitempty"`
 	Ulimits       []Ulimit           `yaml:"ulimits,omitempty" json:"ulimits,omitempty"`
-	User          *string            `yaml:"user,omitempty" json:"user,omitempty"`
+	User          *string            `yaml:"user,omitempty" json:"user,omitempty" jsonschema:"oneof_type=string;integer"`
 	Workdir       *string            `yaml:"workdir,omitempty" json:"workdir,omitempty"`
 	VolumesFrom   []VolumeFrom       `yaml:"volumes_from,omitempty" json:"volumes_from,omitempty"`
 }
 
 func (obj *CommonContainerAttrs) GetCommonContainerAttrs() CommonContainerAttrs {
 	return *obj
+}
+
+func (obj *CommonContainerAttrs) CanOverride() bool {
+	if obj.User != nil || obj.Workdir != nil || obj.EntryPoint != nil {
+		return false
+	}
+
+	if obj.HealthCheck != nil || obj.LoggingConfig != nil {
+		return false
+	}
+
+	if obj.StartTimeout != nil || obj.StopTimeout != nil {
+		return false
+	}
+
+	if obj.Credentials != nil || obj.Image != nil {
+		return false
+	}
+
+	if len(obj.DockerLabels) > 0 || len(obj.DependsOn) > 0 || len(obj.MountPoints) > 0 || len(obj.Ulimits) > 0 || len(obj.VolumesFrom) > 0 {
+		return false
+	}
+	return true
 }
 
 func (cta *CommonContainerAttrs) Validate() error {

@@ -28,6 +28,10 @@ type NameTemplates struct {
 	CronRule   *string `yaml:"cron_rule,omitempty" json:"cron_rule,omitempty" jsonschema:"minLength=1" jsonschema_extras:"deprecated=true"`
 	CronTarget *string `yaml:"cron_target,omitempty" json:"cron_target,omitempty" jsonschema:"minLength=1" jsonschema_extras:"deprecated=true"`
 
+	// For the shared task definition names
+	SharedTaskPD   *string `yaml:"shared_task_predeploy,omitempty" json:"shared_task_predeploy,omitempty" jsonschema:"-"`
+	SharedTaskCron *string `yaml:"shared_task_cron,omitempty" json:"shared_task_cron,omitempty" jsonschema:"-"`
+
 	// removed
 	ContainerName *string `yaml:"container,omitempty" json:"container,omitempty" jsonschema:"-"`
 }
@@ -80,6 +84,13 @@ func (def *NameTemplates) ApplyDefaults() {
 		def.ContainerName = aws.String("{{ .Container }}")
 	}
 
+	if def.SharedTaskCron == nil {
+		def.SharedTaskCron = aws.String("cron")
+	}
+	if def.SharedTaskPD == nil {
+		def.SharedTaskPD = aws.String("predeploy")
+	}
+
 	if def.MarkerTagKey == nil {
 		def.MarkerTagKey = aws.String("ecsdeployer/project")
 	}
@@ -93,9 +104,8 @@ func (a *NameTemplates) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var defo = tNameTemplates{}
 	if err := unmarshal(&defo); err != nil {
 		return err
-	} else {
-		*a = NameTemplates(defo)
 	}
+	*a = NameTemplates(defo)
 	a.ApplyDefaults()
 	if err := a.Validate(); err != nil {
 		return err
@@ -159,6 +169,11 @@ func (NameTemplates) JSONSchemaExtend(base *jsonschema.Schema) {
 		kisVal := v.FieldByIndex(field.Index).Elem().String()
 
 		jsonField, _, _ := strings.Cut(field.Tag.Get("json"), ",")
+
+		// if it's not in the schema, move on
+		if _, ok := base.Properties.Get(jsonField); !ok {
+			continue
+		}
 
 		configschema.SchemaPropMerge(base, jsonField, func(s *jsonschema.Schema) {
 			if s.Default == nil {

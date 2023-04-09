@@ -2,7 +2,6 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
@@ -14,8 +13,8 @@ type NameValuePair struct {
 
 func NewNameValuePair(k, v string) NameValuePair {
 	return NameValuePair{
-		Name:  aws.String(k),
-		Value: aws.String(v),
+		Name:  &k,
+		Value: &v,
 	}
 }
 
@@ -34,7 +33,7 @@ func (a *NameValuePair) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (def *NameValuePair) Validate() error {
+func (def NameValuePair) Validate() error {
 	if def.Name == nil {
 		return NewValidationError("you must provide a tag Name")
 	}

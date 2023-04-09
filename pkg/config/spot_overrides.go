@@ -1,7 +1,8 @@
 package config
 
 import (
-	"ecsdeployer.com/ecsdeployer/internal/util"
+	"encoding/json"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
@@ -127,8 +128,8 @@ func (obj *SpotOverrides) UnmarshalYAML(unmarshal func(interface{}) error) error
 
 	var val bool
 	if err := unmarshal(&val); err != nil {
-		type t SpotOverrides // prevent recursive overflow
-		var defo = t{}
+		type tSpotOverrides SpotOverrides // prevent recursive overflow
+		var defo = tSpotOverrides{}
 		if err := unmarshal(&defo); err != nil {
 			return err
 		}
@@ -194,16 +195,18 @@ func (SpotOverrides) JSONSchema() *jsonschema.Schema {
 	}
 }
 
-func (obj *SpotOverrides) MarshalJSON() ([]byte, error) {
-	if !obj.Enabled {
-		return []byte("false"), nil
+func (obj *SpotOverrides) MarshalYAML() (interface{}, error) {
+	if obj.IsDisabled() {
+		return false, nil
 	}
-
 	type t SpotOverrides
-	res, err := util.Jsonify(t(*obj))
+	return t(*obj), nil
+}
+
+func (obj *SpotOverrides) MarshalJSON() ([]byte, error) {
+	data, err := obj.MarshalYAML()
 	if err != nil {
 		return nil, err
 	}
-
-	return []byte(res), nil
+	return json.Marshal(data)
 }

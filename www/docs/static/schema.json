@@ -2,2002 +2,2039 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ecsdeployer.com/ecsdeployer/pkg/config/project",
   "$defs": {
-   "Architecture": {
-    "type": "string",
-    "enum": [
-     "amd64",
-     "arm64",
-     "x86_64"
-    ],
-    "description": "Specify CPU Architecture",
-    "default": "amd64"
-   },
-   "AwsLogConfig": {
-    "oneOf": [
-     {
-      "type": "boolean",
-      "description": "Enable or disable logging to AWS using default values"
-     },
-     {
-      "properties": {
-       "disabled": {
-        "type": "boolean"
-       },
-       "retention": {
-        "$ref": "#/$defs/LogRetention"
-       },
-       "options": {
-        "$ref": "#/$defs/EnvVarMap"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object"
-     }
-    ]
-   },
-   "CPUShares": {
-    "oneOf": [
-     {
-      "type": "integer",
-      "description": "CPU Shares",
-      "minimum": 0
-     },
-     {
+    "Architecture": {
       "type": "string",
-      "description": "CPU Shares or vCPUs"
-     }
-    ],
-    "description": "Specify CPU Resources"
-   },
-   "ClusterRef": {
-    "type": "string",
-    "minLength": 1,
-    "description": "ARN or Name"
-   },
-   "ConsoleTask": {
-    "oneOf": [
-     {
-      "type": "boolean",
-      "description": "Enable or disable remote shell"
-     },
-     {
-      "properties": {
-       "name": {
-        "type": "string",
-        "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
-       },
-       "command": {
-        "$ref": "#/$defs/ShellCommand"
-       },
-       "entrypoint": {
-        "$ref": "#/$defs/ShellCommand"
-       },
-       "image": {
-        "$ref": "#/$defs/ImageUri"
-       },
-       "credentials": {
-        "type": "string"
-       },
-       "cpu": {
-        "$ref": "#/$defs/CPUShares"
-       },
-       "memory": {
-        "$ref": "#/$defs/Memory"
-       },
-       "environment": {
-        "$ref": "#/$defs/EnvVarMap"
-       },
-       "start_timeout": {
-        "$ref": "#/$defs/Duration"
-       },
-       "stop_timeout": {
-        "$ref": "#/$defs/Duration"
-       },
-       "labels": {
-        "items": {
-         "$ref": "#/$defs/NameValuePair"
-        },
-        "type": "array"
-       },
-       "depends_on": {
-        "items": {
-         "$ref": "#/$defs/DependsOn"
-        },
-        "type": "array"
-       },
-       "logging": {
-        "$ref": "#/$defs/TaskLoggingConfig"
-       },
-       "healthcheck": {
-        "$ref": "#/$defs/HealthCheck"
-       },
-       "mounts": {
-        "items": {
-         "$ref": "#/$defs/Mount"
-        },
-        "type": "array"
-       },
-       "ulimits": {
-        "items": {
-         "$ref": "#/$defs/Ulimit"
-        },
-        "type": "array"
-       },
-       "user": {
-        "type": "string"
-       },
-       "workdir": {
-        "type": "string"
-       },
-       "volumes_from": {
-        "items": {
-         "$ref": "#/$defs/VolumeFrom"
-        },
-        "type": "array"
-       },
-       "storage": {
-        "$ref": "#/$defs/Storage"
-       },
-       "arch": {
-        "$ref": "#/$defs/Architecture",
-        "description": "Task CPU Architecture"
-       },
-       "platform_version": {
-        "type": "string",
-        "description": "Fargate Platform Version",
-        "default": "LATEST"
-       },
-       "tags": {
-        "items": {
-         "$ref": "#/$defs/NameValuePair"
-        },
-        "type": "array"
-       },
-       "network": {
-        "$ref": "#/$defs/Network"
-       },
-       "sidecars": {
-        "items": {
-         "$ref": "#/$defs/Sidecar"
-        },
-        "type": "array"
-       },
-       "volumes": {
-        "$ref": "#/$defs/VolumeList"
-       },
-       "proxy": {
-        "$ref": "#/$defs/ProxyConfig"
-       },
-       "port": {
-        "$ref": "#/$defs/PortMapping"
-       },
-       "enabled": {
-        "type": "boolean"
-       },
-       "path": {
-        "type": "string"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object"
-     }
-    ]
-   },
-   "CronJob": {
-    "properties": {
-     "name": {
-      "type": "string",
-      "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
-     },
-     "command": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "entrypoint": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "image": {
-      "$ref": "#/$defs/ImageUri"
-     },
-     "credentials": {
-      "type": "string"
-     },
-     "cpu": {
-      "$ref": "#/$defs/CPUShares"
-     },
-     "memory": {
-      "$ref": "#/$defs/Memory"
-     },
-     "environment": {
-      "$ref": "#/$defs/EnvVarMap"
-     },
-     "start_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "stop_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "labels": {
-      "items": {
-       "$ref": "#/$defs/NameValuePair"
-      },
-      "type": "array"
-     },
-     "depends_on": {
-      "items": {
-       "$ref": "#/$defs/DependsOn"
-      },
-      "type": "array"
-     },
-     "logging": {
-      "$ref": "#/$defs/TaskLoggingConfig"
-     },
-     "healthcheck": {
-      "$ref": "#/$defs/HealthCheck"
-     },
-     "mounts": {
-      "items": {
-       "$ref": "#/$defs/Mount"
-      },
-      "type": "array"
-     },
-     "ulimits": {
-      "items": {
-       "$ref": "#/$defs/Ulimit"
-      },
-      "type": "array"
-     },
-     "user": {
-      "type": "string"
-     },
-     "workdir": {
-      "type": "string"
-     },
-     "volumes_from": {
-      "items": {
-       "$ref": "#/$defs/VolumeFrom"
-      },
-      "type": "array"
-     },
-     "storage": {
-      "$ref": "#/$defs/Storage"
-     },
-     "arch": {
-      "$ref": "#/$defs/Architecture",
-      "description": "Task CPU Architecture"
-     },
-     "platform_version": {
-      "type": "string",
-      "description": "Fargate Platform Version",
-      "default": "LATEST"
-     },
-     "tags": {
-      "items": {
-       "$ref": "#/$defs/NameValuePair"
-      },
-      "type": "array"
-     },
-     "network": {
-      "$ref": "#/$defs/Network"
-     },
-     "sidecars": {
-      "items": {
-       "$ref": "#/$defs/Sidecar"
-      },
-      "type": "array"
-     },
-     "volumes": {
-      "$ref": "#/$defs/VolumeList"
-     },
-     "proxy": {
-      "$ref": "#/$defs/ProxyConfig"
-     },
-     "disabled": {
-      "type": "boolean"
-     },
-     "description": {
-      "type": "string"
-     },
-     "schedule": {
-      "type": "string",
-      "minLength": 5,
-      "examples": [
-       "cron(0 9 * * ? *)",
-       "rate(1 hour)",
-       "rate(2 hours)"
-      ]
-     },
-     "timezone": {
-      "type": "string"
-     },
-     "bus": {
-      "type": "string"
-     },
-     "start_date": {
-      "type": "string",
-      "format": "date-time"
-     },
-     "end_date": {
-      "type": "string",
-      "format": "date-time"
-     }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "schedule",
-     "name"
-    ]
-   },
-   "CustomLogConfig": {
-    "properties": {
-     "driver": {
-      "type": "string"
-     },
-     "options": {
-      "$ref": "#/$defs/EnvVarMap"
-     }
-    },
-    "additionalProperties": false,
-    "type": "object"
-   },
-   "DependsOn": {
-    "oneOf": [
-     {
-      "properties": {
-       "name": {
-        "type": "string",
-        "minLength": 1,
-        "pattern": "^[a-zA-Z][-_a-zA-Z0-9]+$"
-       },
-       "condition": {
-        "type": "string",
-        "enum": [
-         "START",
-         "COMPLETE",
-         "SUCCESS",
-         "HEALTHY"
-        ],
-        "default": "START"
-       }
-      },
-      "type": "object",
-      "required": [
-       "name"
-      ]
-     },
-     {
-      "type": "string",
-      "pattern": "^[-_a-zA-Z0-9]+(:[a-zA-Z]+)?$",
-      "description": "'container:CONDITION' format"
-     }
-    ]
-   },
-   "Duration": {
-    "oneOf": [
-     {
-      "type": "integer",
-      "description": "Seconds",
-      "minimum": 0
-     },
-     {
-      "type": "string",
-      "pattern": "^[+]?([0-9]*(\\.[0-9]*)?[a-z]+)+$",
-      "description": "Duration specified in shorthand",
-      "examples": [
-       "5m",
-       "4m2s",
-       "2h",
-       "2h10m5s"
-      ]
-     }
-    ]
-   },
-   "EcsDeployerOptions": {
-    "properties": {
-     "required_version": {
-      "$ref": "#/$defs/VersionConstraint",
-      "description": "Create a version constraint to prevent different versions of ECS Deployer from deploying this app."
-     },
-     "allowed_account_id": {
-      "oneOf": [
-       {
-        "type": "string",
-        "pattern": "^[0-9]{12,}$"
-       },
-       {
-        "type": "integer"
-       }
+      "enum": [
+        "amd64",
+        "arm64",
+        "x86_64"
       ],
-      "description": "Restrict to a specific AWS account ID."
-     }
-    },
-    "additionalProperties": false,
-    "type": "object"
-   },
-   "EnvVar": {
-    "oneOf": [
-     {
-      "$comment": "Pull a secret from an SSM Parameter",
-      "properties": {
-       "ssm": {
-        "type": "string",
-        "minLength": 1
-       }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-       "ssm"
-      ]
-     },
-     {
-      "$comment": "Construct value using a template",
-      "properties": {
-       "template": {
-        "type": "string",
-        "minLength": 1
-       }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-       "template"
-      ]
-     },
-     {
-      "$comment": "Use a value verbatim",
-      "properties": {
-       "value": {
-        "description": "Any value that can be cast to a string, or blank",
-        "type": [
-         "number",
-         "string",
-         "boolean"
-        ]
-       }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-       "value"
-      ]
-     },
-     {
-      "$comment": "Unsets any value that was defined previously",
-      "properties": {
-       "unset": {
-        "type": "boolean",
-        "const": true
-       }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-       "unset"
-      ]
-     },
-     {
-      "$comment": "Use a value verbatim",
-      "description": "Any value that can be cast to a string, or blank",
-      "type": [
-       "number",
-       "string",
-       "boolean"
-      ]
-     }
-    ]
-   },
-   "EnvVarMap": {
-    "patternProperties": {
-     "^[a-zA-Z_][^=]*$": {
-      "$ref": "#/$defs/EnvVar"
-     }
-    },
-    "additionalProperties": false,
-    "type": "object"
-   },
-   "FirelensAwsLogGroup": {
-    "oneOf": [
-     {
-      "type": "boolean",
-      "const": false,
-      "description": "Do not log to AWSLogs"
-     },
-     {
-      "type": "string",
-      "minLength": 2,
-      "description": "Send logs to this log group"
-     }
-    ],
-    "description": "Should logs for firelens be sent to a log group"
-   },
-   "FirelensConfig": {
-    "oneOf": [
-     {
-      "type": "boolean"
-     },
-     {
-      "properties": {
-       "disabled": {
-        "type": "boolean"
-       },
-       "type": {
-        "type": "string",
-        "enum": [
-         "fluentbit",
-         "fluentd"
-        ],
-        "default": "fluentbit"
-       },
-       "container_name": {
-        "type": "string",
-        "default": "log_router"
-       },
-       "options": {
-        "$ref": "#/$defs/EnvVarMap"
-       },
-       "router_options": {
-        "$ref": "#/$defs/EnvVarMap"
-       },
-       "environment": {
-        "$ref": "#/$defs/EnvVarMap"
-       },
-       "credentials": {
-        "type": "string"
-       },
-       "inherit_env": {
-        "type": "boolean"
-       },
-       "image": {
-        "$ref": "#/$defs/ImageUri"
-       },
-       "memory": {
-        "$ref": "#/$defs/Memory"
-       },
-       "log_to_awslogs": {
-        "$ref": "#/$defs/FirelensAwsLogGroup"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object"
-     }
-    ]
-   },
-   "HealthCheck": {
-    "oneOf": [
-     {
-      "type": "boolean",
-      "const": false,
-      "description": "Disable a healthcheck for a specific task"
-     },
-     {
-      "properties": {
-       "disabled": {
-        "type": "boolean"
-       },
-       "command": {
-        "$ref": "#/$defs/ShellCommand"
-       },
-       "interval": {
-        "$ref": "#/$defs/Duration"
-       },
-       "retries": {
-        "type": "integer",
-        "minimum": 1
-       },
-       "start_period": {
-        "$ref": "#/$defs/Duration"
-       },
-       "timeout": {
-        "$ref": "#/$defs/Duration"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object"
-     }
-    ]
-   },
-   "ImageUri": {
-    "oneOf": [
-     {
-      "oneOf": [
-       {
-        "required": [
-         "ecr",
-         "tag"
-        ]
-       },
-       {
-        "required": [
-         "ecr",
-         "digest"
-        ]
-       },
-       {
-        "required": [
-         "docker",
-         "tag"
-        ]
-       },
-       {
-        "required": [
-         "docker",
-         "digest"
-        ]
-       }
-      ],
-      "properties": {
-       "ecr": {
-        "type": "string",
-        "title": "Just the ECR Repository name"
-       },
-       "docker": {
-        "type": "string",
-        "title": "Dockerhub Repo URI"
-       },
-       "tag": {
-        "type": "string",
-        "title": "Image tag"
-       },
-       "digest": {
-        "type": "string",
-        "title": "Image digest"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object"
-     },
-     {
-      "type": "string",
-      "minLength": 2,
-      "title": "The full URI to your image",
-      "examples": [
-       "myorg/myapp:latest",
-       "myorg/myapp@sha256:deadbeefdeadbeefdeadbeefdeadbeef",
-       "myorg/myapp:{{ .ImageTag }}"
-      ]
-     }
-    ]
-   },
-   "KeepInSync": {
-    "oneOf": [
-     {
-      "type": "boolean",
-      "description": "Set all fields on or off"
-     },
-     {
-      "properties": {
-       "services": {
-        "type": "boolean",
-        "description": "Deletes services no longer referenced in stage file",
-        "default": true
-       },
-       "log_retention": {
-        "type": "boolean",
-        "description": "Ensures that log groups have the correct retention period set",
-        "default": true
-       },
-       "cronjobs": {
-        "type": "boolean",
-        "description": "Deletes cronjobs no longer referenced in stage file",
-        "default": true
-       },
-       "task_definitions": {
-        "type": "boolean",
-        "description": "Deregisters old task definitions",
-        "default": true
-       }
-      },
-      "additionalProperties": false,
-      "type": "object"
-     }
-    ]
-   },
-   "LoadBalancer": {
-    "properties": {
-     "port": {
-      "$ref": "#/$defs/PortMapping"
-     },
-     "target_group": {
-      "$ref": "#/$defs/TargetGroupRef"
-     },
-     "grace": {
-      "$ref": "#/$defs/Duration"
-     }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "port",
-     "target_group"
-    ]
-   },
-   "LoadBalancers": {
-    "oneOf": [
-     {
-      "$ref": "#/$defs/LoadBalancer",
-      "description": "Default variant, just define a single load balancer mapping"
-     },
-     {
-      "items": {
-       "$ref": "#/$defs/LoadBalancer"
-      },
-      "type": "array",
-      "description": "Define multiple load balancer mappings."
-     }
-    ]
-   },
-   "LogRetention": {
-    "oneOf": [
-     {
-      "type": "string",
-      "const": "forever",
-      "description": "Retain logs forever"
-     },
-     {
-      "type": "string",
-      "pattern": "^[1-9][0-9]*$",
-      "description": "The number of days to retain logs"
-     },
-     {
-      "type": "integer",
-      "minimum": 1,
-      "description": "The number of days to retain logs"
-     }
-    ],
-    "description": "How long to retain logs in CloudWatch logs"
-   },
-   "LoggingConfig": {
-    "oneOf": [
-     {
-      "type": "boolean"
-     },
-     {
-      "properties": {
-       "disabled": {
-        "type": "boolean"
-       },
-       "firelens": {
-        "$ref": "#/$defs/FirelensConfig"
-       },
-       "awslogs": {
-        "$ref": "#/$defs/AwsLogConfig"
-       },
-       "custom": {
-        "$ref": "#/$defs/CustomLogConfig"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object"
-     }
-    ]
-   },
-   "Memory": {
-    "oneOf": [
-     {
-      "type": "string",
-      "description": "Absolute or multiple of CPU",
-      "examples": [
-       "2048",
-       "2x",
-       "2 GB",
-       "0.5gb",
-       "x2"
-      ]
-     },
-     {
-      "type": "integer",
-      "description": "Absolute value in Megabytes"
-     }
-    ],
-    "title": "Memory requirements"
-   },
-   "Mount": {
-    "properties": {
-     "path": {
-      "type": "string"
-     },
-     "source": {
-      "type": "string"
-     },
-     "readonly": {
-      "type": "boolean"
-     }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "path",
-     "source"
-    ]
-   },
-   "NameTemplates": {
-    "properties": {
-     "task_family": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
-     },
-     "service_name": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
-     },
-     "cron_group": {
-      "type": "string",
-      "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}"
-     },
-     "schedule_group": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}"
-     },
-     "schedule": {
-      "type": "string",
-      "minLength": 1,
-      "default": "ecsd-cron-{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
-     },
-     "predeploy_group": {
-      "type": "string",
-      "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}"
-     },
-     "predeploy_started_by": {
-      "type": "string",
-      "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:deployer"
-     },
-     "log_group": {
-      "type": "string",
-      "minLength": 1,
-      "default": "/ecsdeployer/app/{{ .Project }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}"
-     },
-     "log_stream_prefix": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Container }}"
-     },
-     "target_group": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}"
-     },
-     "marker_tag_key": {
-      "type": "string",
-      "minLength": 1,
-      "default": "ecsdeployer/project"
-     },
-     "marker_tag_value": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{end}}"
-     },
-     "cron_rule": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}",
-      "deprecated": true
-     },
-     "cron_target": {
-      "type": "string",
-      "minLength": 1,
-      "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
-      "deprecated": true
-     }
-    },
-    "additionalProperties": false,
-    "type": "object"
-   },
-   "NameValuePair": {
-    "properties": {
-     "name": {
-      "type": "string",
-      "minLength": 1
-     },
-     "value": {
-      "oneOf": [
-       {
-        "type": "string",
-        "minLength": 1
-       },
-       {
-        "type": [
-         "number",
-         "boolean"
-        ]
-       }
-      ],
-      "description": "Any value that can be cast to a string of at least one character long"
-     }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "name",
-     "value"
-    ]
-   },
-   "Network": {
-    "properties": {
-     "subnets": {
-      "items": {
-       "$ref": "#/$defs/NetworkFilter"
-      },
-      "type": "array",
-      "description": "List of SubnetIds or Subnet Filters"
-     },
-     "security_groups": {
-      "items": {
-       "$ref": "#/$defs/NetworkFilter"
-      },
-      "type": "array",
-      "description": "List of SecurityGroupIds or SecurityGroup Filters"
-     },
-     "public_ip": {
-      "type": "boolean",
-      "description": "Should the task be given a Public IP address?",
-      "default": false
-     }
-    },
-    "additionalProperties": false,
-    "type": "object"
-   },
-   "NetworkFilter": {
-    "oneOf": [
-     {
-      "type": "string",
-      "pattern": "^[a-z]+-[a-f0-9]{3,}$",
-      "description": "Explicit ID",
-      "examples": [
-       "subnet-12345abcd",
-       "sg-12345abcd"
-      ]
-     },
-     {
-      "type": "string",
-      "pattern": "^([^=]+)=(([^,]+),?)+$",
-      "description": "Filter shorthand",
-      "examples": [
-       "status=available",
-       "tag:key=value"
-      ]
-     },
-     {
-      "properties": {
-       "name": {
-        "type": "string",
-        "minLength": 1
-       },
-       "value": {
-        "oneOf": [
-         {
-          "items": {
-           "type": "string"
-          },
-          "type": "array",
-          "minItems": 1
-         },
-         {
-          "type": "string"
-         }
-        ],
-        "description": "String or array of strings"
-       }
-      },
-      "type": "object",
-      "required": [
-       "name",
-       "value"
-      ]
-     },
-     {
-      "properties": {
-       "name": {
-        "type": "string",
-        "minLength": 1
-       },
-       "values": {
-        "oneOf": [
-         {
-          "items": {
-           "type": "string"
-          },
-          "type": "array",
-          "minItems": 1
-         },
-         {
-          "type": "string"
-         }
-        ],
-        "description": "String or array of strings"
-       }
-      },
-      "type": "object",
-      "required": [
-       "name",
-       "values"
-      ]
-     }
-    ]
-   },
-   "PortMapping": {
-    "oneOf": [
-     {
-      "properties": {
-       "port": {
-        "type": "integer",
-        "maximum": 65535,
-        "minimum": 1
-       },
-       "protocol": {
-        "type": "string",
-        "enum": [
-         "tcp",
-         "udp"
-        ],
-        "default": "tcp"
-       }
-      },
-      "type": "object",
-      "required": [
-       "port"
-      ]
-     },
-     {
-      "type": "string",
-      "pattern": "^[0-9]+(/(tcp|udp))?$",
-      "description": "Docker style port mapping"
-     },
-     {
-      "type": "integer",
-      "maximum": 65535,
-      "minimum": 1,
-      "description": "Simple TCP Port"
-     }
-    ],
-    "description": "Port specifications"
-   },
-   "PreDeployTask": {
-    "properties": {
-     "name": {
-      "type": "string",
-      "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
-     },
-     "command": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "entrypoint": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "image": {
-      "$ref": "#/$defs/ImageUri"
-     },
-     "credentials": {
-      "type": "string"
-     },
-     "cpu": {
-      "$ref": "#/$defs/CPUShares"
-     },
-     "memory": {
-      "$ref": "#/$defs/Memory"
-     },
-     "environment": {
-      "$ref": "#/$defs/EnvVarMap"
-     },
-     "start_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "stop_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "labels": {
-      "items": {
-       "$ref": "#/$defs/NameValuePair"
-      },
-      "type": "array"
-     },
-     "depends_on": {
-      "items": {
-       "$ref": "#/$defs/DependsOn"
-      },
-      "type": "array"
-     },
-     "logging": {
-      "$ref": "#/$defs/TaskLoggingConfig"
-     },
-     "healthcheck": {
-      "$ref": "#/$defs/HealthCheck"
-     },
-     "mounts": {
-      "items": {
-       "$ref": "#/$defs/Mount"
-      },
-      "type": "array"
-     },
-     "ulimits": {
-      "items": {
-       "$ref": "#/$defs/Ulimit"
-      },
-      "type": "array"
-     },
-     "user": {
-      "type": "string"
-     },
-     "workdir": {
-      "type": "string"
-     },
-     "volumes_from": {
-      "items": {
-       "$ref": "#/$defs/VolumeFrom"
-      },
-      "type": "array"
-     },
-     "storage": {
-      "$ref": "#/$defs/Storage"
-     },
-     "arch": {
-      "$ref": "#/$defs/Architecture",
-      "description": "Task CPU Architecture"
-     },
-     "platform_version": {
-      "type": "string",
-      "description": "Fargate Platform Version",
-      "default": "LATEST"
-     },
-     "tags": {
-      "items": {
-       "$ref": "#/$defs/NameValuePair"
-      },
-      "type": "array"
-     },
-     "network": {
-      "$ref": "#/$defs/Network"
-     },
-     "sidecars": {
-      "items": {
-       "$ref": "#/$defs/Sidecar"
-      },
-      "type": "array"
-     },
-     "volumes": {
-      "$ref": "#/$defs/VolumeList"
-     },
-     "proxy": {
-      "$ref": "#/$defs/ProxyConfig"
-     },
-     "timeout": {
-      "$ref": "#/$defs/Duration",
-      "description": "Abort task after specified time has elapsed"
-     },
-     "disabled": {
-      "type": "boolean",
-      "description": "Do not run this task",
-      "default": false
-     },
-     "ignore_failure": {
-      "type": "boolean",
-      "description": "Ignore runtime failures of this task",
-      "default": false
-     }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "name"
-    ]
-   },
-   "ProxyConfig": {
-    "oneOf": [
-     {
-      "type": "boolean",
-      "const": false,
-      "description": "Disable proxy configuration for a specific task"
-     },
-     {
-      "properties": {
-       "disabled": {
-        "type": "boolean"
-       },
-       "type": {
-        "type": "string",
-        "description": "Proxy type. You should omit this unless you know what you are doing.",
-        "default": "APPMESH",
-        "examples": [
-         "APPMESH"
-        ]
-       },
-       "container": {
-        "type": "string",
-        "description": "Name of the sidecar that provides the proxy",
-        "default": "envoy"
-       },
-       "properties": {
-        "$ref": "#/$defs/EnvVarMap"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object"
-     }
-    ]
-   },
-   "RoleRef": {
-    "type": "string",
-    "minLength": 1,
-    "description": "ARN or Name"
-   },
-   "RolloutConfig": {
-    "properties": {
-     "min": {
-      "type": "integer",
-      "minimum": 0
-     },
-     "max": {
-      "type": "integer",
-      "minimum": 0
-     }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "min",
-     "max"
-    ]
-   },
-   "SSMImport": {
-    "oneOf": [
-     {
-      "type": "boolean",
-      "description": "if false, disable SSMImporting entirely. If true, use defaults"
-     },
-     {
-      "type": "string",
-      "pattern": "^\\/.+",
-      "description": "Enable SSM importing, with the value provided as the path to use."
-     },
-     {
-      "properties": {
-       "enabled": {
-        "type": "boolean"
-       },
-       "path": {
-        "type": "string",
-        "description": "Path to the SSM parameter root for your project. A trailing slash will be added.",
-        "default": "/ecsdeployer/secrets/{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{ end }}"
-       },
-       "recursive": {
-        "type": "boolean",
-        "description": "Whether we should recurse into deeper parameter levels",
-        "default": true
-       }
-      },
-      "additionalProperties": false,
-      "type": "object"
-     }
-    ]
-   },
-   "Service": {
-    "properties": {
-     "name": {
-      "type": "string",
-      "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
-     },
-     "command": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "entrypoint": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "image": {
-      "$ref": "#/$defs/ImageUri"
-     },
-     "credentials": {
-      "type": "string"
-     },
-     "cpu": {
-      "$ref": "#/$defs/CPUShares"
-     },
-     "memory": {
-      "$ref": "#/$defs/Memory"
-     },
-     "environment": {
-      "$ref": "#/$defs/EnvVarMap"
-     },
-     "start_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "stop_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "labels": {
-      "items": {
-       "$ref": "#/$defs/NameValuePair"
-      },
-      "type": "array"
-     },
-     "depends_on": {
-      "items": {
-       "$ref": "#/$defs/DependsOn"
-      },
-      "type": "array"
-     },
-     "logging": {
-      "$ref": "#/$defs/TaskLoggingConfig"
-     },
-     "healthcheck": {
-      "$ref": "#/$defs/HealthCheck"
-     },
-     "mounts": {
-      "items": {
-       "$ref": "#/$defs/Mount"
-      },
-      "type": "array"
-     },
-     "ulimits": {
-      "items": {
-       "$ref": "#/$defs/Ulimit"
-      },
-      "type": "array"
-     },
-     "user": {
-      "type": "string"
-     },
-     "workdir": {
-      "type": "string"
-     },
-     "volumes_from": {
-      "items": {
-       "$ref": "#/$defs/VolumeFrom"
-      },
-      "type": "array"
-     },
-     "storage": {
-      "$ref": "#/$defs/Storage"
-     },
-     "arch": {
-      "$ref": "#/$defs/Architecture",
-      "description": "Task CPU Architecture"
-     },
-     "platform_version": {
-      "type": "string",
-      "description": "Fargate Platform Version",
-      "default": "LATEST"
-     },
-     "tags": {
-      "items": {
-       "$ref": "#/$defs/NameValuePair"
-      },
-      "type": "array"
-     },
-     "network": {
-      "$ref": "#/$defs/Network"
-     },
-     "sidecars": {
-      "items": {
-       "$ref": "#/$defs/Sidecar"
-      },
-      "type": "array"
-     },
-     "volumes": {
-      "$ref": "#/$defs/VolumeList"
-     },
-     "proxy": {
-      "$ref": "#/$defs/ProxyConfig"
-     },
-     "desired": {
-      "type": "integer",
-      "default": 0,
-      "minimum": 0
-     },
-     "rollout": {
-      "$ref": "#/$defs/RolloutConfig"
-     },
-     "skip_wait_for_stable": {
-      "type": "boolean",
-      "description": "Do not wait for service to become stable before marking it successful",
-      "default": false
-     },
-     "spot": {
-      "$ref": "#/$defs/SpotOverrides"
-     },
-     "load_balancer": {
-      "$ref": "#/$defs/LoadBalancers"
-     }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "desired",
-     "name"
-    ]
-   },
-   "Settings": {
-    "properties": {
-     "predeploy_parallel": {
-      "type": "boolean"
-     },
-     "predeploy_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "skip_deployment_env_vars": {
-      "type": "boolean"
-     },
-     "skip_cron_env_vars": {
-      "type": "boolean"
-     },
-     "disable_marker_tag": {
-      "type": "boolean"
-     },
-     "keep_in_sync": {
-      "$ref": "#/$defs/KeepInSync"
-     },
-     "wait_for_stable": {
-      "$ref": "#/$defs/WaitForStable"
-     },
-     "use_old_cron_eventbus": {
-      "type": "boolean"
-     },
-     "ssm_import": {
-      "$ref": "#/$defs/SSMImport"
-     }
-    },
-    "additionalProperties": false,
-    "type": "object"
-   },
-   "ShellCommand": {
-    "oneOf": [
-     {
-      "description": "Shell-style command",
-      "type": [
-       "number",
-       "string",
-       "boolean"
-      ]
-     },
-     {
-      "items": {
-       "description": "Any value that can be cast to a string, or blank",
-       "type": [
-        "number",
-        "string",
-        "boolean"
-       ]
-      },
-      "type": "array",
-      "description": "Command array. Preferred"
-     }
-    ]
-   },
-   "Sidecar": {
-    "properties": {
-     "name": {
-      "type": "string",
-      "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
-     },
-     "command": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "entrypoint": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "image": {
-      "$ref": "#/$defs/ImageUri"
-     },
-     "credentials": {
-      "type": "string"
-     },
-     "cpu": {
-      "$ref": "#/$defs/CPUShares"
-     },
-     "memory": {
-      "$ref": "#/$defs/Memory"
-     },
-     "environment": {
-      "$ref": "#/$defs/EnvVarMap"
-     },
-     "start_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "stop_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "labels": {
-      "items": {
-       "$ref": "#/$defs/NameValuePair"
-      },
-      "type": "array"
-     },
-     "depends_on": {
-      "items": {
-       "$ref": "#/$defs/DependsOn"
-      },
-      "type": "array"
-     },
-     "logging": {
-      "$ref": "#/$defs/TaskLoggingConfig"
-     },
-     "healthcheck": {
-      "$ref": "#/$defs/HealthCheck"
-     },
-     "mounts": {
-      "items": {
-       "$ref": "#/$defs/Mount"
-      },
-      "type": "array"
-     },
-     "ulimits": {
-      "items": {
-       "$ref": "#/$defs/Ulimit"
-      },
-      "type": "array"
-     },
-     "user": {
-      "type": "string"
-     },
-     "workdir": {
-      "type": "string"
-     },
-     "volumes_from": {
-      "items": {
-       "$ref": "#/$defs/VolumeFrom"
-      },
-      "type": "array"
-     },
-     "inherit_env": {
-      "type": "boolean",
-      "default": false
-     },
-     "port_mappings": {
-      "items": {
-       "$ref": "#/$defs/PortMapping"
-      },
-      "type": "array"
-     },
-     "memory_reservation": {
-      "$ref": "#/$defs/Memory"
-     },
-     "essential": {
-      "type": "boolean",
-      "default": true
-     }
-    },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "name"
-    ]
-   },
-   "SpotOverrides": {
-    "oneOf": [
-     {
-      "properties": {
-       "enabled": {
-        "type": "boolean",
-        "description": "Enable spot containers",
-        "default": false
-       },
-       "minimum_ondemand": {
-        "type": "integer"
-       },
-       "minimum_ondemand_percent": {
-        "type": "integer"
-       }
-      },
-      "type": "object"
-     },
-     {
-      "type": "boolean"
-     }
-    ],
-    "description": "Spot Capacity Overrides"
-   },
-   "Storage": {
-    "type": "integer",
-    "minimum": 20,
-    "description": "Size in GB of storage to add",
-    "default": 20
-   },
-   "TargetGroupRef": {
-    "type": "string",
-    "minLength": 1,
-    "description": "ARN or Name"
-   },
-   "TaskDefaults": {
-    "properties": {
-     "command": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "entrypoint": {
-      "$ref": "#/$defs/ShellCommand"
-     },
-     "image": {
-      "$ref": "#/$defs/ImageUri"
-     },
-     "credentials": {
-      "type": "string"
-     },
-     "cpu": {
-      "$ref": "#/$defs/CPUShares",
-      "default": 1024
-     },
-     "memory": {
-      "$ref": "#/$defs/Memory",
-      "default": "2x"
-     },
-     "environment": {
-      "$ref": "#/$defs/EnvVarMap"
-     },
-     "start_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "stop_timeout": {
-      "$ref": "#/$defs/Duration"
-     },
-     "labels": {
-      "items": {
-       "$ref": "#/$defs/NameValuePair"
-      },
-      "type": "array"
-     },
-     "depends_on": {
-      "items": {
-       "$ref": "#/$defs/DependsOn"
-      },
-      "type": "array"
-     },
-     "healthcheck": {
-      "$ref": "#/$defs/HealthCheck"
-     },
-     "mounts": {
-      "items": {
-       "$ref": "#/$defs/Mount"
-      },
-      "type": "array"
-     },
-     "ulimits": {
-      "items": {
-       "$ref": "#/$defs/Ulimit"
-      },
-      "type": "array"
-     },
-     "user": {
-      "type": "string"
-     },
-     "workdir": {
-      "type": "string"
-     },
-     "volumes_from": {
-      "items": {
-       "$ref": "#/$defs/VolumeFrom"
-      },
-      "type": "array"
-     },
-     "storage": {
-      "$ref": "#/$defs/Storage"
-     },
-     "arch": {
-      "$ref": "#/$defs/Architecture",
-      "description": "Task CPU Architecture",
+      "description": "Specify CPU Architecture",
       "default": "amd64"
-     },
-     "platform_version": {
-      "type": "string",
-      "description": "Fargate Platform Version",
-      "default": "LATEST"
-     },
-     "tags": {
-      "items": {
-       "$ref": "#/$defs/NameValuePair"
-      },
-      "type": "array"
-     },
-     "sidecars": {
-      "items": {
-       "$ref": "#/$defs/Sidecar"
-      },
-      "type": "array"
-     },
-     "volumes": {
-      "$ref": "#/$defs/VolumeList"
-     },
-     "proxy": {
-      "$ref": "#/$defs/ProxyConfig"
-     },
-     "spot": {
-      "$ref": "#/$defs/SpotOverrides"
-     }
     },
-    "additionalProperties": false,
-    "type": "object"
-   },
-   "TaskLoggingConfig": {
-    "oneOf": [
-     {
-      "type": "boolean",
-      "const": false,
-      "description": "Disable logging"
-     },
-     {
-      "type": "null",
-      "description": "Inherit logging configuration"
-     },
-     {
+    "AwsLogConfig": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Enable or disable logging to AWS using default values"
+        },
+        {
+          "properties": {
+            "disabled": {
+              "type": "boolean"
+            },
+            "retention": {
+              "$ref": "#/$defs/LogRetention"
+            },
+            "options": {
+              "$ref": "#/$defs/EnvVarMap"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    },
+    "CPUShares": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "description": "CPU Shares",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "description": "CPU Shares or vCPUs"
+        }
+      ],
+      "description": "Specify CPU Resources"
+    },
+    "ClusterRef": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ARN or Name"
+    },
+    "ConsoleTask": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Enable or disable remote shell"
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
+            },
+            "command": {
+              "$ref": "#/$defs/ShellCommand"
+            },
+            "entrypoint": {
+              "$ref": "#/$defs/ShellCommand"
+            },
+            "image": {
+              "$ref": "#/$defs/ImageUri"
+            },
+            "credentials": {
+              "type": "string"
+            },
+            "cpu": {
+              "$ref": "#/$defs/CPUShares"
+            },
+            "memory": {
+              "$ref": "#/$defs/Memory"
+            },
+            "environment": {
+              "$ref": "#/$defs/EnvVarMap"
+            },
+            "start_timeout": {
+              "$ref": "#/$defs/Duration"
+            },
+            "stop_timeout": {
+              "$ref": "#/$defs/Duration"
+            },
+            "labels": {
+              "items": {
+                "$ref": "#/$defs/NameValuePair"
+              },
+              "type": "array"
+            },
+            "depends_on": {
+              "items": {
+                "$ref": "#/$defs/DependsOn"
+              },
+              "type": "array"
+            },
+            "logging": {
+              "$ref": "#/$defs/TaskLoggingConfig"
+            },
+            "healthcheck": {
+              "$ref": "#/$defs/HealthCheck"
+            },
+            "mounts": {
+              "items": {
+                "$ref": "#/$defs/Mount"
+              },
+              "type": "array"
+            },
+            "ulimits": {
+              "items": {
+                "$ref": "#/$defs/Ulimit"
+              },
+              "type": "array"
+            },
+            "user": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "workdir": {
+              "type": "string"
+            },
+            "volumes_from": {
+              "items": {
+                "$ref": "#/$defs/VolumeFrom"
+              },
+              "type": "array"
+            },
+            "storage": {
+              "$ref": "#/$defs/Storage"
+            },
+            "arch": {
+              "$ref": "#/$defs/Architecture",
+              "description": "Task CPU Architecture"
+            },
+            "platform_version": {
+              "type": "string",
+              "description": "Fargate Platform Version",
+              "default": "LATEST"
+            },
+            "tags": {
+              "items": {
+                "$ref": "#/$defs/NameValuePair"
+              },
+              "type": "array"
+            },
+            "network": {
+              "$ref": "#/$defs/Network"
+            },
+            "sidecars": {
+              "items": {
+                "$ref": "#/$defs/Sidecar"
+              },
+              "type": "array"
+            },
+            "volumes": {
+              "$ref": "#/$defs/VolumeList"
+            },
+            "proxy": {
+              "$ref": "#/$defs/ProxyConfig"
+            },
+            "port": {
+              "$ref": "#/$defs/PortMapping"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "path": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    },
+    "CronJob": {
       "properties": {
-       "driver": {
-        "type": "string"
-       },
-       "options": {
-        "$ref": "#/$defs/EnvVarMap"
-       }
+        "name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
+        },
+        "command": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "entrypoint": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "image": {
+          "$ref": "#/$defs/ImageUri"
+        },
+        "credentials": {
+          "type": "string"
+        },
+        "cpu": {
+          "$ref": "#/$defs/CPUShares"
+        },
+        "memory": {
+          "$ref": "#/$defs/Memory"
+        },
+        "environment": {
+          "$ref": "#/$defs/EnvVarMap"
+        },
+        "start_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "stop_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "labels": {
+          "items": {
+            "$ref": "#/$defs/NameValuePair"
+          },
+          "type": "array"
+        },
+        "depends_on": {
+          "items": {
+            "$ref": "#/$defs/DependsOn"
+          },
+          "type": "array"
+        },
+        "logging": {
+          "$ref": "#/$defs/TaskLoggingConfig"
+        },
+        "healthcheck": {
+          "$ref": "#/$defs/HealthCheck"
+        },
+        "mounts": {
+          "items": {
+            "$ref": "#/$defs/Mount"
+          },
+          "type": "array"
+        },
+        "ulimits": {
+          "items": {
+            "$ref": "#/$defs/Ulimit"
+          },
+          "type": "array"
+        },
+        "user": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
+        "workdir": {
+          "type": "string"
+        },
+        "volumes_from": {
+          "items": {
+            "$ref": "#/$defs/VolumeFrom"
+          },
+          "type": "array"
+        },
+        "storage": {
+          "$ref": "#/$defs/Storage"
+        },
+        "arch": {
+          "$ref": "#/$defs/Architecture",
+          "description": "Task CPU Architecture"
+        },
+        "platform_version": {
+          "type": "string",
+          "description": "Fargate Platform Version",
+          "default": "LATEST"
+        },
+        "tags": {
+          "items": {
+            "$ref": "#/$defs/NameValuePair"
+          },
+          "type": "array"
+        },
+        "network": {
+          "$ref": "#/$defs/Network"
+        },
+        "sidecars": {
+          "items": {
+            "$ref": "#/$defs/Sidecar"
+          },
+          "type": "array"
+        },
+        "volumes": {
+          "$ref": "#/$defs/VolumeList"
+        },
+        "proxy": {
+          "$ref": "#/$defs/ProxyConfig"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "schedule": {
+          "type": "string",
+          "minLength": 5,
+          "examples": [
+            "cron(0 9 * * ? *)",
+            "rate(1 hour)",
+            "rate(2 hours)"
+          ]
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "bus": {
+          "type": "string"
+        },
+        "start_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "schedule",
+        "name"
+      ]
+    },
+    "CustomLogConfig": {
+      "properties": {
+        "driver": {
+          "type": "string"
+        },
+        "options": {
+          "$ref": "#/$defs/EnvVarMap"
+        }
       },
       "additionalProperties": false,
       "type": "object"
-     }
-    ]
-   },
-   "Ulimit": {
-    "oneOf": [
-     {
-      "properties": {
-       "name": {
-        "type": "string",
-        "enum": [
-         "core",
-         "cpu",
-         "data",
-         "fsize",
-         "locks",
-         "memlock",
-         "msgqueue",
-         "nice",
-         "nofile",
-         "nproc",
-         "rss",
-         "rtprio",
-         "rttime",
-         "sigpending",
-         "stack"
-        ]
-       },
-       "limit": {
-        "type": "integer"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-       "name",
-       "limit"
-      ],
-      "description": "Single value used for both hard and soft limits"
-     },
-     {
-      "properties": {
-       "name": {
-        "type": "string",
-        "enum": [
-         "core",
-         "cpu",
-         "data",
-         "fsize",
-         "locks",
-         "memlock",
-         "msgqueue",
-         "nice",
-         "nofile",
-         "nproc",
-         "rss",
-         "rtprio",
-         "rttime",
-         "sigpending",
-         "stack"
-        ]
-       },
-       "hard": {
-        "type": "integer"
-       },
-       "soft": {
-        "type": "integer",
-        "default": 0
-       }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-       "name"
-      ],
-      "description": "Define both hard and soft limit values"
-     }
-    ],
-    "description": "Ulimit overrides"
-   },
-   "VersionConstraint": {
-    "$comment": "https://pkg.go.dev/github.com/Masterminds/semver/v3#readme-checking-version-constraints",
-    "type": "string",
-    "description": "Specify a constraint on a semantic version"
-   },
-   "Volume": {
-    "oneOf": [
-     {
-      "type": "string",
-      "description": "Shorthand to specify a default bind volume"
-     },
-     {
-      "properties": {
-       "name": {
-        "type": "string"
-       },
-       "efs": {
-        "$ref": "#/$defs/VolumeEFSConfig"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-       "name"
-      ]
-     }
-    ]
-   },
-   "VolumeEFSConfig": {
-    "properties": {
-     "file_system_id": {
-      "type": "string"
-     },
-     "access_point_id": {
-      "type": "string"
-     },
-     "root": {
-      "type": "string"
-     },
-     "disable_iam": {
-      "type": "boolean"
-     },
-     "disable_encryption": {
-      "type": "boolean"
-     }
     },
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-     "file_system_id"
-    ]
-   },
-   "VolumeFrom": {
-    "oneOf": [
-     {
-      "type": "string",
-      "description": "Shorthand to specify a container name"
-     },
-     {
-      "properties": {
-       "source": {
-        "type": "string"
-       },
-       "readonly": {
-        "type": "boolean"
-       }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-       "source"
+    "DependsOn": {
+      "oneOf": [
+        {
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[a-zA-Z][-_a-zA-Z0-9]+$"
+            },
+            "condition": {
+              "type": "string",
+              "enum": [
+                "START",
+                "COMPLETE",
+                "SUCCESS",
+                "HEALTHY"
+              ],
+              "default": "START"
+            }
+          },
+          "type": "object",
+          "required": [
+            "name"
+          ]
+        },
+        {
+          "type": "string",
+          "pattern": "^[-_a-zA-Z0-9]+(:[a-zA-Z]+)?$",
+          "description": "'container:CONDITION' format"
+        }
       ]
-     }
-    ]
-   },
-   "VolumeList": {
-    "items": {
-     "$ref": "#/$defs/Volume"
     },
-    "type": "array"
-   },
-   "WaitForStable": {
-    "oneOf": [
-     {
-      "type": "boolean",
-      "description": "Enable or disable waiting for stability entirely"
-     },
-     {
+    "Duration": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "description": "Seconds",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "pattern": "^[+]?([0-9]*(\\.[0-9]*)?[a-z]+)+$",
+          "description": "Duration specified in shorthand",
+          "examples": [
+            "5m",
+            "4m2s",
+            "2h",
+            "2h10m5s"
+          ]
+        }
+      ]
+    },
+    "EcsDeployerOptions": {
       "properties": {
-       "disabled": {
-        "type": "boolean"
-       },
-       "individually": {
-        "type": "boolean",
-        "description": "Don't use this"
-       },
-       "timeout": {
-        "$ref": "#/$defs/Duration"
-       }
+        "required_version": {
+          "$comment": "https://semver.org",
+          "type": "string",
+          "description": "Specify a constraint on a semantic version"
+        },
+        "allowed_account_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9]{12}$"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "description": "Restrict to a specific AWS account ID."
+        }
       },
       "additionalProperties": false,
       "type": "object"
-     }
-    ]
-   }
+    },
+    "EnvVar": {
+      "oneOf": [
+        {
+          "$comment": "Pull a secret from an SSM Parameter",
+          "properties": {
+            "ssm": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "ssm"
+          ]
+        },
+        {
+          "$comment": "Construct value using a template",
+          "properties": {
+            "template": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "template"
+          ]
+        },
+        {
+          "$comment": "Use a value verbatim",
+          "properties": {
+            "value": {
+              "description": "Any value that can be cast to a string, or blank",
+              "type": [
+                "number",
+                "string",
+                "boolean"
+              ]
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "value"
+          ]
+        },
+        {
+          "$comment": "Unsets any value that was defined previously",
+          "properties": {
+            "unset": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "unset"
+          ]
+        },
+        {
+          "$comment": "Use a value verbatim",
+          "description": "Any value that can be cast to a string, or blank",
+          "type": [
+            "number",
+            "string",
+            "boolean"
+          ]
+        }
+      ]
+    },
+    "EnvVarMap": {
+      "patternProperties": {
+        "^[a-zA-Z_][^=]*$": {
+          "$ref": "#/$defs/EnvVar"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "FirelensAwsLogGroup": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "const": false,
+          "description": "Do not log to AWSLogs"
+        },
+        {
+          "type": "string",
+          "minLength": 2,
+          "description": "Send logs to this log group"
+        }
+      ],
+      "description": "Should logs for firelens be sent to a log group"
+    },
+    "FirelensConfig": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "properties": {
+            "disabled": {
+              "type": "boolean"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "fluentbit",
+                "fluentd"
+              ],
+              "default": "fluentbit"
+            },
+            "container_name": {
+              "type": "string",
+              "default": "log_router"
+            },
+            "options": {
+              "$ref": "#/$defs/EnvVarMap"
+            },
+            "router_options": {
+              "$ref": "#/$defs/EnvVarMap"
+            },
+            "environment": {
+              "$ref": "#/$defs/EnvVarMap"
+            },
+            "credentials": {
+              "type": "string"
+            },
+            "inherit_env": {
+              "type": "boolean"
+            },
+            "image": {
+              "$ref": "#/$defs/ImageUri"
+            },
+            "memory": {
+              "$ref": "#/$defs/Memory"
+            },
+            "log_to_awslogs": {
+              "$ref": "#/$defs/FirelensAwsLogGroup"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    },
+    "HealthCheck": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "const": false,
+          "description": "Disable a healthcheck for a specific task"
+        },
+        {
+          "properties": {
+            "disabled": {
+              "type": "boolean"
+            },
+            "command": {
+              "$ref": "#/$defs/ShellCommand"
+            },
+            "interval": {
+              "$ref": "#/$defs/Duration"
+            },
+            "retries": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "start_period": {
+              "$ref": "#/$defs/Duration"
+            },
+            "timeout": {
+              "$ref": "#/$defs/Duration"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    },
+    "ImageUri": {
+      "oneOf": [
+        {
+          "oneOf": [
+            {
+              "required": [
+                "ecr",
+                "tag"
+              ]
+            },
+            {
+              "required": [
+                "ecr",
+                "digest"
+              ]
+            },
+            {
+              "required": [
+                "docker",
+                "tag"
+              ]
+            },
+            {
+              "required": [
+                "docker",
+                "digest"
+              ]
+            }
+          ],
+          "properties": {
+            "ecr": {
+              "type": "string",
+              "title": "Just the ECR Repository name"
+            },
+            "docker": {
+              "type": "string",
+              "title": "Dockerhub Repo URI"
+            },
+            "tag": {
+              "type": "string",
+              "title": "Image tag"
+            },
+            "digest": {
+              "type": "string",
+              "title": "Image digest"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        },
+        {
+          "type": "string",
+          "minLength": 2,
+          "title": "The full URI to your image",
+          "examples": [
+            "myorg/myapp:latest",
+            "myorg/myapp@sha256:deadbeefdeadbeefdeadbeefdeadbeef",
+            "myorg/myapp:{{ .ImageTag }}"
+          ]
+        }
+      ]
+    },
+    "KeepInSync": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Set all fields on or off"
+        },
+        {
+          "properties": {
+            "services": {
+              "type": "boolean",
+              "description": "Deletes services no longer referenced in stage file",
+              "default": true
+            },
+            "log_retention": {
+              "type": "boolean",
+              "description": "Ensures that log groups have the correct retention period set",
+              "default": true
+            },
+            "cronjobs": {
+              "type": "boolean",
+              "description": "Deletes cronjobs no longer referenced in stage file",
+              "default": true
+            },
+            "task_definitions": {
+              "type": "boolean",
+              "description": "Deregisters old task definitions",
+              "default": true
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    },
+    "LoadBalancer": {
+      "properties": {
+        "port": {
+          "$ref": "#/$defs/PortMapping"
+        },
+        "target_group": {
+          "$ref": "#/$defs/TargetGroupRef"
+        },
+        "grace": {
+          "$ref": "#/$defs/Duration"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "port",
+        "target_group"
+      ]
+    },
+    "LoadBalancers": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/LoadBalancer",
+          "description": "Default variant, just define a single load balancer mapping"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/LoadBalancer"
+          },
+          "type": "array",
+          "description": "Define multiple load balancer mappings."
+        }
+      ]
+    },
+    "LogRetention": {
+      "oneOf": [
+        {
+          "type": "string",
+          "const": "forever",
+          "description": "Retain logs forever"
+        },
+        {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "description": "The number of days to retain logs"
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The number of days to retain logs"
+        }
+      ],
+      "description": "How long to retain logs in CloudWatch logs"
+    },
+    "LoggingConfig": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "properties": {
+            "disabled": {
+              "type": "boolean"
+            },
+            "firelens": {
+              "$ref": "#/$defs/FirelensConfig"
+            },
+            "awslogs": {
+              "$ref": "#/$defs/AwsLogConfig"
+            },
+            "custom": {
+              "$ref": "#/$defs/CustomLogConfig"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    },
+    "Memory": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Absolute or multiple of CPU",
+          "examples": [
+            "2048",
+            "2x",
+            "2 GB",
+            "0.5gb",
+            "x2"
+          ]
+        },
+        {
+          "type": "integer",
+          "description": "Absolute value in Megabytes"
+        }
+      ],
+      "title": "Memory requirements"
+    },
+    "Mount": {
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "readonly": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "path",
+        "source"
+      ]
+    },
+    "NameTemplates": {
+      "properties": {
+        "task_family": {
+          "type": "string",
+          "minLength": 1,
+          "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
+        },
+        "service_name": {
+          "type": "string",
+          "minLength": 1,
+          "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
+        },
+        "cron_group": {
+          "type": "string",
+          "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}"
+        },
+        "schedule_group": {
+          "type": "string",
+          "minLength": 1,
+          "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}"
+        },
+        "schedule": {
+          "type": "string",
+          "minLength": 1,
+          "default": "ecsd-cron-{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
+        },
+        "predeploy_group": {
+          "type": "string",
+          "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}"
+        },
+        "predeploy_started_by": {
+          "type": "string",
+          "default": "ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:deployer"
+        },
+        "log_group": {
+          "type": "string",
+          "minLength": 1,
+          "default": "/ecsdeployer/app/{{ .Project }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}"
+        },
+        "log_stream_prefix": {
+          "type": "string",
+          "minLength": 1,
+          "default": "{{ .Container }}"
+        },
+        "target_group": {
+          "type": "string",
+          "minLength": 1,
+          "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}"
+        },
+        "marker_tag_key": {
+          "type": "string",
+          "minLength": 1,
+          "default": "ecsdeployer/project"
+        },
+        "marker_tag_value": {
+          "type": "string",
+          "minLength": 1,
+          "default": "{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{end}}"
+        },
+        "cron_rule": {
+          "type": "string",
+          "minLength": 1,
+          "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}",
+          "deprecated": true
+        },
+        "cron_target": {
+          "type": "string",
+          "minLength": 1,
+          "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
+          "deprecated": true
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "NameValuePair": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": [
+                "number",
+                "boolean"
+              ]
+            }
+          ],
+          "description": "Any value that can be cast to a string of at least one character long"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "value"
+      ]
+    },
+    "Network": {
+      "properties": {
+        "subnets": {
+          "items": {
+            "$ref": "#/$defs/NetworkFilter"
+          },
+          "type": "array",
+          "description": "List of SubnetIds or Subnet Filters"
+        },
+        "security_groups": {
+          "items": {
+            "$ref": "#/$defs/NetworkFilter"
+          },
+          "type": "array",
+          "description": "List of SecurityGroupIds or SecurityGroup Filters"
+        },
+        "public_ip": {
+          "type": "boolean",
+          "description": "Should the task be given a Public IP address?",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "NetworkFilter": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-z]+-[a-f0-9]{3,}$",
+          "description": "Explicit ID",
+          "examples": [
+            "subnet-12345abcd",
+            "sg-12345abcd"
+          ]
+        },
+        {
+          "type": "string",
+          "pattern": "^([^=]+)=(([^,]+),?)+$",
+          "description": "Filter shorthand",
+          "examples": [
+            "status=available",
+            "tag:key=value"
+          ]
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "value": {
+              "oneOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "minItems": 1
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "String or array of strings"
+            }
+          },
+          "type": "object",
+          "required": [
+            "name",
+            "value"
+          ]
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "values": {
+              "oneOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "minItems": 1
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "String or array of strings"
+            }
+          },
+          "type": "object",
+          "required": [
+            "name",
+            "values"
+          ]
+        }
+      ]
+    },
+    "PortMapping": {
+      "oneOf": [
+        {
+          "properties": {
+            "port": {
+              "type": "integer",
+              "maximum": 65535,
+              "minimum": 1
+            },
+            "protocol": {
+              "type": "string",
+              "enum": [
+                "tcp",
+                "udp"
+              ],
+              "default": "tcp"
+            }
+          },
+          "type": "object",
+          "required": [
+            "port"
+          ]
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+(/(tcp|udp))?$",
+          "description": "Docker style port mapping"
+        },
+        {
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 1,
+          "description": "Simple TCP Port"
+        }
+      ],
+      "description": "Port specifications"
+    },
+    "PreDeployTask": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
+        },
+        "command": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "entrypoint": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "image": {
+          "$ref": "#/$defs/ImageUri"
+        },
+        "credentials": {
+          "type": "string"
+        },
+        "cpu": {
+          "$ref": "#/$defs/CPUShares"
+        },
+        "memory": {
+          "$ref": "#/$defs/Memory"
+        },
+        "environment": {
+          "$ref": "#/$defs/EnvVarMap"
+        },
+        "start_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "stop_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "labels": {
+          "items": {
+            "$ref": "#/$defs/NameValuePair"
+          },
+          "type": "array"
+        },
+        "depends_on": {
+          "items": {
+            "$ref": "#/$defs/DependsOn"
+          },
+          "type": "array"
+        },
+        "logging": {
+          "$ref": "#/$defs/TaskLoggingConfig"
+        },
+        "healthcheck": {
+          "$ref": "#/$defs/HealthCheck"
+        },
+        "mounts": {
+          "items": {
+            "$ref": "#/$defs/Mount"
+          },
+          "type": "array"
+        },
+        "ulimits": {
+          "items": {
+            "$ref": "#/$defs/Ulimit"
+          },
+          "type": "array"
+        },
+        "user": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
+        "workdir": {
+          "type": "string"
+        },
+        "volumes_from": {
+          "items": {
+            "$ref": "#/$defs/VolumeFrom"
+          },
+          "type": "array"
+        },
+        "storage": {
+          "$ref": "#/$defs/Storage"
+        },
+        "arch": {
+          "$ref": "#/$defs/Architecture",
+          "description": "Task CPU Architecture"
+        },
+        "platform_version": {
+          "type": "string",
+          "description": "Fargate Platform Version",
+          "default": "LATEST"
+        },
+        "tags": {
+          "items": {
+            "$ref": "#/$defs/NameValuePair"
+          },
+          "type": "array"
+        },
+        "network": {
+          "$ref": "#/$defs/Network"
+        },
+        "sidecars": {
+          "items": {
+            "$ref": "#/$defs/Sidecar"
+          },
+          "type": "array"
+        },
+        "volumes": {
+          "$ref": "#/$defs/VolumeList"
+        },
+        "proxy": {
+          "$ref": "#/$defs/ProxyConfig"
+        },
+        "timeout": {
+          "$ref": "#/$defs/Duration",
+          "description": "Abort task after specified time has elapsed"
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "Do not run this task",
+          "default": false
+        },
+        "ignore_failure": {
+          "type": "boolean",
+          "description": "Ignore runtime failures of this task",
+          "default": false
+        },
+        "do_not_wait": {
+          "type": "boolean",
+          "description": "Do not wait for this task to finish",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name"
+      ]
+    },
+    "ProxyConfig": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "const": false,
+          "description": "Disable proxy configuration for a specific task"
+        },
+        {
+          "properties": {
+            "disabled": {
+              "type": "boolean"
+            },
+            "type": {
+              "type": "string",
+              "description": "Proxy type. You should omit this unless you know what you are doing.",
+              "default": "APPMESH",
+              "examples": [
+                "APPMESH"
+              ]
+            },
+            "container": {
+              "type": "string",
+              "description": "Name of the sidecar that provides the proxy",
+              "default": "envoy"
+            },
+            "properties": {
+              "$ref": "#/$defs/EnvVarMap"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    },
+    "RoleRef": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ARN or Name"
+    },
+    "RolloutConfig": {
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "min",
+        "max"
+      ]
+    },
+    "SSMImport": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "if false, disable SSMImporting entirely. If true, use defaults"
+        },
+        {
+          "type": "string",
+          "pattern": "^\\/.+",
+          "description": "Enable SSM importing, with the value provided as the path to use."
+        },
+        {
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "path": {
+              "type": "string",
+              "description": "Path to the SSM parameter root for your project. A trailing slash will be added.",
+              "default": "/ecsdeployer/secrets/{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{ end }}"
+            },
+            "recursive": {
+              "type": "boolean",
+              "description": "Whether we should recurse into deeper parameter levels",
+              "default": true
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    },
+    "Service": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
+        },
+        "command": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "entrypoint": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "image": {
+          "$ref": "#/$defs/ImageUri"
+        },
+        "credentials": {
+          "type": "string"
+        },
+        "cpu": {
+          "$ref": "#/$defs/CPUShares"
+        },
+        "memory": {
+          "$ref": "#/$defs/Memory"
+        },
+        "environment": {
+          "$ref": "#/$defs/EnvVarMap"
+        },
+        "start_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "stop_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "labels": {
+          "items": {
+            "$ref": "#/$defs/NameValuePair"
+          },
+          "type": "array"
+        },
+        "depends_on": {
+          "items": {
+            "$ref": "#/$defs/DependsOn"
+          },
+          "type": "array"
+        },
+        "logging": {
+          "$ref": "#/$defs/TaskLoggingConfig"
+        },
+        "healthcheck": {
+          "$ref": "#/$defs/HealthCheck"
+        },
+        "mounts": {
+          "items": {
+            "$ref": "#/$defs/Mount"
+          },
+          "type": "array"
+        },
+        "ulimits": {
+          "items": {
+            "$ref": "#/$defs/Ulimit"
+          },
+          "type": "array"
+        },
+        "user": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
+        "workdir": {
+          "type": "string"
+        },
+        "volumes_from": {
+          "items": {
+            "$ref": "#/$defs/VolumeFrom"
+          },
+          "type": "array"
+        },
+        "storage": {
+          "$ref": "#/$defs/Storage"
+        },
+        "arch": {
+          "$ref": "#/$defs/Architecture",
+          "description": "Task CPU Architecture"
+        },
+        "platform_version": {
+          "type": "string",
+          "description": "Fargate Platform Version",
+          "default": "LATEST"
+        },
+        "tags": {
+          "items": {
+            "$ref": "#/$defs/NameValuePair"
+          },
+          "type": "array"
+        },
+        "network": {
+          "$ref": "#/$defs/Network"
+        },
+        "sidecars": {
+          "items": {
+            "$ref": "#/$defs/Sidecar"
+          },
+          "type": "array"
+        },
+        "volumes": {
+          "$ref": "#/$defs/VolumeList"
+        },
+        "proxy": {
+          "$ref": "#/$defs/ProxyConfig"
+        },
+        "desired": {
+          "type": "integer",
+          "default": 0,
+          "minimum": 0
+        },
+        "rollout": {
+          "$ref": "#/$defs/RolloutConfig"
+        },
+        "skip_wait_for_stable": {
+          "type": "boolean",
+          "description": "Do not wait for service to become stable before marking it successful",
+          "default": false
+        },
+        "spot": {
+          "$ref": "#/$defs/SpotOverrides"
+        },
+        "load_balancer": {
+          "$ref": "#/$defs/LoadBalancers"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name"
+      ]
+    },
+    "Settings": {
+      "properties": {
+        "predeploy_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "skip_deployment_env_vars": {
+          "type": "boolean"
+        },
+        "skip_cron_env_vars": {
+          "type": "boolean"
+        },
+        "disable_marker_tag": {
+          "type": "boolean"
+        },
+        "keep_in_sync": {
+          "$ref": "#/$defs/KeepInSync"
+        },
+        "wait_for_stable": {
+          "$ref": "#/$defs/WaitForStable"
+        },
+        "use_old_cron_eventbus": {
+          "type": "boolean"
+        },
+        "ssm_import": {
+          "$ref": "#/$defs/SSMImport"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ShellCommand": {
+      "oneOf": [
+        {
+          "description": "Shell-style command",
+          "type": [
+            "number",
+            "string",
+            "boolean"
+          ]
+        },
+        {
+          "items": {
+            "description": "Any value that can be cast to a string, or blank",
+            "type": [
+              "number",
+              "string",
+              "boolean"
+            ]
+          },
+          "type": "array",
+          "description": "Command array. Preferred"
+        }
+      ]
+    },
+    "Sidecar": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-zA-Z][-_a-zA-Z0-9]*$"
+        },
+        "command": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "entrypoint": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "image": {
+          "$ref": "#/$defs/ImageUri"
+        },
+        "credentials": {
+          "type": "string"
+        },
+        "cpu": {
+          "$ref": "#/$defs/CPUShares"
+        },
+        "memory": {
+          "$ref": "#/$defs/Memory"
+        },
+        "environment": {
+          "$ref": "#/$defs/EnvVarMap"
+        },
+        "start_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "stop_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "labels": {
+          "items": {
+            "$ref": "#/$defs/NameValuePair"
+          },
+          "type": "array"
+        },
+        "depends_on": {
+          "items": {
+            "$ref": "#/$defs/DependsOn"
+          },
+          "type": "array"
+        },
+        "logging": {
+          "$ref": "#/$defs/TaskLoggingConfig"
+        },
+        "healthcheck": {
+          "$ref": "#/$defs/HealthCheck"
+        },
+        "mounts": {
+          "items": {
+            "$ref": "#/$defs/Mount"
+          },
+          "type": "array"
+        },
+        "ulimits": {
+          "items": {
+            "$ref": "#/$defs/Ulimit"
+          },
+          "type": "array"
+        },
+        "user": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
+        "workdir": {
+          "type": "string"
+        },
+        "volumes_from": {
+          "items": {
+            "$ref": "#/$defs/VolumeFrom"
+          },
+          "type": "array"
+        },
+        "inherit_env": {
+          "type": "boolean",
+          "default": false
+        },
+        "port_mappings": {
+          "items": {
+            "$ref": "#/$defs/PortMapping"
+          },
+          "type": "array"
+        },
+        "memory_reservation": {
+          "$ref": "#/$defs/Memory"
+        },
+        "essential": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name"
+      ]
+    },
+    "SpotOverrides": {
+      "oneOf": [
+        {
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Enable spot containers",
+              "default": false
+            },
+            "minimum_ondemand": {
+              "type": "integer"
+            },
+            "minimum_ondemand_percent": {
+              "type": "integer"
+            }
+          },
+          "type": "object"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "description": "Spot Capacity Overrides"
+    },
+    "Storage": {
+      "type": "integer",
+      "minimum": 20,
+      "description": "Size in GB of storage to add",
+      "default": 20
+    },
+    "TargetGroupRef": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ARN or Name"
+    },
+    "TaskDefaults": {
+      "properties": {
+        "command": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "entrypoint": {
+          "$ref": "#/$defs/ShellCommand"
+        },
+        "image": {
+          "$ref": "#/$defs/ImageUri"
+        },
+        "credentials": {
+          "type": "string"
+        },
+        "cpu": {
+          "$ref": "#/$defs/CPUShares",
+          "default": 1024
+        },
+        "memory": {
+          "$ref": "#/$defs/Memory",
+          "default": "2x"
+        },
+        "environment": {
+          "$ref": "#/$defs/EnvVarMap"
+        },
+        "start_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "stop_timeout": {
+          "$ref": "#/$defs/Duration"
+        },
+        "labels": {
+          "items": {
+            "$ref": "#/$defs/NameValuePair"
+          },
+          "type": "array"
+        },
+        "depends_on": {
+          "items": {
+            "$ref": "#/$defs/DependsOn"
+          },
+          "type": "array"
+        },
+        "healthcheck": {
+          "$ref": "#/$defs/HealthCheck"
+        },
+        "mounts": {
+          "items": {
+            "$ref": "#/$defs/Mount"
+          },
+          "type": "array"
+        },
+        "ulimits": {
+          "items": {
+            "$ref": "#/$defs/Ulimit"
+          },
+          "type": "array"
+        },
+        "user": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        },
+        "workdir": {
+          "type": "string"
+        },
+        "volumes_from": {
+          "items": {
+            "$ref": "#/$defs/VolumeFrom"
+          },
+          "type": "array"
+        },
+        "storage": {
+          "$ref": "#/$defs/Storage"
+        },
+        "arch": {
+          "$ref": "#/$defs/Architecture",
+          "description": "Task CPU Architecture",
+          "default": "amd64"
+        },
+        "platform_version": {
+          "type": "string",
+          "description": "Fargate Platform Version",
+          "default": "LATEST"
+        },
+        "tags": {
+          "items": {
+            "$ref": "#/$defs/NameValuePair"
+          },
+          "type": "array"
+        },
+        "sidecars": {
+          "items": {
+            "$ref": "#/$defs/Sidecar"
+          },
+          "type": "array"
+        },
+        "volumes": {
+          "$ref": "#/$defs/VolumeList"
+        },
+        "proxy": {
+          "$ref": "#/$defs/ProxyConfig"
+        },
+        "spot": {
+          "$ref": "#/$defs/SpotOverrides"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "TaskLoggingConfig": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "const": false,
+          "description": "Disable logging"
+        },
+        {
+          "type": "null",
+          "description": "Inherit logging configuration"
+        },
+        {
+          "properties": {
+            "driver": {
+              "type": "string"
+            },
+            "options": {
+              "$ref": "#/$defs/EnvVarMap"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    },
+    "Ulimit": {
+      "oneOf": [
+        {
+          "properties": {
+            "name": {
+              "type": "string",
+              "enum": [
+                "core",
+                "cpu",
+                "data",
+                "fsize",
+                "locks",
+                "memlock",
+                "msgqueue",
+                "nice",
+                "nofile",
+                "nproc",
+                "rss",
+                "rtprio",
+                "rttime",
+                "sigpending",
+                "stack"
+              ]
+            },
+            "limit": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "name",
+            "limit"
+          ],
+          "description": "Single value used for both hard and soft limits"
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string",
+              "enum": [
+                "core",
+                "cpu",
+                "data",
+                "fsize",
+                "locks",
+                "memlock",
+                "msgqueue",
+                "nice",
+                "nofile",
+                "nproc",
+                "rss",
+                "rtprio",
+                "rttime",
+                "sigpending",
+                "stack"
+              ]
+            },
+            "hard": {
+              "type": "integer"
+            },
+            "soft": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "name"
+          ],
+          "description": "Define both hard and soft limit values"
+        }
+      ],
+      "description": "Ulimit overrides"
+    },
+    "Volume": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Shorthand to specify a default bind volume"
+        },
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "efs": {
+              "$ref": "#/$defs/VolumeEFSConfig"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "name"
+          ]
+        }
+      ]
+    },
+    "VolumeEFSConfig": {
+      "properties": {
+        "file_system_id": {
+          "type": "string"
+        },
+        "access_point_id": {
+          "type": "string"
+        },
+        "root": {
+          "type": "string"
+        },
+        "disable_iam": {
+          "type": "boolean"
+        },
+        "disable_encryption": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "file_system_id"
+      ]
+    },
+    "VolumeFrom": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Shorthand to specify a container name"
+        },
+        {
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "readonly": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "VolumeList": {
+      "items": {
+        "$ref": "#/$defs/Volume"
+      },
+      "type": "array"
+    },
+    "WaitForStable": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Enable or disable waiting for stability entirely"
+        },
+        {
+          "properties": {
+            "disabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "timeout": {
+              "$ref": "#/$defs/Duration",
+              "default": "1800"
+            }
+          },
+          "additionalProperties": false,
+          "type": "object"
+        }
+      ]
+    }
   },
   "properties": {
-   "ecsdeployer": {
-    "$ref": "#/$defs/EcsDeployerOptions",
-    "description": "Add restrictions to ECSDeployer itself."
-   },
-   "project": {
-    "type": "string",
-    "pattern": "^[a-z][-a-z0-9]*$",
-    "title": "Project Name"
-   },
-   "stage": {
-    "type": "string",
-    "pattern": "^[a-z][-a-z0-9]*$",
-    "title": "Stage Name"
-   },
-   "image": {
-    "$ref": "#/$defs/ImageUri"
-   },
-   "role": {
-    "$ref": "#/$defs/RoleRef"
-   },
-   "execution_role": {
-    "$ref": "#/$defs/RoleRef"
-   },
-   "cron_launcher_role": {
-    "$ref": "#/$defs/RoleRef"
-   },
-   "service_role": {
-    "$ref": "#/$defs/RoleRef"
-   },
-   "services": {
-    "items": {
-     "$ref": "#/$defs/Service"
+    "ecsdeployer": {
+      "$ref": "#/$defs/EcsDeployerOptions",
+      "description": "Add restrictions to ECSDeployer itself."
     },
-    "type": "array"
-   },
-   "cronjobs": {
-    "items": {
-     "$ref": "#/$defs/CronJob"
+    "project": {
+      "type": "string",
+      "pattern": "^[a-z][-a-z0-9]*$",
+      "title": "Project Name"
     },
-    "type": "array"
-   },
-   "predeploy": {
-    "items": {
-     "$ref": "#/$defs/PreDeployTask"
+    "stage": {
+      "type": "string",
+      "pattern": "^[a-z][-a-z0-9]*$",
+      "title": "Stage Name"
     },
-    "type": "array"
-   },
-   "console": {
-    "$ref": "#/$defs/ConsoleTask"
-   },
-   "environment": {
-    "$ref": "#/$defs/EnvVarMap"
-   },
-   "task_defaults": {
-    "$ref": "#/$defs/TaskDefaults"
-   },
-   "name_templates": {
-    "$ref": "#/$defs/NameTemplates"
-   },
-   "logging": {
-    "$ref": "#/$defs/LoggingConfig"
-   },
-   "tags": {
-    "items": {
-     "$ref": "#/$defs/NameValuePair"
+    "image": {
+      "$ref": "#/$defs/ImageUri"
     },
-    "type": "array"
-   },
-   "network": {
-    "$ref": "#/$defs/Network"
-   },
-   "cluster": {
-    "$ref": "#/$defs/ClusterRef"
-   },
-   "settings": {
-    "$ref": "#/$defs/Settings"
-   }
+    "role": {
+      "$ref": "#/$defs/RoleRef"
+    },
+    "execution_role": {
+      "$ref": "#/$defs/RoleRef"
+    },
+    "cron_launcher_role": {
+      "$ref": "#/$defs/RoleRef"
+    },
+    "service_role": {
+      "$ref": "#/$defs/RoleRef"
+    },
+    "services": {
+      "items": {
+        "$ref": "#/$defs/Service"
+      },
+      "type": "array"
+    },
+    "cronjobs": {
+      "items": {
+        "$ref": "#/$defs/CronJob"
+      },
+      "type": "array"
+    },
+    "predeploy": {
+      "items": {
+        "$ref": "#/$defs/PreDeployTask"
+      },
+      "type": "array"
+    },
+    "console": {
+      "$ref": "#/$defs/ConsoleTask"
+    },
+    "environment": {
+      "$ref": "#/$defs/EnvVarMap"
+    },
+    "task_defaults": {
+      "$ref": "#/$defs/TaskDefaults"
+    },
+    "name_templates": {
+      "$ref": "#/$defs/NameTemplates"
+    },
+    "logging": {
+      "$ref": "#/$defs/LoggingConfig"
+    },
+    "tags": {
+      "items": {
+        "$ref": "#/$defs/NameValuePair"
+      },
+      "type": "array"
+    },
+    "network": {
+      "$ref": "#/$defs/Network"
+    },
+    "cluster": {
+      "$ref": "#/$defs/ClusterRef"
+    },
+    "settings": {
+      "$ref": "#/$defs/Settings"
+    }
   },
   "additionalProperties": false,
   "type": "object",
   "required": [
-   "project",
-   "cluster"
+    "project",
+    "cluster"
   ],
   "title": "JSON Schema for ECS Deployer configuration file"
- }
+}

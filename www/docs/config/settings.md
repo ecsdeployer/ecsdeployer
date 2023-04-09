@@ -19,7 +19,7 @@ settings:
 
 :   See [SSM Parameter Store Secrets Import](#ssm-import)
 
-    **Highly recommended you enable this!**
+    **It is highly recommended you enable this!**
 
     _Default_: disabled (see [SSM Parameter Store Secrets Import](#ssm-import) for defaults)
 
@@ -30,7 +30,7 @@ settings:
     By default, they are run sequentially. 
     If none of your tasks deploy on each other, you can speed up deployments by enabling this.
 
-    _Default_: `{{schema:default:Settings.predeploy_parallel}}`
+    _Default_: `{x{schema:default:Settings.predeploy_parallel}x}`
 -->
 
 [`predeploy_timeout`](#settings.predeploy_timeout){ #settings.predeploy_timeout }
@@ -181,6 +181,8 @@ It's **highly** recommended that you use SSM Parameter Store to put sensitive va
       keep_in_sync:
         services: true
         cronjobs: false
+        log_retention: true
+        task_definitions: true
     ```
 
     [`services`](#keep_in_sync.services){ #keep_in_sync.services }
@@ -224,10 +226,6 @@ By default, the deployer will wait for your services to become stable according 
 :   How long should the deployer wait for a service to become stable
 
     _Default_: `{{schema:default:WaitForStable.timeout}}` (seconds)
-
-<!-- [`individually`](#wait_for_stable.individually){ #wait_for_stable.individually }
-
-:   X -->
 
 ## Deployment Env Vars
 

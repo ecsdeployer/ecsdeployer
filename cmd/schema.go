@@ -1,12 +1,12 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
+	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/spf13/cobra"
 )
@@ -16,7 +16,7 @@ type schemaCmd struct {
 	output string
 }
 
-func newSchemaCmd(metadata *cmdMetadata) *schemaCmd {
+func newSchemaCmd() *schemaCmd {
 	root := &schemaCmd{}
 	cmd := &cobra.Command{
 		Use:           "jsonschema",
@@ -27,18 +27,18 @@ func newSchemaCmd(metadata *cmdMetadata) *schemaCmd {
 		Args:          cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			schema := configschema.GenerateSchema(&config.Project{})
-			bts, err := json.MarshalIndent(schema, " ", " ")
+			bts, err := util.JsonifyPretty(schema)
 			if err != nil {
 				return fmt.Errorf("failed to create jsonschema: %w", err)
 			}
 			if root.output == "-" {
-				cmd.Println(string(bts))
+				cmd.Println(bts)
 				return nil
 			}
 			if err := os.MkdirAll(filepath.Dir(root.output), 0o755); err != nil {
 				return fmt.Errorf("failed to write jsonschema file: %w", err)
 			}
-			if err := os.WriteFile(root.output, bts, 0o600); err != nil {
+			if err := os.WriteFile(root.output, []byte(bts), 0o600); err != nil {
 				return fmt.Errorf("failed to write jsonschema file: %w", err)
 			}
 			return nil

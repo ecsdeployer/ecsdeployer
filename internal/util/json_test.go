@@ -49,6 +49,10 @@ func TestJsonifyAndPretty(t *testing.T) {
 			require.JSONEq(t, res, resEscaped)
 			require.Equal(t, expectedEscaped, resEscaped)
 
+			resPrettyEscaped, err := JsonifyPrettyEscaped(table.obj)
+			require.NoError(t, err)
+			require.JSONEq(t, res, resPrettyEscaped)
+
 		})
 	}
 }

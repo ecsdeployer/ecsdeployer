@@ -3,6 +3,8 @@ package testutil
 import (
 	"bufio"
 	"bytes"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"reflect"
@@ -12,9 +14,9 @@ import (
 	"text/template"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/caarlos0/log"
 	"github.com/jmespath/go-jmespath"
 	"github.com/webdestroya/awsmocker"
+	"github.com/webdestroya/go-log"
 	"golang.org/x/exp/maps"
 )
 
@@ -163,4 +165,12 @@ func StripIndentation(value string) string {
 	}
 
 	return regexp.MustCompile("(?m)^"+indent).ReplaceAllString(value, "")
+}
+
+func RandomHex(n int) string {
+	bytes := make([]byte, (n+1)/2)
+	if _, err := rand.Read(bytes); err != nil {
+		panic(err)
+	}
+	return hex.EncodeToString(bytes)
 }

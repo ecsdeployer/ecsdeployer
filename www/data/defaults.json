@@ -3,6 +3,12 @@
     "disabled": "false",
     "retention": "180"
   },
+  "CronEnvVars": {
+    "ECSDEPLOYER_CRON_ATTEMPT": "<aws.scheduler.attempt-number>",
+    "ECSDEPLOYER_CRON_EXECUTION_ID": "<aws.scheduler.execution-id>",
+    "ECSDEPLOYER_CRON_SCHEDULED_TIME": "<aws.scheduler.scheduled-time>",
+    "ECSDEPLOYER_CRON_SCHEDULE_ARN": "<aws.scheduler.schedule-arn>"
+  },
   "CronJob": {
     "description": "",
     "disabled": "false",
@@ -57,6 +63,8 @@
     "schedule": "ecsd-cron-{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}",
     "schedule_group": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}",
     "service_name": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}",
+    "shared_task_cron": "cron",
+    "shared_task_predeploy": "predeploy",
     "ssm_import__path": "/ecsdeployer/secrets/{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{ end }}",
     "target_group": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
     "task_family": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}"
@@ -66,6 +74,7 @@
   },
   "PreDeployTask": {
     "disabled": "false",
+    "do_not_wait": "false",
     "ignore_failure": "false",
     "name": ""
   },
@@ -86,7 +95,7 @@
   },
   "Settings": {
     "disable_marker_tag": "false",
-    "predeploy_parallel": "false",
+    "disable_shared_taskdefs": "false",
     "predeploy_timeout": "5400",
     "skip_cron_env_vars": "false",
     "skip_deployment_env_vars": "false",
@@ -111,6 +120,8 @@
     "schedule": "ecsd-cron-{PROJECT}-{TASK}",
     "schedule_group": "{PROJECT}",
     "service_name": "{PROJECT}-{TASK}",
+    "shared_task_cron": "cron",
+    "shared_task_predeploy": "predeploy",
     "ssm_import__path": "/ecsdeployer/secrets/{PROJECT}",
     "target_group": "{PROJECT}-target-{TASK}",
     "task_family": "{PROJECT}-{TASK}"
@@ -129,6 +140,8 @@
     "schedule": "ecsd-cron-{PROJECT}-{STAGE}-{TASK}",
     "schedule_group": "{PROJECT}-{STAGE}",
     "service_name": "{PROJECT}-{STAGE}-{TASK}",
+    "shared_task_cron": "cron",
+    "shared_task_predeploy": "predeploy",
     "ssm_import__path": "/ecsdeployer/secrets/{PROJECT}/{STAGE}",
     "target_group": "{PROJECT}-{STAGE}-target-{TASK}",
     "task_family": "{PROJECT}-{STAGE}-{TASK}"
@@ -140,7 +153,6 @@
   },
   "WaitForStable": {
     "disabled": "false",
-    "individually": "true",
     "timeout": "1800"
   }
 }

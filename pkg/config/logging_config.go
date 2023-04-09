@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
 
 	"github.com/invopop/jsonschema"
@@ -128,6 +129,32 @@ func (obj *LoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error
 	}
 
 	return nil
+}
+
+func (obj *LoggingConfig) MarshalYAML() (interface{}, error) {
+	if obj.IsDisabled() {
+		return false, nil
+	}
+	type tLoggingConfig LoggingConfig
+
+	switch obj.Type() {
+	case LoggingTypeAwslogs:
+		return &tLoggingConfig{AwsLogConfig: obj.AwsLogConfig}, nil
+	case LoggingTypeFirelens:
+		return &tLoggingConfig{FirelensConfig: obj.FirelensConfig}, nil
+	case LoggingTypeCustom:
+		return &tLoggingConfig{Custom: obj.Custom}, nil
+	default:
+		return "!!!!!!!!!UNKNOWN", nil
+	}
+}
+
+func (obj *LoggingConfig) MarshalJSON() ([]byte, error) {
+	data, err := obj.MarshalYAML()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(data)
 }
 
 func (LoggingConfig) JSONSchemaExtend(base *jsonschema.Schema) {

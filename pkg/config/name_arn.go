@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/invopop/jsonschema"
 )
@@ -144,52 +143,16 @@ func (obj *NameArn) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-// func nameArnYamlUnmarshaller(unmarshal func(interface{}) error) (NameArn, error) {
-// 	obj := NameArn{}
-
-// 	// var str string
-// 	if err := unmarshal(&obj); err != nil {
-// 		return obj, err
-// 	}
-
-// 	return obj, nil
-// }
-
-func (obj *NameArn) MarshalJSON() ([]byte, error) {
-
+func (obj *NameArn) MarshalText() ([]byte, error) {
 	if obj.arnStr != "" {
-		result, err := util.Jsonify(obj.arnStr)
-		if err != nil {
-			return nil, err
-		}
-		return []byte(result), nil
+		return []byte(obj.arnStr), nil
 	}
 
 	if obj.name != "" {
-		result, err := util.Jsonify(obj.name)
-		if err != nil {
-			return nil, err
-		}
-		return []byte(result), nil
+		return []byte(obj.name), nil
 	}
 
-	return []byte("null"), nil
-
-	// type stuff map[string]interface{}
-	// result, err := util.Jsonify(stuff{
-	// 	// "Name":    obj.Name(),
-	// 	// "Arn":     obj.Arn(),
-	// 	"rawname": obj.name,
-	// 	"rawArn":  obj.arnStr,
-	// 	"AwsArn":  obj.awsArn,
-	// })
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return []byte(result), nil
-}
-func (obj *NameArn) MarshalYAML() error {
-	return nil
+	return nil, nil
 }
 
 func (NameArn) JSONSchema() *jsonschema.Schema {

@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/caarlos0/log"
 	"github.com/spf13/cobra"
+	"github.com/webdestroya/go-log"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -21,9 +22,10 @@ type checkCmd struct {
 	config   string
 	quiet    bool
 	showJson bool
+	dump     string
 }
 
-func newCheckCmd(metadata *cmdMetadata) *checkCmd {
+func newCheckCmd() *checkCmd {
 	root := &checkCmd{}
 	cmd := &cobra.Command{
 		Use:           "check",
@@ -32,13 +34,17 @@ func newCheckCmd(metadata *cmdMetadata) *checkCmd {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Args:          cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			if root.quiet {
 				log.Log = log.New(io.Discard)
 			}
 
 			if root.config == "" {
 				return errors.New("You need to specify a config file")
+			}
+
+			if root.dump != "" && root.showJson {
+				return errors.New("Don't specify --show along with --dump. Just use --dump.")
 			}
 
 			f, err := os.Open(root.config) // #nosec
@@ -69,12 +75,25 @@ func newCheckCmd(metadata *cmdMetadata) *checkCmd {
 
 			log.Info("config is valid!")
 
-			if root.showJson {
-				sysJson, err := util.JsonifyPretty(cfg)
-				if err != nil {
+			if root.dump != "" {
+				fmt.Fprintln(cmd.OutOrStdout(), "")
+				fmt.Fprintln(cmd.OutOrStdout(), "WARNING: DO NOT USE THIS AS INPUT TO ECSDEPLOYER. IT IS ONLY MEANT FOR DEBUGGING.")
+				fmt.Fprintln(cmd.OutOrStdout(), "")
+			}
+
+			switch strings.ToLower(root.dump) {
+			case "yaml":
+				if sysYaml, err := yaml.Marshal(cfg); err != nil {
 					return err
+				} else {
+					fmt.Fprintln(cmd.OutOrStdout(), string(sysYaml))
 				}
-				fmt.Println(sysJson)
+			case "json":
+				if sysJson, err := util.JsonifyPretty(cfg); err != nil {
+					return err
+				} else {
+					fmt.Fprintln(cmd.OutOrStdout(), sysJson)
+				}
 			}
 
 			return nil
@@ -84,7 +103,12 @@ func newCheckCmd(metadata *cmdMetadata) *checkCmd {
 	cmd.Flags().StringVarP(&root.config, paramConfigFile, "c", "", "Configuration file to check")
 	cmd.Flags().BoolVarP(&root.quiet, "quiet", "q", false, "Quiet mode: no output")
 	cmd.Flags().BoolVar(&root.showJson, "show", false, "Show the JSONified project config. (How the deployer is interpreting it)")
+	cmd.Flags().StringVar(&root.dump, "dump", "", "Dump the project config the way ECSDeployer is interpreting it.")
 	_ = cmd.Flags().SetAnnotation(paramConfigFile, cobra.BashCompFilenameExt, []string{"yaml", "yml"})
+
+	_ = cmd.Flags().MarkDeprecated("show", "Use --dump json instead")
+	_ = cmd.Flags().MarkHidden("show")
+	_ = cmd.Flags().MarkHidden("dump")
 
 	root.cmd = cmd
 	return root
@@ -118,8 +142,10 @@ func validateConfigSchemaBytes(data []byte) error {
 
 	if !result.Valid() {
 		log.Error("The project configuration is not valid because:")
+		log.IncreasePadding()
+		defer log.DecreasePadding()
 		for _, err := range result.Errors() {
-			log.Error(fmt.Sprintf("- %s", err))
+			log.Error(err.String())
 		}
 		return errors.New("config does not adhere to schema")
 	}

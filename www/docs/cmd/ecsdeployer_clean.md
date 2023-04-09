@@ -25,6 +25,7 @@ ecsdeployer clean [flags]
       --image string         Specify a container image URI.
   -q, --quiet                Quiet mode: no output
       --tag string           Specify a custom image tag to use.
+      --timeout duration     Timeout for the entire cleanup process (default 30m0s)
 ```
 
 ## Global Options

@@ -5,9 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/caarlos0/log"
+	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
+	"github.com/webdestroya/go-log"
 	cobracompletefig "github.com/withfig/autocomplete-tools/integrations/cobra"
+)
+
+var (
+	boldStyle = lipgloss.NewStyle().Bold(true)
 )
 
 func Execute(version string, exit func(int), args []string) {
@@ -35,20 +41,13 @@ func (cmd *rootCmd) Execute(args []string) {
 type rootCmd struct {
 	cmd   *cobra.Command
 	debug bool
+	trace bool
 	exit  func(int)
-}
-
-type cmdMetadata struct {
-	version string
 }
 
 func newRootCmd(version string, exit func(int)) *rootCmd {
 	root := &rootCmd{
 		exit: exit,
-	}
-
-	metadata := &cmdMetadata{
-		version: version,
 	}
 
 	cmd := &cobra.Command{
@@ -70,7 +69,12 @@ Check out our website for more information, examples and documentation: https://
 			HiddenDefaultCmd: true,
 		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			if root.debug {
+
+			log.Strings[log.DebugLevel] = "%"
+			if root.trace {
+				log.SetLevel(log.TraceLevel)
+				log.Debug("trace logs enabled")
+			} else if root.debug {
 				log.SetLevel(log.DebugLevel)
 				log.Debug("debug logs enabled")
 			}
@@ -78,20 +82,28 @@ Check out our website for more information, examples and documentation: https://
 	}
 
 	cmd.PersistentFlags().BoolVar(&root.debug, "debug", false, "Enable debug mode")
+	cmd.PersistentFlags().BoolVar(&root.trace, "trace", false, "Enable trace mode")
+	_ = cmd.PersistentFlags().MarkHidden("trace")
 
 	cmd.AddCommand(
-		newDeployCmd(metadata).cmd,
-		newCheckCmd(metadata).cmd,
-		newSchemaCmd(metadata).cmd,
-		newManCmd(metadata).cmd,
-		newDocsCmd(metadata).cmd,
-		newCleanCmd(metadata).cmd,
-		newInfoCmd(metadata).cmd,
+		newDeployCmd().cmd,
+		newCheckCmd().cmd,
+		newSchemaCmd().cmd,
+		newManCmd().cmd,
+		newDocsCmd().cmd,
+		newCleanCmd().cmd,
+		newInfoCmd().cmd,
 		cobracompletefig.CreateCompletionSpecCommand(cobracompletefig.Opts{Visible: false}),
 	)
 
 	root.cmd = cmd
 	return root
+}
+
+func deprecateWarn(ctx *config.Context) {
+	if ctx.Deprecated {
+		log.Warn(boldStyle.Render("you are using deprecated features, check the log above for information"))
+	}
 }
 
 func timedRunE(verb string, runef func(cmd *cobra.Command, args []string) error) func(cmd *cobra.Command, args []string) error {

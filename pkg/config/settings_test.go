@@ -14,7 +14,6 @@ func TestSettings(t *testing.T) {
 		obj := &config.Settings{}
 		obj.ApplyDefaults()
 
-		require.Equal(t, false, *obj.PreDeployParallel, "PreDeployParallel")
 		require.Equal(t, 90*time.Minute, obj.PreDeployTimeout.ToDuration(), "PreDeployTimeout")
 		require.NotNil(t, obj.KeepInSync, "KeepInSync")
 		require.NotNil(t, obj.WaitForStable, "WaitForStable")

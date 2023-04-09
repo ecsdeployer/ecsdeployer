@@ -17,6 +17,9 @@ environment:
   TPL_MULTI_TEST: 
     template: "{{.Project}}-{{.Name}}"
 
+settings:
+  ssm_import: /ecsdeployer/{{.Project}}/
+
 task_defaults:
   user: 123
   workdir: /var/blah/whatever
@@ -51,11 +54,13 @@ task_defaults:
 predeploy:
   - name: pd1
     command: "something"
+    ignore_failure: true
   
   - name: pd2
     command: ["another", "thing"]
   
   - name: pd-sc-inherit
+    do_not_wait: true
     environment:
       SC_TEST_VAR: blah
     sidecars:
@@ -72,10 +77,15 @@ predeploy:
         image: fake
     
   - name: pd-storage
+    do_not_wait: true
     storage: 50
   
   - name: pd-override-defaults
+    do_not_wait: true
     user: ""
+
+  - name: pd-disabled
+    disabled: true
 
 console: true
 
@@ -129,3 +139,13 @@ cronjobs:
     schedule: "cron(0 9 * * ? *)"
     command: ["bundle", "exec", "rake", "cron:whatever"]
     description: "Whatever: this does stuff"
+
+  - name: cron2
+    disabled: true
+    schedule: "cron(0 9 * * ? *)"
+    command: ["bundle", "exec", "rake", "cron:whatever2"]
+  
+  - name: cron-daily
+    disabled: true
+    schedule: "rate(1 day)"
+    command: ["bundle", "exec", "rake", "cron:whatever2"]

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"regexp"
@@ -134,12 +135,20 @@ func (MemorySpec) JSONSchema() *jsonschema.Schema {
 	}
 }
 
-func (obj MemorySpec) MarshalJSON() ([]byte, error) {
+func (obj MemorySpec) MarshalYAML() (interface{}, error) {
 
 	if obj.multiplier > 0 {
 		val := strconv.FormatFloat(obj.multiplier, 'f', -1, 64)
-		return []byte(fmt.Sprintf(`"%sx"`, val)), nil
+		return fmt.Sprintf(`%sx`, val), nil
 	}
 
-	return []byte(fmt.Sprintf("%d", obj.value)), nil
+	return obj.value, nil
+}
+
+func (obj MemorySpec) MarshalJSON() ([]byte, error) {
+	data, err := obj.MarshalYAML()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(data)
 }

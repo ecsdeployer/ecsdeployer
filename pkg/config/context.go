@@ -2,6 +2,7 @@ package config
 
 import (
 	stdctx "context"
+	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -9,7 +10,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
-	"github.com/caarlos0/log"
 )
 
 type ContextEnv map[string]string
@@ -21,6 +21,11 @@ type Context struct {
 	Date       time.Time
 	Env        ContextEnv
 	Deprecated bool
+
+	// maximum parallel goroutines to run in a given scenario
+	MaxConcurrency int
+
+	CleanOnlyFlow bool
 
 	// app info
 	Version     string
@@ -60,11 +65,12 @@ func NewWithTimeout(project *Project, timeout time.Duration) (*Context, stdctx.C
 
 func Wrap(ctx stdctx.Context, project *Project) *Context {
 	return &Context{
-		Context: ctx,
-		Cache:   &ContextCache{},
-		Project: project,
-		Date:    time.Now(),
-		Env:     ToEnv(append(os.Environ(), project.Env...)),
+		Context:        ctx,
+		Cache:          newContextCache(),
+		MaxConcurrency: 4,
+		Project:        project,
+		Date:           time.Now(),
+		Env:            ToEnv(append(os.Environ(), project.Env...)),
 	}
 }
 
@@ -83,10 +89,10 @@ func ToEnv(env []string) ContextEnv {
 
 func (ctx *Context) AwsAccountId() string {
 	ctx.muAwsAcctId.Do(func() {
-		log.Debug("Requesting AWS Account Id")
+		// log.Debug("Requesting AWS Account Id")
 		res, err := awsclients.STSClient().GetCallerIdentity(ctx.Context, nil)
 		if err != nil {
-			panic(err)
+			panic(fmt.Errorf("failed to determine AWS Account ID: %w", err))
 		}
 		ctx.awsAccountId = *res.Account
 	})
@@ -110,4 +116,11 @@ func (ctx *Context) ClusterName() string {
 		ctx.clusterName = clusterArnName
 	})
 	return ctx.clusterName
+}
+
+func (ctx *Context) Concurrency(proposal int) int {
+	if proposal > ctx.MaxConcurrency {
+		return ctx.MaxConcurrency
+	}
+	return proposal
 }

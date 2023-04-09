@@ -4,12 +4,11 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
 type Settings struct {
-	PreDeployParallel *bool     `yaml:"predeploy_parallel,omitempty" json:"predeploy_parallel,omitempty"`
-	PreDeployTimeout  *Duration `yaml:"predeploy_timeout,omitempty" json:"predeploy_timeout,omitempty"`
+	// PreDeployParallel *bool     `yaml:"predeploy_parallel,omitempty" json:"predeploy_parallel,omitempty"`
+	PreDeployTimeout *Duration `yaml:"predeploy_timeout,omitempty" json:"predeploy_timeout,omitempty"`
 
 	SkipDeploymentEnvVars bool `yaml:"skip_deployment_env_vars,omitempty" json:"skip_deployment_env_vars,omitempty"`
 	SkipCronEnvVars       bool `yaml:"skip_cron_env_vars,omitempty" json:"skip_cron_env_vars,omitempty"`
@@ -21,6 +20,9 @@ type Settings struct {
 
 	// Use the older eventbridge target/rule style to do cronjobs
 	CronUsesEventing bool `yaml:"use_old_cron_eventbus,omitempty" json:"use_old_cron_eventbus,omitempty"`
+
+	// Block sharing task defs for cron/predeploy tasks
+	DisableSharedTaskDef bool `yaml:"disable_shared_taskdefs,omitempty" json:"disable_shared_taskdefs,omitempty" jsonschema:"-"`
 
 	SSMImport *SSMImport `yaml:"ssm_import,omitempty" json:"ssm_import,omitempty"`
 }
@@ -44,9 +46,9 @@ func (a *Settings) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 func (obj *Settings) ApplyDefaults() {
-	if obj.PreDeployParallel == nil {
-		obj.PreDeployParallel = aws.Bool(false)
-	}
+	// if obj.PreDeployParallel == nil {
+	// 	obj.PreDeployParallel = aws.Bool(false)
+	// }
 
 	if obj.PreDeployTimeout == nil {
 		obj.PreDeployTimeout = util.Ptr(NewDurationFromTDuration(90 * time.Minute))

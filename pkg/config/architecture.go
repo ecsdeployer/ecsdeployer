@@ -72,6 +72,19 @@ func (obj *Architecture) UnmarshalYAML(unmarshal func(interface{}) error) error 
 	return nil
 }
 
+func (obj *Architecture) MarshalText() ([]byte, error) {
+	return []byte(obj.String()), nil
+}
+
+// func (obj *Architecture) MarshalYAML() (interface{}, error) {
+// 	return obj.String(), nil
+// }
+
+// func (obj *Architecture) MarshalJSON() ([]byte, error) {
+// 	data, err := obj.MarshalYAML()
+// 	return []byte(data.(string)), err
+// }
+
 func (Architecture) JSONSchema() *jsonschema.Schema {
 	return &jsonschema.Schema{
 		Type: "string",

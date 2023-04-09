@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -18,27 +17,12 @@ func TestWaitForStable(t *testing.T) {
 			obj      *config.WaitForStable
 		}{
 			{false, &config.WaitForStable{}},
-			{false, &config.WaitForStable{Disabled: util.Ptr(false)}},
-			{true, &config.WaitForStable{Disabled: util.Ptr(true)}},
+			{false, &config.WaitForStable{Disabled: false}},
+			{true, &config.WaitForStable{Disabled: true}},
 		}
 
 		for _, table := range tables {
 			require.Equal(t, table.expected, table.obj.IsDisabled())
-		}
-	})
-
-	t.Run("WaitIndividually", func(t *testing.T) {
-		tables := []struct {
-			expected bool
-			obj      *config.WaitForStable
-		}{
-			{true, &config.WaitForStable{}},
-			{false, &config.WaitForStable{Individually: util.Ptr(false)}},
-			{true, &config.WaitForStable{Individually: util.Ptr(true)}},
-		}
-
-		for _, table := range tables {
-			require.Equal(t, table.expected, table.obj.WaitIndividually())
 		}
 	})
 
@@ -47,7 +31,6 @@ func TestWaitForStable(t *testing.T) {
 		wfs.ApplyDefaults()
 
 		require.False(t, wfs.IsDisabled())
-		require.True(t, wfs.WaitIndividually())
 		require.Equal(t, 30*time.Minute, wfs.Timeout.ToDuration())
 	})
 
@@ -57,8 +40,6 @@ func TestWaitForStable(t *testing.T) {
 			obj         *config.WaitForStable
 		}{
 			{"", &config.WaitForStable{}},
-			{"", &config.WaitForStable{Individually: util.Ptr(true)}},
-			{"must be set to true", &config.WaitForStable{Individually: util.Ptr(false)}},
 		}
 
 		for _, table := range tables {

@@ -2,9 +2,16 @@ package cmd
 
 import (
 	"io"
+	"time"
 
-	"github.com/caarlos0/log"
+	"ecsdeployer.com/ecsdeployer/internal/middleware/errhandler"
+	"ecsdeployer.com/ecsdeployer/internal/middleware/logging"
+	"ecsdeployer.com/ecsdeployer/internal/middleware/skip"
+	"ecsdeployer.com/ecsdeployer/internal/pipeline"
+	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/caarlos0/ctrlc"
 	"github.com/spf13/cobra"
+	"github.com/webdestroya/go-log"
 )
 
 type cleanCmd struct {
@@ -13,17 +20,14 @@ type cleanCmd struct {
 }
 
 type cleanOpts struct {
-	config   string
-	quiet    bool
-	version  string
-	imageUri string
-	imageTag string
-	metadata *cmdMetadata
+	commonOpts
+	quiet   bool
+	timeout time.Duration
 }
 
-func newCleanCmd(metadata *cmdMetadata) *cleanCmd {
+func newCleanCmd() *cleanCmd {
 	root := &cleanCmd{}
-	root.opts.metadata = metadata
+	// root.opts.metadata = metadata
 	cmd := &cobra.Command{
 		Use:   "clean",
 		Short: "Runs the cleanup step only. Skips actual deployment",
@@ -37,26 +41,49 @@ from your environment that are no longer being referenced in your configuration 
 			if root.opts.quiet {
 				log.Log = log.New(io.Discard)
 			}
-			opts := &configLoaderExtras{
-				configFile:  root.opts.config,
-				appVersion:  root.opts.version,
-				imageTag:    root.opts.imageTag,
-				imageUri:    root.opts.imageUri,
-				cmdMetadata: root.opts.metadata,
-			}
-
-			err := stepRunner(opts, stepRunModeCleanup)
+			ctx, err := cleanProject(root.opts)
 			if err != nil {
 				return err
 			}
+			deprecateWarn(ctx)
 			return nil
 		}),
 	}
 
 	cmd.Flags().BoolVarP(&root.opts.quiet, "quiet", "q", false, "Quiet mode: no output")
+	cmd.Flags().DurationVar(&root.opts.timeout, "timeout", 30*time.Minute, "Timeout for the entire cleanup process")
 
-	setCommonFlags(cmd, &root.opts.config, &root.opts.version, &root.opts.imageTag, &root.opts.imageUri)
+	setCommonFlags(cmd, &root.opts.commonOpts)
 
 	root.cmd = cmd
 	return root
+}
+
+func cleanProject(options cleanOpts) (*config.Context, error) {
+	cfg, err := loadConfig(options.config)
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := config.NewWithTimeout(cfg, options.timeout)
+	defer cancel()
+	setupCleanContext(ctx, options)
+	return ctx, ctrlc.Default.Run(ctx, func() error {
+		for _, step := range pipeline.CleanupPipeline {
+			if err := skip.Maybe(
+				step,
+				logging.Log(
+					step.String(),
+					errhandler.Handle(step.Run),
+				),
+			)(ctx); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func setupCleanContext(ctx *config.Context, options cleanOpts) {
+	setupContextCommon(ctx, options.commonOpts)
+	ctx.CleanOnlyFlow = true
 }

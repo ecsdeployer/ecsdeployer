@@ -58,13 +58,8 @@ func (obj *Duration) String() string {
 	return fmt.Sprintf("%d", int32(obj.ToDuration().Seconds()))
 }
 
-func (obj *Duration) MarshalYAML() (interface{}, error) {
-	return obj.String(), nil
-}
-
-func (obj *Duration) MarshalJSON() ([]byte, error) {
-	data, err := obj.MarshalYAML()
-	return []byte(data.(string)), err
+func (obj *Duration) MarshalText() ([]byte, error) {
+	return []byte(obj.String()), nil
 }
 
 func (obj Duration) ToDuration() time.Duration {

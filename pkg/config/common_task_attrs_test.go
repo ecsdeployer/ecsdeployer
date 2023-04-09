@@ -25,6 +25,20 @@ func TestCommonTaskAttrs(t *testing.T) {
 		require.Implements(t, (*hasCommonTaskAttrs)(nil), &config.CommonTaskAttrs{}, "CommonTaskAttrs")
 		require.Implements(t, (*hasCommonTaskAttrs)(nil), &config.FargateDefaults{}, "FargateDefaults")
 	})
+
+	t.Run("CanOverride", func(t *testing.T) {
+		require.True(t, (&config.CommonTaskAttrs{}).CanOverride())
+		strVal := "x"
+		require.False(t, (&config.CommonTaskAttrs{Architecture: util.Ptr(config.ArchitectureARM64)}).CanOverride())
+		require.False(t, (&config.CommonTaskAttrs{PlatformVersion: &strVal}).CanOverride())
+		require.False(t, (&config.CommonTaskAttrs{ProxyConfig: &config.ProxyConfig{}}).CanOverride())
+		require.False(t, (&config.CommonTaskAttrs{Network: &config.NetworkConfiguration{}}).CanOverride())
+		require.False(t, (&config.CommonTaskAttrs{Sidecars: []*config.Sidecar{{}}}).CanOverride())
+		require.False(t, (&config.CommonTaskAttrs{Tags: []config.NameValuePair{{}}}).CanOverride())
+		require.False(t, (&config.CommonTaskAttrs{Volumes: config.VolumeList{"x": config.Volume{}}}).CanOverride())
+
+		require.False(t, (&config.CommonTaskAttrs{CommonContainerAttrs: config.CommonContainerAttrs{DependsOn: []config.DependsOn{{}}}}).CanOverride())
+	})
 }
 
 func TestCommonTaskAttrs_Smoke(t *testing.T) {

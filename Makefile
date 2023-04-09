@@ -3,7 +3,7 @@ gopkgs := $(shell go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/
 
 
 .PHONY: precommit
-precommit: tidy lint test schema docs-pre
+precommit: tidy lint test docs-pre
 
 .PHONY: generate
 generate:
@@ -47,7 +47,6 @@ check:
 .PHONY: schema
 schema:
 	@go run . schema -o ./www/docs/static/schema.json
-	@cat ./www/docs/static/schema.json | jq -r .
 
 .PHONY: smokedeploy-debug
 smokedeploy-debug:
@@ -72,6 +71,10 @@ test:
 .PHONY: test-v
 test-v:
 	@./scripts/run_with_test_env.sh go test -v -timeout 180s $(gopkgs)
+
+.PHONY: test-smokedeploy
+test-smokedeploy:
+	@./scripts/run_with_test_env.sh go test -timeout 180s -v ./cmd/ -run TestDeploySmoke -- --dump-cmd-output
 
 .PHONY: test-testutil
 test-testutil:
@@ -112,7 +115,6 @@ coverage:
 
 #	@# ignore testutil
 	@cat coverage/c.out | grep -v ecsdeployer/internal/testutil/ > coverage/c_notest.out
-#	@#go tool cover -html=coverage/c.out -o coverage/index.html
 	@go tool cover -html=coverage/c_notest.out -o coverage/index.html
 
 .PHONY: htmltest

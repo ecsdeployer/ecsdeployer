@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
@@ -102,11 +103,19 @@ func (a *LogRetention) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (obj LogRetention) MarshalJSON() ([]byte, error) {
+func (obj LogRetention) MarshalYAML() (interface{}, error) {
 	if obj.Forever() {
-		return []byte(`"forever"`), nil
+		return "forever", nil
 	}
-	return []byte(fmt.Sprintf("%d", obj.days)), nil
+	return obj.days, nil
+}
+
+func (obj LogRetention) MarshalJSON() ([]byte, error) {
+	data, err := obj.MarshalYAML()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(data)
 }
 
 func (LogRetention) JSONSchema() *jsonschema.Schema {

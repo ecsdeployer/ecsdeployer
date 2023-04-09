@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
-	"github.com/caarlos0/log"
 )
 
 type ClusterArn struct {
@@ -13,7 +12,7 @@ type ClusterArn struct {
 
 func (obj *ClusterArn) Arn(ctx *Context) (string, error) {
 	return obj.NameArn.superArn(ctx, func() (string, error) {
-		log.WithField("clustername", obj.name).Debug("resolving cluster arn")
+		// log.WithField("clustername", obj.name).Debug("resolving cluster arn")
 		clusterArn := arn.ARN{
 			Partition: "aws",
 			Service:   "ecs",

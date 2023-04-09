@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -149,22 +150,21 @@ func NewImageUri(value string) ImageUri {
 	return img
 }
 
-func (obj *ImageUri) MarshalJSON() ([]byte, error) {
+func (obj *ImageUri) MarshalYAML() (interface{}, error) {
 	if obj.uri != nil {
-		res, err := util.Jsonify(obj.uri)
-		if err != nil {
-			return nil, err
-		}
-		return []byte(res), nil
+		return *obj.uri, nil
 	}
 
-	type t ImageUri
-	res, err := util.Jsonify(t(*obj))
+	type _ImageUri ImageUri
+	return _ImageUri(*obj), nil
+}
+
+func (obj *ImageUri) MarshalJSON() ([]byte, error) {
+	data, err := obj.MarshalYAML()
 	if err != nil {
 		return nil, err
 	}
-
-	return []byte(res), nil
+	return json.Marshal(data)
 }
 
 func (ImageUri) JSONSchema() *jsonschema.Schema {

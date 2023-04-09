@@ -5,7 +5,7 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding"
 	"fmt"
 	"os"
 	"reflect"
@@ -39,6 +39,21 @@ type typeDefaults map[string]string
 func jsonifyTrimmed(obj jsonMarshalable) string {
 	bytearr := util.Must(obj.MarshalJSON())
 	return strings.Replace(string(bytearr), `"`, "", 2)
+}
+
+func marshalTrimmed(obj any) string {
+	switch val := obj.(type) {
+	case encoding.TextMarshaler:
+		return string(util.Must(val.MarshalText()))
+	case *jsonMarshalable:
+		bytearr := util.Must((*val).MarshalJSON())
+		return strings.Replace(string(bytearr), `"`, "", 2)
+	case jsonMarshalable:
+		bytearr := util.Must(val.MarshalJSON())
+		return strings.Replace(string(bytearr), `"`, "", 2)
+	default:
+		panic(fmt.Sprintf("INVALID TYPE FOR marshalTrimmed: %T", val))
+	}
 }
 
 func exportStructValues(obj defaultApplier) typeDefaults {
@@ -93,16 +108,13 @@ func exportStructValues(obj defaultApplier) typeDefaults {
 			strMap[fname] = fmt.Sprintf("%s", f.MethodByName("String").Call([]reflect.Value{})[0])
 
 		case logRetentionType:
-			strMap[fname] = jsonifyTrimmed(val.Interface().(config.LogRetention))
+			strMap[fname] = marshalTrimmed(val.Interface().(config.LogRetention))
 
 		case firelensAwsLogGroupType:
-			strMap[fname] = jsonifyTrimmed(val.Interface().(config.FirelensAwsLogGroup))
+			strMap[fname] = marshalTrimmed(val.Interface().(config.FirelensAwsLogGroup))
 
 		case memoryType:
-			// mt := val.Interface().(config.MemorySpec)
-			// bytearr := util.Must(mt.MarshalJSON())
-			// strMap[fname] = strings.Replace(string(bytearr), `"`, "", 2)
-			strMap[fname] = jsonifyTrimmed(val.Interface().(config.MemorySpec))
+			strMap[fname] = marshalTrimmed(val.Interface().(config.MemorySpec))
 
 		default:
 			switch val.Kind() {
@@ -192,17 +204,23 @@ func main() {
 		"Mount":             exportStructValues(&config.Mount{}),
 		"PortMapping":       exportStructValues(&config.PortMapping{}),
 		"DeploymentEnvVars": config.DefaultDeploymentEnvVars,
+		"CronEnvVars":       config.DefaultCronEnvVars,
 		// "NetworkConfiguration": exportStructValues(&config.NetworkConfiguration{}),
 		"TplDefault":      generateTemplateExamples(templates, false),
 		"TplDefaultStage": generateTemplateExamples(templates, true),
 	}
 
-	bts, err := json.MarshalIndent(defaultValues, "", "  ")
+	strVals, err := util.JsonifyPretty(defaultValues)
 	if err != nil {
 		panic(fmt.Errorf("failed to export defaults: %w", err))
 	}
 
-	if err := os.WriteFile("./data/defaults.json", bts, 0o644); err != nil {
+	// bts, err := json.MarshalIndent(defaultValues, "", "  ")
+	// if err != nil {
+	// 	panic(fmt.Errorf("failed to export defaults: %w", err))
+	// }
+
+	if err := os.WriteFile("./data/defaults.json", []byte(strVals), 0o644); err != nil {
 		panic(fmt.Errorf("failed to write defaults file: %w", err))
 	}
 
