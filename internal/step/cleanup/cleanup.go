@@ -38,6 +38,8 @@ func (Step) Run(ctx *config.Context) error {
 
 	wrapRunner := errhandler.Ignore
 
+	// if they are running a clean only flow, then we want this to error out
+	// but if it's a regular deploy, then "cleanup isn't necessary"
 	if ctx.CleanOnlyFlow {
 		wrapRunner = errhandler.Handle
 	}

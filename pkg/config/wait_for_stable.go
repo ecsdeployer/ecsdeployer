@@ -4,29 +4,17 @@ import (
 	"errors"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
+	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"github.com/invopop/jsonschema"
 )
 
 type WaitForStable struct {
-	Disabled     *bool     `yaml:"disabled,omitempty" json:"disabled,omitempty"`
-	Individually *bool     `yaml:"individually,omitempty" json:"individually,omitempty" jsonschema:"description=Don't use this"`
-	Timeout      *Duration `yaml:"timeout,omitempty" json:"timeout,omitempty"`
+	Disabled bool      `yaml:"disabled,omitempty" json:"disabled,omitempty"`
+	Timeout  *Duration `yaml:"timeout,omitempty" json:"timeout,omitempty"`
 }
 
 func (wfs *WaitForStable) IsDisabled() bool {
-	if wfs.Disabled == nil {
-		return false
-	}
-	return *wfs.Disabled
-}
-
-func (a *WaitForStable) WaitIndividually() bool {
-	if a.Individually == nil {
-		return true
-	}
-
-	return *a.Individually
+	return wfs.Disabled
 }
 
 func (a *WaitForStable) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -37,8 +25,8 @@ func (a *WaitForStable) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			return err
 		}
 
-		type t WaitForStable
-		var obj t
+		type tWaitForStable WaitForStable
+		var obj tWaitForStable
 		if err := unmarshal(&obj); err != nil {
 			return err
 		}
@@ -46,7 +34,7 @@ func (a *WaitForStable) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	} else {
 
 		*a = WaitForStable{
-			Disabled: aws.Bool(!val),
+			Disabled: !val,
 		}
 	}
 
@@ -61,23 +49,10 @@ func (a *WaitForStable) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 func (def *WaitForStable) Validate() error {
 
-	// TODO: when we eventually support merging service checks into chunks, we can allow this
-	if def.Individually == nil || !*def.Individually {
-		return NewValidationError("'individually' must be set to true (or left blank) currently")
-	}
-
 	return nil
 }
 
 func (obj *WaitForStable) ApplyDefaults() {
-
-	if obj.Disabled == nil {
-		obj.Disabled = aws.Bool(false)
-	}
-
-	if obj.Individually == nil {
-		obj.Individually = aws.Bool(true)
-	}
 
 	if obj.Timeout == nil {
 		timeout := NewDurationFromTDuration(30 * time.Minute)
@@ -86,6 +61,18 @@ func (obj *WaitForStable) ApplyDefaults() {
 }
 
 func (WaitForStable) JSONSchemaExtend(base *jsonschema.Schema) {
+
+	def := &WaitForStable{}
+	def.ApplyDefaults()
+
+	configschema.SchemaPropMerge(base, "disabled", func(s *jsonschema.Schema) {
+		s.Default = def.Disabled
+	})
+
+	configschema.SchemaPropMerge(base, "timeout", func(s *jsonschema.Schema) {
+		s.Default = def.Timeout
+	})
+
 	orig := *base
 	newBase := &jsonschema.Schema{
 		OneOf: []*jsonschema.Schema{

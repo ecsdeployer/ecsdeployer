@@ -9,7 +9,7 @@ type Service struct {
 	CommonTaskAttrs `yaml:",inline" json:",inline"`
 	// NetworkedTaskAttrs `yaml:",inline" json:",inline"`
 
-	DesiredCount  int32          `yaml:"desired" json:"desired" jsonschema:"required,minimum=0"`
+	DesiredCount  int32          `yaml:"desired,omitempty" json:"desired,omitempty"`
 	RolloutConfig *RolloutConfig `yaml:"rollout,omitempty" json:"rollout,omitempty"`
 
 	SkipWaitForStable bool `yaml:"skip_wait_for_stable,omitempty" json:"skip_wait_for_stable,omitempty" jsonschema:"description=Do not wait for service to become stable before marking it successful,default=false"`

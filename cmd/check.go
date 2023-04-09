@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
@@ -21,7 +22,7 @@ type checkCmd struct {
 	config   string
 	quiet    bool
 	showJson bool
-	showYaml bool
+	dump     string
 }
 
 func newCheckCmd() *checkCmd {
@@ -40,6 +41,10 @@ func newCheckCmd() *checkCmd {
 
 			if root.config == "" {
 				return errors.New("You need to specify a config file")
+			}
+
+			if root.dump != "" && root.showJson {
+				return errors.New("Don't specify --show along with --dump. Just use --dump.")
 			}
 
 			f, err := os.Open(root.config) // #nosec
@@ -70,14 +75,20 @@ func newCheckCmd() *checkCmd {
 
 			log.Info("config is valid!")
 
-			if root.showYaml {
+			if root.dump != "" {
+				fmt.Fprintln(cmd.OutOrStdout(), "")
+				fmt.Fprintln(cmd.OutOrStdout(), "WARNING: DO NOT USE THIS AS INPUT TO ECSDEPLOYER. IT IS ONLY MEANT FOR DEBUGGING.")
+				fmt.Fprintln(cmd.OutOrStdout(), "")
+			}
 
+			switch strings.ToLower(root.dump) {
+			case "yaml":
 				if sysYaml, err := yaml.Marshal(cfg); err != nil {
 					return err
 				} else {
 					fmt.Fprintln(cmd.OutOrStdout(), string(sysYaml))
 				}
-			} else if root.showJson {
+			case "json":
 				if sysJson, err := util.JsonifyPretty(cfg); err != nil {
 					return err
 				} else {
@@ -92,8 +103,12 @@ func newCheckCmd() *checkCmd {
 	cmd.Flags().StringVarP(&root.config, paramConfigFile, "c", "", "Configuration file to check")
 	cmd.Flags().BoolVarP(&root.quiet, "quiet", "q", false, "Quiet mode: no output")
 	cmd.Flags().BoolVar(&root.showJson, "show", false, "Show the JSONified project config. (How the deployer is interpreting it)")
-	cmd.Flags().BoolVar(&root.showYaml, "yaml", false, "Show the YAMLified project config. (How the deployer is interpreting it)")
+	cmd.Flags().StringVar(&root.dump, "dump", "", "Dump the project config the way ECSDeployer is interpreting it.")
 	_ = cmd.Flags().SetAnnotation(paramConfigFile, cobra.BashCompFilenameExt, []string{"yaml", "yml"})
+
+	_ = cmd.Flags().MarkDeprecated("show", "Use --dump json instead")
+	_ = cmd.Flags().MarkHidden("show")
+	_ = cmd.Flags().MarkHidden("dump")
 
 	root.cmd = cmd
 	return root

@@ -1,6 +1,8 @@
 package config
 
-import "ecsdeployer.com/ecsdeployer/internal/util"
+import (
+	"ecsdeployer.com/ecsdeployer/internal/util"
+)
 
 type CommonContainerAttrs struct {
 	Name          string             `yaml:"name,omitempty" json:"name,omitempty" jsonschema:"pattern=^[a-zA-Z][-_a-zA-Z0-9]*$"`
@@ -19,7 +21,7 @@ type CommonContainerAttrs struct {
 	HealthCheck   *HealthCheck       `yaml:"healthcheck,omitempty" json:"healthcheck,omitempty"`
 	MountPoints   []Mount            `yaml:"mounts,omitempty" json:"mounts,omitempty"`
 	Ulimits       []Ulimit           `yaml:"ulimits,omitempty" json:"ulimits,omitempty"`
-	User          *string            `yaml:"user,omitempty" json:"user,omitempty"`
+	User          *string            `yaml:"user,omitempty" json:"user,omitempty" jsonschema:"oneof_type=string;integer"`
 	Workdir       *string            `yaml:"workdir,omitempty" json:"workdir,omitempty"`
 	VolumesFrom   []VolumeFrom       `yaml:"volumes_from,omitempty" json:"volumes_from,omitempty"`
 }

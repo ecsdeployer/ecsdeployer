@@ -3,6 +3,12 @@
     "disabled": "false",
     "retention": "180"
   },
+  "CronEnvVars": {
+    "ECSDEPLOYER_CRON_ATTEMPT": "<aws.scheduler.attempt-number>",
+    "ECSDEPLOYER_CRON_EXECUTION_ID": "<aws.scheduler.execution-id>",
+    "ECSDEPLOYER_CRON_SCHEDULED_TIME": "<aws.scheduler.scheduled-time>",
+    "ECSDEPLOYER_CRON_SCHEDULE_ARN": "<aws.scheduler.schedule-arn>"
+  },
   "CronJob": {
     "description": "",
     "disabled": "false",
@@ -148,7 +154,6 @@
   },
   "WaitForStable": {
     "disabled": "false",
-    "individually": "true",
     "timeout": "1800"
   }
 }

@@ -89,7 +89,7 @@ func (a *KeepInSync) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		}
 
 		type _KeepInSync KeepInSync
-		var obj _KeepInSync // = t(NewKeepInSyncFromBool(defaultKeepInSync))
+		var obj _KeepInSync
 		if err := unmarshal(&obj); err != nil {
 			return err
 		}

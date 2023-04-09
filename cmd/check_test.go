@@ -24,7 +24,8 @@ func TestCheckConfig(t *testing.T) {
 			{"normal", []string{"check", "-c", testFile}},
 			{"quiet", []string{"check", "-c", testFile, "-q"}},
 			{"show json", []string{"check", "-c", testFile, "--show"}},
-			{"show yaml", []string{"check", "-c", testFile, "--yaml"}},
+			{"dump json", []string{"check", "-c", testFile, "--dump", "json"}},
+			{"dump yaml", []string{"check", "-c", testFile, "--dump", "yaml"}},
 		}
 
 		for _, table := range tables {
@@ -33,6 +34,29 @@ func TestCheckConfig(t *testing.T) {
 				result := runCommand(t, nil, table.args...)
 				require.NoError(t, result.err)
 				require.Equal(t, 0, result.exitCode)
+			})
+		}
+	})
+
+	t.Run("dumping", func(t *testing.T) {
+
+		testutil.MockSimpleStsProxy(t)
+		formats := []string{"json", "yaml"}
+		filenames := []string{
+			"testdata/valid.yml",
+			"../internal/builders/testdata/dummy.yml",
+			"../internal/builders/testdata/everything.yml",
+		}
+		for _, format := range formats {
+			t.Run(format, func(t *testing.T) {
+
+				for _, filename := range filenames {
+					t.Run(filename, func(t *testing.T) {
+						result := runCommand(t, nil, "check", "-c", filename, "--dump", format)
+						require.NoError(t, result.err)
+						require.Equal(t, 0, result.exitCode)
+					})
+				}
 			})
 		}
 	})

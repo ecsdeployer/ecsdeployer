@@ -32,6 +32,7 @@
 * [x] Linking Service with multiple load balancers
 * [x] Ability to override every possible option on a task (User, Ulimits, WorkDir, etc)
 * [ ] Windows containers
+* [ ] Pre/Post deploy hooks (run arbitrary commands)
 
 ## Possible Future Features
 * [ ] Ability to launch tasks using EventBridge events as a trigger

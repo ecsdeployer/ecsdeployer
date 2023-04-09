@@ -124,7 +124,14 @@
               "type": "array"
             },
             "user": {
-              "type": "string"
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
             },
             "workdir": {
               "type": "string"
@@ -247,7 +254,14 @@
           "type": "array"
         },
         "user": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
         },
         "workdir": {
           "type": "string"
@@ -882,14 +896,6 @@
           "minLength": 1,
           "default": "{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}",
           "deprecated": true
-        },
-        "shared_task_predeploy": {
-          "type": "string",
-          "default": "predeploy"
-        },
-        "shared_task_cron": {
-          "type": "string",
-          "default": "cron"
         }
       },
       "additionalProperties": false,
@@ -1128,7 +1134,14 @@
           "type": "array"
         },
         "user": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
         },
         "workdir": {
           "type": "string"
@@ -1351,7 +1364,14 @@
           "type": "array"
         },
         "user": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
         },
         "workdir": {
           "type": "string"
@@ -1418,7 +1438,6 @@
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "desired",
         "name"
       ]
     },
@@ -1546,7 +1565,14 @@
           "type": "array"
         },
         "user": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
         },
         "workdir": {
           "type": "string"
@@ -1675,7 +1701,14 @@
           "type": "array"
         },
         "user": {
-          "type": "string"
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
         },
         "workdir": {
           "type": "string"
@@ -1910,14 +1943,12 @@
         {
           "properties": {
             "disabled": {
-              "type": "boolean"
-            },
-            "individually": {
               "type": "boolean",
-              "description": "Don't use this"
+              "default": false
             },
             "timeout": {
-              "$ref": "#/$defs/Duration"
+              "$ref": "#/$defs/Duration",
+              "default": "1800"
             }
           },
           "additionalProperties": false,

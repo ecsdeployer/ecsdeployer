@@ -82,8 +82,6 @@ func (Step) Clean(ctx *config.Context) error {
 				continue
 			}
 
-			// log.WithField("name", serviceName).Info("Found unwanted service. Will delete")
-
 			wg.Add(1)
 
 			go func(svcArn string) {
@@ -106,6 +104,7 @@ func destroyService(ctx *config.Context, serviceArn string) error {
 	serviceName := helpers.GetECSServiceNameFromArn(serviceArn)
 
 	logger := log.WithField("service", serviceName)
+	logger.Info("found unwanted service")
 
 	clusterName := helpers.GetECSClusterNameFromArn(serviceArn)
 

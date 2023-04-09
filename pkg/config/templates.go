@@ -29,8 +29,8 @@ type NameTemplates struct {
 	CronTarget *string `yaml:"cron_target,omitempty" json:"cron_target,omitempty" jsonschema:"minLength=1" jsonschema_extras:"deprecated=true"`
 
 	// For the shared task definition names
-	SharedTaskPD   *string `yaml:"shared_task_predeploy,omitempty" json:"shared_task_predeploy,omitempty"`
-	SharedTaskCron *string `yaml:"shared_task_cron,omitempty" json:"shared_task_cron,omitempty"`
+	SharedTaskPD   *string `yaml:"shared_task_predeploy,omitempty" json:"shared_task_predeploy,omitempty" jsonschema:"-"`
+	SharedTaskCron *string `yaml:"shared_task_cron,omitempty" json:"shared_task_cron,omitempty" jsonschema:"-"`
 
 	// removed
 	ContainerName *string `yaml:"container,omitempty" json:"container,omitempty" jsonschema:"-"`
@@ -169,6 +169,11 @@ func (NameTemplates) JSONSchemaExtend(base *jsonschema.Schema) {
 		kisVal := v.FieldByIndex(field.Index).Elem().String()
 
 		jsonField, _, _ := strings.Cut(field.Tag.Get("json"), ",")
+
+		// if it's not in the schema, move on
+		if _, ok := base.Properties.Get(jsonField); !ok {
+			continue
+		}
 
 		configschema.SchemaPropMerge(base, jsonField, func(s *jsonschema.Schema) {
 			if s.Default == nil {

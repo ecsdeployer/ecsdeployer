@@ -225,10 +225,6 @@ By default, the deployer will wait for your services to become stable according 
 
     _Default_: `{{schema:default:WaitForStable.timeout}}` (seconds)
 
-<!-- [`individually`](#wait_for_stable.individually){ #wait_for_stable.individually }
-
-:   X -->
-
 ## Deployment Env Vars
 
 <div class="tbl-nowrap-key tbl-normal-font" markdown>

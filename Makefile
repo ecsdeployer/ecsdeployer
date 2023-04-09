@@ -116,7 +116,6 @@ coverage:
 
 #	@# ignore testutil
 	@cat coverage/c.out | grep -v ecsdeployer/internal/testutil/ > coverage/c_notest.out
-#	@#go tool cover -html=coverage/c.out -o coverage/index.html
 	@go tool cover -html=coverage/c_notest.out -o coverage/index.html
 
 .PHONY: htmltest

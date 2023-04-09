@@ -101,11 +101,9 @@ func (Step) Clean(ctx *config.Context) error {
 			}
 
 			if slices.Contains(expectedTaskFamilies, taskFamilyName) {
-				// service is supposed to be there, so dont delete
+				// family is supposed to be there, so dont delete
 				continue
 			}
-
-			// log.WithField("name", serviceName).Info("Found unwanted service. Will delete")
 
 			wg.Add(1)
 
@@ -123,6 +121,7 @@ func (Step) Clean(ctx *config.Context) error {
 
 func DeregisterTaskDefinition(ctx *config.Context, taskDefinitionArn string) error {
 	ecsClient := awsclients.ECSClient()
+	log.WithField("arn", taskDefinitionArn).Info("found unwanted task definition")
 
 	_, err := ecsClient.DeregisterTaskDefinition(ctx.Context, &ecs.DeregisterTaskDefinitionInput{
 		TaskDefinition: &taskDefinitionArn,

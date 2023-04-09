@@ -61,7 +61,7 @@ func (LoadBalancers) JSONSchemaExtend(base *jsonschema.Schema) {
 	newSchema := &jsonschema.Schema{
 		OneOf: []*jsonschema.Schema{
 			{
-				Ref:         "#/$defs/LoadBalancer",
+				Ref:         oldBase.Items.Ref,
 				Description: "Default variant, just define a single load balancer mapping",
 			},
 			&oldBase,

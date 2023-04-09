@@ -87,6 +87,7 @@ func runSchedulerCleanup(ctx *config.Context) error {
 
 func destroySchedule(ctx *config.Context, groupName, scheduleName string) error {
 
+	log.WithField("schedule", scheduleName).Info("found unwanted schedule")
 	client := awsclients.SchedulerClient()
 
 	_, err := client.DeleteSchedule(ctx.Context, &scheduler.DeleteScheduleInput{
