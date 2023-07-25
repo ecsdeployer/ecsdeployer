@@ -103,17 +103,6 @@ predeploy:
   - name: pd-disabled
     disabled: true
 
-  # - name: pd-sc-inherit-add
-  #   do_not_wait: true
-  #   environment:
-  #     SC_TEST_VAR: blah
-  #   sidecars:
-  #     - name: sc1
-  #       image: fake
-  #       inherit_env: true
-  #       environment:
-  #         EXTRA_VAR: someval
-
 console: true
 
 services:
