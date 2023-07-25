@@ -25,6 +25,9 @@ builds:
     
     goarm:
       - "7"
+    
+    flags:
+      - "-trimpath"
 
     ldflags:
       - "-s -w"

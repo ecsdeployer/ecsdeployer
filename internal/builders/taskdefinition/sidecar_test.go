@@ -41,6 +41,30 @@ func TestSidecars(t *testing.T) {
 			scEnv := buildtestutils.KVListToMap(sc1.Environment, buildtestutils.KVListToMap_KVP)
 			require.NotContains(t, scEnv, "SC_TEST_VAR")
 		})
+
+		t.Run("extra_vars_added", func(t *testing.T) {
+			sc, err := buildtestutils.GetContainer(taskDefinition, "scadd")
+			require.NoError(t, err)
+
+			scEnv := buildtestutils.KVListToMap(sc.Environment, buildtestutils.KVListToMap_KVP)
+			require.Contains(t, scEnv, "EXTRA_VAR")
+			require.Contains(t, scEnv, "TPL_MULTI_TEST")
+			require.Contains(t, scEnv, "SC_TEST_VAR")
+			require.Equal(t, "someval", scEnv["EXTRA_VAR"])
+			require.Equal(t, "overridden", scEnv["SC_TEST_VAR"])
+		})
+
+		t.Run("env_var_no_inherit", func(t *testing.T) {
+			sc, err := buildtestutils.GetContainer(taskDefinition, "scenv")
+			require.NoError(t, err)
+
+			scEnv := buildtestutils.KVListToMap(sc.Environment, buildtestutils.KVListToMap_KVP)
+			require.Contains(t, scEnv, "OTHER_EXTRA_VAR")
+			require.Contains(t, scEnv, "SC_TEST_VAR")
+			require.Equal(t, "someval", scEnv["OTHER_EXTRA_VAR"])
+			require.Equal(t, "overridden2", scEnv["SC_TEST_VAR"])
+			require.Len(t, scEnv, 2)
+		})
 	})
 
 	t.Run("port_mappings", func(t *testing.T) {

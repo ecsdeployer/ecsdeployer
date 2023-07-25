@@ -70,11 +70,27 @@ predeploy:
         depends_on:
           - scno:START
           - scdef:START
+
       - name: scno
         image: fake
         inherit_env: false
+
       - name: scdef
         image: fake
+
+      - name: scadd
+        image: fake
+        inherit_env: true
+        environment:
+          EXTRA_VAR: someval
+          SC_TEST_VAR: overridden
+    
+      - name: scenv
+        image: fake
+        inherit_env: false
+        environment:
+          OTHER_EXTRA_VAR: someval
+          SC_TEST_VAR: overridden2
     
   - name: pd-storage
     do_not_wait: true

@@ -35,8 +35,19 @@ func (b *Builder) applySidecarContainer(sidecar *config.Sidecar) error {
 
 	cdef.Essential = sidecar.Essential
 
+	scEnvVars := make(config.EnvVarMap, 0)
+
 	if sidecar.InheritEnv {
-		if err := b.addEnvVarsToContainer(cdef, b.baseEnvVars); err != nil {
+		scEnvVars = config.MergeEnvVarMaps(scEnvVars, b.baseEnvVars)
+	}
+
+	// if they wanted env vars, add them (overriding anything that was inherited)
+	if len(sidecar.EnvVars) > 0 {
+		scEnvVars = config.MergeEnvVarMaps(scEnvVars, sidecar.EnvVars)
+	}
+
+	if len(scEnvVars) > 0 {
+		if err := b.addEnvVarsToContainer(cdef, scEnvVars); err != nil {
 			return err
 		}
 	}
