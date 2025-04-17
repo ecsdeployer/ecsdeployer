@@ -1,6 +1,7 @@
 package cleanupcronjobs
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -11,6 +12,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	scheduler "github.com/aws/aws-sdk-go-v2/service/scheduler"
+	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 	"github.com/webdestroya/go-log"
 	"golang.org/x/exp/slices"
 )
@@ -51,6 +53,11 @@ func runSchedulerCleanup(ctx *config.Context) error {
 	for paginator.HasMorePages() {
 		output, err := paginator.NextPage(ctx.Context)
 		if err != nil {
+			var notFoundErr *schedulerTypes.ResourceNotFoundException
+			if errors.As(err, &notFoundErr) {
+				// not found isnt an error, so move along
+				return nil
+			}
 			log.WithError(err).Warn("Failed to page schedule resources")
 			return nil
 		}
