@@ -350,9 +350,7 @@ func TestNetworkCalculateSubnets_WithVPC(t *testing.T) {
 }
 
 func networkFilterMocker(t *testing.T, filePath string, mocks []*awsmocker.MockedEndpoint) (*NetworkConfiguration, *Project, *Context) {
-	testutil.StartMocker(t, &awsmocker.MockerOptions{
-		Mocks: append([]*awsmocker.MockedEndpoint{}, mocks...),
-	})
+	testutil.StartMocker(t, awsmocker.WithMocks(mocks...))
 
 	network, err := yaml.ParseYAMLFile[NetworkConfiguration](filePath)
 	require.NoError(t, err)

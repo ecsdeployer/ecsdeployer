@@ -14,12 +14,10 @@ import (
 
 func TestTargetGroupArn_Smoke(t *testing.T) {
 
-	testutil.StartMocker(t, &awsmocker.MockerOptions{
-		Mocks: []*awsmocker.MockedEndpoint{
-			testutil.Mock_ELBv2_DescribeTargetGroups_Single_Success("dummytg"),
-			testutil.Mock_ELBv2_DescribeTargetGroups_Single_Failure("invalid"),
-		},
-	})
+	testutil.StartMocker(t, awsmocker.WithMocks(
+		testutil.Mock_ELBv2_DescribeTargetGroups_Single_Success("dummytg"),
+		testutil.Mock_ELBv2_DescribeTargetGroups_Single_Failure("invalid"),
+	))
 
 	ctx, err := config.NewFromYAML("testdata/simple.yml")
 	require.NoError(t, err)

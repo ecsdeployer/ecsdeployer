@@ -12,7 +12,7 @@ import (
 	"github.com/webdestroya/awsmocker"
 )
 
-func StartMocker(t *testing.T) {
+func StartMocker(t *testing.T) *awsmocker.MockerInfo {
 
 	mocks := []*awsmocker.MockedEndpoint{
 		testutil.Mock_ELBv2_DescribeTargetGroups_Generic_Success(),
@@ -37,9 +37,7 @@ func StartMocker(t *testing.T) {
 		testutil.Mock_ECS_UpdateService_Generic(),
 	)
 
-	testutil.StartMocker(t, &awsmocker.MockerOptions{
-		Mocks: mocks,
-	})
+	return testutil.StartMocker(t, awsmocker.WithMocks(mocks...))
 }
 
 //nolint:unused

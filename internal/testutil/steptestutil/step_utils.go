@@ -16,9 +16,7 @@ func StepTestAwsMocker(t *testing.T, projectFilePath string, mocks []*awsmocker.
 
 	testutil.DisableLoggingForTest(t)
 
-	testutil.StartMocker(t, &awsmocker.MockerOptions{
-		Mocks: append([]*awsmocker.MockedEndpoint{}, mocks...),
-	})
+	testutil.StartMocker(t, awsmocker.WithMocks(mocks...))
 
 	project, err := yaml.ParseYAMLFile[config.Project](projectFilePath)
 	require.NoError(t, err)

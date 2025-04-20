@@ -161,7 +161,5 @@ func setupFullDeployMock(t *testing.T) {
 		)
 	}
 
-	testutil.StartMocker(t, &awsmocker.MockerOptions{
-		Mocks: mocks,
-	})
+	testutil.StartMocker(t, awsmocker.WithMocks(mocks...))
 }
