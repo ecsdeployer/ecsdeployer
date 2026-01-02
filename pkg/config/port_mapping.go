@@ -5,12 +5,13 @@ import (
 	"strconv"
 	"strings"
 
+	"slices"
+
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
-	"golang.org/x/exp/slices"
 )
 
 const (

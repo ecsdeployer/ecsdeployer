@@ -19,7 +19,7 @@ import (
 )
 
 func TestClientGetters(t *testing.T) {
-	testutil.StartMocker(t, nil)
+	testutil.StartMocker(t)
 
 	require.IsType(t, &sts.Client{}, awsclients.STSClient())
 	require.IsType(t, &ecs.Client{}, awsclients.ECSClient())

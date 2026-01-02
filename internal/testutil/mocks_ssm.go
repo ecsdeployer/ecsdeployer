@@ -5,8 +5,9 @@ import (
 	"sync"
 	"time"
 
+	"slices"
+
 	"github.com/webdestroya/awsmocker"
-	"golang.org/x/exp/slices"
 )
 
 func Mock_SSM_GetParametersByPath(prefixWithTrailingSlash string, paramNames []string) *awsmocker.MockedEndpoint {

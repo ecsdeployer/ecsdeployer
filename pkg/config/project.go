@@ -4,12 +4,13 @@ import (
 	"io"
 	"os"
 
+	"maps"
+
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"github.com/invopop/jsonschema"
 	"github.com/webdestroya/go-log"
-	"golang.org/x/exp/maps"
 )
 
 type Project struct {

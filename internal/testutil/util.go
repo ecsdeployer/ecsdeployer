@@ -13,11 +13,12 @@ import (
 	"testing"
 	"text/template"
 
+	"maps"
+
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/jmespath/go-jmespath"
 	"github.com/webdestroya/awsmocker"
 	"github.com/webdestroya/go-log"
-	"golang.org/x/exp/maps"
 )
 
 func DisableLoggingForTest(t *testing.T) {
@@ -87,7 +88,7 @@ func JmesRequestMatcher(jmesMap map[string]interface{}) func(*awsmocker.Received
 
 	return func(rr *awsmocker.ReceivedRequest) bool {
 		newMap := make(map[string]interface{}, len(cleanMap))
-		for _, k := range searchPaths {
+		for k := range searchPaths {
 			newMap[k] = JmesSearchOrNil(rr.JsonPayload, k)
 			// fmt.Printf("COMPARING: %s (%v, %v) ? [%T, %T]\n", k, newMap[k], cleanMap[k], newMap[k], cleanMap[k])
 		}

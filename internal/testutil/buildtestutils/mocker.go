@@ -12,7 +12,7 @@ import (
 	"github.com/webdestroya/awsmocker"
 )
 
-func StartMocker(t *testing.T) *awsmocker.MockerInfo {
+func StartMocker(t *testing.T) awsmocker.MockerInfo {
 
 	mocks := []*awsmocker.MockedEndpoint{
 		testutil.Mock_ELBv2_DescribeTargetGroups_Generic_Success(),

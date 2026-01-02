@@ -7,7 +7,7 @@ import (
 	"github.com/webdestroya/awsmocker"
 )
 
-func StartMocker(t *testing.T, opts ...awsmocker.MockerOptionFunc) *awsmocker.MockerInfo {
+func StartMocker(t *testing.T, opts ...awsmocker.MockerOptionFunc) awsmocker.MockerInfo {
 
 	info := awsmocker.Start(t, opts...)
 

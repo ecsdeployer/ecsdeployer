@@ -2,6 +2,8 @@
 package deregistertaskdefinitions
 
 import (
+	"slices"
+
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/semerrgroup"
@@ -10,7 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/webdestroya/go-log"
-	"golang.org/x/exp/slices"
 )
 
 type Step struct{}

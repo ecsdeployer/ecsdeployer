@@ -1,9 +1,10 @@
 package config
 
 import (
+	"maps"
+
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/invopop/jsonschema"
-	"golang.org/x/exp/maps"
 )
 
 type VolumeList map[string]Volume

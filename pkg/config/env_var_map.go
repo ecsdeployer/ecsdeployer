@@ -1,9 +1,10 @@
 package config
 
 import (
+	"maps"
+
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
-	"golang.org/x/exp/maps"
 )
 
 type EnvVarMap map[string]EnvVar

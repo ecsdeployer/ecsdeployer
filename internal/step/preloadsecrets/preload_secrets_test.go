@@ -1,7 +1,10 @@
 package preloadsecrets
 
 import (
+	"slices"
 	"testing"
+
+	"maps"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/internal/testutil/steptestutil"
@@ -9,7 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws/arn"
 	"github.com/stretchr/testify/require"
 	"github.com/webdestroya/awsmocker"
-	"golang.org/x/exp/maps"
 )
 
 func TestPreloadSecretsStep(t *testing.T) {
@@ -50,7 +52,7 @@ func TestPreloadSecretsStep(t *testing.T) {
 		err := Step{}.Preload(ctx)
 		require.NoError(t, err)
 
-		require.Subset(t, maps.Keys(ctx.Cache.SSMSecrets), secretNames)
+		require.Subset(t, slices.Collect(maps.Keys(ctx.Cache.SSMSecrets)), secretNames)
 
 		for _, name := range secretNames {
 			require.NotNil(t, ctx.Cache.SSMSecrets[name])

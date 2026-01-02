@@ -6,11 +6,12 @@ import (
 	"sort"
 	"time"
 
+	"slices"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/jmespath/go-jmespath"
 	"github.com/webdestroya/awsmocker"
-	"golang.org/x/exp/slices"
 )
 
 func Mock_ECS_RunTask() *awsmocker.MockedEndpoint {

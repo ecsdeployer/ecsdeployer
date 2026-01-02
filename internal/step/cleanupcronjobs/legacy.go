@@ -3,6 +3,8 @@ package cleanupcronjobs
 import (
 	"sync"
 
+	"slices"
+
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/deprecate"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
@@ -14,7 +16,6 @@ import (
 	tagging "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi"
 	taggingTypes "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types"
 	"github.com/webdestroya/go-log"
-	"golang.org/x/exp/slices"
 )
 
 func runLegacyCleanup(ctx *config.Context) error {

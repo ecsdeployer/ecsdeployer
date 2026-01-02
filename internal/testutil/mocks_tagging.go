@@ -3,8 +3,9 @@ package testutil
 import (
 	"fmt"
 
+	"maps"
+
 	"github.com/webdestroya/awsmocker"
-	"golang.org/x/exp/maps"
 )
 
 // resourceArns can be either a string array, or a map or key=>map[tagkey]=tagvalue
