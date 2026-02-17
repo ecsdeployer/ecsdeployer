@@ -37,13 +37,13 @@ func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParamet
 		optFunc(&options)
 	}
 
-	jmesMatches := map[string]interface{}{
+	jmesMatches := map[string]any{
 		"Path":           options.Path,
 		"Recursive":      true,
 		"WithDecryption": false,
 	}
 
-	// response := map[string]interface{}{
+	// response := map[string]any{
 	// 	"Parameters": results,
 	// }
 
@@ -76,7 +76,7 @@ func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParamet
 					}
 				}
 
-				results := make([]interface{}, 0, len(params))
+				results := make([]any, 0, len(params))
 
 				slices.Sort(params)
 
@@ -84,7 +84,7 @@ func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParamet
 
 					name := options.Path + paramName
 
-					entry := map[string]interface{}{
+					entry := map[string]any{
 						"Name":             name,
 						"Type":             "SecureString",
 						"Version":          1,
@@ -97,7 +97,7 @@ func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParamet
 					results = append(results, entry)
 				}
 
-				response := map[string]interface{}{
+				response := map[string]any{
 					"Parameters": results,
 				}
 

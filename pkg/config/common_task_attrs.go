@@ -98,9 +98,9 @@ func (cta *CommonTaskAttrs) Validate() error {
 	return nil
 }
 
-func (cta *CommonTaskAttrs) TemplateFields() map[string]interface{} {
+func (cta *CommonTaskAttrs) TemplateFields() map[string]any {
 
-	fields := make(map[string]interface{})
+	fields := make(map[string]any)
 	maps.Copy(fields, cta.CommonContainerAttrs.TemplateFields())
 	fields["TaskName"] = cta.Name
 	fields["Name"] = cta.Name

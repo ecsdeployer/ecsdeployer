@@ -30,7 +30,7 @@ func (vlist VolumeList) ToAws() []ecsTypes.Volume {
 	return out
 }
 
-func (obj *VolumeList) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *VolumeList) UnmarshalYAML(unmarshal func(any) error) error {
 	type tVolumeList []Volume
 	var defo = tVolumeList{}
 	if err := unmarshal(&defo); err != nil {

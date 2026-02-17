@@ -14,7 +14,7 @@ func (obj *FirelensAwsLogGroup) Enabled() bool {
 	return obj.Path != ""
 }
 
-func (obj *FirelensAwsLogGroup) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *FirelensAwsLogGroup) UnmarshalYAML(unmarshal func(any) error) error {
 	var bVal bool
 
 	if err := unmarshal(&bVal); err != nil {

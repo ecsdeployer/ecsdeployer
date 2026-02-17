@@ -13,7 +13,7 @@ type TaskLoggingConfig struct {
 	Options EnvVarMap `yaml:"options,omitempty" json:"options,omitempty"`
 }
 
-func (obj *TaskLoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *TaskLoggingConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var val bool
 	// allow `false` as a value

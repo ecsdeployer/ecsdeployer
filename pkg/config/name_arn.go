@@ -123,7 +123,7 @@ func (obj *NameArn) ParseFromString(value string) error {
 }
 
 // only parses a string
-func (obj *NameArn) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *NameArn) UnmarshalYAML(unmarshal func(any) error) error {
 	var str string
 	if err := unmarshal(&str); err != nil {
 		return err

@@ -50,23 +50,23 @@ func Mock(opts ...optFunc) *awsmocker.MockedEndpoint {
 				serviceName := testutil.JmesPathSearch(rr.JsonPayload, "services[0]").(string)
 
 				if options.Missing {
-					return jsonify(map[string]interface{}{
-						"failures": []interface{}{
-							map[string]interface{}{
+					return jsonify(map[string]any{
+						"failures": []any{
+							map[string]any{
 								"arn":    fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, serviceName),
 								"reason": "MISSING",
 							},
 						},
-						"services": []interface{}{},
+						"services": []any{},
 					})
 				}
 
 				svc.ClusterArn = &clusterArn
 				svc.ServiceName = &serviceName
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{},
-					"services": []interface{}{testutil.MockResponse_ECS_Service(svc)},
+				return jsonify(map[string]any{
+					"failures": []any{},
+					"services": []any{testutil.MockResponse_ECS_Service(svc)},
 				})
 			},
 		},

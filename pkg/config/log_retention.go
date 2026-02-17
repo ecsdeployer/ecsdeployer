@@ -87,7 +87,7 @@ func ParseLogRetention[T int32 | int64 | int | string](value T) (LogRetention, e
 	return LogRetention{days: intVal}, nil
 }
 
-func (a *LogRetention) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *LogRetention) UnmarshalYAML(unmarshal func(any) error) error {
 	var str string
 	if err := unmarshal(&str); err != nil {
 		return err
@@ -103,7 +103,7 @@ func (a *LogRetention) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (obj LogRetention) MarshalYAML() (interface{}, error) {
+func (obj LogRetention) MarshalYAML() (any, error) {
 	if obj.Forever() {
 		return "forever", nil
 	}

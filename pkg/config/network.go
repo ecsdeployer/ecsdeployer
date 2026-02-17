@@ -106,7 +106,7 @@ func (nc *NetworkConfiguration) Resolve(ctx *Context, netConfRef any) error {
 	return nil
 }
 
-func (a *NetworkConfiguration) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *NetworkConfiguration) UnmarshalYAML(unmarshal func(any) error) error {
 	type tNetworkConfiguration NetworkConfiguration
 	var obj = tNetworkConfiguration{}
 	if err := unmarshal(&obj); err != nil {

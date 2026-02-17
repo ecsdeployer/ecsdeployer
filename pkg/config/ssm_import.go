@@ -43,7 +43,7 @@ func (obj *SSMImport) Validate() error {
 	return nil
 }
 
-func (a *SSMImport) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *SSMImport) UnmarshalYAML(unmarshal func(any) error) error {
 	var boolVal bool
 	if err := unmarshal(&boolVal); err != nil {
 

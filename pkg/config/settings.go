@@ -27,7 +27,7 @@ type Settings struct {
 	SSMImport *SSMImport `yaml:"ssm_import,omitempty" json:"ssm_import,omitempty"`
 }
 
-func (a *Settings) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *Settings) UnmarshalYAML(unmarshal func(any) error) error {
 	type tSettings Settings
 	var obj tSettings
 	if err := unmarshal(&obj); err != nil {

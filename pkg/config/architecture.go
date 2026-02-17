@@ -56,7 +56,7 @@ func ParseArchitecture(value string) (Architecture, error) {
 	return ArchitectureInvalid, ErrInvalidArchitecture
 }
 
-func (obj *Architecture) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Architecture) UnmarshalYAML(unmarshal func(any) error) error {
 	var def string
 	if err := unmarshal(&def); err != nil {
 		return err
@@ -76,7 +76,7 @@ func (obj *Architecture) MarshalText() ([]byte, error) {
 	return []byte(obj.String()), nil
 }
 
-// func (obj *Architecture) MarshalYAML() (interface{}, error) {
+// func (obj *Architecture) MarshalYAML() (any, error) {
 // 	return obj.String(), nil
 // }
 
@@ -88,7 +88,7 @@ func (obj *Architecture) MarshalText() ([]byte, error) {
 func (Architecture) JSONSchema() *jsonschema.Schema {
 	return &jsonschema.Schema{
 		Type: "string",
-		Enum: []interface{}{
+		Enum: []any{
 			ArchitectureAMD64.String(),
 			ArchitectureARM64.String(),
 			"x86_64",

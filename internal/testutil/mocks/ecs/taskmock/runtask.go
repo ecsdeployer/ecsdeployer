@@ -35,10 +35,10 @@ func mockRunTask(family, taskId string) *awsmocker.MockedEndpoint {
 
 				clusterName := path.Base(cluster.(string))
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{},
-					"tasks": []interface{}{
-						map[string]interface{}{
+				return jsonify(map[string]any{
+					"failures": []any{},
+					"tasks": []any{
+						map[string]any{
 							"taskArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task/%s/%s", rr.Region, awsmocker.DefaultAccountId, clusterName, taskId),
 						},
 					},

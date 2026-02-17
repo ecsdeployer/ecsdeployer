@@ -37,7 +37,7 @@ func (obj *EcsDeployerOptions) Validate() error {
 	return nil
 }
 
-func (obj *EcsDeployerOptions) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *EcsDeployerOptions) UnmarshalYAML(unmarshal func(any) error) error {
 	type tEcsDeployerOptions EcsDeployerOptions
 	var defo = tEcsDeployerOptions{}
 	if err := unmarshal(&defo); err != nil {

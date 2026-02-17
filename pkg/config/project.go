@@ -37,7 +37,7 @@ type Project struct {
 	Settings         *Settings             `yaml:"settings,omitempty" json:"settings,omitempty"`
 
 	// This is used to allow YAML aliases. It is not serialized
-	Aliases map[string]interface{} `yaml:"aliases,omitempty" json:"-" jsonschema:"-"`
+	Aliases map[string]any `yaml:"aliases,omitempty" json:"-" jsonschema:"-"`
 
 	Env []string `yaml:"env,omitempty" json:"env,omitempty" jsonschema:"-"` // this is generic environment, not for the app
 }
@@ -81,7 +81,7 @@ func LoadFromBytes(data []byte) (*Project, error) {
 	return &config, nil
 }
 
-func (obj *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Project) UnmarshalYAML(unmarshal func(any) error) error {
 	type tProject Project
 	var tmpObj tProject
 	if err := unmarshal(&tmpObj); err != nil {

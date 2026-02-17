@@ -12,7 +12,7 @@ import (
 func Mock_Tagging_GetResources(typeFilter string, tags map[string]string, resourceArns any) *awsmocker.MockedEndpoint {
 
 	// TagFilters | [?Key=='ecsdeployer/project'].Values[0] | [0]
-	jmesMatchers := map[string]interface{}{
+	jmesMatchers := map[string]any{
 		"ResourceTypeFilters[0]": typeFilter,
 	}
 	for k, v := range tags {
@@ -53,17 +53,17 @@ func Mock_Tagging_GetResources(typeFilter string, tags map[string]string, resour
 		panic(fmt.Errorf("resourceArns must be either a []string or map[string]map[string]string. You provided %T", resourceArns))
 	}
 
-	results := make([]interface{}, 0, len(mappings))
+	results := make([]any, 0, len(mappings))
 
 	for _, mapping := range mappings {
-		tagList := make([]interface{}, 0, len(mapping.tags))
+		tagList := make([]any, 0, len(mapping.tags))
 		for k, v := range mapping.tags {
 			tagList = append(tagList, map[string]string{
 				"Key":   k,
 				"Value": v,
 			})
 		}
-		results = append(results, map[string]interface{}{
+		results = append(results, map[string]any{
 			"ResourceARN": mapping.arn,
 			"Tags":        tagList,
 		})
@@ -78,7 +78,7 @@ func Mock_Tagging_GetResources(typeFilter string, tags map[string]string, resour
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 
-				return jsonify(map[string]interface{}{
+				return jsonify(map[string]any{
 					// "PaginationToken": "",
 					"ResourceTagMappingList": results,
 				})

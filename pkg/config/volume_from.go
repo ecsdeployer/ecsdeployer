@@ -33,7 +33,7 @@ func (obj *VolumeFrom) ToAws() ecsTypes.VolumeFrom {
 	}
 }
 
-func (obj *VolumeFrom) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *VolumeFrom) UnmarshalYAML(unmarshal func(any) error) error {
 	type tVolumeFrom VolumeFrom
 	var defo = tVolumeFrom{}
 	if err := unmarshal(&defo); err != nil {

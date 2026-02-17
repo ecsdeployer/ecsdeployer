@@ -37,7 +37,7 @@ func NewVersionConstraint(value string) (*VersionConstraint, error) {
 	return &obj, nil
 }
 
-func (a *VersionConstraint) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *VersionConstraint) UnmarshalYAML(unmarshal func(any) error) error {
 	var str string
 	if err := unmarshal(&str); err != nil {
 		return err
@@ -69,7 +69,7 @@ func (VersionConstraint) JSONSchema() *jsonschema.Schema {
 		Comments:    "https://semver.org",
 
 		// this looks ugly because Go insists on escaping the ><
-		// Examples: []interface{}{
+		// Examples: []any{
 		// 	">= 1, < 3",
 		// 	"1.2.3",
 		// },

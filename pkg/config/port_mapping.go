@@ -68,7 +68,7 @@ func NewPortMappingFromString(value string) (*PortMapping, error) {
 	return mapping, nil
 }
 
-func (obj *PortMapping) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *PortMapping) UnmarshalYAML(unmarshal func(any) error) error {
 	type tPortMapping PortMapping // prevent recursive overflow
 	var defo = tPortMapping{}
 	if err := unmarshal(&defo); err != nil {

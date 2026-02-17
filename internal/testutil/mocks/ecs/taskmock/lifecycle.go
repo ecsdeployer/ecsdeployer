@@ -59,8 +59,8 @@ func (lc *lifecycle) describeTaskMock() *awsmocker.MockedEndpoint {
 					taskResult["stoppedAt"] = lc.stoppedAt()
 					taskResult["stopCode"] = lc.options.StopReason
 					taskResult["stoppedReason"] = "aws stoppedReason here"
-					taskResult["containers"] = []interface{}{
-						map[string]interface{}{
+					taskResult["containers"] = []any{
+						map[string]any{
 							"name":     "primary",
 							"exitCode": lc.options.ExitCode,
 						},
@@ -69,9 +69,9 @@ func (lc *lifecycle) describeTaskMock() *awsmocker.MockedEndpoint {
 					taskResult["lastStatus"] = "RUNNING"
 				}
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{},
-					"tasks":    []interface{}{taskResult},
+				return jsonify(map[string]any{
+					"failures": []any{},
+					"tasks":    []any{taskResult},
 				})
 			},
 		},

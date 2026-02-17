@@ -33,7 +33,7 @@ func (lbs LoadBalancers) GetHealthCheckGracePeriod() *int32 {
 	return &highestGrace
 }
 
-func (a *LoadBalancers) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *LoadBalancers) UnmarshalYAML(unmarshal func(any) error) error {
 	var single LoadBalancer
 	if err := unmarshal(&single); err != nil {
 

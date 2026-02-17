@@ -22,7 +22,7 @@ func Mock_Logs_CreateLogGroup(logGroupName string) *awsmocker.MockedEndpoint {
 		Request: &awsmocker.MockedRequest{
 			Service: "logs",
 			Action:  "CreateLogGroup",
-			Matcher: JmesRequestMatcher(map[string]interface{}{
+			Matcher: JmesRequestMatcher(map[string]any{
 				"logGroupName": logGroupName,
 			}),
 		},
@@ -35,7 +35,7 @@ func Mock_Logs_CreateLogGroup_Deny(logGroupName string) *awsmocker.MockedEndpoin
 		Request: &awsmocker.MockedRequest{
 			Service: "logs",
 			Action:  "CreateLogGroup",
-			Matcher: JmesRequestMatcher(map[string]interface{}{
+			Matcher: JmesRequestMatcher(map[string]any{
 				"logGroupName": logGroupName,
 			}),
 		},
@@ -48,7 +48,7 @@ func Mock_Logs_CreateLogGroup_AlreadyExists(logGroupName string) *awsmocker.Mock
 		Request: &awsmocker.MockedRequest{
 			Service: "logs",
 			Action:  "CreateLogGroup",
-			Matcher: JmesRequestMatcher(map[string]interface{}{
+			Matcher: JmesRequestMatcher(map[string]any{
 				"logGroupName": logGroupName,
 			}),
 		},
@@ -70,7 +70,7 @@ func Mock_Logs_PutRetentionPolicy(logGroupName string, days int32) *awsmocker.Mo
 		Request: &awsmocker.MockedRequest{
 			Service: "logs",
 			Action:  "PutRetentionPolicy",
-			Matcher: JmesRequestMatcher(map[string]interface{}{
+			Matcher: JmesRequestMatcher(map[string]any{
 				"logGroupName":    logGroupName,
 				"retentionInDays": days,
 			}),
@@ -84,7 +84,7 @@ func Mock_Logs_DeleteRetentionPolicy(logGroupName string) *awsmocker.MockedEndpo
 		Request: &awsmocker.MockedRequest{
 			Service: "logs",
 			Action:  "DeleteRetentionPolicy",
-			Matcher: JmesRequestMatcher(map[string]interface{}{
+			Matcher: JmesRequestMatcher(map[string]any{
 				"logGroupName": logGroupName,
 			}),
 		},
@@ -98,10 +98,10 @@ func Mock_Logs_DescribeLogGroups(logGroupRetentions map[string]int32) *awsmocker
 		logGroupRetentions = make(map[string]int32)
 	}
 
-	results := make([]interface{}, 0, len(logGroupRetentions))
+	results := make([]any, 0, len(logGroupRetentions))
 	for k, v := range logGroupRetentions {
 
-		entry := map[string]interface{}{
+		entry := map[string]any{
 			"arn":               fmt.Sprintf("arn:aws:logs:%s:%s:log-group:%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, k),
 			"logGroupName":      k,
 			"storedBytes":       0,
@@ -122,7 +122,7 @@ func Mock_Logs_DescribeLogGroups(logGroupRetentions map[string]int32) *awsmocker
 		},
 		Response: &awsmocker.MockedResponse{
 			ContentType: awsmocker.ContentTypeJSON,
-			Body: jsonify(map[string]interface{}{
+			Body: jsonify(map[string]any{
 				"logGroups": results,
 			}),
 		},
@@ -131,7 +131,7 @@ func Mock_Logs_DescribeLogGroups(logGroupRetentions map[string]int32) *awsmocker
 
 func Mock_Logs_DescribeLogGroups_Single(logGroupName string, retention int32) *awsmocker.MockedEndpoint {
 
-	entry := map[string]interface{}{
+	entry := map[string]any{
 		"arn":               fmt.Sprintf("arn:aws:logs:%s:%s:log-group:%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, logGroupName),
 		"logGroupName":      logGroupName,
 		"storedBytes":       0,
@@ -146,14 +146,14 @@ func Mock_Logs_DescribeLogGroups_Single(logGroupName string, retention int32) *a
 		Request: &awsmocker.MockedRequest{
 			Service: "logs",
 			Action:  "DescribeLogGroups",
-			Matcher: JmesRequestMatcher(map[string]interface{}{
+			Matcher: JmesRequestMatcher(map[string]any{
 				"logGroupNamePrefix": logGroupName,
 			}),
 		},
 		Response: &awsmocker.MockedResponse{
 			ContentType: awsmocker.ContentTypeJSON,
-			Body: jsonify(map[string]interface{}{
-				"logGroups": []interface{}{entry},
+			Body: jsonify(map[string]any{
+				"logGroups": []any{entry},
 			}),
 		},
 	}

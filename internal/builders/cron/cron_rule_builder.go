@@ -23,8 +23,8 @@ func BuildCronRule(ctx *config.Context, resource *config.CronJob) (*events.PutRu
 	}
 
 	ruleDef := &events.PutRuleInput{
-		Name:               aws.String(ruleName),
-		ScheduleExpression: aws.String(resource.Schedule),
+		Name:               new(ruleName),
+		ScheduleExpression: new(resource.Schedule),
 		State:              eventTypes.RuleStateEnabled,
 	}
 

@@ -18,7 +18,7 @@ func NewNameValuePair(k, v string) NameValuePair {
 	}
 }
 
-func (a *NameValuePair) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *NameValuePair) UnmarshalYAML(unmarshal func(any) error) error {
 	type tNameValuePair NameValuePair
 	var obj = tNameValuePair{}
 	if err := unmarshal(&obj); err != nil {

@@ -152,7 +152,7 @@ func generateTemplateExamples(tplMap typeDefaults, includeStage bool) typeDefaul
 
 	newTpl := make(typeDefaults, len(tplMap))
 
-	tplFields := map[string]interface{}{
+	tplFields := map[string]any{
 		"ProjectName":   "{PROJECT}",
 		"Project":       "{PROJECT}",
 		"Stage":         nil,

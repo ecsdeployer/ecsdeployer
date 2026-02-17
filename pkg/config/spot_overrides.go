@@ -124,7 +124,7 @@ func (obj *SpotOverrides) WantsOnDemand() bool {
 	return false
 }
 
-func (obj *SpotOverrides) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *SpotOverrides) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var val bool
 	if err := unmarshal(&val); err != nil {
@@ -195,7 +195,7 @@ func (SpotOverrides) JSONSchema() *jsonschema.Schema {
 	}
 }
 
-func (obj *SpotOverrides) MarshalYAML() (interface{}, error) {
+func (obj *SpotOverrides) MarshalYAML() (any, error) {
 	if obj.IsDisabled() {
 		return false, nil
 	}

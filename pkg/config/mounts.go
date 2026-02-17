@@ -36,7 +36,7 @@ func (obj *Mount) ToAws() ecsTypes.MountPoint {
 	}
 }
 
-func (obj *Mount) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Mount) UnmarshalYAML(unmarshal func(any) error) error {
 	type tMount Mount
 	var defo = tMount{}
 	if err := unmarshal(&defo); err != nil {

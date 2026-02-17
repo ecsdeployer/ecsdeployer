@@ -16,7 +16,7 @@ func Mock_Events_PutRule_Generic() *awsmocker.MockedEndpoint {
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 				name, _ := jmespath.Search("Name", rr.JsonPayload)
-				return jsonify(map[string]interface{}{
+				return jsonify(map[string]any{
 					"RuleArn": fmt.Sprintf("arn:aws:events:%s:%s:rule/%s", rr.Region, awsmocker.DefaultAccountId, name.(string)),
 				})
 			},
@@ -32,7 +32,7 @@ func Mock_Events_PutTargets_Generic() *awsmocker.MockedEndpoint {
 		},
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
-				return jsonify(map[string]interface{}{
+				return jsonify(map[string]any{
 					"FailedEntries":    []string{},
 					"FailedEntryCount": 0,
 				})
@@ -42,7 +42,7 @@ func Mock_Events_PutTargets_Generic() *awsmocker.MockedEndpoint {
 }
 
 func Mock_Events_ListTargetsByRule(ruleName, busName string, targetIds []string) *awsmocker.MockedEndpoint {
-	jmesMatches := map[string]interface{}{
+	jmesMatches := map[string]any{
 		"Rule": ruleName,
 	}
 
@@ -50,13 +50,13 @@ func Mock_Events_ListTargetsByRule(ruleName, busName string, targetIds []string)
 		jmesMatches["EventBusName"] = busName
 	}
 
-	results := make([]interface{}, 0, len(targetIds))
+	results := make([]any, 0, len(targetIds))
 
 	for _, id := range targetIds {
-		entry := map[string]interface{}{
+		entry := map[string]any{
 			"Id":  id,
 			"Arn": fmt.Sprintf("arn:aws:ecs:%s:%s:cluster/testcluster", awsmocker.DefaultRegion, awsmocker.DefaultAccountId),
-			"EcsParameters": map[string]interface{}{
+			"EcsParameters": map[string]any{
 				"TaskCount": 1,
 			},
 		}
@@ -71,7 +71,7 @@ func Mock_Events_ListTargetsByRule(ruleName, busName string, targetIds []string)
 		},
 		Response: &awsmocker.MockedResponse{
 			ContentType: awsmocker.ContentTypeJSON,
-			Body: jsonify(map[string]interface{}{
+			Body: jsonify(map[string]any{
 				"Targets": results,
 			}),
 		},
@@ -79,7 +79,7 @@ func Mock_Events_ListTargetsByRule(ruleName, busName string, targetIds []string)
 }
 
 func Mock_Events_RemoveTargets(ruleName, busName, targetId string) *awsmocker.MockedEndpoint {
-	jmesMatches := map[string]interface{}{
+	jmesMatches := map[string]any{
 		"Rule":   ruleName,
 		"Ids[0]": targetId,
 	}
@@ -96,7 +96,7 @@ func Mock_Events_RemoveTargets(ruleName, busName, targetId string) *awsmocker.Mo
 		},
 		Response: &awsmocker.MockedResponse{
 			ContentType: awsmocker.ContentTypeJSON,
-			Body: jsonify(map[string]interface{}{
+			Body: jsonify(map[string]any{
 				"FailedEntries":    []string{},
 				"FailedEntryCount": 0,
 			}),
@@ -105,7 +105,7 @@ func Mock_Events_RemoveTargets(ruleName, busName, targetId string) *awsmocker.Mo
 }
 
 func Mock_Events_DeleteRule(ruleName, busName string) *awsmocker.MockedEndpoint {
-	jmesMatches := map[string]interface{}{
+	jmesMatches := map[string]any{
 		"Name": ruleName,
 	}
 

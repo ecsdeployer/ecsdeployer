@@ -57,8 +57,8 @@ func (cta *CommonContainerAttrs) Validate() error {
 	return nil
 }
 
-func (cta *CommonContainerAttrs) TemplateFields() map[string]interface{} {
-	return map[string]interface{}{
+func (cta *CommonContainerAttrs) TemplateFields() map[string]any {
+	return map[string]any{
 		"Container": cta.Name,
 		// "Name":      cta.Name,
 	}

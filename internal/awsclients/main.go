@@ -42,7 +42,10 @@ func init() {
 		t.ResponseHeaderTimeout = 30 * time.Second
 	})
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithHTTPClient(httpClient))
+	cfg, err := config.LoadDefaultConfig(
+		context.Background(),
+		config.WithHTTPClient(httpClient),
+	)
 	if err != nil {
 		// panic(fmt.Sprintf("failed loading config, %v", err))
 		// couldnt load default? maybe they have a better one

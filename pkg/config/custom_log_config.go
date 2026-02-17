@@ -5,7 +5,7 @@ type CustomLogConfig struct {
 	Options EnvVarMap `yaml:"options,omitempty" json:"options,omitempty"`
 }
 
-func (obj *CustomLogConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *CustomLogConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type tCustomLogConfig CustomLogConfig // prevent recursive overflow
 	var defo = tCustomLogConfig{}

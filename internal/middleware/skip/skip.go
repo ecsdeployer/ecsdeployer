@@ -27,7 +27,7 @@ type ErrSkipper interface {
 
 // Maybe returns an action that skips immediately if the given p is a Skipper
 // and its Skip method returns true.
-func Maybe(skipper interface{}, next middleware.Action) middleware.Action {
+func Maybe(skipper any, next middleware.Action) middleware.Action {
 	if skipper, ok := skipper.(Skipper); ok {
 		return Maybe(wrapper{skipper}, next)
 	}
@@ -47,7 +47,7 @@ func Maybe(skipper interface{}, next middleware.Action) middleware.Action {
 	return next
 }
 
-// func MaybeSilent(skipper interface{}, next middleware.Action) middleware.Action {
+// func MaybeSilent(skipper any, next middleware.Action) middleware.Action {
 // 	if skipper, ok := skipper.(Skipper); ok {
 // 		return MaybeSilent(wrapper{skipper}, next)
 // 	}

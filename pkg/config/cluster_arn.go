@@ -25,7 +25,7 @@ func (obj *ClusterArn) Arn(ctx *Context) (string, error) {
 	})
 }
 
-// func (obj *ClusterArn) UnmarshalYAML(unmarshal func(interface{}) error) error {
+// func (obj *ClusterArn) UnmarshalYAML(unmarshal func(any) error) error {
 // 	res, err := nameArnYamlUnmarshaller(unmarshal)
 // 	if err != nil {
 // 		return err

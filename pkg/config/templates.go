@@ -99,7 +99,7 @@ func (def *NameTemplates) ApplyDefaults() {
 	}
 }
 
-func (a *NameTemplates) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *NameTemplates) UnmarshalYAML(unmarshal func(any) error) error {
 	type tNameTemplates NameTemplates
 	var defo = tNameTemplates{}
 	if err := unmarshal(&defo); err != nil {

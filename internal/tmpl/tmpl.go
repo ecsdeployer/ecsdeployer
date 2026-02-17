@@ -19,7 +19,7 @@ type Template struct {
 }
 
 // Fields that will be available to the template engine.
-type Fields map[string]interface{}
+type Fields map[string]any
 
 const (
 	projectName  = "Project"
@@ -74,7 +74,7 @@ func (t *Template) WithExtraFields(f Fields) *Template {
 	return t
 }
 
-func (t *Template) WithExtraField(k string, v interface{}) *Template {
+func (t *Template) WithExtraField(k string, v any) *Template {
 	t.fields[k] = v
 	return t
 }
@@ -117,7 +117,7 @@ func (t *Template) Apply(s string) (string, error) {
 	return out.String(), err
 }
 
-func tplFuncJoin(sep string, vals ...interface{}) string {
+func tplFuncJoin(sep string, vals ...any) string {
 	tmpArr := make([]string, len(vals))
 	for i, val := range vals {
 		switch v := val.(type) {

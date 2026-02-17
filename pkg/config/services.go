@@ -39,7 +39,7 @@ func (svc *Service) IsLoadBalanced() bool {
 	return len(svc.LoadBalancers) > 0
 }
 
-func (a *Service) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *Service) UnmarshalYAML(unmarshal func(any) error) error {
 	type tService Service
 	var obj = tService{}
 	if err := unmarshal(&obj); err != nil {
@@ -103,7 +103,7 @@ func (obj *Service) Validate() error {
 
 func (Service) JSONSchemaExtend(base *jsonschema.Schema) {
 	configschema.SchemaPropMerge(base, "desired", func(s *jsonschema.Schema) {
-		s.Extras = map[string]interface{}{
+		s.Extras = map[string]any{
 			"minimum": 0,
 			"default": 0,
 		}

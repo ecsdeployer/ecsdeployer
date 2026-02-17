@@ -28,7 +28,7 @@ func TestSchemaCmd(t *testing.T) {
 		outFile, err := os.Open(destination)
 		require.NoError(t, err)
 
-		schema := map[string]interface{}{}
+		schema := map[string]any{}
 		require.NoError(t, json.NewDecoder(outFile).Decode(&schema))
 		require.Equal(t, "https://json-schema.org/draft/2020-12/schema", schema["$schema"].(string))
 	})
@@ -37,7 +37,7 @@ func TestSchemaCmd(t *testing.T) {
 		result := runCommand(t, nil, "schema", "--output", "-")
 		require.NoError(t, result.err)
 
-		schema := map[string]interface{}{}
+		schema := map[string]any{}
 		require.NoError(t, json.NewDecoder(strings.NewReader(result.stdout)).Decode(&schema))
 		require.Equal(t, "https://json-schema.org/draft/2020-12/schema", schema["$schema"].(string))
 	})

@@ -94,7 +94,7 @@ func (e EnvVar) GetValue(tplRef templater) (string, error) {
 	return "", errors.New("Unknown env var type")
 }
 
-func (a *EnvVar) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *EnvVar) UnmarshalYAML(unmarshal func(any) error) error {
 	type tEnvVar EnvVar
 	var envvar tEnvVar
 	if err := unmarshal(&envvar); err != nil {

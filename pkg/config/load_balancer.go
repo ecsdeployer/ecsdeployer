@@ -25,7 +25,7 @@ func (obj *LoadBalancer) Validate() error {
 	return nil
 }
 
-func (a *LoadBalancer) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *LoadBalancer) UnmarshalYAML(unmarshal func(any) error) error {
 	type t LoadBalancer
 	var obj = t{}
 	if err := unmarshal(&obj); err != nil {

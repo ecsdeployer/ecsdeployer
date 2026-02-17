@@ -52,7 +52,7 @@ func (nc *ProxyConfig) Validate() error {
 	return nil
 }
 
-func (obj *ProxyConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *ProxyConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var boolVal bool
 	if err := unmarshal(&boolVal); err == nil {

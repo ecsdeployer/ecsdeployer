@@ -29,7 +29,7 @@ type FirelensConfig struct {
 	LogToAwsLogs *FirelensAwsLogGroup `yaml:"log_to_awslogs,omitempty" json:"log_to_awslogs,omitempty"`
 }
 
-func (obj *FirelensConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *FirelensConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var val bool
 	if err := unmarshal(&val); err != nil {
@@ -146,7 +146,7 @@ func (FirelensConfig) JSONSchemaExtend(base *jsonschema.Schema) {
 		if def.Type != nil {
 			prop.Default = def.Type
 		}
-		prop.Enum = []interface{}{
+		prop.Enum = []any{
 			ecsTypes.FirelensConfigurationTypeFluentbit,
 			ecsTypes.FirelensConfigurationTypeFluentd,
 		}

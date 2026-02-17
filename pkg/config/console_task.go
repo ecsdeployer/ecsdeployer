@@ -28,7 +28,7 @@ func (obj *ConsoleTask) IsEnabled() bool {
 	return *obj.Enabled
 }
 
-func (con *ConsoleTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (con *ConsoleTask) UnmarshalYAML(unmarshal func(any) error) error {
 	var boolval bool
 	if err := unmarshal(&boolval); err != nil {
 		type tConsoleTask ConsoleTask

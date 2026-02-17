@@ -15,7 +15,7 @@ var (
 
 type CpuSpec int32
 
-func (obj *CpuSpec) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *CpuSpec) UnmarshalYAML(unmarshal func(any) error) error {
 	var def string
 	if err := unmarshal(&def); err != nil {
 		return err
@@ -92,7 +92,7 @@ func (CpuSpec) JSONSchema() *jsonschema.Schema {
 			{
 				Type:        "integer",
 				Description: "CPU Shares",
-				Extras: map[string]interface{}{
+				Extras: map[string]any{
 					"minimum": 0,
 				},
 			},

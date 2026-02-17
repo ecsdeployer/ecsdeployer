@@ -26,10 +26,10 @@ func Mock_ECS_RunTask() *awsmocker.MockedEndpoint {
 
 				clusterName := path.Base(cluster.(string))
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{},
-					"tasks": []interface{}{
-						map[string]interface{}{
+				return jsonify(map[string]any{
+					"failures": []any{},
+					"tasks": []any{
+						map[string]any{
 							"taskArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task/%s/deadbeefdeadbeefdeadbeefdeadbeef", rr.Region, awsmocker.DefaultAccountId, clusterName),
 						},
 					},
@@ -49,14 +49,14 @@ func Mock_ECS_RunTask_FailToLaunch(maxCount int) *awsmocker.MockedEndpoint {
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{
-						map[string]interface{}{
+				return jsonify(map[string]any{
+					"failures": []any{
+						map[string]any{
 							"detail": "some failure detail",
 							"reason": "you goofed",
 						},
 					},
-					"tasks": []interface{}{},
+					"tasks": []any{},
 				})
 			},
 		},
@@ -75,10 +75,10 @@ func Mock_ECS_DescribeTasks_Pending(status string, maxCount int) *awsmocker.Mock
 				clusterName := path.Base(JmesPathSearch(rr.JsonPayload, "cluster").(string))
 				taskArn := JmesPathSearch(rr.JsonPayload, "tasks[0]").(string)
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{},
-					"tasks": []interface{}{
-						map[string]interface{}{
+				return jsonify(map[string]any{
+					"failures": []any{},
+					"tasks": []any{
+						map[string]any{
 							"lastStatus": status,
 							"clusterArn": fmt.Sprintf("arn:aws:ecs:%s:%s:cluster/%s", rr.Region, awsmocker.DefaultAccountId, clusterName),
 							"taskArn":    taskArn,
@@ -101,14 +101,14 @@ func Mock_ECS_DescribeTasks_Failure(maxCount int) *awsmocker.MockedEndpoint {
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 				taskArn := JmesPathSearch(rr.JsonPayload, "tasks[0]").(string)
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{
-						map[string]interface{}{
+				return jsonify(map[string]any{
+					"failures": []any{
+						map[string]any{
 							"arn":    taskArn,
 							"reason": "MISSING",
 						},
 					},
-					"tasks": []interface{}{},
+					"tasks": []any{},
 				})
 			},
 		},
@@ -127,7 +127,7 @@ func Mock_ECS_DescribeTasks_Stopped(stopCode ecsTypes.TaskStopCode, exitCode int
 				clusterName := path.Base(JmesPathSearch(rr.JsonPayload, "cluster").(string))
 				taskArn := JmesPathSearch(rr.JsonPayload, "tasks[0]").(string)
 
-				taskInfo := map[string]interface{}{
+				taskInfo := map[string]any{
 					"lastStatus":    "STOPPED",
 					"desiredStatus": "STOPPED",
 					"clusterArn":    fmt.Sprintf("arn:aws:ecs:%s:%s:cluster/%s", rr.Region, awsmocker.DefaultAccountId, clusterName),
@@ -135,17 +135,17 @@ func Mock_ECS_DescribeTasks_Stopped(stopCode ecsTypes.TaskStopCode, exitCode int
 					"stoppedAt":     time.Now().UTC().Unix(),
 					"stopCode":      stopCode,
 					"stoppedReason": "something something",
-					"containers": []interface{}{
-						map[string]interface{}{
+					"containers": []any{
+						map[string]any{
 							"name":     "primary",
 							"exitCode": exitCode,
 						},
 					},
 				}
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{},
-					"tasks":    []interface{}{taskInfo},
+				return jsonify(map[string]any{
+					"failures": []any{},
+					"tasks":    []any{taskInfo},
 				})
 			},
 		},
@@ -163,8 +163,8 @@ func Mock_ECS_RegisterTaskDefinition_Generic() *awsmocker.MockedEndpoint {
 
 				taskName, _ := jmespath.Search("family", rr.JsonPayload)
 
-				return jsonify(map[string]interface{}{
-					"taskDefinition": map[string]interface{}{
+				return jsonify(map[string]any{
+					"taskDefinition": map[string]any{
 						"taskDefinitionArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:999", rr.Region, awsmocker.DefaultAccountId, taskName.(string)),
 						"family":            taskName,
 					},
@@ -186,14 +186,14 @@ func Mock_ECS_DescribeServices_Missing(maxCount int) *awsmocker.MockedEndpoint {
 
 				serviceName := JmesPathSearch(rr.JsonPayload, "services[0]").(string)
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{
-						map[string]interface{}{
+				return jsonify(map[string]any{
+					"failures": []any{
+						map[string]any{
 							"arn":    fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, serviceName),
 							"reason": "MISSING",
 						},
 					},
-					"services": []interface{}{},
+					"services": []any{},
 				})
 			},
 		},
@@ -216,9 +216,9 @@ func Mock_ECS_DescribeServices_Single(svc ecsTypes.Service, maxCount int) *awsmo
 				svc.ClusterArn = aws.String(clusterArn)
 				svc.ServiceName = aws.String(serviceName)
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{},
-					"services": []interface{}{MockResponse_ECS_Service(svc)},
+				return jsonify(map[string]any{
+					"failures": []any{},
+					"services": []any{MockResponse_ECS_Service(svc)},
 				})
 			},
 		},
@@ -242,9 +242,9 @@ func Mock_ECS_DescribeServices_jmespath(jmesMatches map[string]any, svc ecsTypes
 				svc.ClusterArn = aws.String(clusterArn)
 				svc.ServiceName = aws.String(serviceName)
 
-				return jsonify(map[string]interface{}{
-					"failures": []interface{}{},
-					"services": []interface{}{MockResponse_ECS_Service(svc)},
+				return jsonify(map[string]any{
+					"failures": []any{},
+					"services": []any{MockResponse_ECS_Service(svc)},
 				})
 			},
 		},
@@ -260,8 +260,8 @@ func Mock_ECS_DescribeServices_jmespath(jmesMatches map[string]any, svc ecsTypes
 // 		Response: &awsmocker.MockedResponse{
 // 			Body: func(rr *awsmocker.ReceivedRequest) string {
 
-// 				return jsonify(map[string]interface{}{
-// 					"taskDefinition": map[string]interface{}{
+// 				return jsonify(map[string]any{
+// 					"taskDefinition": map[string]any{
 // 						"taskDefinitionArn": fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:999", rr.Region, awsmocker.DefaultAccountId, "BLAH"),
 // 					},
 // 				})
@@ -283,8 +283,8 @@ func Mock_ECS_CreateService_Generic() *awsmocker.MockedEndpoint {
 
 				clusterName := path.Base(clusterArn.(string))
 
-				return jsonify(map[string]interface{}{
-					"service": map[string]interface{}{
+				return jsonify(map[string]any{
+					"service": map[string]any{
 						"serviceName": serviceName.(string),
 						"clusterArn":  clusterArn.(string),
 						"serviceArn":  fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s/%s", rr.Region, awsmocker.DefaultAccountId, clusterName, serviceName.(string)),
@@ -305,7 +305,7 @@ func Mock_ECS_CreateService_jmespath(jmesMatchers map[string]any, service ecsTyp
 		},
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
-				return jsonify(map[string]interface{}{
+				return jsonify(map[string]any{
 					"service": MockResponse_ECS_Service(service),
 				})
 			},
@@ -322,7 +322,7 @@ func Mock_ECS_UpdateService_jmespath(jmesMatchers map[string]any, service ecsTyp
 		},
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
-				return jsonify(map[string]interface{}{
+				return jsonify(map[string]any{
 					"service": MockResponse_ECS_Service(service),
 				})
 			},
@@ -343,8 +343,8 @@ func Mock_ECS_UpdateService_Generic() *awsmocker.MockedEndpoint {
 
 				clusterName := path.Base(clusterArn.(string))
 
-				return jsonify(map[string]interface{}{
-					"service": map[string]interface{}{
+				return jsonify(map[string]any{
+					"service": map[string]any{
 						"serviceName": serviceName.(string),
 						"clusterArn":  clusterArn.(string),
 						"serviceArn":  fmt.Sprintf("arn:aws:ecs:%s:%s:service/%s/%s", rr.Region, awsmocker.DefaultAccountId, clusterName, serviceName.(string)),
@@ -365,7 +365,7 @@ func Mock_ECS_DeleteService_jmespath(jmesMatchers map[string]any, service ecsTyp
 		},
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
-				return jsonify(map[string]interface{}{
+				return jsonify(map[string]any{
 					"service": MockResponse_ECS_Service(service),
 				})
 			},
@@ -373,8 +373,8 @@ func Mock_ECS_DeleteService_jmespath(jmesMatchers map[string]any, service ecsTyp
 	}
 }
 
-func MockResponse_ECS_Service(service ecsTypes.Service) map[string]interface{} {
-	val := make(map[string]interface{}, 20)
+func MockResponse_ECS_Service(service ecsTypes.Service) map[string]any {
+	val := make(map[string]any, 20)
 
 	timeNow := time.Now().UTC()
 	// val["createdAt"] = timeNow.Format(time.RFC3339) // would be nice if AWS was consistent, but alas... no.
@@ -407,9 +407,9 @@ func MockResponse_ECS_Service(service ecsTypes.Service) map[string]interface{} {
 	}
 
 	// used in waiter
-	deps := make([]interface{}, 0, len(service.Deployments))
+	deps := make([]any, 0, len(service.Deployments))
 	for i, dep := range service.Deployments {
-		depObj := map[string]interface{}{
+		depObj := map[string]any{
 			"id":           fmt.Sprintf("ecs-svc/%d", i),
 			"updatedAt":    timeNow.Unix(),
 			"createdAt":    timeNow.Unix(),
@@ -445,7 +445,7 @@ func Mock_ECS_ListTaskDefinitionFamilies(results []string) *awsmocker.MockedEndp
 		},
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
-				return jsonify(map[string]interface{}{
+				return jsonify(map[string]any{
 					"families": results,
 				})
 			},
@@ -455,7 +455,7 @@ func Mock_ECS_ListTaskDefinitionFamilies(results []string) *awsmocker.MockedEndp
 
 func Mock_ECS_ListTaskDefinitions(familyName string, revisions []int) *awsmocker.MockedEndpoint {
 
-	jmesMatchers := map[string]interface{}{
+	jmesMatchers := map[string]any{
 		"familyPrefix": familyName,
 	}
 
@@ -469,8 +469,8 @@ func Mock_ECS_ListTaskDefinitions(familyName string, revisions []int) *awsmocker
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 
 				if len(revisions) == 0 {
-					return jsonify(map[string]interface{}{
-						"taskDefinitionArns": []interface{}{},
+					return jsonify(map[string]any{
+						"taskDefinitionArns": []any{},
 					})
 				}
 
@@ -489,7 +489,7 @@ func Mock_ECS_ListTaskDefinitions(familyName string, revisions []int) *awsmocker
 					arnList = append(arnList, fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:%d", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, familyName, rev))
 				}
 
-				return jsonify(map[string]interface{}{
+				return jsonify(map[string]any{
 					"taskDefinitionArns": arnList,
 				})
 			},
@@ -501,7 +501,7 @@ func Mock_ECS_ListTaskDefinitions(familyName string, revisions []int) *awsmocker
 func Mock_ECS_DeregisterTaskDefinition(family string, rev int) *awsmocker.MockedEndpoint {
 	defArn := fmt.Sprintf("arn:aws:ecs:%s:%s:task-definition/%s:%d", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, family, rev)
 
-	jmesMatchers := map[string]interface{}{
+	jmesMatchers := map[string]any{
 		"taskDefinition": defArn,
 	}
 
@@ -513,8 +513,8 @@ func Mock_ECS_DeregisterTaskDefinition(family string, rev int) *awsmocker.Mocked
 		},
 		Response: &awsmocker.MockedResponse{
 			Body: func(rr *awsmocker.ReceivedRequest) string {
-				return jsonify(map[string]interface{}{
-					"taskDefinition": map[string]interface{}{
+				return jsonify(map[string]any{
+					"taskDefinition": map[string]any{
 						"family":            family,
 						"revision":          rev,
 						"status":            "INACTIVE",

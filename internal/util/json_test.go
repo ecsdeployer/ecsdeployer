@@ -14,7 +14,7 @@ func TestJsonifyAndPretty(t *testing.T) {
 	}
 
 	tables := []struct {
-		obj        interface{}
+		obj        any
 		exp        string
 		expEscaped string
 	}{

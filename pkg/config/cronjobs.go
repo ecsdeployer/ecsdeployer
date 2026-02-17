@@ -29,7 +29,7 @@ func (obj *CronJob) IsDisabled() bool {
 	return obj.Disabled
 }
 
-func (obj *CronJob) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *CronJob) UnmarshalYAML(unmarshal func(any) error) error {
 	type tCronJob CronJob
 	var defo = tCronJob{}
 	if err := unmarshal(&defo); err != nil {
@@ -84,7 +84,7 @@ func (CronJob) JSONSchemaExtend(base *jsonschema.Schema) {
 	base.Required = append(base.Required, "name")
 
 	configschema.SchemaPropMerge(base, "schedule", func(s *jsonschema.Schema) {
-		s.Examples = []interface{}{
+		s.Examples = []any{
 			"cron(0 9 * * ? *)",
 			"rate(1 hour)",
 			"rate(2 hours)",

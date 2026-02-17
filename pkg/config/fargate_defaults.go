@@ -15,7 +15,7 @@ type FargateDefaults struct {
 
 var _ IsTaskStruct = (*FargateDefaults)(nil)
 
-func (obj *FargateDefaults) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *FargateDefaults) UnmarshalYAML(unmarshal func(any) error) error {
 	type tFargateDefaults FargateDefaults // prevent recursive overflow
 	var defo = tFargateDefaults{}
 	if err := unmarshal(&defo); err != nil {

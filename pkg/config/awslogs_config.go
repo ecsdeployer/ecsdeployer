@@ -37,7 +37,7 @@ func (obj *AwsLogConfig) ApplyDefaults() {
 	}
 }
 
-func (obj *AwsLogConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *AwsLogConfig) UnmarshalYAML(unmarshal func(any) error) error {
 	type tAwsLogConfig AwsLogConfig
 	var defo = tAwsLogConfig{}
 	if err := unmarshal(&defo); err != nil {

@@ -47,7 +47,7 @@ func (obj *Sidecar) ApplyDefaults() {
 
 }
 
-func (obj *Sidecar) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Sidecar) UnmarshalYAML(unmarshal func(any) error) error {
 	type t Sidecar
 	var defo = t{}
 	if err := unmarshal(&defo); err != nil {

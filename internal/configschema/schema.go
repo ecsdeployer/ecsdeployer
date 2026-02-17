@@ -34,7 +34,7 @@ func NewStringLike(modFuncs ...modifierFunc) *jsonschema.Schema {
 				MinLength: 1,
 			},
 			{
-				Extras: map[string]interface{}{
+				Extras: map[string]any{
 					"type": []string{"number", "boolean"},
 				},
 			},
@@ -67,7 +67,7 @@ func NewStringLikeWithBlank(modFuncs ...modifierFunc) *jsonschema.Schema {
 		// 		Type: "boolean",
 		// 	},
 		// },
-		Extras: map[string]interface{}{
+		Extras: map[string]any{
 			"type": []string{"number", "string", "boolean"},
 		},
 		Description: "Any value that can be cast to a string, or blank",

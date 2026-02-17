@@ -40,13 +40,13 @@ func TestBuildSchedule(t *testing.T) {
 			require.NoErrorf(t, err, "Index#%d", i)
 			require.EqualValuesf(t, table.name, *schedule.Name, "Index#%d, Name", i)
 
-			input := make(map[string]interface{})
+			input := make(map[string]any)
 
 			err = json.Unmarshal([]byte(*schedule.Target.Input), &input)
 			require.NoError(t, err)
 
 			require.Len(t, input["containerOverrides"], 1)
-			require.Len(t, (input["containerOverrides"].([]interface{}))[0].(map[string]interface{})["environment"], len(config.DefaultCronEnvVars))
+			require.Len(t, (input["containerOverrides"].([]any))[0].(map[string]any)["environment"], len(config.DefaultCronEnvVars))
 
 		}
 	})

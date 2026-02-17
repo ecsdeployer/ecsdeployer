@@ -48,7 +48,7 @@ func (obj *VolumeEFSConfig) ToAws() *ecsTypes.EFSVolumeConfiguration {
 	return out
 }
 
-func (obj *VolumeEFSConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *VolumeEFSConfig) UnmarshalYAML(unmarshal func(any) error) error {
 	type tVolumeEFSConfig VolumeEFSConfig
 	var defo = tVolumeEFSConfig{}
 	if err := unmarshal(&defo); err != nil {

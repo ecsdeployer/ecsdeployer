@@ -33,7 +33,7 @@ func DisableLogging() {
 	log.Log = log.New(io.Discard)
 }
 
-func TemplateApply(tpl string, fields interface{}) string {
+func TemplateApply(tpl string, fields any) string {
 	tplate, err := template.New("testutil").Parse(tpl)
 	if err != nil {
 		panic(err)
@@ -47,11 +47,11 @@ func TemplateApply(tpl string, fields interface{}) string {
 	return buffer.String()
 }
 
-func jsonify(obj interface{}) string {
+func jsonify(obj any) string {
 	return util.Must(util.Jsonify(obj))
 }
 
-func JmesPathSearch(obj interface{}, searchPath string) interface{} {
+func JmesPathSearch(obj any, searchPath string) any {
 	result, err := jmespath.Search(searchPath, obj)
 	if err != nil {
 		panic(fmt.Errorf("Failed to find '%s': %w", searchPath, err))
@@ -60,7 +60,7 @@ func JmesPathSearch(obj interface{}, searchPath string) interface{} {
 	return result
 }
 
-func JmesSearchOrNil(obj interface{}, searchPath string) interface{} {
+func JmesSearchOrNil(obj any, searchPath string) any {
 	result, err := jmespath.Search(searchPath, obj)
 	if err != nil {
 		return nil
@@ -69,9 +69,9 @@ func JmesSearchOrNil(obj interface{}, searchPath string) interface{} {
 	return result
 }
 
-func JmesRequestMatcher(jmesMap map[string]interface{}) func(*awsmocker.ReceivedRequest) bool {
+func JmesRequestMatcher(jmesMap map[string]any) func(*awsmocker.ReceivedRequest) bool {
 
-	cleanMap := make(map[string]interface{}, len(jmesMap))
+	cleanMap := make(map[string]any, len(jmesMap))
 	searchPaths := maps.Keys(jmesMap)
 	// searchPaths := make([]string, 0, len(jmesMap))
 	for k, v := range jmesMap {
@@ -87,7 +87,7 @@ func JmesRequestMatcher(jmesMap map[string]interface{}) func(*awsmocker.Received
 	}
 
 	return func(rr *awsmocker.ReceivedRequest) bool {
-		newMap := make(map[string]interface{}, len(cleanMap))
+		newMap := make(map[string]any, len(cleanMap))
 		for k := range searchPaths {
 			newMap[k] = JmesSearchOrNil(rr.JsonPayload, k)
 			// fmt.Printf("COMPARING: %s (%v, %v) ? [%T, %T]\n", k, newMap[k], cleanMap[k], newMap[k], cleanMap[k])

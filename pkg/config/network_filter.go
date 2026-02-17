@@ -97,7 +97,7 @@ type nfilterWhatever struct {
 	Values forcedStrArr `yaml:"values" json:"values,omitempty"`
 }
 
-func (a *NetworkFilter) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *NetworkFilter) UnmarshalYAML(unmarshal func(any) error) error {
 
 	// Try to read it as a string, if a string, then try parsing
 	// else, try loading it as an object
@@ -183,7 +183,7 @@ func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 		Type:        "string",
 		Pattern:     "^([^=]+)=(([^,]+),?)+$",
 		Description: "Filter shorthand",
-		Examples: []interface{}{
+		Examples: []any{
 			"status=available",
 			"tag:key=value",
 		},
@@ -193,7 +193,7 @@ func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 		Type:        "string",
 		Pattern:     "^[a-z]+-[a-f0-9]{3,}$",
 		Description: "Explicit ID",
-		Examples: []interface{}{
+		Examples: []any{
 			"subnet-12345abcd",
 			"sg-12345abcd",
 		},

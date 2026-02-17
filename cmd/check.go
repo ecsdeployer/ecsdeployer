@@ -117,7 +117,7 @@ func newCheckCmd() *checkCmd {
 // This only validates whether a yaml stream adheres to the JSON Schema for the config
 func validateConfigSchemaBytes(data []byte) error {
 
-	var rawConfig map[string]interface{}
+	var rawConfig map[string]any
 	if err := yaml.Unmarshal(data, &rawConfig); err != nil {
 		return err
 	}

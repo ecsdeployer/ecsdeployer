@@ -17,7 +17,7 @@ type Capacity struct {
 	Providers []CapacityProvider `yaml:"providers,omitempty" json:"providers,omitempty"`
 }
 
-func (obj *Capacity) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Capacity) UnmarshalYAML(unmarshal func(any) error) error {
 	type tCapacity Capacity // prevent recursive overflow
 	var defo = tCapacity{}
 	if err := unmarshal(&defo); err != nil {

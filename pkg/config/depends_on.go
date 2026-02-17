@@ -47,7 +47,7 @@ func NewDependsOnFromString(str string) (*DependsOn, error) {
 	return res, nil
 }
 
-func (a *DependsOn) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *DependsOn) UnmarshalYAML(unmarshal func(any) error) error {
 	type tDependsOn DependsOn
 	var obj tDependsOn
 	if err := unmarshal(&obj); err != nil {
