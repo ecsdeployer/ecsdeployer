@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -105,7 +104,7 @@ func (b *Builder) applyLoggingFirelensContainer() error {
 		}
 
 		awsLogConfig := &config.TaskLoggingConfig{
-			Driver:  util.Ptr(string(ecsTypes.LogDriverAwslogs)),
+			Driver:  new(string(ecsTypes.LogDriverAwslogs)),
 			Options: awsLogOpts,
 		}
 

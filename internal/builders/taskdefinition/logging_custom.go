@@ -1,7 +1,6 @@
 package taskdefinition
 
 import (
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
@@ -14,7 +13,7 @@ func (b *Builder) applyContainerLoggingCustom(cdef *ecsTypes.ContainerDefinition
 	}
 
 	taskLogConfig := &config.TaskLoggingConfig{
-		Driver:  util.Ptr(logConfig.Driver),
+		Driver:  new(logConfig.Driver),
 		Options: logConfig.Options.Filter(),
 	}
 

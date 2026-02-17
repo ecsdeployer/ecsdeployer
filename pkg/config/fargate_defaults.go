@@ -82,7 +82,7 @@ func (obj *FargateDefaults) ApplyDefaults() {
 	}
 
 	if obj.Architecture == nil {
-		obj.Architecture = util.Ptr(ArchitectureDefault)
+		obj.Architecture = new(ArchitectureDefault)
 	}
 
 	if obj.SpotOverride == nil {

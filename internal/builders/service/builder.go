@@ -2,7 +2,6 @@ package service
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 )
@@ -47,7 +46,7 @@ func (builder *Builder) init() error {
 	builder.project = builder.ctx.Project
 	builder.taskDefaults = builder.project.TaskDefaults
 	builder.templates = builder.project.Templates
-	builder.commonTask = util.Ptr(builder.entity.GetCommonTaskAttrs())
+	builder.commonTask = new(builder.entity.GetCommonTaskAttrs())
 
 	// if commonTplFields, err := helpers.GetDefaultTaskTemplateFields(builder.ctx, builder.commonTask); err != nil {
 	// 	return err

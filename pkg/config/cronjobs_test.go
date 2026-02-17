@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -48,7 +47,7 @@ func TestCronJob(t *testing.T) {
 			{&config.CronJob{Schedule: "rate(1 minute)"}, ""},
 
 			// also validates the common stuff
-			// {&config.CronJob{Schedule: "rate(1 minute)", CommonTaskAttrs: config.CommonTaskAttrs{Architecture: util.Ptr(config.Architecture("wrong"))}}, "not a valid arch"},
+			// {&config.CronJob{Schedule: "rate(1 minute)", CommonTaskAttrs: config.CommonTaskAttrs{Architecture: new(config.Architecture("wrong"))}}, "not a valid arch"},
 		}
 		for _, table := range tables {
 			err := table.obj.Validate()
@@ -100,7 +99,7 @@ func TestCronJob(t *testing.T) {
 				schedule: rate(1 hour)
 				start_date: 2023-01-02T09:12:55Z`,
 				expSched: "rate(1 hour)",
-				expStart: util.Ptr(time.Date(2023, 1, 2, 9, 12, 55, 0, time.UTC)),
+				expStart: new(time.Date(2023, 1, 2, 9, 12, 55, 0, time.UTC)),
 			},
 			{
 				str: `
@@ -108,7 +107,7 @@ func TestCronJob(t *testing.T) {
 				schedule: rate(1 hour)
 				start_date: 2023-01-02T09:12:55-08:00`,
 				expSched: "rate(1 hour)",
-				expStart: util.Ptr(time.Date(2023, 1, 2, 9, 12, 55, 0, tzMinus8UTC)),
+				expStart: new(time.Date(2023, 1, 2, 9, 12, 55, 0, tzMinus8UTC)),
 			},
 			{
 				str: `
@@ -117,8 +116,8 @@ func TestCronJob(t *testing.T) {
 				start_date: 2023-01-02T09:12:55-08:00
 				end_date: 2024-01-02T09:12:55-08:00`,
 				expSched: "rate(1 hour)",
-				expStart: util.Ptr(time.Date(2023, 1, 2, 9, 12, 55, 0, tzMinus8UTC)),
-				expEnd:   util.Ptr(time.Date(2024, 1, 2, 9, 12, 55, 0, tzMinus8UTC)),
+				expStart: new(time.Date(2023, 1, 2, 9, 12, 55, 0, tzMinus8UTC)),
+				expEnd:   new(time.Date(2024, 1, 2, 9, 12, 55, 0, tzMinus8UTC)),
 			},
 		}
 		for i, table := range tables {

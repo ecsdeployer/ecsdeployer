@@ -1,7 +1,6 @@
 package config
 
 import (
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
 )
 
@@ -23,7 +22,7 @@ func (obj *TaskLoggingConfig) UnmarshalYAML(unmarshal func(any) error) error {
 		}
 
 		*obj = TaskLoggingConfig{
-			Driver: util.Ptr(LoggingDisableFlag),
+			Driver: new(LoggingDisableFlag),
 		}
 		obj.ApplyDefaults()
 		return nil

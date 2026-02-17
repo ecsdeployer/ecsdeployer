@@ -25,8 +25,8 @@ func LongestCommonPrefix(strs []string) string {
 
 	lenFirstString := len(firstString)
 
-	commonPrefix := ""
-	for i := 0; i < lenFirstString; i++ {
+	var commonPrefix strings.Builder
+	for i := range lenFirstString {
 		firstStringChar := string(firstString[i])
 		match := true
 		for j := 1; j < lenStrs; j++ {
@@ -43,11 +43,11 @@ func LongestCommonPrefix(strs []string) string {
 		}
 
 		if match {
-			commonPrefix += firstStringChar
+			commonPrefix.WriteString(firstStringChar)
 		} else {
 			break
 		}
 	}
 
-	return commonPrefix
+	return commonPrefix.String()
 }

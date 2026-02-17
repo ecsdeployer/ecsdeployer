@@ -265,7 +265,7 @@ func TestNetworkCalculateSecurityGroups_WithExistingVPC(t *testing.T) {
 		},
 	})
 
-	result, err := calculateSecurityGroups(ctx, *network, util.Ptr("vpc-11111111"))
+	result, err := calculateSecurityGroups(ctx, *network, new("vpc-11111111"))
 	require.NoError(t, err)
 
 	require.Contains(t, result, "sg-1234567890")

@@ -3,7 +3,6 @@ package config_test
 import (
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -36,14 +35,14 @@ func TestImageUri_Validate(t *testing.T) {
 		valid bool
 	}{
 		{config.NewImageUri("fakefake"), true},
-		{config.ImageUri{Ecr: util.Ptr("test/thing"), Tag: util.Ptr("blah")}, true},
-		{config.ImageUri{Ecr: util.Ptr("test/thing"), Digest: util.Ptr("sha256:deadbeef")}, true},
-		{config.ImageUri{Docker: util.Ptr("user/reponame"), Tag: util.Ptr("sometag")}, true},
-		{config.ImageUri{Docker: util.Ptr("user/reponame"), Digest: util.Ptr("sha256:deadbeef")}, true},
-		{config.ImageUri{Docker: util.Ptr("user/reponame")}, false},
-		{config.ImageUri{Ecr: util.Ptr("user/reponame")}, false},
-		{config.ImageUri{Docker: util.Ptr("user/reponame"), Ecr: util.Ptr("user/reponame")}, false},
-		{config.ImageUri{Tag: util.Ptr("xxx")}, false},
+		{config.ImageUri{Ecr: new("test/thing"), Tag: new("blah")}, true},
+		{config.ImageUri{Ecr: new("test/thing"), Digest: new("sha256:deadbeef")}, true},
+		{config.ImageUri{Docker: new("user/reponame"), Tag: new("sometag")}, true},
+		{config.ImageUri{Docker: new("user/reponame"), Digest: new("sha256:deadbeef")}, true},
+		{config.ImageUri{Docker: new("user/reponame")}, false},
+		{config.ImageUri{Ecr: new("user/reponame")}, false},
+		{config.ImageUri{Docker: new("user/reponame"), Ecr: new("user/reponame")}, false},
+		{config.ImageUri{Tag: new("xxx")}, false},
 	}
 
 	for i, table := range tables {
@@ -59,10 +58,10 @@ func TestImageUri_Value(t *testing.T) {
 		expected string
 	}{
 		{config.NewImageUri("fakefake"), "fakefake"},
-		{config.ImageUri{Ecr: util.Ptr("test/thing"), Tag: util.Ptr("blah")}, "{{ AwsAccountId }}.dkr.ecr.{{ AwsRegion }}.amazonaws.com/test/thing:blah"},
-		{config.ImageUri{Ecr: util.Ptr("test/thing"), Digest: util.Ptr("sha256:deadbeef")}, "{{ AwsAccountId }}.dkr.ecr.{{ AwsRegion }}.amazonaws.com/test/thing@sha256:deadbeef"},
-		{config.ImageUri{Docker: util.Ptr("user/reponame"), Tag: util.Ptr("sometag")}, "user/reponame:sometag"},
-		{config.ImageUri{Docker: util.Ptr("user/reponame"), Digest: util.Ptr("sha256:deadbeef")}, "user/reponame@sha256:deadbeef"},
+		{config.ImageUri{Ecr: new("test/thing"), Tag: new("blah")}, "{{ AwsAccountId }}.dkr.ecr.{{ AwsRegion }}.amazonaws.com/test/thing:blah"},
+		{config.ImageUri{Ecr: new("test/thing"), Digest: new("sha256:deadbeef")}, "{{ AwsAccountId }}.dkr.ecr.{{ AwsRegion }}.amazonaws.com/test/thing@sha256:deadbeef"},
+		{config.ImageUri{Docker: new("user/reponame"), Tag: new("sometag")}, "user/reponame:sometag"},
+		{config.ImageUri{Docker: new("user/reponame"), Digest: new("sha256:deadbeef")}, "user/reponame@sha256:deadbeef"},
 	}
 
 	for i, table := range tables {

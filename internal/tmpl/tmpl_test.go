@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -82,7 +81,7 @@ func TestTplFuncJoin(t *testing.T) {
 		params   []any
 		expected string
 	}{
-		{[]any{"test", util.Ptr("thing"), true, false, int(5), int32(6), int16(50), int64(123123), float32(1.33), float64(2.67), nil}, "test/thing/true/false/5/6/50/123123/1.33/2.67/"},
+		{[]any{"test", new("thing"), true, false, int(5), int32(6), int16(50), int64(123123), float32(1.33), float64(2.67), nil}, "test/thing/true/false/5/6/50/123123/1.33/2.67/"},
 		{[]any{int(1), int8(2), int16(3), int32(4), int64(5)}, "1/2/3/4/5"},
 		{[]any{uint(1), uint8(2), uint16(3), uint32(4), uint64(5)}, "1/2/3/4/5"},
 	}

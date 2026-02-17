@@ -43,14 +43,14 @@ func (b *Builder) applyContainerDefaults(cdef *ecsTypes.ContainerDefinition, thi
 		cdef.WorkingDirectory = common.Workdir
 	}
 
-	if common.Ulimits != nil && len(common.Ulimits) > 0 {
+	if len(common.Ulimits) > 0 {
 		cdef.Ulimits = make([]ecsTypes.Ulimit, 0, len(common.Ulimits))
 		for _, ulimit := range common.Ulimits {
 			cdef.Ulimits = append(cdef.Ulimits, ulimit.ToAws())
 		}
 	}
 
-	if common.MountPoints != nil && len(common.MountPoints) > 0 {
+	if len(common.MountPoints) > 0 {
 		cdef.MountPoints = make([]ecsTypes.MountPoint, 0, len(common.MountPoints))
 		for _, mount := range common.MountPoints {
 			cdef.MountPoints = append(cdef.MountPoints, mount.ToAws())

@@ -3,7 +3,6 @@ package taskdefinition
 import (
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -65,7 +64,7 @@ func (builder *Builder) init() error {
 	builder.project = builder.ctx.Project
 	builder.taskDefaults = builder.project.TaskDefaults
 	builder.templates = builder.project.Templates
-	builder.commonTask = util.Ptr(builder.entity.GetCommonTaskAttrs())
+	builder.commonTask = new(builder.entity.GetCommonTaskAttrs())
 	builder.sidecars = make([]*ecsTypes.ContainerDefinition, 0)
 
 	if commonTplFields, err := helpers.GetDefaultTaskTemplateFields(builder.ctx, builder.commonTask); err != nil {

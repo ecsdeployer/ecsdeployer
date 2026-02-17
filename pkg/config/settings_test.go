@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -23,7 +22,7 @@ func TestSettings(t *testing.T) {
 	t.Run("Validate", func(t *testing.T) {
 		obj := &config.Settings{
 			DisableMarkerTag: true,
-			KeepInSync:       util.Ptr(config.NewKeepInSyncFromBool(true)),
+			KeepInSync:       new(config.NewKeepInSyncFromBool(true)),
 		}
 		obj.ApplyDefaults()
 		err := obj.Validate()

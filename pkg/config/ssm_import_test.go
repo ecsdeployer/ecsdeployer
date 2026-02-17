@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -27,10 +26,10 @@ func TestSSMImport_Unmarshal(t *testing.T) {
 		{"false", &config.SSMImport{Enabled: false, Path: defSSM.Path, Recursive: defSSM.Recursive}},
 		{"enabled: false", &config.SSMImport{Enabled: false, Path: defSSM.Path, Recursive: defSSM.Recursive}},
 		{"enabled: true", &config.SSMImport{Enabled: true, Path: defSSM.Path, Recursive: defSSM.Recursive}},
-		{"enabled: true\npath: /test/thing", &config.SSMImport{Enabled: true, Path: util.Ptr("/test/thing"), Recursive: defSSM.Recursive}},
-		{`/path/to/something`, &config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something"), Recursive: &bTrue}},
-		{`"/path/to/something/{{ .ProjectName }}"`, &config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something/{{ .ProjectName }}"), Recursive: &bTrue}},
-		{`"/path/to/something/{{ .Project }}"`, &config.SSMImport{Enabled: true, Path: util.Ptr("/path/to/something/{{ .Project }}"), Recursive: &bTrue}},
+		{"enabled: true\npath: /test/thing", &config.SSMImport{Enabled: true, Path: new("/test/thing"), Recursive: defSSM.Recursive}},
+		{`/path/to/something`, &config.SSMImport{Enabled: true, Path: new("/path/to/something"), Recursive: &bTrue}},
+		{`"/path/to/something/{{ .ProjectName }}"`, &config.SSMImport{Enabled: true, Path: new("/path/to/something/{{ .ProjectName }}"), Recursive: &bTrue}},
+		{`"/path/to/something/{{ .Project }}"`, &config.SSMImport{Enabled: true, Path: new("/path/to/something/{{ .Project }}"), Recursive: &bTrue}},
 
 		{"1234", nil},      // interpreted as a string, but must start with slash
 		{"test/path", nil}, // ssm path must start with slash

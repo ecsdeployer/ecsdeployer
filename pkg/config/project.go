@@ -7,7 +7,6 @@ import (
 	"maps"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"github.com/invopop/jsonschema"
 	"github.com/webdestroya/go-log"
@@ -133,7 +132,7 @@ func (project *Project) ApplyDefaults() {
 	project.Logging.ApplyDefaults()
 
 	if project.Image == nil {
-		project.Image = util.Ptr(NewImageUri("{{ .Image }}"))
+		project.Image = new(NewImageUri("{{ .Image }}"))
 	}
 
 	if project.Settings == nil {
@@ -146,7 +145,7 @@ func (project *Project) ApplyDefaults() {
 	}
 	project.ConsoleTask.ApplyDefaults()
 
-	if project.Tags == nil || len(project.Tags) == 0 {
+	if len(project.Tags) == 0 {
 		project.Tags = make([]NameValuePair, 0)
 	}
 

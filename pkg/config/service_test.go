@@ -3,7 +3,6 @@ package config_test
 import (
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -40,5 +39,5 @@ func TestService_Unmarshal_Basic(t *testing.T) {
 
 func TestService_Validate(t *testing.T) {
 	require.ErrorContains(t, (&config.Service{DesiredCount: -1}).Validate(), "desired count cannot")
-	require.ErrorContains(t, (&config.Service{DesiredCount: 1, RolloutConfig: &config.RolloutConfig{Minimum: util.Ptr(int32(100)), Maximum: util.Ptr(int32(110))}}).Validate(), "impossible")
+	require.ErrorContains(t, (&config.Service{DesiredCount: 1, RolloutConfig: &config.RolloutConfig{Minimum: new(int32(100)), Maximum: new(int32(110))}}).Validate(), "impossible")
 }

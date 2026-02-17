@@ -2,8 +2,6 @@ package config
 
 import (
 	"time"
-
-	"ecsdeployer.com/ecsdeployer/internal/util"
 )
 
 type Settings struct {
@@ -51,11 +49,11 @@ func (obj *Settings) ApplyDefaults() {
 	// }
 
 	if obj.PreDeployTimeout == nil {
-		obj.PreDeployTimeout = util.Ptr(NewDurationFromTDuration(90 * time.Minute))
+		obj.PreDeployTimeout = new(NewDurationFromTDuration(90 * time.Minute))
 	}
 
 	if obj.KeepInSync == nil {
-		obj.KeepInSync = util.Ptr(NewKeepInSyncFromBool(defaultKeepInSync))
+		obj.KeepInSync = new(NewKeepInSyncFromBool(defaultKeepInSync))
 	}
 
 	if obj.WaitForStable == nil {

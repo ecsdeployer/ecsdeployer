@@ -20,7 +20,7 @@ func (obj *HealthCheck) Validate() error {
 		return nil
 	}
 
-	if obj.Command == nil || len(obj.Command) == 0 {
+	if len(obj.Command) == 0 {
 		return NewValidationError("Healthcheck command cannot be empty")
 	}
 

@@ -29,7 +29,7 @@ func (obj *AwsLogConfig) Validate() error {
 func (obj *AwsLogConfig) ApplyDefaults() {
 	if obj.Retention == nil {
 		// obj.Retention = aws.Int32(365)
-		obj.Retention = util.Ptr(util.Must(ParseLogRetention(defaultLogRetention)))
+		obj.Retention = new(util.Must(ParseLogRetention(defaultLogRetention)))
 	}
 
 	if obj.Options == nil {

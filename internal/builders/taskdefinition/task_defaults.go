@@ -23,7 +23,7 @@ func (b *Builder) applyTaskDefaults() error {
 		ecsTypes.CompatibilityFargate,
 	}
 
-	arch := util.Coalesce(b.commonTask.Architecture, b.taskDefaults.Architecture, util.Ptr(config.ArchitectureDefault))
+	arch := util.Coalesce(b.commonTask.Architecture, b.taskDefaults.Architecture, new(config.ArchitectureDefault))
 
 	b.taskDef.RuntimePlatform = &ecsTypes.RuntimePlatform{
 		CpuArchitecture:       arch.ToAws(),
