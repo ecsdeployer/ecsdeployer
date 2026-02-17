@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -16,11 +15,11 @@ func TestHealthCheck_Validate(t *testing.T) {
 		valid bool
 	}{
 		{config.HealthCheck{Command: []string{"CMD", "test"}}, true},
-		{config.HealthCheck{Command: []string{"CMD", "test"}, Retries: util.Ptr[int32](5)}, true},
+		{config.HealthCheck{Command: []string{"CMD", "test"}, Retries: new(int32(5))}, true},
 
 		{config.HealthCheck{}, false},
-		{config.HealthCheck{Command: []string{"test"}, Retries: util.Ptr[int32](5)}, false},
-		{config.HealthCheck{Command: []string{"CMD", "test"}, Retries: util.Ptr[int32](-1)}, false},
+		{config.HealthCheck{Command: []string{"test"}, Retries: new(int32(5))}, false},
+		{config.HealthCheck{Command: []string{"CMD", "test"}, Retries: new(int32(-1))}, false},
 	}
 
 	for i, table := range tables {

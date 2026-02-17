@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -24,9 +23,9 @@ func TestSpotOverrides(t *testing.T) {
 		// {true, nil, nil, config.SpotOverrides{}},
 		{true, nil, []int32{0, 1}, &config.SpotOverrides{}},
 		{true, nil, []int32{0, 1}, config.NewSpotOnDemand()},
-		{false, []int32{0, 100}, []int32{0, 1}, &config.SpotOverrides{Enabled: true, MinimumOnDemand: util.Ptr[int32](0), MinimumOnDemandPercent: util.Ptr[int32](1)}},
+		{false, []int32{0, 100}, []int32{0, 1}, &config.SpotOverrides{Enabled: true, MinimumOnDemand: new(int32(0)), MinimumOnDemandPercent: new(int32(1))}},
 		{false, []int32{0, 1}, nil, &config.SpotOverrides{Enabled: true}},
-		{false, []int32{0, 100}, []int32{1, 0}, &config.SpotOverrides{Enabled: true, MinimumOnDemand: util.Ptr[int32](1), MinimumOnDemandPercent: util.Ptr[int32](0)}},
+		{false, []int32{0, 100}, []int32{1, 0}, &config.SpotOverrides{Enabled: true, MinimumOnDemand: new(int32(1)), MinimumOnDemandPercent: new(int32(0))}},
 	}
 
 	for entryNum, table := range tables {
@@ -122,7 +121,7 @@ func TestSpotOverrides_Marshalling(t *testing.T) {
 		},
 		{
 			str:        "enabled: true\nminimum_ondemand: 1",
-			exp:        &config.SpotOverrides{Enabled: true, MinimumOnDemand: util.Ptr[int32](1)},
+			exp:        &config.SpotOverrides{Enabled: true, MinimumOnDemand: new(int32(1))},
 			expMarshal: `{"enabled":true,"minimum_ondemand":1}`,
 		},
 	}

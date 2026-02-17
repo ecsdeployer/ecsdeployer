@@ -60,8 +60,8 @@ func GetECSClusterNameFromArn(str string) string {
 	res := arn.Resource
 
 	// it's a cluster ARN
-	if strings.HasPrefix(res, "cluster/") {
-		return strings.TrimPrefix(res, "cluster/")
+	if after, ok := strings.CutPrefix(res, "cluster/"); ok {
+		return after
 	}
 
 	parts := strings.Split(res, "/")
