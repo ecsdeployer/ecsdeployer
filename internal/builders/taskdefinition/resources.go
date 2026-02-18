@@ -5,7 +5,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/fargate"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -27,8 +26,8 @@ func (b *Builder) applyTaskResources() error {
 	}
 
 	fargateResource := fargate.FindFargateBestFit(cpu.Shares(), memoryValue)
-	b.taskDef.Cpu = aws.String(fargateResource.CpuString())
-	b.taskDef.Memory = aws.String(fargateResource.MemoryString())
+	b.taskDef.Cpu = new(fargateResource.CpuString())
+	b.taskDef.Memory = new(fargateResource.MemoryString())
 
 	return nil
 }
@@ -49,7 +48,7 @@ func (b *Builder) applyContainerResources(cdef *ecsTypes.ContainerDefinition, th
 		}
 
 		if memoryValue > 0 {
-			cdef.MemoryReservation = aws.Int32(memoryValue)
+			cdef.MemoryReservation = new(memoryValue)
 		}
 	}
 

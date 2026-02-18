@@ -5,7 +5,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -71,8 +70,8 @@ func (b *Builder) buildContainerLogging(cdef *ecsTypes.ContainerDefinition, logC
 		if lv.IsSSM() {
 
 			conf.SecretOptions = append(conf.SecretOptions, ecsTypes.Secret{
-				Name:      aws.String(lk),
-				ValueFrom: aws.String(util.Must(lv.GetValue(nil))),
+				Name:      new(lk),
+				ValueFrom: new(util.Must(lv.GetValue(nil))),
 			})
 			continue
 		}

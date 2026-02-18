@@ -108,7 +108,7 @@ func TestLoggingFirelens(t *testing.T) {
 
 		// check container dependency
 		require.Condition(t, func() bool {
-			if primary.DependsOn == nil || len(primary.DependsOn) == 0 {
+			if len(primary.DependsOn) == 0 {
 				return false
 			}
 			for _, dep := range primary.DependsOn {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"maps"
 	"strconv"
 	"strings"
 	"text/template"
@@ -68,9 +69,7 @@ func New(ctx *config.Context) *Template {
 // WithExtraFields allows to add new more custom fields to the template.
 // It will override fields with the same name.
 func (t *Template) WithExtraFields(f Fields) *Template {
-	for k, v := range f {
-		t.fields[k] = v
-	}
+	maps.Copy(t.fields, f)
 	return t
 }
 

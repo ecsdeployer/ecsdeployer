@@ -2,7 +2,6 @@ package taskdefinition
 
 import (
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -22,16 +21,16 @@ func (b *Builder) applyContainerHealthCheck(cdef *ecsTypes.ContainerDefinition, 
 	}
 
 	if check.Interval != nil {
-		value.Interval = aws.Int32(check.Interval.ToAwsInt32())
+		value.Interval = new(check.Interval.ToAwsInt32())
 	}
 	if check.Retries != nil {
 		value.Retries = check.Retries
 	}
 	if check.StartPeriod != nil {
-		value.StartPeriod = aws.Int32(check.StartPeriod.ToAwsInt32())
+		value.StartPeriod = new(check.StartPeriod.ToAwsInt32())
 	}
 	if check.Timeout != nil {
-		value.Timeout = aws.Int32(check.Timeout.ToAwsInt32())
+		value.Timeout = new(check.Timeout.ToAwsInt32())
 	}
 
 	cdef.HealthCheck = value

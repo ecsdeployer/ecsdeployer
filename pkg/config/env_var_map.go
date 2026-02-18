@@ -45,7 +45,6 @@ func (obj EnvVarMap) HasSSM() bool {
 func MergeEnvVarMaps(values ...EnvVarMap) EnvVarMap {
 	newMap := make(EnvVarMap)
 	for _, value := range values {
-		value := value
 		maps.Copy(newMap, value)
 	}
 

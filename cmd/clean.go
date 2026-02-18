@@ -38,7 +38,7 @@ from your environment that are no longer being referenced in your configuration 
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Args:          cobra.NoArgs,
-		RunE: timedRunE("clean", func(cmd *cobra.Command, args []string) error {
+		RunE: cmdutil.TimedRunE("clean", func(cmd *cobra.Command, args []string) error {
 			if root.opts.quiet {
 				log.Log = log.New(io.Discard)
 			}

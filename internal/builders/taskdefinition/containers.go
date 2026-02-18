@@ -14,7 +14,6 @@ func (b *Builder) applyContainers() error {
 	// process sidecars
 	if len(b.sidecars) > 0 {
 		for _, sidecar := range b.sidecars {
-			sidecar := sidecar
 			b.taskDef.ContainerDefinitions = append(b.taskDef.ContainerDefinitions, *sidecar)
 		}
 	}

@@ -165,7 +165,7 @@ func (NameTemplates) JSONSchemaExtend(base *jsonschema.Schema) {
 	v := reflect.ValueOf(templates).Elem()
 
 	// put the default values into the schema
-	for _, field := range reflect.VisibleFields(reflect.TypeOf(*templates)) {
+	for _, field := range reflect.VisibleFields(reflect.TypeFor[NameTemplates]()) {
 		kisVal := v.FieldByIndex(field.Index).Elem().String()
 
 		jsonField, _, _ := strings.Cut(field.Tag.Get("json"), ",")

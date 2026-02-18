@@ -56,7 +56,8 @@ func (FirelensAwsLogGroup) JSONSchema() *jsonschema.Schema {
 
 func (obj FirelensAwsLogGroup) MarshalJSON() ([]byte, error) {
 	if obj.Enabled() {
-		return []byte(fmt.Sprintf(`"%s"`, obj.Path)), nil
+		// return []byte(fmt.Sprintf(`"%s"`, obj.Path)), nil
+		return fmt.Appendf(nil, `"%s"`, obj.Path), nil
 	}
 
 	return []byte("false"), nil

@@ -6,7 +6,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 	"github.com/stretchr/testify/require"
 )
@@ -29,7 +28,7 @@ func TestBuildSchedule(t *testing.T) {
 		desciption *string
 	}{
 		{"ecsd-cron-dummy-job1", schedulerTypes.ScheduleStateEnabled, "cron(0 9 * * ? *)", nil},
-		{"ecsd-cron-dummy-job2", schedulerTypes.ScheduleStateEnabled, "rate(1 hour)", aws.String("somedesc")},
+		{"ecsd-cron-dummy-job2", schedulerTypes.ScheduleStateEnabled, "rate(1 hour)", new("somedesc")},
 		{"ecsd-cron-dummy-job3", schedulerTypes.ScheduleStateDisabled, "rate(1 hour)", nil},
 		{"ecsd-cron-dummy-job4", schedulerTypes.ScheduleStateEnabled, "rate(1 hour)", nil},
 	}

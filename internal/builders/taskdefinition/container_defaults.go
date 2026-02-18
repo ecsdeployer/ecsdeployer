@@ -3,7 +3,6 @@ package taskdefinition
 import (
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -12,20 +11,20 @@ func (b *Builder) applyContainerDefaults(cdef *ecsTypes.ContainerDefinition, thi
 
 	common := thing.GetCommonContainerAttrs()
 
-	cdef.Name = aws.String(common.Name)
-	cdef.Essential = aws.Bool(true)
+	cdef.Name = new(common.Name)
+	cdef.Essential = new(true)
 
 	image := util.Coalesce(common.Image, b.commonTask.Image, b.taskDefaults.Image, b.project.Image)
 	if image != nil {
-		cdef.Image = aws.String(image.Value())
+		cdef.Image = new(image.Value())
 	}
 
 	if common.StartTimeout != nil {
-		cdef.StartTimeout = aws.Int32(common.StartTimeout.ToAwsInt32())
+		cdef.StartTimeout = new(common.StartTimeout.ToAwsInt32())
 	}
 
 	if common.StopTimeout != nil {
-		cdef.StopTimeout = aws.Int32(common.StopTimeout.ToAwsInt32())
+		cdef.StopTimeout = new(common.StopTimeout.ToAwsInt32())
 	}
 
 	creds := util.Coalesce(common.Credentials, b.commonTask.Credentials, b.taskDefaults.Credentials)

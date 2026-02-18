@@ -23,7 +23,6 @@ func (Step) Skip(ctx *config.Context) bool {
 func (Step) Run(ctx *config.Context) error {
 
 	for _, pdtask := range ctx.Project.PreDeployTasks {
-		pdtask := pdtask
 		runner := predeploytask.New(pdtask)
 
 		if err := skip.Maybe(

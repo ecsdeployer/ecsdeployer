@@ -31,7 +31,6 @@ func Mock_Tagging_GetResources(typeFilter string, tags map[string]string, resour
 	case map[string]map[string]string:
 
 		for rArn, extraTags := range rarns {
-			extraTags := extraTags
 			maps.Copy(extraTags, tags)
 
 			mappings = append(mappings, resMapping{

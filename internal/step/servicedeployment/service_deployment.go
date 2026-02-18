@@ -21,7 +21,6 @@ func (Step) Run(ctx *config.Context) error {
 	g := semerrgroup.New(ctx.Concurrency(5))
 
 	for _, svc := range ctx.Project.Services {
-		svc := svc
 		g.Go(func() error {
 			return service.New(svc).Run(ctx)
 		})

@@ -37,7 +37,7 @@ func DeepFindInStruct[T any](haystack any) []*T {
 // it will not find child structs within a matching struct
 func DeepFindInStructAdvanced[T any](haystack any, options *DeepFindInStructOptions) []*T {
 
-	needleV := reflect.TypeOf(new(T)).Elem()
+	needleV := reflect.TypeFor[T]()
 
 	haystackVal := reflect.Indirect(reflect.ValueOf(haystack))
 	haystackType := haystackVal.Type()
@@ -61,7 +61,7 @@ func DeepFindInStructAdvanced[T any](haystack any, options *DeepFindInStructOpti
 				continue
 			}
 
-			if f.Kind() == reflect.Ptr || f.Kind() == reflect.Interface {
+			if f.Kind() == reflect.Pointer || f.Kind() == reflect.Interface {
 				value = f.Elem()
 			}
 		}
@@ -95,7 +95,7 @@ func DeepFindInStructAdvanced[T any](haystack any, options *DeepFindInStructOpti
 						continue
 					}
 
-					if item.Kind() == reflect.Ptr || item.Kind() == reflect.Interface {
+					if item.Kind() == reflect.Pointer || item.Kind() == reflect.Interface {
 						item = item.Elem()
 					}
 				}

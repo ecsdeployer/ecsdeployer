@@ -2,7 +2,6 @@ package service
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -25,7 +24,7 @@ func (b *Builder) applyServiceDefaults() error {
 
 	b.serviceDef.DeploymentConfiguration = b.entity.RolloutConfig.GetAwsConfig()
 
-	b.serviceDef.DesiredCount = aws.Int32(b.entity.DesiredCount)
+	b.serviceDef.DesiredCount = new(b.entity.DesiredCount)
 
 	b.serviceDef.EnableECSManagedTags = true
 
@@ -35,7 +34,7 @@ func (b *Builder) applyServiceDefaults() error {
 
 	b.serviceDef.SchedulingStrategy = ecsTypes.SchedulingStrategyReplica
 
-	platformVersion := util.Coalesce(b.entity.PlatformVersion, b.taskDefaults.PlatformVersion, aws.String("LATEST"))
+	platformVersion := util.Coalesce(b.entity.PlatformVersion, b.taskDefaults.PlatformVersion, new("LATEST"))
 	b.serviceDef.PlatformVersion = platformVersion
 
 	if b.project.ServiceRole != nil {

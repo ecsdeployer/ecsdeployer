@@ -34,7 +34,7 @@ func newDeployCmd() *deployCmd {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Args:          cobra.NoArgs,
-		RunE: timedRunE("deploy", func(cmd *cobra.Command, args []string) error {
+		RunE: cmdutil.TimedRunE("deploy", func(cmd *cobra.Command, args []string) error {
 			if root.opts.quiet {
 				log.Log = log.New(io.Discard)
 			}

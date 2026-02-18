@@ -2,10 +2,9 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
-	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/commands/secrets"
+	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
@@ -27,10 +26,10 @@ func (cmd *rootCmd) Execute(args []string) {
 	if err := cmd.cmd.Execute(); err != nil {
 		code := 1
 		msg := "command failed"
-		if eerr, ok := errors.AsType[*exitError](err); ok {
-			code = eerr.code
-			if eerr.details != "" {
-				msg = eerr.details
+		if eerr, ok := errors.AsType[*cmdutil.ExitError](err); ok {
+			code = eerr.Code
+			if eerr.Details != "" {
+				msg = eerr.Details
 			}
 		}
 		log.WithError(err).Error(msg)
@@ -104,20 +103,5 @@ Check out our website for more information, examples and documentation: https://
 func deprecateWarn(ctx *config.Context) {
 	if ctx.Deprecated {
 		log.Warn(boldStyle.Render("you are using deprecated features, check the log above for information"))
-	}
-}
-
-func timedRunE(verb string, runef func(cmd *cobra.Command, args []string) error) func(cmd *cobra.Command, args []string) error {
-	return func(cmd *cobra.Command, args []string) error {
-		start := time.Now()
-
-		log.Info(fmt.Sprintf("starting %s...", verb))
-
-		if err := runef(cmd, args); err != nil {
-			return wrapError(err, fmt.Sprintf("%s failed after %s", verb, time.Since(start).Truncate(time.Second)))
-		}
-
-		log.Info(fmt.Sprintf("%s succeeded after %s", verb, time.Since(start).Truncate(time.Second)))
-		return nil
 	}
 }

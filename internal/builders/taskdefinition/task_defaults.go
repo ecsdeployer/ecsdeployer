@@ -3,7 +3,6 @@ package taskdefinition
 import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -13,7 +12,7 @@ func (b *Builder) applyTaskDefaults() error {
 	if err != nil {
 		return err
 	}
-	b.taskDef.Family = aws.String(familyName)
+	b.taskDef.Family = new(familyName)
 
 	b.taskDef.NetworkMode = ecsTypes.NetworkModeAwsvpc
 

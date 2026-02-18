@@ -6,7 +6,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -58,15 +57,15 @@ func (b *Builder) applyLoggingFirelensContainer() error {
 
 	b.loggingContainer = &ecsTypes.ContainerDefinition{
 		Name:                  firelensConfig.Name,
-		Essential:             aws.Bool(true),
-		Image:                 aws.String(flImageUri),
+		Essential:             new(true),
+		Image:                 new(flImageUri),
 		FirelensConfiguration: flConfig,
 	}
 
 	if firelensConfig.Memory != nil {
 		memVal := firelensConfig.Memory.GetValueOnly()
 		if memVal > 0 {
-			b.loggingContainer.MemoryReservation = aws.Int32(memVal)
+			b.loggingContainer.MemoryReservation = new(memVal)
 		}
 	}
 
