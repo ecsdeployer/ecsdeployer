@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"bytes"
-	"io"
 	"os"
 	"testing"
 
 	"slices"
 
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
 	"github.com/webdestroya/go-log"
@@ -47,17 +47,7 @@ func setupCmdOutput(t *testing.T) {
 
 	// silence output
 
-	silenceLogging(t)
-}
-
-// send logs to the trash
-func silenceLogging(t *testing.T) {
-	t.Helper()
-	orig := log.Log
-	t.Cleanup(func() {
-		log.Log = orig
-	})
-	log.Log = log.New(io.Discard)
+	testutil.DisableLoggingForTest(t)
 }
 
 // Returns stdout, stderr, [error], exitcode
@@ -110,29 +100,4 @@ func runCommand(t *testing.T, conf *rcConf, args ...string) *runCommandResult {
 	result.stderr = bufErr.String()
 
 	return result
-}
-
-// used for populating stdin or any other stream with data from a file
-func fillStreamWithConfig(t *testing.T, dst io.WriteSeeker, srcFile string) error {
-	t.Helper()
-
-	src, err := os.Open(srcFile)
-	if err != nil {
-		return err
-	}
-
-	defer src.Close()
-
-	data, err := io.ReadAll(src)
-	if err != nil {
-		return err
-	}
-
-	if _, err := dst.Write(data); err != nil {
-		return err
-	}
-	if _, err := dst.Seek(0, 0); err != nil {
-		return err
-	}
-	return nil
 }

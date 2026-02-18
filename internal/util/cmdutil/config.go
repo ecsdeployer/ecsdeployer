@@ -1,4 +1,4 @@
-package cmd
+package cmdutil
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ var genericConfigPaths = [...]string{
 	"ecsdeployer.yaml",
 }
 
-func loadConfig(path string) (*config.Project, error) {
+func LoadConfig(path string) (*config.Project, error) {
 	if path == "-" {
 		log.Info("loading config from stdin")
 		return config.LoadReader(os.Stdin)

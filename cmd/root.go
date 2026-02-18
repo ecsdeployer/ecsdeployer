@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/commands/secrets"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
@@ -26,8 +27,7 @@ func (cmd *rootCmd) Execute(args []string) {
 	if err := cmd.cmd.Execute(); err != nil {
 		code := 1
 		msg := "command failed"
-		eerr := &exitError{}
-		if errors.As(err, &eerr) {
+		if eerr, ok := errors.AsType[*exitError](err); ok {
 			code = eerr.code
 			if eerr.details != "" {
 				msg = eerr.details
@@ -93,6 +93,7 @@ Check out our website for more information, examples and documentation: https://
 		newDocsCmd().cmd,
 		newCleanCmd().cmd,
 		newInfoCmd().cmd,
+		secrets.New(),
 		cobracompletefig.CreateCompletionSpecCommand(cobracompletefig.Opts{Visible: false}),
 	)
 

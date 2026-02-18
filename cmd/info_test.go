@@ -8,7 +8,7 @@ import (
 )
 
 func TestInfoCmd(t *testing.T) {
-	silenceLogging(t)
+	testutil.DisableLoggingForTest(t)
 	testutil.StartMocker(t, nil)
 
 	result := runCommand(t, nil, "info", "-c", "testdata/info_simple.yml", "--trace")

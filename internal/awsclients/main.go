@@ -25,15 +25,15 @@ var (
 
 	awsConfig aws.Config
 
-	ecsClient       *ecs.Client
-	stsClient       *sts.Client
-	ssmClient       *ssm.Client
-	ec2Client       *ec2.Client
-	elbv2Client     *elbv2.Client
-	eventsClient    *events.Client
-	logsClient      *logs.Client
-	taggingClient   *tagging.Client
-	schedulerClient *scheduler.Client
+	ecsClient       ECSClienter
+	stsClient       STSClienter
+	ssmClient       SSMClienter
+	ec2Client       EC2Clienter
+	elbv2Client     ELBv2Clienter
+	eventsClient    EventsClienter
+	logsClient      LogsClienter
+	taggingClient   TaggingClienter
+	schedulerClient SchedulerClienter
 )
 
 func init() {

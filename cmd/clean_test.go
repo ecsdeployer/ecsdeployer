@@ -13,7 +13,7 @@ import (
 )
 
 func TestCleanCmd(t *testing.T) {
-	silenceLogging(t)
+	testutil.DisableLoggingForTest(t)
 	helpers.IsTestingMode = true
 
 	t.Run("calls correct function", func(t *testing.T) {

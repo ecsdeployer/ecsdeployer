@@ -1,12 +1,12 @@
 package cmd
 
 import (
+	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/spf13/cobra"
 )
 
 const (
-	paramConfigFile = "config"
 	paramAppVersion = "app-version"
 	paramImageTag   = "tag"
 	paramImage      = "image"
@@ -21,12 +21,10 @@ type commonOpts struct {
 }
 
 func setCommonFlags(cmd *cobra.Command, common *commonOpts) {
-	cmd.Flags().StringVarP(&common.config, paramConfigFile, "c", "", "Configuration file to check")
+	cmdutil.FlagConfigFile(cmd, &common.config)
 	cmd.Flags().StringVar(&common.appVersion, paramAppVersion, "", "Set the application version. Useful for templates")
 	cmd.Flags().StringVar(&common.imageTag, paramImageTag, "", "Specify a custom image tag to use.")
 	cmd.Flags().StringVar(&common.imageUri, paramImage, "", "Specify a container image URI.")
-
-	_ = cmd.Flags().SetAnnotation(paramConfigFile, cobra.BashCompFilenameExt, []string{"yaml", "yml"})
 }
 
 // process the common specific context modifications

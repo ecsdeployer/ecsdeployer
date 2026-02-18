@@ -11,13 +11,13 @@ import (
 )
 
 func Mock_SSM_GetParametersByPath(prefixWithTrailingSlash string, paramNames []string) *awsmocker.MockedEndpoint {
-	return Mock_SSM_GetParametersByPath_Advanced(func(m *Mock_ECS_GetParametersByPathOpts) {
+	return Mock_SSM_GetParametersByPath_Advanced(func(m *Mock_SSM_GetParametersByPathOpts) {
 		m.Path = prefixWithTrailingSlash
 		m.Names = paramNames
 	})
 }
 
-type Mock_ECS_GetParametersByPathOpts struct {
+type Mock_SSM_GetParametersByPathOpts struct {
 	MaxCount  int
 	Path      string
 	Names     []string
@@ -30,9 +30,9 @@ var (
 	ssmGenMu    sync.Mutex
 )
 
-func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParametersByPathOpts)) *awsmocker.MockedEndpoint {
+func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_SSM_GetParametersByPathOpts)) *awsmocker.MockedEndpoint {
 
-	options := Mock_ECS_GetParametersByPathOpts{}
+	options := Mock_SSM_GetParametersByPathOpts{}
 	for _, optFunc := range optFuncs {
 		optFunc(&options)
 	}

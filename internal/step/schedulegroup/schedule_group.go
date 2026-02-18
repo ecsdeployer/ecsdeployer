@@ -52,8 +52,7 @@ func getGroup(ctx *config.Context, scheduleGroupName string) (bool, error) {
 		Name: &scheduleGroupName,
 	})
 	if err != nil {
-		var rnfe *schedulerTypes.ResourceNotFoundException
-		if errors.As(err, &rnfe) {
+		if _, ok := errors.AsType[*schedulerTypes.ResourceNotFoundException](err); ok {
 			return false, nil
 		}
 		return false, err

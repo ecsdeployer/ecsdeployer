@@ -60,13 +60,13 @@ func setupFullDeployMock(t *testing.T) {
 		testutil.Mock_Logs_PutRetentionPolicy_AllowAny(),
 		testutil.Mock_Scheduler_GetScheduleGroup_Missing("dummy"),
 		testutil.Mock_Scheduler_CreateScheduleGroup("dummy"),
-		testutil.Mock_SSM_GetParametersByPath_Advanced(func(m *testutil.Mock_ECS_GetParametersByPathOpts) {
+		testutil.Mock_SSM_GetParametersByPath_Advanced(func(m *testutil.Mock_SSM_GetParametersByPathOpts) {
 			m.MaxCount = 2
 			m.NextToken = true
 			m.Path = "/ecsdeployer/dummy/"
 			m.NumParams = 10
 		}),
-		testutil.Mock_SSM_GetParametersByPath_Advanced(func(m *testutil.Mock_ECS_GetParametersByPathOpts) {
+		testutil.Mock_SSM_GetParametersByPath_Advanced(func(m *testutil.Mock_SSM_GetParametersByPathOpts) {
 			m.MaxCount = 1
 			m.Path = "/ecsdeployer/dummy/"
 			m.NumParams = 8

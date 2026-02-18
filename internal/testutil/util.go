@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"os"
 	"reflect"
 	"regexp"
 	"strings"
@@ -21,7 +22,9 @@ import (
 	"github.com/webdestroya/go-log"
 )
 
+// send logs to the trash
 func DisableLoggingForTest(t *testing.T) {
+	t.Helper()
 	orig := log.Log
 	t.Cleanup(func() {
 		log.Log = orig
@@ -29,6 +32,9 @@ func DisableLoggingForTest(t *testing.T) {
 	log.Log = log.New(io.Discard)
 }
 
+// Disables logging globally, forever
+//
+// Deprecated: Use [DisableLoggingForTest] instead
 func DisableLogging() {
 	log.Log = log.New(io.Discard)
 }
@@ -174,4 +180,29 @@ func RandomHex(n int) string {
 		panic(err)
 	}
 	return hex.EncodeToString(bytes)
+}
+
+// used for populating stdin or any other stream with data from a file
+func FillStreamWithConfig(t *testing.T, dst io.WriteSeeker, srcFile string) error {
+	t.Helper()
+
+	src, err := os.Open(srcFile)
+	if err != nil {
+		return err
+	}
+
+	defer src.Close()
+
+	data, err := io.ReadAll(src)
+	if err != nil {
+		return err
+	}
+
+	if _, err := dst.Write(data); err != nil {
+		return err
+	}
+	if _, err := dst.Seek(0, 0); err != nil {
+		return err
+	}
+	return nil
 }

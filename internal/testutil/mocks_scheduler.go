@@ -197,7 +197,7 @@ func Mock_Scheduler_ListSchedules(groupName string, schedules []MockListSchedule
 }
 
 // because nothing on AWS is ever consistent.
-func schedulerGoofyErrorResponder(rr *awsmocker.ReceivedRequest, status int, errorType, message string) *http.Response {
+func schedulerGoofyErrorResponder(_ *awsmocker.ReceivedRequest, status int, errorType, message string) *http.Response {
 	body := jsonify(map[string]any{
 		"Message": message,
 	})

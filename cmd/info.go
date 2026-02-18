@@ -7,6 +7,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/step/preflight"
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/webdestroya/go-log"
@@ -67,7 +68,7 @@ func projectInfo(cmd *cobra.Command, options infoOpts) error {
 		}
 	}()
 
-	cfg, err := loadConfig(options.config)
+	cfg, err := cmdutil.LoadConfig(options.config)
 	if err != nil {
 		return err
 	}

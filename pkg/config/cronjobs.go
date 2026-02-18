@@ -33,8 +33,7 @@ func (obj *CronJob) UnmarshalYAML(unmarshal func(any) error) error {
 	var defo = tCronJob{}
 	if err := unmarshal(&defo); err != nil {
 
-		var parseErr *time.ParseError
-		if errors.As(err, &parseErr) {
+		if parseErr, ok := errors.AsType[*time.ParseError](err); ok {
 			return NewValidationError(parseErr, "Invalid format for start or end time: %s", parseErr.Error())
 		}
 

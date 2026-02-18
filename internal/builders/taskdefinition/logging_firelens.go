@@ -5,7 +5,7 @@ import (
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
-func (b *Builder) applyContainerLoggingFirelens(cdef *ecsTypes.ContainerDefinition, thing hasContainerAttrs) error {
+func (b *Builder) applyContainerLoggingFirelens(cdef *ecsTypes.ContainerDefinition, _ hasContainerAttrs) error {
 
 	logConfig := b.project.Logging.FirelensConfig
 	if logConfig.IsDisabled() {

@@ -10,6 +10,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
+	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/spf13/cobra"
@@ -62,7 +63,7 @@ func newCheckCmd() *checkCmd {
 				return err
 			}
 
-			cfg, err := loadConfig(root.config)
+			cfg, err := cmdutil.LoadConfig(root.config)
 			if err != nil {
 				return fmt.Errorf("invalid config: %w", err)
 			}
@@ -100,11 +101,10 @@ func newCheckCmd() *checkCmd {
 		},
 	}
 
-	cmd.Flags().StringVarP(&root.config, paramConfigFile, "c", "", "Configuration file to check")
+	cmdutil.FlagConfigFile(cmd, &root.config)
 	cmd.Flags().BoolVarP(&root.quiet, "quiet", "q", false, "Quiet mode: no output")
 	cmd.Flags().BoolVar(&root.showJson, "show", false, "Show the JSONified project config. (How the deployer is interpreting it)")
 	cmd.Flags().StringVar(&root.dump, "dump", "", "Dump the project config the way ECSDeployer is interpreting it.")
-	_ = cmd.Flags().SetAnnotation(paramConfigFile, cobra.BashCompFilenameExt, []string{"yaml", "yml"})
 
 	_ = cmd.Flags().MarkDeprecated("show", "Use --dump json instead")
 	_ = cmd.Flags().MarkHidden("show")

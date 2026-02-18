@@ -5,7 +5,7 @@ import (
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
-func (b *Builder) applyContainerLoggingCustom(cdef *ecsTypes.ContainerDefinition, thing hasContainerAttrs) error {
+func (b *Builder) applyContainerLoggingCustom(cdef *ecsTypes.ContainerDefinition, _ hasContainerAttrs) error {
 
 	logConfig := b.project.Logging.Custom
 	if logConfig.IsDisabled() {

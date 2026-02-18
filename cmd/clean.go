@@ -8,6 +8,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/middleware/logging"
 	"ecsdeployer.com/ecsdeployer/internal/middleware/skip"
 	"ecsdeployer.com/ecsdeployer/internal/pipeline"
+	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/caarlos0/ctrlc"
 	"github.com/spf13/cobra"
@@ -60,7 +61,7 @@ from your environment that are no longer being referenced in your configuration 
 }
 
 func cleanProject(options cleanOpts) (*config.Context, error) {
-	cfg, err := loadConfig(options.config)
+	cfg, err := cmdutil.LoadConfig(options.config)
 	if err != nil {
 		return nil, err
 	}
