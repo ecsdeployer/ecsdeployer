@@ -19,23 +19,18 @@ tidy:
 		exit 1; \
 	fi
 
-.PHONY: lint-install
-lint-install:
-	@echo "Installing golangci-lint"
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
+# .PHONY: lint-install
+# lint-install:
+# 	@echo "Installing golangci-lint"
+# 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
 
 .PHONY: lint
 lint:
-	@which golangci-lint >/dev/null 2>&1 || { \
-		echo "golangci-lint not found, please run: make lint-install"; \
-		exit 1; \
-	}
-	@golangci-lint version
-	@golangci-lint run && echo "Code passed lint check!"
+	@go tool -modfile=tools.mod github.com/golangci/golangci-lint/cmd/golangci-lint run && echo "Code passed lint check!"
 
 .PHONY: test-release
 test-release:
-	@goreleaser release --skip-publish --clean --snapshot
+	@go tool -modfile=tools.mod github.com/goreleaser/goreleaser/v2 release --skip publish --clean --snapshot
 
 .PHONY: check
 check:

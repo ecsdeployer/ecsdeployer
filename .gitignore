@@ -14,3 +14,4 @@ www/tmp
 .idea/
 .vscode/
 www/hooks/__pycache__/
+/.claude
