@@ -68,7 +68,7 @@ func (r *listCmdRunner) RunE(cmd *cobra.Command, args []string) error {
 	ssmClient := awsclients.SSMClient()
 
 	request := &ssm.GetParametersByPathInput{
-		Path:           new(ssmPrefix),
+		Path:           &ssmPrefix,
 		WithDecryption: new(true),
 		Recursive:      ssmImport.Recursive,
 	}

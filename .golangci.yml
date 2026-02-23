@@ -1,7 +1,5 @@
 run:
   timeout: 1m
-  skip-dirs:
-    - scripts
 
 linters:
   disable-all: true
@@ -30,6 +28,8 @@ linters:
     - importas
 
 issues:
+  exclude-dirs:
+    - scripts
   # exclude:
   #   - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*\\.Exit|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv|io\\.WriteString|io\\.Copy). is not checked"
   #   - 'declaration of "err"'
@@ -39,28 +39,29 @@ issues:
         - errcheck
         - gosec
 
-
 # output configuration options
 output:
-  format: 'colored-line-number'
+  formats:
+    - format: 'colored-line-number'
   print-issued-lines: true
   print-linter-name: true
 
 linters-settings:
 
   depguard:
-    list-type: denylist
-    packages:
-      - github.com/aws/aws-sdk-go/aws
-    packages-with-error-message:
-      - github.com/aws/aws-sdk-go/aws: 'use v2 sdk instead'
+    rules:
+      main:
+        deny:
+          - pkg: github.com/aws/aws-sdk-go/aws
+            desc: 'use v2 sdk instead'
 
   gocritic:
     disabled-checks:
       - newDeref # it's wrong on generics
 
   govet:
-    check-shadowing: true
+    enable:
+      - shadow
     # enable-all: true
 
   importas:
