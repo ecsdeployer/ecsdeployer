@@ -30,7 +30,7 @@ lint:
 
 .PHONY: test-release
 test-release:
-	@goreleaser release --skip publish --clean --snapshot
+	@goreleaser release --skip publish,sign --clean --snapshot --parallelism 4
 
 .PHONY: check
 check:
@@ -115,7 +115,3 @@ coverage:
 .PHONY: htmltest
 htmltest:
 	cd www && mkdocs build && htmltest -c htmltest.yml site
-
-# Add Tool
-# go get -modfile=tools.mod -tool github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8
-# go tool -modfile=tools.mod github.com/golangci/golangci-lint/cmd/golangci-lint run

@@ -42,9 +42,9 @@ archives:
   - id: homebrew
     format_overrides:
       - goos: linux
-        format: tar.gz
+        formats: ['tar.gz']
       - goos: windows
-        format: zip
+        formats: ['zip']
     name_template: '{{ .ProjectName }}_{{- tolower .Os }}_{{- if eq .Arch "amd64" }}x86_64{{- else if eq .Arch "386" }}i386{{- else }}{{ .Arch }}{{ end }}{{- if .Arm }}v{{ .Arm }}{{ end }}'
     files:
       - README.md
@@ -56,7 +56,7 @@ checksum:
   name_template: 'checksums.txt'
 
 snapshot:
-  name_template: "{{ .Version }}"
+  version_template: "{{ .Version }}"
 
 release:
   footer: |
@@ -105,7 +105,7 @@ scoops:
     description: Easily deploy containerized applications to AWS ECS Fargate
     license: MIT
 
-brews:
+homebrew_casks:
 
   - &hbgen
     ids:
@@ -115,23 +115,26 @@ brews:
       owner: ecsdeployer
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_SCOOP_GITHUB_TOKEN }}"
-    directory: Formula
-    url_template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    url:
+      template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     homepage: "https://ecsdeployer.com"
     description: "Easily deploy containerized applications to AWS ECS Fargate"
     skip_upload: auto
     commit_author:
       name: cloud87bot
       email: 114977785+cloud87bot@users.noreply.github.com
-    license: "MIT"
-    install: |-
-      bin.install "ecsdeployer"
-      bash_completion.install "completions/ecsdeployer.bash" => "ecsdeployer"
-      fish_completion.install "completions/ecsdeployer.fish" => "ecsdeployer.fish"
-      zsh_completion.install "completions/ecsdeployer.zsh" => "_ecsdeployer"
-      man1.install "manpages/ecsdeployer.1.gz"
-    test: |-
-      system "#{bin} --version"
+    binaries:
+      - ecsdeployer
+    completions:
+      bash: completions/ecsdeployer.bash
+      fish: completions/ecsdeployer.fish
+      zsh: completions/ecsdeployer.zsh
+    manpages:
+      - manpages/ecsdeployer.1.gz
+    hooks:
+      post:
+        install: |
+          system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/ecsdeployer"]
 
   -
     << : *hbgen
@@ -139,7 +142,7 @@ brews:
 
 nfpms:
   - id: "ecsdeployer"
-    builds: ['ecsdeployer']
+    ids: ['ecsdeployer']
     formats:
       - deb
       - rpm
