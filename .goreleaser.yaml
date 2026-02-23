@@ -1,6 +1,8 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
 
+version: 2
+
 project_name: ecsdeployer
 
 before:
@@ -18,14 +20,14 @@ builds:
       - windows
 
     goarch:
-      - "386"
+      # - "386"
       - amd64
-      - arm
+      # - arm
       - arm64
-    
-    goarm:
-      - "7"
-    
+
+    # goarm:
+    #   - "7"
+
     flags:
       - "-trimpath"
 
@@ -38,7 +40,6 @@ builds:
 
 archives:
   - id: homebrew
-    rlcp: true
     format_overrides:
       - goos: linux
         format: tar.gz
@@ -62,7 +63,7 @@ release:
     **Full Changelog**: https://github.com/ecsdeployer/ecsdeployer/compare/{{ .PreviousTag }}...{{ .Tag }}
 
 changelog:
-  skip: true
+  disable: true
 
 announce:
   skip: true
@@ -71,18 +72,38 @@ universal_binaries:
   - name_template: "{{ .ProjectName }}"
     replace: false
 
-scoop:
-  bucket:
-    owner: ecsdeployer
-    name: scoop-bucket
-    token: "{{ .Env.HOMEBREW_SCOOP_GITHUB_TOKEN }}"
-  url_template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-  commit_author:
-    name: cloud87bot
-    email: 114977785+cloud87bot@users.noreply.github.com
-  homepage:  https://ecsdeployer.com
-  description: Easily deploy containerized applications to AWS ECS Fargate
-  license: MIT
+source:
+  enabled: true
+
+sboms:
+  - artifacts: archive
+  - id: source # Two different sbom configurations need two different IDs
+    artifacts: source
+
+signs:
+  - cmd: cosign
+    certificate: "${artifact}.pem"
+    args:
+      - sign-blob
+      - "--output-certificate=${certificate}"
+      - "--output-signature=${signature}"
+      - "${artifact}"
+      - "--yes" # needed on cosign 2.0.0+
+    artifacts: checksum
+    output: true
+
+scoops:
+  - repository:
+      owner: ecsdeployer
+      name: scoop-bucket
+      token: "{{ .Env.HOMEBREW_SCOOP_GITHUB_TOKEN }}"
+    url_template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    commit_author:
+      name: cloud87bot
+      email: 114977785+cloud87bot@users.noreply.github.com
+    homepage:  https://ecsdeployer.com
+    description: Easily deploy containerized applications to AWS ECS Fargate
+    license: MIT
 
 brews:
 
@@ -90,11 +111,11 @@ brews:
     ids:
       - homebrew
     name: ecsdeployer
-    tap:
+    repository:
       owner: ecsdeployer
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_SCOOP_GITHUB_TOKEN }}"
-    folder: Formula
+    directory: Formula
     url_template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     homepage: "https://ecsdeployer.com"
     description: "Easily deploy containerized applications to AWS ECS Fargate"
@@ -110,9 +131,9 @@ brews:
       zsh_completion.install "completions/ecsdeployer.zsh" => "_ecsdeployer"
       man1.install "manpages/ecsdeployer.1.gz"
     test: |-
-      system "#{bin} --version" 
+      system "#{bin} --version"
 
-  - 
+  -
     << : *hbgen
     name: ecsdeployer@v{{ .Major }}
 
@@ -154,6 +175,6 @@ nfpms:
         dst: /usr/share/doc/ecsdeployer/copyright
         file_info:
           mode: 0644
-  
+
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=jcroql

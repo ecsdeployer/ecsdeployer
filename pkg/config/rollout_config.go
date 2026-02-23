@@ -28,10 +28,10 @@ func (obj *RolloutConfig) MinimumPercent() float64 {
 }
 
 func (obj *RolloutConfig) GetMinMaxCount(count int32) (int32, int32) {
-	min := int32(math.Ceil(obj.MinimumPercent() * float64(count)))
-	max := int32(math.Floor(obj.MaximumPercent() * float64(count)))
+	minVal := int32(math.Ceil(obj.MinimumPercent() * float64(count)))
+	maxVal := int32(math.Floor(obj.MaximumPercent() * float64(count)))
 
-	return min, max
+	return minVal, maxVal
 }
 
 func (a *RolloutConfig) UnmarshalYAML(unmarshal func(any) error) error {

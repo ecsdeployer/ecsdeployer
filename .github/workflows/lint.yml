@@ -10,6 +10,7 @@ on:
     paths:
       - .github/workflows/lint.yml
       - .go-version
+      - .tool-versions
       - .golangci.yml
       - internal/**
       - cmd/**
@@ -32,9 +33,10 @@ jobs:
           go-version-file: .go-version
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: v1.64.8
+          install-mode: binary
+          version-file: .tool-versions
           args: --config .golangci.yml --timeout 5m --verbose
       
   

@@ -206,7 +206,7 @@ func networkConfigurationResolver(ctx *Context, network *NetworkConfiguration) (
 
 func calculateSubnets(ctx *Context, network NetworkConfiguration) ([]string, *string, error) {
 
-	var subnetIds []string = []string{}
+	subnetIds := []string{}
 
 	idFilters, nfFilters := splitNetworkFiltersByType(network.Subnets)
 

@@ -1,104 +1,97 @@
-run:
-  timeout: 1m
-
-linters:
-  disable-all: true
-  enable:
-    - errcheck
-    - gofmt
-    - goimports
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
-    - misspell
-    - prealloc
-    - staticcheck
-    - typecheck
-    - unconvert
-    - unused
-    - asciicheck
-    - errorlint
-    - depguard
-    - goconst
-    - makezero
-    - nonamedreturns
-    - predeclared
-    - gocritic
-    - importas
-
-issues:
-  exclude-dirs:
-    - scripts
-  # exclude:
-  #   - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*\\.Exit|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv|io\\.WriteString|io\\.Copy). is not checked"
-  #   - 'declaration of "err"'
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - errcheck
-        - gosec
-
-# output configuration options
+version: "2"
 output:
   formats:
-    - format: 'colored-line-number'
-  print-issued-lines: true
-  print-linter-name: true
-
-linters-settings:
-
-  depguard:
-    rules:
-      main:
-        deny:
-          - pkg: github.com/aws/aws-sdk-go/aws
-            desc: 'use v2 sdk instead'
-
-  gocritic:
-    disabled-checks:
-      - newDeref # it's wrong on generics
-
-  govet:
-    enable:
-      - shadow
-    # enable-all: true
-
-  importas:
-    no-unaliased: true
-    # no-extra-aliases: true
-    alias:
+    text:
+      path: stdout
+      print-linter-name: true
+      print-issued-lines: true
+linters:
+  default: none
+  enable:
+    - asciicheck
+    - depguard
+    - errcheck
+    - errorlint
+    - goconst
+    - gocritic
+    - gosec
+    - govet
+    - importas
+    - ineffassign
+    - makezero
+    - misspell
+    - nonamedreturns
+    # - prealloc
+    - predeclared
+    - staticcheck
+    - unconvert
+    - unused
+  settings:
+    depguard:
+      rules:
+        main:
+          deny:
+            - pkg: github.com/aws/aws-sdk-go/aws
+              desc: use v2 sdk instead
+    gocritic:
+      disabled-checks:
+        - newDeref # it's wrong on generics
+    govet:
+      enable:
+        - shadow
+    importas:
+      alias:
         # AWS Resource Types
-      - pkg: github.com/aws/aws-sdk-go-v2/service/ecs/types
-        alias: ecsTypes
-
-      - pkg: github.com/aws/aws-sdk-go-v2/service/ec2/types
-        alias: ec2Types
-
-      - pkg: github.com/aws/aws-sdk-go-v2/service/eventbridge/types
-        alias: eventTypes
-
-      - pkg: github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types
-        alias: logTypes
-
-      - pkg: github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types
-        alias: taggingTypes
-
-      - pkg: github.com/aws/aws-sdk-go-v2/service/scheduler/types
-        alias: schedulerTypes
+        - pkg: github.com/aws/aws-sdk-go-v2/service/ecs/types
+          alias: ecsTypes
+        - pkg: github.com/aws/aws-sdk-go-v2/service/ec2/types
+          alias: ec2Types
+        - pkg: github.com/aws/aws-sdk-go-v2/service/eventbridge/types
+          alias: eventTypes
+        - pkg: github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs/types
+          alias: logTypes
+        - pkg: github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types
+          alias: taggingTypes
+        - pkg: github.com/aws/aws-sdk-go-v2/service/scheduler/types
+          alias: schedulerTypes
 
         # AWS Clients
-      - pkg: github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2
-        alias: elbv2
-
-      - pkg: github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing
-        alias: elb
-
-      - pkg: github.com/aws/aws-sdk-go-v2/service/eventbridge
-        alias: events
-
-      - pkg: github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi
-        alias: tagging
-
-      - pkg: github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs
-        alias: logs
+        - pkg: github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2
+          alias: elbv2
+        - pkg: github.com/aws/aws-sdk-go-v2/service/elasticloadbalancing
+          alias: elb
+        - pkg: github.com/aws/aws-sdk-go-v2/service/eventbridge
+          alias: events
+        - pkg: github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi
+          alias: tagging
+        - pkg: github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs
+          alias: logs
+      no-unaliased: true
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - errcheck
+          - gosec
+        path: _test\.go
+    paths:
+      - scripts
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - scripts
+      - third_party$
+      - builtin$
+      - examples$

@@ -30,7 +30,6 @@ require (
 	github.com/webdestroya/go-log v0.1.0
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	github.com/xeipuuv/gojsonschema v1.2.0
-	golang.org/x/exp v0.0.0-20230307190834-24139beb5833
 	golang.org/x/sync v0.0.0-20220923202941-7f9b1623fab7
 	gopkg.in/yaml.v3 v3.0.1
 )

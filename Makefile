@@ -26,11 +26,11 @@ tidy:
 
 .PHONY: lint
 lint:
-	@go tool -modfile=tools.mod github.com/golangci/golangci-lint/cmd/golangci-lint run && echo "Code passed lint check!"
+	@golangci-lint run && echo "Code passed lint check!"
 
 .PHONY: test-release
 test-release:
-	@go tool -modfile=tools.mod github.com/goreleaser/goreleaser/v2 release --skip publish --clean --snapshot
+	@goreleaser release --skip publish --clean --snapshot
 
 .PHONY: check
 check:

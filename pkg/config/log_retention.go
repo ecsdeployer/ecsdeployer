@@ -71,11 +71,11 @@ func ParseLogRetention[T int32 | int64 | int | string](value T) (LogRetention, e
 
 	switch v := any(value).(type) {
 	case int64:
-		intVal = int32(v)
+		intVal = int32(v) //nolint:gosec // this value will never exceed 32bits
 	case int32:
 		intVal = v
 	case int:
-		intVal = int32(v)
+		intVal = int32(v) //nolint:gosec // this value will never exceed 32bits
 	default:
 		return LogRetention{}, fmt.Errorf("%w: somehow got a nonstandard integer to the log retention parser", ErrInvalidLogRetention)
 	}

@@ -13,6 +13,8 @@ env:
 permissions:
   contents: write
   id-token: write
+  attestations: write
+  artifact-metadata: write
 
 jobs:
 
@@ -64,12 +66,17 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version-file: .go-version
+      
+      - uses: sigstore/cosign-installer@v4.0.0
+
+      - uses: anchore/sbom-action/download-syft@v0.22.2 # installs syft
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v7
         with:
+          distribution: goreleaser
           args: release --clean
-          version: v1.16.1
+          version: v2.14.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_SCOOP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_SCOOP_GITHUB_TOKEN }}
