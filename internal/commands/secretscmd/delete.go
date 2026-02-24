@@ -56,7 +56,7 @@ func (r *deleteCmdRunner) RunE(cmd *cobra.Command, args []string) error {
 		// 	return nil
 		// }
 
-		return cmdutil.Wrap(err)
+		return cmdutil.NewUserError(err)
 	}
 	log.WithField("param", paramName).Info("parameter deleted")
 

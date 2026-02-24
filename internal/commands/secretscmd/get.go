@@ -61,7 +61,7 @@ func (r *getCmdRunner) RunE(cmd *cobra.Command, args []string) error {
 		WithDecryption: new(true),
 	})
 	if err != nil {
-		return err
+		return cmdutil.NewUserError(err)
 	}
 
 	for _, parameter := range resp.Parameters {

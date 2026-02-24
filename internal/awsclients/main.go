@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/aws/retry"
 	awsHttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/config"
 	logs "github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
@@ -44,6 +45,11 @@ func init() {
 
 	cfg, err := config.LoadDefaultConfig(
 		context.Background(),
+		// config.WithRetryMaxAttempts(10),
+		config.WithRetryer(func() aws.Retryer {
+			rtr := retry.AddWithMaxAttempts(retry.NewStandard(), 40)
+			return retry.AddWithMaxBackoffDelay(rtr, 8*time.Second)
+		}),
 		config.WithHTTPClient(httpClient),
 	)
 	if err != nil {

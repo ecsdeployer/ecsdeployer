@@ -80,7 +80,7 @@ func (r *setCmdRunner) PreRunE(cmd *cobra.Command, args []string) error {
 	if r.valueFile != "" {
 		info, err := os.Stat(r.valueFile)
 		if err != nil {
-			return err
+			return cmdutil.NewUserError(err)
 		}
 		if info.Size() > 10*1024 {
 			return cmdutil.NewUserErrorf("File provided exceeds 10KB, it will not fit into a Parameter")
@@ -88,7 +88,7 @@ func (r *setCmdRunner) PreRunE(cmd *cobra.Command, args []string) error {
 
 		val, err := os.ReadFile(r.valueFile)
 		if err != nil {
-			return err
+			return cmdutil.NewUserError(err)
 		}
 		r.value = string(val)
 	}
@@ -96,7 +96,7 @@ func (r *setCmdRunner) PreRunE(cmd *cobra.Command, args []string) error {
 	if r.useStdin {
 		val, err := io.ReadAll(cmd.InOrStdin())
 		if err != nil {
-			return err
+			return cmdutil.NewUserError(err)
 		}
 		r.value = string(val)
 	}
@@ -126,7 +126,7 @@ func (r *setCmdRunner) RunE(cmd *cobra.Command, args []string) error {
 	}
 
 	if _, err := ssmClient.PutParameter(cmd.Context(), params); err != nil {
-		return err
+		return cmdutil.NewUserError(err)
 	}
 	log.WithField("param", paramName).Info("parameter set")
 
