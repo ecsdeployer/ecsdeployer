@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 
+	"ecsdeployer.com/ecsdeployer/internal/commands/checkcmd"
 	"ecsdeployer.com/ecsdeployer/internal/commands/cleancmd"
 	"ecsdeployer.com/ecsdeployer/internal/commands/deploycmd"
 	"ecsdeployer.com/ecsdeployer/internal/commands/docscmd"
@@ -11,16 +12,14 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/commands/schemacmd"
 	"ecsdeployer.com/ecsdeployer/internal/commands/secretscmd"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
-	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/webdestroya/go-log"
 	cobracompletefig "github.com/withfig/autocomplete-tools/integrations/cobra"
 )
 
-var (
-	boldStyle = lipgloss.NewStyle().Bold(true)
-)
+// var (
+// 	boldStyle = lipgloss.NewStyle().Bold(true)
+// )
 
 func Execute(version string, exit func(int), args []string) {
 	newRootCmd(version, exit).Execute(args)
@@ -92,7 +91,7 @@ Check out our website for more information, examples and documentation: https://
 
 	cmd.AddCommand(
 		deploycmd.New(), // newDeployCmd().cmd,
-		newCheckCmd().cmd,
+		checkcmd.New(),  // newCheckCmd().cmd,
 		schemacmd.New(), // newSchemaCmd().cmd,
 		mancmd.New(),    // newManCmd().cmd,
 		docscmd.New(),   // newDocsCmd().cmd,
@@ -106,8 +105,8 @@ Check out our website for more information, examples and documentation: https://
 	return root
 }
 
-func deprecateWarn(ctx *config.Context) {
-	if ctx.Deprecated {
-		log.Warn(boldStyle.Render("you are using deprecated features, check the log above for information"))
-	}
-}
+// func deprecateWarn(ctx *config.Context) {
+// 	if ctx.Deprecated {
+// 		log.Warn(boldStyle.Render("you are using deprecated features, check the log above for information"))
+// 	}
+// }

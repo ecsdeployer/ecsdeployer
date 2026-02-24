@@ -1,5 +1,6 @@
 package cmd
 
+/*
 import (
 	"encoding/json"
 	"errors"
@@ -152,3 +153,4 @@ func validateConfigSchemaBytes(data []byte) error {
 
 	return nil
 }
+*/
