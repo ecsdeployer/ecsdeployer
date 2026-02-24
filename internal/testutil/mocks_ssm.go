@@ -111,3 +111,53 @@ func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_SSM_GetParamet
 		},
 	}
 }
+
+func Mock_SSM_DeleteParameter(paramName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service:       "ssm",
+			Action:        "DeleteParameter",
+			MaxMatchCount: 1,
+			Matcher: JmesRequestMatcher(map[string]any{
+				"Name": paramName,
+			}),
+		},
+		Response: &awsmocker.MockedResponse{
+			ContentType: awsmocker.ContentTypeJSON,
+			Body:        `{}`,
+		},
+	}
+}
+
+func Mock_SSM_DeleteParameter_NotFound(paramName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service:       "ssm",
+			Action:        "DeleteParameter",
+			MaxMatchCount: 1,
+			Matcher: JmesRequestMatcher(map[string]any{
+				"Name": paramName,
+			}),
+		},
+		// Response: &awsmocker.MockedResponse{
+		// 	StatusCode:  400,
+		// 	ContentType: awsmocker.ContentTypeJSON,
+		// 	Body:        `{"__type":"ParameterNotFound", "Code": "ParameterNotFound"}`,
+		// },
+		Response: awsmocker.MockResponse_Error(400, "ParameterNotFound", "Not found"),
+	}
+}
+
+func Mock_SSM_DeleteParameter_Forbidden(paramName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service:       "ssm",
+			Action:        "DeleteParameter",
+			MaxMatchCount: 1,
+			Matcher: JmesRequestMatcher(map[string]any{
+				"Name": paramName,
+			}),
+		},
+		Response: awsmocker.MockResponse_Error(400, "AccessDeniedException", "No permission"),
+	}
+}

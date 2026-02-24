@@ -10,6 +10,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
+	"github.com/spf13/cobra"
 	"github.com/webdestroya/go-log"
 )
 
@@ -78,12 +79,11 @@ func runCommand(t *testing.T, conf *rcConf, args ...string) *runCommandResult {
 		exitCode: 0,
 	}
 
-	rcmd := newRootCmd(fakedTestVersionStr, result.SetExitCode)
+	// rcmd := newRootCmd(fakedTestVersionStr, result.SetExitCode)
+	// rcmd := rootcmd.New()
 
 	var bufOut bytes.Buffer
 	var bufErr bytes.Buffer
-	rcmd.cmd.SetOut(&bufOut)
-	rcmd.cmd.SetErr(&bufErr)
 
 	if !conf.noWrapLog {
 		origLog := log.Log
@@ -93,8 +93,17 @@ func runCommand(t *testing.T, conf *rcConf, args ...string) *runCommandResult {
 		log.Log = log.New(&bufErr)
 	}
 
-	rcmd.cmd.SetArgs(args)
-	result.err = rcmd.cmd.Execute()
+	ecode, err := ExecuteNew(func(c *cobra.Command) {
+		c.SetOut(&bufOut)
+		c.SetErr(&bufErr)
+		c.SetArgs(args)
+	})
+
+	result.exitCode = int(ecode)
+	result.err = err
+
+	// rcmd.cmd.SetArgs(args)
+	// result.err = rcmd.cmd.Execute()
 
 	result.stdout = bufOut.String()
 	result.stderr = bufErr.String()

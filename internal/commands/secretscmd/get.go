@@ -24,7 +24,7 @@ func newGetCmd() *cobra.Command {
 		Short:   "Get the value of a specific secret",
 		PreRunE: runner.PreRunE,
 		RunE:    runner.RunE,
-		Args:    cobra.MatchAll(cobra.MinimumNArgs(1), cobra.MaximumNArgs(10)),
+		Args:    cobra.RangeArgs(1, 10),
 	}
 
 	cmdutil.FlagConfigFile(cmd, &runner.configFile)

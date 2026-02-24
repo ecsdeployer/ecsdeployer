@@ -14,7 +14,6 @@ import (
 
 type setCmdRunner struct {
 	configFile string
-	unset      bool
 	force      bool
 	valueFile  string
 	useStdin   bool
@@ -29,15 +28,17 @@ func newSetCmd() *cobra.Command {
 	runner := &setCmdRunner{}
 
 	cmd := &cobra.Command{
-		Use:     "set VARIABLE_NAME {VALUE | --file filename | --stdin | --unset}",
-		Short:   "Set (or delete) a secret",
+		Use:     "set VARIABLE_NAME {VALUE | --file filename | --stdin}",
+		Short:   "Set a secret",
 		RunE:    runner.RunE,
 		PreRunE: runner.PreRunE,
 		Args:    cobra.RangeArgs(1, 2),
+		Example: `
+# Delete 
+`,
 	}
 
 	cmdutil.FlagConfigFile(cmd, &runner.configFile)
-	cmd.Flags().BoolVar(&runner.unset, "unset", false, "Removes a variable entirely")
 	cmd.Flags().BoolVar(&runner.force, "force", false, "Do not ask for confirmation")
 	cmd.Flags().BoolVar(&runner.useStdin, "stdin", false, "Get value from stdin")
 	cmd.Flags().StringVar(&runner.valueFile, "file", "", "Read value from `file`")
@@ -50,9 +51,6 @@ func (r *setCmdRunner) PreRunE(cmd *cobra.Command, args []string) error {
 
 	optCount := 0
 	if r.valueFile != "" {
-		optCount++
-	}
-	if r.unset {
 		optCount++
 	}
 	if len(args) > 1 {
@@ -68,9 +66,9 @@ func (r *setCmdRunner) PreRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	if optCount == 0 {
-		return cmdutil.NewUserErrorf("You must provide either a value or the --unset flag")
+		return cmdutil.NewUserErrorf("You must provide a value")
 	} else if optCount > 1 {
-		return cmdutil.NewUserErrorf("You can only provide one of: VALUE, --file, --stdin, --unset")
+		return cmdutil.NewUserErrorf("You can only provide one of: VALUE, --file, --stdin")
 	}
 
 	r.varName = args[0]
@@ -117,32 +115,20 @@ func (r *setCmdRunner) RunE(cmd *cobra.Command, args []string) error {
 
 	paramName := ssmPrefix + r.varName
 
-	if r.unset {
-
-		if _, err = ssmClient.DeleteParameter(cmd.Context(), &ssm.DeleteParameterInput{
-			Name: &paramName,
-		}); err != nil {
-			return err
-		}
-		log.WithField("param", paramName).Info("parameter deleted")
-
-	} else {
-
-		params := &ssm.PutParameterInput{
-			Name:      &paramName,
-			Value:     &r.value,
-			Overwrite: new(true),
-			Type:      ssmTypes.ParameterTypeSecureString,
-		}
-		if r.keyId != "" {
-			params.KeyId = &r.keyId
-		}
-
-		if _, err := ssmClient.PutParameter(cmd.Context(), params); err != nil {
-			return err
-		}
-		log.WithField("param", paramName).Info("parameter set")
+	params := &ssm.PutParameterInput{
+		Name:      &paramName,
+		Value:     &r.value,
+		Overwrite: new(true),
+		Type:      ssmTypes.ParameterTypeSecureString,
 	}
+	if r.keyId != "" {
+		params.KeyId = &r.keyId
+	}
+
+	if _, err := ssmClient.PutParameter(cmd.Context(), params); err != nil {
+		return err
+	}
+	log.WithField("param", paramName).Info("parameter set")
 
 	log.Info("You must redeploy the project so containers pick up the new value.")
 

@@ -115,3 +115,8 @@ coverage:
 .PHONY: htmltest
 htmltest:
 	cd www && mkdocs build && htmltest -c htmltest.yml site
+
+.PHONY: binsize
+binsize:
+# go install github.com/Zxilly/go-size-analyzer/cmd/gsa@latest
+	@gsa --web dist/ecsdeployer_darwin_arm64_v8.0/ecsdeployer
