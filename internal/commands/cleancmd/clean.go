@@ -1,6 +1,5 @@
-package cmd
+package cleancmd
 
-/*
 import (
 	"io"
 	"time"
@@ -12,24 +11,18 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/caarlos0/ctrlc"
+	"github.com/caarlos0/log"
 	"github.com/spf13/cobra"
-	"github.com/webdestroya/go-log"
 )
 
-type cleanCmd struct {
-	cmd  *cobra.Command
-	opts cleanOpts
-}
-
-type cleanOpts struct {
-	commonOpts
+type cleanRunner struct {
+	cmdutil.CommonOptions
 	quiet   bool
 	timeout time.Duration
 }
 
-func newCleanCmd() *cleanCmd {
-	root := &cleanCmd{}
-	// root.opts.metadata = metadata
+func New() *cobra.Command {
+	runner := &cleanRunner{}
 	cmd := &cobra.Command{
 		Use:   "clean",
 		Short: "Runs the cleanup step only. Skips actual deployment",
@@ -39,36 +32,39 @@ from your environment that are no longer being referenced in your configuration 
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Args:          cobra.NoArgs,
-		RunE: cmdutil.TimedRunE("clean", func(cmd *cobra.Command, args []string) error {
-			if root.opts.quiet {
-				log.Log = log.New(io.Discard)
-			}
-			ctx, err := cleanProject(root.opts)
-			if err != nil {
-				return err
-			}
-			deprecateWarn(ctx)
-			return nil
-		}),
+		RunE:          cmdutil.TimedRunE("clean", runner.RunE),
 	}
 
-	cmd.Flags().BoolVarP(&root.opts.quiet, "quiet", "q", false, "Quiet mode: no output")
-	cmd.Flags().DurationVar(&root.opts.timeout, "timeout", 30*time.Minute, "Timeout for the entire cleanup process")
+	cmd.Flags().BoolVarP(&runner.quiet, "quiet", "q", false, "Quiet mode: no output")
+	cmd.Flags().DurationVar(&runner.timeout, "timeout", 30*time.Minute, "Timeout for the entire cleanup process")
 
-	setCommonFlags(cmd, &root.opts.commonOpts)
+	cmdutil.SetCommonFlags(cmd, &runner.CommonOptions)
 
-	root.cmd = cmd
-	return root
+	return cmd
 }
 
-func cleanProject(options cleanOpts) (*config.Context, error) {
-	cfg, err := cmdutil.LoadConfig(options.config)
+func (r *cleanRunner) RunE(cmd *cobra.Command, args []string) error {
+	if r.quiet {
+		log.Log = log.New(io.Discard)
+	}
+
+	ctx, err := r.cleanProject()
+	if err != nil {
+		return err
+	}
+	cmdutil.DeprecateWarn(ctx)
+	return nil
+}
+
+func (r *cleanRunner) cleanProject() (*config.Context, error) {
+	cfg, err := cmdutil.LoadConfig(r.ConfigFile)
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := config.NewWithTimeout(cfg, options.timeout)
+	ctx, cancel := config.NewWithTimeout(cfg, r.timeout)
 	defer cancel()
-	setupCleanContext(ctx, options)
+	cmdutil.SetCommonContext(ctx, r.CommonOptions)
+	ctx.CleanOnlyFlow = true
 	return ctx, ctrlc.Default.Run(ctx, func() error {
 		for _, step := range pipeline.CleanupPipeline {
 			if err := skip.Maybe(
@@ -84,9 +80,3 @@ func cleanProject(options cleanOpts) (*config.Context, error) {
 		return nil
 	})
 }
-
-func setupCleanContext(ctx *config.Context, options cleanOpts) {
-	setupContextCommon(ctx, options.commonOpts)
-	ctx.CleanOnlyFlow = true
-}
-*/

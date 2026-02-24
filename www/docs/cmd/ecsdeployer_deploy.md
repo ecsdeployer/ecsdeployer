@@ -14,7 +14,7 @@ ecsdeployer deploy [flags]
 
 ```
       --app-version string   Set the application version. Useful for templates
-  -c, --config string        Configuration file to check
+  -c, --config file          Configuration file to check
   -h, --help                 help for deploy
       --image string         Specify a container image URI.
   -q, --quiet                Quiet mode: no output

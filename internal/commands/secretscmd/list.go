@@ -1,21 +1,13 @@
-package secrets
+package secretscmd
 
 import (
 	"fmt"
 	"path/filepath"
-	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
-	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
-	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/spf13/cobra"
-)
-
-const (
-	outputFormatDotEnv = `dotenv`
-	outputFormatPlain  = `plain`
 )
 
 type listCmdRunner struct {
@@ -43,34 +35,17 @@ func newListCmd() *cobra.Command {
 }
 
 func (r *listCmdRunner) RunE(cmd *cobra.Command, args []string) error {
-
-	proj, err := cmdutil.LoadConfig(r.configFile)
+	ctx, ssmPrefix, err := loadProject(cmd.Context(), r.configFile)
 	if err != nil {
 		return err
 	}
-
-	if !proj.Settings.SSMImport.IsEnabled() {
-		return fmt.Errorf(`SSM import is not enabled for this project, nothing to list.`)
-	}
-
-	ssmImport := *proj.Settings.SSMImport
-
-	ctx := config.Wrap(cmd.Context(), proj)
-
-	ssmPrefix, err := tmpl.New(ctx).Apply(ssmImport.GetPath())
-	if err != nil {
-		return err
-	}
-
-	// Trim any trailing slash, then add our own
-	ssmPrefix = strings.TrimSuffix(ssmPrefix, "/") + "/"
 
 	ssmClient := awsclients.SSMClient()
 
 	request := &ssm.GetParametersByPathInput{
 		Path:           &ssmPrefix,
 		WithDecryption: new(true),
-		Recursive:      ssmImport.Recursive,
+		Recursive:      ctx.Project.Settings.SSMImport.Recursive,
 	}
 
 	paginator := ssm.NewGetParametersByPathPaginator(ssmClient, request, func(o *ssm.GetParametersByPathPaginatorOptions) {

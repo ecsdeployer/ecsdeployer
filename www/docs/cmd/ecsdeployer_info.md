@@ -14,7 +14,7 @@ ecsdeployer info [flags]
 
 ```
       --app-version string   Set the application version. Useful for templates
-  -c, --config string        Configuration file to check
+  -c, --config file          Configuration file to check
   -h, --help                 help for info
       --image string         Specify a container image URI.
       --tag string           Specify a custom image tag to use.

@@ -1,6 +1,5 @@
-package cmd
+package mancmd
 
-/*
 import (
 	"fmt"
 
@@ -9,13 +8,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type manCmd struct {
-	cmd *cobra.Command
-}
+func New() *cobra.Command {
 
-func newManCmd() *manCmd {
-	root := &manCmd{}
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:                   "man",
 		Short:                 "Generates ECS Deployer's command line manpages",
 		SilenceUsage:          true,
@@ -23,7 +18,7 @@ func newManCmd() *manCmd {
 		Hidden:                true,
 		Args:                  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			manPage, err := mcoral.NewManPage(1, root.cmd.Root())
+			manPage, err := mcoral.NewManPage(1, cmd.Root())
 			if err != nil {
 				return err
 			}
@@ -33,8 +28,4 @@ func newManCmd() *manCmd {
 			return err
 		},
 	}
-
-	root.cmd = cmd
-	return root
 }
-*/

@@ -3,7 +3,13 @@ package cmd
 import (
 	"errors"
 
-	"ecsdeployer.com/ecsdeployer/internal/commands/secrets"
+	"ecsdeployer.com/ecsdeployer/internal/commands/cleancmd"
+	"ecsdeployer.com/ecsdeployer/internal/commands/deploycmd"
+	"ecsdeployer.com/ecsdeployer/internal/commands/docscmd"
+	"ecsdeployer.com/ecsdeployer/internal/commands/infocmd"
+	"ecsdeployer.com/ecsdeployer/internal/commands/mancmd"
+	"ecsdeployer.com/ecsdeployer/internal/commands/schemacmd"
+	"ecsdeployer.com/ecsdeployer/internal/commands/secretscmd"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/charmbracelet/lipgloss"
@@ -85,14 +91,14 @@ Check out our website for more information, examples and documentation: https://
 	_ = cmd.PersistentFlags().MarkHidden("trace")
 
 	cmd.AddCommand(
-		newDeployCmd().cmd,
+		deploycmd.New(), // newDeployCmd().cmd,
 		newCheckCmd().cmd,
-		newSchemaCmd().cmd,
-		newManCmd().cmd,
-		newDocsCmd().cmd,
-		newCleanCmd().cmd,
-		newInfoCmd().cmd,
-		secrets.New(),
+		schemacmd.New(), // newSchemaCmd().cmd,
+		mancmd.New(),    // newManCmd().cmd,
+		docscmd.New(),   // newDocsCmd().cmd,
+		cleancmd.New(),  // newCleanCmd().cmd,
+		infocmd.New(),   // newInfoCmd().cmd,
+		secretscmd.New(),
 		cobracompletefig.CreateCompletionSpecCommand(cobracompletefig.Opts{Visible: false}),
 	)
 

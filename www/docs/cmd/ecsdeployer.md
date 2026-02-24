@@ -31,4 +31,5 @@ Check out our website for more information, examples and documentation: https://
 * [`ecsdeployer deploy`](ecsdeployer_deploy.md)	 - Deploys application
 * [`ecsdeployer info`](ecsdeployer_info.md)	 - Gives an overview of your project and what things are enabled
 * [`ecsdeployer jsonschema`](ecsdeployer_jsonschema.md)	 - outputs ECS Deployer's JSON schema
+* [`ecsdeployer secrets`](ecsdeployer_secrets.md)	 - Manage application secrets in SSM
 

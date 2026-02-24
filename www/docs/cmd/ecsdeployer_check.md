@@ -13,9 +13,9 @@ ecsdeployer check [flags]
 ## Options
 
 ```
-  -c, --config string   Configuration file to check
-  -h, --help            help for check
-  -q, --quiet           Quiet mode: no output
+  -c, --config file   Configuration file to check
+  -h, --help          help for check
+  -q, --quiet         Quiet mode: no output
 ```
 
 ## Global Options

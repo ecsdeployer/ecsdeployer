@@ -1,5 +1,6 @@
 package cmd
 
+/*
 import (
 	"fmt"
 	"os"
@@ -50,3 +51,4 @@ func newSchemaCmd() *schemaCmd {
 	root.cmd = cmd
 	return root
 }
+*/

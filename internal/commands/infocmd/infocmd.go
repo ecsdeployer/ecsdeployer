@@ -1,6 +1,5 @@
-package cmd
+package infocmd
 
-/*
 import (
 	"fmt"
 	"io"
@@ -10,74 +9,64 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
+	"github.com/caarlos0/log"
 	"github.com/spf13/cobra"
-	"github.com/webdestroya/go-log"
 )
 
-type infoCmd struct {
-	cmd  *cobra.Command
-	opts infoOpts
+const infoDefault = "<default>"
+
+type infoRunner struct {
+	cmdutil.CommonOptions
 }
 
-type infoOpts struct {
-	commonOpts
-}
-
-const (
-	infoDefault = "<default>"
-)
-
-func newInfoCmd() *infoCmd {
-	root := &infoCmd{}
+func New() *cobra.Command {
+	runner := &infoRunner{}
 	cmd := &cobra.Command{
 		Use:           "info",
 		Short:         "Gives an overview of your project and what things are enabled",
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Args:          cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
-
-			debug, _ := cmd.Root().PersistentFlags().GetBool("debug")
-			trace, _ := cmd.Root().PersistentFlags().GetBool("trace")
-			if !debug && !trace {
-				log.Log = log.New(io.Discard)
-			}
-
-			err := projectInfo(cmd, root.opts)
-			if err != nil {
-
-				cmd.Println()
-				cmd.Printf("Failure: %s\n", err)
-
-				return err
-			}
-			return nil
-		},
+		RunE:          runner.RunE,
 	}
 
-	setCommonFlags(cmd, &root.opts.commonOpts)
+	cmdutil.SetCommonFlags(cmd, &runner.CommonOptions)
 
-	root.cmd = cmd
-	return root
+	return cmd
 }
 
-func projectInfo(cmd *cobra.Command, options infoOpts) error {
+func (r *infoRunner) RunE(cmd *cobra.Command, args []string) error {
+	debug, _ := cmd.Root().PersistentFlags().GetBool("debug")
+	trace, _ := cmd.Root().PersistentFlags().GetBool("trace")
+	if !debug && !trace {
+		log.Log = log.New(io.Discard)
+	}
 
+	err := r.projectInfo(cmd)
+	if err != nil {
+		cmd.Println()
+		cmd.Printf("Failure: %s\n", err)
+		return err
+	}
+	return nil
+}
+
+func (r *infoRunner) projectInfo(cmd *cobra.Command) error {
 	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("Failed to display project info.", r)
+		if rec := recover(); rec != nil {
+			fmt.Println("Failed to display project info.", rec)
 		}
 	}()
 
-	cfg, err := cmdutil.LoadConfig(options.config)
+	cfg, err := cmdutil.LoadConfig(r.ConfigFile)
 	if err != nil {
 		return err
 	}
 	ctx, cancel := config.NewWithTimeout(cfg, 30*time.Minute)
 	defer cancel()
-	setupContextCommon(ctx, options.commonOpts)
+	cmdutil.SetCommonContext(ctx, r.CommonOptions)
 
-	cmd.Println(boldStyle.Render("ECS DEPLOYER"))
+	cmd.Println(cmdutil.BoldStyle.Render("ECS DEPLOYER"))
 	cmd.Println()
 	cmd.Println("Note: this is a VERY high level overview of your app. This is not a detailed report of all settings and configuration.")
 	cmd.Println()
@@ -94,7 +83,7 @@ func projectInfo(cmd *cobra.Command, options infoOpts) error {
 
 	pInfoFmt := "%-13s %s\n"
 
-	cmd.Println(boldStyle.Render("PROJECT INFO:"))
+	cmd.Println(cmdutil.BoldStyle.Render("PROJECT INFO:"))
 	cmd.Printf(pInfoFmt, "Name:", project.ProjectName)
 	cmd.Printf(pInfoFmt, "Cluster:", util.Must(project.Cluster.Name(ctx)))
 	cmd.Printf(pInfoFmt, "Image:", project.Image.Value())
@@ -116,7 +105,7 @@ func projectInfo(cmd *cobra.Command, options infoOpts) error {
 	}
 
 	cmd.Println()
-	cmd.Println(boldStyle.Render("ROLES:"))
+	cmd.Println(cmdutil.BoldStyle.Render("ROLES:"))
 	cmd.Printf("  App Role:           %s\n", util.Must(project.Role.Name(ctx)))
 	cmd.Printf("  Execution Role:     %s\n", util.Must(project.ExecutionRole.Name(ctx)))
 	if project.CronLauncherRole != nil {
@@ -126,7 +115,7 @@ func projectInfo(cmd *cobra.Command, options infoOpts) error {
 	numPd := len(project.PreDeployTasks)
 	if numPd > 0 {
 		cmd.Println()
-		cmd.Println(boldStyle.Render(fmt.Sprintf("PREDEPLOY TASKS (%d):", numPd)))
+		cmd.Println(cmdutil.BoldStyle.Render(fmt.Sprintf("PREDEPLOY TASKS (%d):", numPd)))
 		for _, pd := range project.PreDeployTasks {
 			cmdTxt := infoDefault
 			if pd.Command != nil {
@@ -139,7 +128,7 @@ func projectInfo(cmd *cobra.Command, options infoOpts) error {
 	numCj := len(project.CronJobs)
 	if numCj > 0 {
 		cmd.Println()
-		cmd.Print(boldStyle.Render(fmt.Sprintf("CRON JOBS (%d):", numCj)))
+		cmd.Print(cmdutil.BoldStyle.Render(fmt.Sprintf("CRON JOBS (%d):", numCj)))
 		for _, pd := range project.CronJobs {
 			cmdTxt := infoDefault
 			if pd.Command != nil {
@@ -152,7 +141,7 @@ func projectInfo(cmd *cobra.Command, options infoOpts) error {
 	numSvc := len(project.Services)
 	if numSvc > 0 {
 		cmd.Println()
-		cmd.Print(boldStyle.Render(fmt.Sprintf("SERVICES (%d):", numSvc)))
+		cmd.Print(cmdutil.BoldStyle.Render(fmt.Sprintf("SERVICES (%d):", numSvc)))
 		for _, pd := range project.Services {
 			cmdTxt := infoDefault
 			if pd.Command != nil {
@@ -167,10 +156,8 @@ func projectInfo(cmd *cobra.Command, options infoOpts) error {
 				}
 				cmd.Println()
 			}
-
 		}
 	}
 
 	return nil
 }
-*/

@@ -82,7 +82,7 @@ func runCommand(t *testing.T, conf *rcConf, args ...string) *runCommandResult {
 
 	var bufOut bytes.Buffer
 	var bufErr bytes.Buffer
-	rcmd.cmd.SetOutput(&bufOut)
+	rcmd.cmd.SetOut(&bufOut)
 	rcmd.cmd.SetErr(&bufErr)
 
 	if !conf.noWrapLog {

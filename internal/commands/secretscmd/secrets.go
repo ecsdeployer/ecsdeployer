@@ -1,4 +1,4 @@
-package secrets
+package secretscmd
 
 import "github.com/spf13/cobra"
 
