@@ -8,19 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"ecsdeployer.com/ecsdeployer/internal/commands/checkcmd"
-	"ecsdeployer.com/ecsdeployer/internal/commands/cleancmd"
-	"ecsdeployer.com/ecsdeployer/internal/commands/deploycmd"
-	"ecsdeployer.com/ecsdeployer/internal/commands/docscmd"
-	"ecsdeployer.com/ecsdeployer/internal/commands/infocmd"
-	"ecsdeployer.com/ecsdeployer/internal/commands/mancmd"
 	"ecsdeployer.com/ecsdeployer/internal/commands/rootcmd"
-	"ecsdeployer.com/ecsdeployer/internal/commands/schemacmd"
-	"ecsdeployer.com/ecsdeployer/internal/commands/secretscmd"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"github.com/spf13/cobra"
 	"github.com/webdestroya/go-log"
-	cobracompletefig "github.com/withfig/autocomplete-tools/integrations/cobra"
 )
 
 type exitCode int
@@ -36,7 +27,7 @@ const (
 // var (
 // 	boldStyle = lipgloss.NewStyle().Bold(true)
 // )
-
+/*
 func Execute(version string, exit func(int), args []string) {
 	newRootCmd(version, exit).Execute(args)
 }
@@ -126,7 +117,7 @@ Check out our website for more information, examples and documentation: https://
 // 		log.Warn(boldStyle.Render("you are using deprecated features, check the log above for information"))
 // 	}
 // }
-
+*/
 func ExecuteNew(extras ...func(*cobra.Command)) (exitCode, error) {
 	cobra.EnableTraverseRunHooks = true
 	rootCmd := rootcmd.New()
