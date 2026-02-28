@@ -14,9 +14,9 @@ import (
 	"github.com/webdestroya/go-log"
 )
 
-const (
-	fakedTestVersionStr = "9999.1.2-dev+testing"
-)
+// const (
+// 	fakedTestVersionStr = "9999.1.2-dev+testing"
+// )
 
 // type exitMemento struct {
 // 	code int
