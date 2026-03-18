@@ -27,7 +27,7 @@ var forcedStrArrSchema = &jsonschema.Schema{
 			Items: &jsonschema.Schema{
 				Type: "string",
 			},
-			MinItems: 1,
+			MinItems: new(uint64(1)),
 		},
 		{
 			Type: "string",

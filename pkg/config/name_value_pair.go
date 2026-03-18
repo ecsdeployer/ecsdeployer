@@ -2,7 +2,6 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -47,10 +46,10 @@ func (def NameValuePair) Validate() error {
 
 func (NameValuePair) JSONSchema() *jsonschema.Schema {
 
-	properties := orderedmap.New()
+	properties := jsonschema.NewProperties()
 	properties.Set("name", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 
 	properties.Set("value", configschema.StringLike)

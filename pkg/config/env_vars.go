@@ -5,7 +5,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -149,10 +148,10 @@ func (a *EnvVar) Validate() error {
 
 func (EnvVar) JSONSchema() *jsonschema.Schema {
 
-	valSsmProps := orderedmap.New()
+	valSsmProps := jsonschema.NewProperties()
 	valSsmProps.Set("ssm", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 	valSsmSchema := &jsonschema.Schema{
 		Type:                 "object",
@@ -162,10 +161,10 @@ func (EnvVar) JSONSchema() *jsonschema.Schema {
 		AdditionalProperties: jsonschema.FalseSchema,
 	}
 
-	valTplProps := orderedmap.New()
+	valTplProps := jsonschema.NewProperties()
 	valTplProps.Set("template", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 	valTplSchema := &jsonschema.Schema{
 		Type:                 "object",
@@ -175,7 +174,7 @@ func (EnvVar) JSONSchema() *jsonschema.Schema {
 		AdditionalProperties: jsonschema.FalseSchema,
 	}
 
-	valStrProps := orderedmap.New()
+	valStrProps := jsonschema.NewProperties()
 	valStrProps.Set("value", configschema.StringLikeWithBlank)
 	valStrSchema := &jsonschema.Schema{
 		Type:                 "object",
@@ -185,7 +184,7 @@ func (EnvVar) JSONSchema() *jsonschema.Schema {
 		AdditionalProperties: jsonschema.FalseSchema,
 	}
 
-	valUnsetProps := orderedmap.New()
+	valUnsetProps := jsonschema.NewProperties()
 	valUnsetProps.Set("unset", &jsonschema.Schema{
 		Type:  "boolean",
 		Const: true,

@@ -7,7 +7,6 @@ import (
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
 	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 	"github.com/invopop/jsonschema"
-	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 const (
@@ -165,7 +164,7 @@ func (obj *SpotOverrides) ApplyDefaults() {
 
 func (SpotOverrides) JSONSchema() *jsonschema.Schema {
 
-	properties := orderedmap.New[string, *jsonschema.Schema]()
+	properties := jsonschema.NewProperties()
 	properties.Set("enabled", &jsonschema.Schema{
 		Type:        "boolean",
 		Default:     false,

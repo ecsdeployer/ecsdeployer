@@ -8,7 +8,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -105,10 +104,10 @@ func (DependsOn) JSONSchema() *jsonschema.Schema {
 		Description: "'container:CONDITION' format",
 	}
 
-	objProps := orderedmap.New()
+	objProps := jsonschema.NewProperties()
 	objProps.Set("name", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 		Pattern:   "^[a-zA-Z][-_a-zA-Z0-9]+$",
 	})
 

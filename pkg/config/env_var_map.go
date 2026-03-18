@@ -11,11 +11,30 @@ type EnvVarMap map[string]EnvVar
 
 func (EnvVarMap) JSONSchemaExtend(base *jsonschema.Schema) {
 
-	patt := base.PatternProperties
-	patt["^[a-zA-Z_][^=]*$"] = patt[".*"]
-	delete(patt, ".*")
+	// patt := base.PatternProperties
+	// if len(patt) > 0 {
+	// 	patt["^[a-zA-Z_][^=]*$"] = patt[".*"]
+	// 	delete(patt, ".*")
+	// } else {
+	// 	base.PatternProperties = map[string]*jsonschema.Schema{
+	// 		"^[a-zA-Z_][^=]*$": {Ref: "#/$defs/EnvVar"},
+	// 	}
+	// }
+	base.PatternProperties = map[string]*jsonschema.Schema{
+		"^[a-zA-Z_][^=]*$": {Ref: "#/$defs/EnvVar"},
+	}
 	base.AdditionalProperties = jsonschema.FalseSchema
 }
+
+// func (EnvVarMap) JSONSchema() *jsonschema.Schema {
+// 	return &jsonschema.Schema{
+// 		Type:                 "object",
+// 		AdditionalProperties: jsonschema.FalseSchema,
+// 		PatternProperties: map[string]*jsonschema.Schema{
+// 			"^[a-zA-Z_][^=]*$": {Ref: "#/$defs/EnvVar"},
+// 		},
+// 	}
+// }
 
 // Filters a map of env vars and removes any Unset values
 // You should only use this at the very very end of an evaluation tree.

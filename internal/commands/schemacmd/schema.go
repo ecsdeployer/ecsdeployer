@@ -38,7 +38,7 @@ func (r *schemaCmd) RunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to create jsonschema: %w", err)
 	}
 	if r.output == "-" {
-		cmd.Println(bts)
+		fmt.Fprintln(cmd.OutOrStdout(), bts)
 		return nil
 	}
 	if err := os.MkdirAll(filepath.Dir(r.output), 0o755); err != nil {

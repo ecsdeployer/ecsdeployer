@@ -41,4 +41,18 @@ func TestSchemaCmd(t *testing.T) {
 		require.NoError(t, json.NewDecoder(strings.NewReader(result.stdout)).Decode(&schema))
 		require.Equal(t, "https://json-schema.org/draft/2020-12/schema", schema["$schema"].(string))
 	})
+
+	t.Run("expected", func(t *testing.T) {
+		result := runCommand(t, nil, "schema", "--output", "-")
+		require.NoError(t, result.err)
+
+		expectedData, err := os.ReadFile(path.Join("testdata", "expected_schema.json"))
+		require.NoError(t, err)
+
+		require.JSONEq(t, string(expectedData), result.stdout)
+
+		schema := map[string]any{}
+		require.NoError(t, json.NewDecoder(strings.NewReader(result.stdout)).Decode(&schema))
+		require.Equal(t, "https://json-schema.org/draft/2020-12/schema", schema["$schema"].(string))
+	})
 }

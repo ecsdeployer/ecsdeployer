@@ -7,7 +7,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	ec2Types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -214,10 +213,10 @@ func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 	// 	Description: "String or array of strings",
 	// }
 
-	lazyProps := orderedmap.New()
+	lazyProps := jsonschema.NewProperties()
 	lazyProps.Set("name", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 	lazyProps.Set("value", forcedStrArrSchema)
 	lazySchema := &jsonschema.Schema{
@@ -226,10 +225,10 @@ func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 		Required:   []string{"name", "value"},
 	}
 
-	normalProps := orderedmap.New()
+	normalProps := jsonschema.NewProperties()
 	normalProps.Set("name", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 	normalProps.Set("values", forcedStrArrSchema)
 	normalSchema := &jsonschema.Schema{

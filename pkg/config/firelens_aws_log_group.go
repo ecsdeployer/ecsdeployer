@@ -45,7 +45,7 @@ func (FirelensAwsLogGroup) JSONSchema() *jsonschema.Schema {
 			},
 			{
 				Type:        "string",
-				MinLength:   2,
+				MinLength:   new(uint64(2)),
 				Description: "Send logs to this log group",
 			},
 		},

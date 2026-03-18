@@ -58,9 +58,8 @@ func TestSchemaNamer(t *testing.T) {
 	for _, table := range tables {
 		t.Run(table.expectedName, func(t *testing.T) {
 
-			prop, ok := schema.Properties.Get(table.expectedName)
+			property, ok := schema.Properties.Get(table.expectedName)
 			require.True(t, ok)
-			property := prop.(*jsonschema.Schema)
 			require.Equal(t, fmt.Sprintf("#/$defs/%s", table.expectedName), property.Ref)
 
 			expectedSchema := configschema.GenerateSchema(table.intf)

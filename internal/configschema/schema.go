@@ -156,6 +156,6 @@ func (obj *PropertyChain) End() *orderedmap.OrderedMap[string, *jsonschema.Schem
 
 func NewPropertyChain() *PropertyChain {
 	return &PropertyChain{
-		orderedMap: orderedmap.New[string, *jsonschema.Schema](),
+		orderedMap: jsonschema.NewProperties(),
 	}
 }

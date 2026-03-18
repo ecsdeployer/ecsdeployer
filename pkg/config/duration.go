@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -75,11 +76,8 @@ func (Duration) JSONSchema() *jsonschema.Schema {
 		OneOf: []*jsonschema.Schema{
 			{
 				Type:        "integer",
-				Minimum:     0,
+				Minimum:     json.Number(`0`),
 				Description: "Seconds",
-				Extras: map[string]any{
-					"minimum": 0,
-				},
 			},
 			{
 				Type:        "string",

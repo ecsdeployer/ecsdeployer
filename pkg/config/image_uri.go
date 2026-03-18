@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -172,7 +171,7 @@ func (ImageUri) JSONSchema() *jsonschema.Schema {
 	strSchema := &jsonschema.Schema{
 		Type:      "string",
 		Title:     "The full URI to your image",
-		MinLength: 2,
+		MinLength: new(uint64(2)),
 		Examples: []any{
 			"myorg/myapp:latest",
 			"myorg/myapp@sha256:deadbeefdeadbeefdeadbeefdeadbeef",
@@ -181,7 +180,7 @@ func (ImageUri) JSONSchema() *jsonschema.Schema {
 		// Pattern: "^.+(/[^:]+)?((:|@).+)?$",
 	}
 
-	props := orderedmap.New()
+	props := jsonschema.NewProperties()
 	props.Set("ecr", &jsonschema.Schema{
 		Type:  "string",
 		Title: "Just the ECR Repository name",

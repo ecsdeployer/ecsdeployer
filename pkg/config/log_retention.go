@@ -133,7 +133,7 @@ func (LogRetention) JSONSchema() *jsonschema.Schema {
 			},
 			{
 				Type:        "integer",
-				Minimum:     1,
+				Minimum:     json.Number(`1`),
 				Description: "The number of days to retain logs",
 			},
 		},

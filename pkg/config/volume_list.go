@@ -53,11 +53,13 @@ func (obj *VolumeList) UnmarshalYAML(unmarshal func(any) error) error {
 func (VolumeList) JSONSchemaExtend(base *jsonschema.Schema) {
 
 	// get the original mapping
-	volRef := base.PatternProperties[".*"]
+	// volRef := base.PatternProperties[".*"]
 
 	*base = jsonschema.Schema{
-		Type:  "array",
-		Items: volRef,
+		Type: "array",
+		Items: &jsonschema.Schema{
+			Ref: "#/$defs/Volume",
+		},
 	}
 
 }

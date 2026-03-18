@@ -3,7 +3,7 @@ version: "3"
 
 vars:
   GOPKGS:
-    sh: go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/testutil
+    sh: go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/testutil | tr '\n' ' '
 
 tasks:
   precommit:

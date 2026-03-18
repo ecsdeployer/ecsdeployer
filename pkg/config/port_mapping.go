@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -9,7 +10,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -126,11 +126,14 @@ func (obj *PortMapping) ApplyDefaults() {
 
 func (PortMapping) JSONSchema() *jsonschema.Schema {
 
-	properties := orderedmap.New()
+	minPort := json.Number(strconv.FormatInt(minimumPortNumber, 10))
+	maxPort := json.Number(strconv.FormatInt(maximumPortNumber, 10))
+
+	properties := jsonschema.NewProperties()
 	properties.Set("port", &jsonschema.Schema{
 		Type:    "integer",
-		Minimum: minimumPortNumber,
-		Maximum: maximumPortNumber,
+		Minimum: minPort,
+		Maximum: maxPort,
 	})
 
 	properties.Set("protocol", &jsonschema.Schema{
@@ -154,8 +157,8 @@ func (PortMapping) JSONSchema() *jsonschema.Schema {
 			},
 			{
 				Type:        "integer",
-				Minimum:     minimumPortNumber,
-				Maximum:     maximumPortNumber,
+				Minimum:     minPort,
+				Maximum:     maxPort,
 				Description: "Simple TCP Port",
 			},
 		},
