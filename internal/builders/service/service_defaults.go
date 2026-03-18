@@ -24,6 +24,13 @@ func (b *Builder) applyServiceDefaults() error {
 
 	b.serviceDef.DeploymentConfiguration = b.entity.RolloutConfig.GetAwsConfig()
 
+	// AZ rebalancing is incompatible with maximumPercent <= 100%.
+	// When the rollout max is at or below 100%, explicitly disable it to avoid:
+	// "InvalidParameterException: Availability Zone Rebalancing does not support maximumPercent <= 100%"
+	if *b.entity.RolloutConfig.Maximum <= 100 {
+		b.serviceDef.AvailabilityZoneRebalancing = ecsTypes.AvailabilityZoneRebalancingDisabled
+	}
+
 	b.serviceDef.DesiredCount = new(b.entity.DesiredCount)
 
 	b.serviceDef.EnableECSManagedTags = true

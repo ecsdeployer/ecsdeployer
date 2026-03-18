@@ -12,6 +12,7 @@ func BuildUpdate(ctx *config.Context, entity *config.Service) (*ecs.UpdateServic
 	}
 
 	updateServiceInput := &ecs.UpdateServiceInput{
+		AvailabilityZoneRebalancing:   createServiceInput.AvailabilityZoneRebalancing,
 		Service:                       createServiceInput.ServiceName,
 		CapacityProviderStrategy:      createServiceInput.CapacityProviderStrategy,
 		Cluster:                       createServiceInput.Cluster,
