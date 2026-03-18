@@ -2,7 +2,6 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -27,7 +26,7 @@ func (obj *VolumeEFSConfig) ApplyDefaults() {
 
 func (obj *VolumeEFSConfig) ToAws() *ecsTypes.EFSVolumeConfiguration {
 	out := &ecsTypes.EFSVolumeConfiguration{
-		FileSystemId:      aws.String(obj.FileSystemId),
+		FileSystemId:      new(obj.FileSystemId),
 		TransitEncryption: util.Ternary(obj.DisableEncryption, ecsTypes.EFSTransitEncryptionDisabled, ecsTypes.EFSTransitEncryptionEnabled),
 	}
 

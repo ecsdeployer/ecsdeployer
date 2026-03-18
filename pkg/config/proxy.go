@@ -3,7 +3,6 @@ package config
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/invopop/jsonschema"
 )
@@ -18,11 +17,11 @@ type ProxyConfig struct {
 
 func (nc *ProxyConfig) ApplyDefaults() {
 	if nc.Type == nil {
-		nc.Type = aws.String(string(ecsTypes.ProxyConfigurationTypeAppmesh))
+		nc.Type = new(string(ecsTypes.ProxyConfigurationTypeAppmesh))
 	}
 
 	if nc.ContainerName == nil {
-		nc.ContainerName = aws.String("envoy")
+		nc.ContainerName = new("envoy")
 	}
 
 	if nc.Properties == nil {

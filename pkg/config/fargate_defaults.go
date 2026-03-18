@@ -3,7 +3,6 @@ package config
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/invopop/jsonschema"
 )
 
@@ -52,7 +51,7 @@ func (obj *FargateDefaults) Validate() error {
 func (obj *FargateDefaults) ApplyDefaults() {
 	obj.Name = ""
 	if obj.PlatformVersion == nil {
-		obj.PlatformVersion = aws.String(defaultPlatformVersion)
+		obj.PlatformVersion = new(defaultPlatformVersion)
 	}
 
 	if obj.Cpu == nil {

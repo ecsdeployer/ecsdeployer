@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ec2Types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
@@ -86,7 +85,7 @@ func newNetworkFilterOrIdFromString(strVal string) (NetworkFilter, error) {
 		return filter, errors.New("if you are using the string filter type, it must be 'NAME=VALUE,VALUE'")
 	}
 
-	filter.Name = aws.String(parts[0])
+	filter.Name = new(parts[0])
 	filter.Values = strings.Split(parts[1], ",")
 	return filter, nil
 }

@@ -3,12 +3,11 @@ package config
 import (
 	"encoding/json"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
 	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 const (
@@ -66,7 +65,7 @@ func (obj *SpotOverrides) ExportCapacityStrategy() []ecsTypes.CapacityProviderSt
 	if obj.IsDisabled() {
 		return []ecsTypes.CapacityProviderStrategyItem{
 			{
-				CapacityProvider: aws.String(capProviderOnDemand),
+				CapacityProvider: new(capProviderOnDemand),
 				Weight:           1,
 				Base:             0,
 			},
@@ -76,7 +75,7 @@ func (obj *SpotOverrides) ExportCapacityStrategy() []ecsTypes.CapacityProviderSt
 	if !obj.WantsOnDemand() {
 		return []ecsTypes.CapacityProviderStrategyItem{
 			{
-				CapacityProvider: aws.String(capProviderSpot),
+				CapacityProvider: new(capProviderSpot),
 				Weight:           1,
 				Base:             0,
 			},
@@ -84,7 +83,7 @@ func (obj *SpotOverrides) ExportCapacityStrategy() []ecsTypes.CapacityProviderSt
 	}
 
 	onDemandCap := ecsTypes.CapacityProviderStrategyItem{
-		CapacityProvider: aws.String(capProviderOnDemand),
+		CapacityProvider: new(capProviderOnDemand),
 		Weight:           1,
 		Base:             0,
 	}
@@ -99,7 +98,7 @@ func (obj *SpotOverrides) ExportCapacityStrategy() []ecsTypes.CapacityProviderSt
 
 	return []ecsTypes.CapacityProviderStrategyItem{
 		{
-			CapacityProvider: aws.String(capProviderSpot),
+			CapacityProvider: new(capProviderSpot),
 			Weight:           100,
 			Base:             0,
 		},
@@ -166,7 +165,7 @@ func (obj *SpotOverrides) ApplyDefaults() {
 
 func (SpotOverrides) JSONSchema() *jsonschema.Schema {
 
-	properties := orderedmap.New()
+	properties := orderedmap.New[string, *jsonschema.Schema]()
 	properties.Set("enabled", &jsonschema.Schema{
 		Type:        "boolean",
 		Default:     false,

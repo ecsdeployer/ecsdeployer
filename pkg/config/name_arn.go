@@ -159,6 +159,6 @@ func (NameArn) JSONSchema() *jsonschema.Schema {
 	return &jsonschema.Schema{
 		Type:        "string",
 		Description: "ARN or Name",
-		MinLength:   1,
+		MinLength:   new(uint64(1)),
 	}
 }

@@ -2,7 +2,6 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/invopop/jsonschema"
 )
 
@@ -42,7 +41,7 @@ func (obj *Sidecar) Validate() error {
 
 func (obj *Sidecar) ApplyDefaults() {
 	if obj.Essential == nil {
-		obj.Essential = aws.Bool(true)
+		obj.Essential = new(true)
 	}
 
 }

@@ -8,7 +8,6 @@ import (
 	"slices"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
@@ -59,7 +58,7 @@ func NewPortMappingFromString(value string) (*PortMapping, error) {
 		return nil, NewValidationError("port '%d' is invalid and out of range", port)
 	}
 
-	mapping.Port = aws.Int32(int32(port))
+	mapping.Port = new(int32(port))
 
 	if err := mapping.Validate(); err != nil {
 		return nil, err

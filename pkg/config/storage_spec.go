@@ -1,6 +1,8 @@
 package config
 
 import (
+	"encoding/json"
+
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/invopop/jsonschema"
 )
@@ -26,7 +28,7 @@ func (StorageSpec) JSONSchema() *jsonschema.Schema {
 	return &jsonschema.Schema{
 		Type:        "integer",
 		Description: "Size in GB of storage to add",
-		Minimum:     20,
+		Minimum:     json.Number(`20`),
 		Default:     20,
 	}
 }

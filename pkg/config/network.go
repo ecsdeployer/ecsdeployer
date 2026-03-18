@@ -6,7 +6,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	ec2Types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -271,7 +270,7 @@ func calculateSecurityGroups(ctx *Context, network NetworkConfiguration, vpcId *
 
 	if !hasVpcFilter && vpcId != nil {
 		request.Filters = append(request.Filters, ec2Types.Filter{
-			Name:   aws.String("vpc-id"),
+			Name:   new("vpc-id"),
 			Values: []string{*vpcId},
 		})
 	}

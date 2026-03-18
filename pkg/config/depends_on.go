@@ -7,7 +7,6 @@ import (
 	"slices"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
@@ -24,7 +23,7 @@ func NewDependsOnFromString(str string) (*DependsOn, error) {
 
 	if len(parts) == 1 {
 		dep := &DependsOn{
-			Name:      aws.String(parts[0]),
+			Name:      new(parts[0]),
 			Condition: ecsTypes.ContainerConditionStart,
 		}
 
@@ -36,7 +35,7 @@ func NewDependsOnFromString(str string) (*DependsOn, error) {
 	}
 
 	res := &DependsOn{
-		Name:      aws.String(parts[0]),
+		Name:      new(parts[0]),
 		Condition: ecsTypes.ContainerCondition(parts[1]),
 	}
 

@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/invopop/jsonschema"
 )
@@ -28,8 +27,8 @@ func (obj *VolumeFrom) ApplyDefaults() {
 
 func (obj *VolumeFrom) ToAws() ecsTypes.VolumeFrom {
 	return ecsTypes.VolumeFrom{
-		SourceContainer: aws.String(obj.SourceContainer),
-		ReadOnly:        aws.Bool(obj.ReadOnly),
+		SourceContainer: new(obj.SourceContainer),
+		ReadOnly:        new(obj.ReadOnly),
 	}
 }
 

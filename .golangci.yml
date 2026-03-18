@@ -33,6 +33,8 @@ linters:
           deny:
             - pkg: github.com/aws/aws-sdk-go/aws
               desc: use v2 sdk instead
+            - pkg: github.com/iancoleman/orderedmap
+              desc: use github.com/wk8/go-ordered-map/v2 instead
     gocritic:
       disabled-checks:
         - newDeref # it's wrong on generics
@@ -41,6 +43,8 @@ linters:
         - shadow
     importas:
       alias:
+        - pkg: github.com/wk8/go-ordered-map/v2
+          alias: orderedmap
         # AWS Resource Types
         - pkg: github.com/aws/aws-sdk-go-v2/service/ecs/types
           alias: ecsTypes

@@ -6,7 +6,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/invopop/jsonschema"
 )
 
@@ -29,12 +28,12 @@ func (obj *SSMImport) GetPath() string {
 
 func (obj *SSMImport) ApplyDefaults() {
 	if obj.Path == nil {
-		obj.Path = aws.String("/ecsdeployer/secrets/{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{ end }}")
+		obj.Path = new("/ecsdeployer/secrets/{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{ end }}")
 	}
-	obj.Path = aws.String(strings.TrimSuffix(*obj.Path, "/"))
+	obj.Path = new(strings.TrimSuffix(*obj.Path, "/"))
 
 	if obj.Recursive == nil {
-		obj.Recursive = aws.Bool(true)
+		obj.Recursive = new(true)
 	}
 
 }
@@ -74,7 +73,7 @@ func (a *SSMImport) UnmarshalYAML(unmarshal func(any) error) error {
 			*a = SSMImport{
 				Enabled:   true,
 				Path:      &str,
-				Recursive: aws.Bool(true),
+				Recursive: new(true),
 			}
 		}
 

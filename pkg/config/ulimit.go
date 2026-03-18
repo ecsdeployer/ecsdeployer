@@ -3,7 +3,6 @@ package config
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/invopop/jsonschema"
 )
@@ -43,7 +42,7 @@ func (obj *Ulimit) ApplyDefaults() {
 	}
 
 	if obj.Hard != nil && obj.Soft == nil {
-		obj.Soft = aws.Int32(0)
+		obj.Soft = new(int32(0))
 	}
 }
 

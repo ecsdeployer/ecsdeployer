@@ -3,8 +3,8 @@ package configschema
 import (
 	"reflect"
 
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 // const (
@@ -31,7 +31,7 @@ func NewStringLike(modFuncs ...modifierFunc) *jsonschema.Schema {
 		OneOf: []*jsonschema.Schema{
 			{
 				Type:      "string",
-				MinLength: 1,
+				MinLength: new(uint64(1)),
 			},
 			{
 				Extras: map[string]any{
@@ -130,7 +130,7 @@ func GetSchemaProp(base *jsonschema.Schema, propName string) *jsonschema.Schema 
 	if !ok {
 		return nil
 	}
-	return prop.(*jsonschema.Schema)
+	return prop
 }
 
 func SchemaPropMerge(base *jsonschema.Schema, propName string, modifyFunc func(*jsonschema.Schema)) {
@@ -142,20 +142,20 @@ func SchemaPropMerge(base *jsonschema.Schema, propName string, modifyFunc func(*
 }
 
 type PropertyChain struct {
-	orderedMap *orderedmap.OrderedMap
+	orderedMap *orderedmap.OrderedMap[string, *jsonschema.Schema]
 }
 
-func (obj *PropertyChain) Set(key string, value any) *PropertyChain {
+func (obj *PropertyChain) Set(key string, value *jsonschema.Schema) *PropertyChain {
 	obj.orderedMap.Set(key, value)
 	return obj
 }
 
-func (obj *PropertyChain) End() *orderedmap.OrderedMap {
+func (obj *PropertyChain) End() *orderedmap.OrderedMap[string, *jsonschema.Schema] {
 	return obj.orderedMap
 }
 
 func NewPropertyChain() *PropertyChain {
 	return &PropertyChain{
-		orderedMap: orderedmap.New(),
+		orderedMap: orderedmap.New[string, *jsonschema.Schema](),
 	}
 }

@@ -3,8 +3,8 @@ package config
 import "regexp"
 
 const (
-	defaultConsoleEnabled = false
-	defaultConsolePort    = 8722
+	defaultConsoleEnabled       = false
+	defaultConsolePort    int32 = 8722
 
 	defaultTaskCpu    = 1024
 	defaultTaskMemory = "2x"
