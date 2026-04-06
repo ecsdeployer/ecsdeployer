@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
 )
 
@@ -29,13 +28,12 @@ func (obj *CronJob) IsDisabled() bool {
 	return obj.Disabled
 }
 
-func (obj *CronJob) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *CronJob) UnmarshalYAML(unmarshal func(any) error) error {
 	type tCronJob CronJob
 	var defo = tCronJob{}
 	if err := unmarshal(&defo); err != nil {
 
-		var parseErr *time.ParseError
-		if errors.As(err, &parseErr) {
+		if parseErr, ok := errors.AsType[*time.ParseError](err); ok {
 			return NewValidationError(parseErr, "Invalid format for start or end time: %s", parseErr.Error())
 		}
 
@@ -71,11 +69,11 @@ func (obj *CronJob) Validate() error {
 func (obj *CronJob) ApplyDefaults() {
 
 	if obj.StartDate != nil {
-		obj.StartDate = util.Ptr(obj.StartDate.UTC())
+		obj.StartDate = new(obj.StartDate.UTC())
 	}
 
 	if obj.EndDate != nil {
-		obj.EndDate = util.Ptr(obj.EndDate.UTC())
+		obj.EndDate = new(obj.EndDate.UTC())
 	}
 }
 
@@ -84,7 +82,7 @@ func (CronJob) JSONSchemaExtend(base *jsonschema.Schema) {
 	base.Required = append(base.Required, "name")
 
 	configschema.SchemaPropMerge(base, "schedule", func(s *jsonschema.Schema) {
-		s.Examples = []interface{}{
+		s.Examples = []any{
 			"cron(0 9 * * ? *)",
 			"rate(1 hour)",
 			"rate(2 hours)",

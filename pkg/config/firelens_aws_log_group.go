@@ -14,7 +14,7 @@ func (obj *FirelensAwsLogGroup) Enabled() bool {
 	return obj.Path != ""
 }
 
-func (obj *FirelensAwsLogGroup) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *FirelensAwsLogGroup) UnmarshalYAML(unmarshal func(any) error) error {
 	var bVal bool
 
 	if err := unmarshal(&bVal); err != nil {
@@ -45,7 +45,7 @@ func (FirelensAwsLogGroup) JSONSchema() *jsonschema.Schema {
 			},
 			{
 				Type:        "string",
-				MinLength:   2,
+				MinLength:   new(uint64(2)),
 				Description: "Send logs to this log group",
 			},
 		},
@@ -56,7 +56,8 @@ func (FirelensAwsLogGroup) JSONSchema() *jsonschema.Schema {
 
 func (obj FirelensAwsLogGroup) MarshalJSON() ([]byte, error) {
 	if obj.Enabled() {
-		return []byte(fmt.Sprintf(`"%s"`, obj.Path)), nil
+		// return []byte(fmt.Sprintf(`"%s"`, obj.Path)), nil
+		return fmt.Appendf(nil, `"%s"`, obj.Path), nil
 	}
 
 	return []byte("false"), nil

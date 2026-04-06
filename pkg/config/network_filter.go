@@ -6,9 +6,7 @@ import (
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ec2Types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -86,7 +84,7 @@ func newNetworkFilterOrIdFromString(strVal string) (NetworkFilter, error) {
 		return filter, errors.New("if you are using the string filter type, it must be 'NAME=VALUE,VALUE'")
 	}
 
-	filter.Name = aws.String(parts[0])
+	filter.Name = new(parts[0])
 	filter.Values = strings.Split(parts[1], ",")
 	return filter, nil
 }
@@ -97,7 +95,7 @@ type nfilterWhatever struct {
 	Values forcedStrArr `yaml:"values" json:"values,omitempty"`
 }
 
-func (a *NetworkFilter) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *NetworkFilter) UnmarshalYAML(unmarshal func(any) error) error {
 
 	// Try to read it as a string, if a string, then try parsing
 	// else, try loading it as an object
@@ -183,7 +181,7 @@ func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 		Type:        "string",
 		Pattern:     "^([^=]+)=(([^,]+),?)+$",
 		Description: "Filter shorthand",
-		Examples: []interface{}{
+		Examples: []any{
 			"status=available",
 			"tag:key=value",
 		},
@@ -193,7 +191,7 @@ func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 		Type:        "string",
 		Pattern:     "^[a-z]+-[a-f0-9]{3,}$",
 		Description: "Explicit ID",
-		Examples: []interface{}{
+		Examples: []any{
 			"subnet-12345abcd",
 			"sg-12345abcd",
 		},
@@ -215,10 +213,10 @@ func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 	// 	Description: "String or array of strings",
 	// }
 
-	lazyProps := orderedmap.New()
+	lazyProps := jsonschema.NewProperties()
 	lazyProps.Set("name", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 	lazyProps.Set("value", forcedStrArrSchema)
 	lazySchema := &jsonschema.Schema{
@@ -227,10 +225,10 @@ func (NetworkFilter) JSONSchema() *jsonschema.Schema {
 		Required:   []string{"name", "value"},
 	}
 
-	normalProps := orderedmap.New()
+	normalProps := jsonschema.NewProperties()
 	normalProps.Set("name", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 	normalProps.Set("values", forcedStrArrSchema)
 	normalSchema := &jsonschema.Schema{

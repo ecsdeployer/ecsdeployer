@@ -3,7 +3,6 @@ package config
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/invopop/jsonschema"
 )
 
@@ -15,7 +14,7 @@ type FargateDefaults struct {
 
 var _ IsTaskStruct = (*FargateDefaults)(nil)
 
-func (obj *FargateDefaults) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *FargateDefaults) UnmarshalYAML(unmarshal func(any) error) error {
 	type tFargateDefaults FargateDefaults // prevent recursive overflow
 	var defo = tFargateDefaults{}
 	if err := unmarshal(&defo); err != nil {
@@ -52,7 +51,7 @@ func (obj *FargateDefaults) Validate() error {
 func (obj *FargateDefaults) ApplyDefaults() {
 	obj.Name = ""
 	if obj.PlatformVersion == nil {
-		obj.PlatformVersion = aws.String(defaultPlatformVersion)
+		obj.PlatformVersion = new(defaultPlatformVersion)
 	}
 
 	if obj.Cpu == nil {
@@ -82,7 +81,7 @@ func (obj *FargateDefaults) ApplyDefaults() {
 	}
 
 	if obj.Architecture == nil {
-		obj.Architecture = util.Ptr(ArchitectureDefault)
+		obj.Architecture = new(ArchitectureDefault)
 	}
 
 	if obj.SpotOverride == nil {

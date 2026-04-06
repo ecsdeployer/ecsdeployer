@@ -24,7 +24,7 @@ type DeepFindInStructOptions struct {
 // Must provide a pointer as the haystack
 // See DeepFindInStructAdvanced
 // This version will ignore zero values for structs
-func DeepFindInStruct[T interface{}](haystack interface{}) []*T {
+func DeepFindInStruct[T any](haystack any) []*T {
 	return DeepFindInStructAdvanced[T](haystack, &DeepFindInStructOptions{})
 }
 
@@ -35,9 +35,9 @@ func DeepFindInStruct[T interface{}](haystack interface{}) []*T {
 //
 // Note: this will stop searching once it finds a match. If you have self-referencing structs,
 // it will not find child structs within a matching struct
-func DeepFindInStructAdvanced[T interface{}](haystack interface{}, options *DeepFindInStructOptions) []*T {
+func DeepFindInStructAdvanced[T any](haystack any, options *DeepFindInStructOptions) []*T {
 
-	needleV := reflect.TypeOf(new(T)).Elem()
+	needleV := reflect.TypeFor[T]()
 
 	haystackVal := reflect.Indirect(reflect.ValueOf(haystack))
 	haystackType := haystackVal.Type()
@@ -61,7 +61,7 @@ func DeepFindInStructAdvanced[T interface{}](haystack interface{}, options *Deep
 				continue
 			}
 
-			if f.Kind() == reflect.Ptr || f.Kind() == reflect.Interface {
+			if f.Kind() == reflect.Pointer || f.Kind() == reflect.Interface {
 				value = f.Elem()
 			}
 		}
@@ -95,7 +95,7 @@ func DeepFindInStructAdvanced[T interface{}](haystack interface{}, options *Deep
 						continue
 					}
 
-					if item.Kind() == reflect.Ptr || item.Kind() == reflect.Interface {
+					if item.Kind() == reflect.Pointer || item.Kind() == reflect.Interface {
 						item = item.Elem()
 					}
 				}

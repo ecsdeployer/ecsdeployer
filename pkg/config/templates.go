@@ -6,7 +6,6 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/invopop/jsonschema"
 )
 
@@ -38,68 +37,68 @@ type NameTemplates struct {
 
 func (def *NameTemplates) ApplyDefaults() {
 	if def.TaskFamily == nil {
-		def.TaskFamily = aws.String("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}")
+		def.TaskFamily = new("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}")
 	}
 
 	if def.ServiceName == nil {
-		def.ServiceName = aws.String("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}")
+		def.ServiceName = new("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}")
 	}
 
 	if def.ScheduleGroupName == nil {
-		def.ScheduleGroupName = aws.String("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}")
+		def.ScheduleGroupName = new("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}")
 	}
 	if def.ScheduleName == nil {
-		def.ScheduleName = aws.String("ecsd-cron-{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}")
+		def.ScheduleName = new("ecsd-cron-{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-{{ .Name }}")
 	}
 
 	if def.CronRule == nil {
-		def.CronRule = aws.String("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}")
+		def.CronRule = new("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-rule-{{ .Name }}")
 	}
 	if def.CronTarget == nil {
-		def.CronTarget = aws.String("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}")
+		def.CronTarget = new("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}")
 	}
 	if def.CronGroup == nil {
-		def.CronGroup = aws.String("ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}")
+		def.CronGroup = new("ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:cron:{{ .Name }}")
 	}
 
 	if def.PreDeployGroup == nil {
-		def.PreDeployGroup = aws.String("ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}")
+		def.PreDeployGroup = new("ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:pd:{{ .Name }}")
 	}
 	if def.PreDeployStartedBy == nil {
-		def.PreDeployStartedBy = aws.String("ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:deployer")
+		def.PreDeployStartedBy = new("ecsd:{{ .Project }}{{ if .Stage }}:{{ .Stage }}{{end}}:deployer")
 	}
 
 	if def.TargetGroup == nil {
-		def.TargetGroup = aws.String("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}")
+		def.TargetGroup = new("{{ .Project }}{{ if .Stage }}-{{ .Stage }}{{end}}-target-{{ .Name }}")
 	}
 
 	if def.LogGroup == nil {
-		def.LogGroup = aws.String("/ecsdeployer/app/{{ .Project }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}")
+		def.LogGroup = new("/ecsdeployer/app/{{ .Project }}/{{ if .Stage }}{{ .Stage }}/{{end}}{{ .Name }}")
 	}
 	if def.LogStreamPrefix == nil {
-		def.LogStreamPrefix = aws.String("{{ .Container }}")
+		def.LogStreamPrefix = new("{{ .Container }}")
 	}
 
 	if def.ContainerName == nil {
-		def.ContainerName = aws.String("{{ .Container }}")
+		def.ContainerName = new("{{ .Container }}")
 	}
 
 	if def.SharedTaskCron == nil {
-		def.SharedTaskCron = aws.String("cron")
+		def.SharedTaskCron = new("cron")
 	}
 	if def.SharedTaskPD == nil {
-		def.SharedTaskPD = aws.String("predeploy")
+		def.SharedTaskPD = new("predeploy")
 	}
 
 	if def.MarkerTagKey == nil {
-		def.MarkerTagKey = aws.String("ecsdeployer/project")
+		def.MarkerTagKey = new("ecsdeployer/project")
 	}
 	if def.MarkerTagValue == nil {
-		def.MarkerTagValue = aws.String("{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{end}}")
+		def.MarkerTagValue = new("{{ .Project }}{{ if .Stage }}/{{ .Stage }}{{end}}")
 	}
 }
 
-func (a *NameTemplates) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *NameTemplates) UnmarshalYAML(unmarshal func(any) error) error {
 	type tNameTemplates NameTemplates
 	var defo = tNameTemplates{}
 	if err := unmarshal(&defo); err != nil {
@@ -165,7 +164,7 @@ func (NameTemplates) JSONSchemaExtend(base *jsonschema.Schema) {
 	v := reflect.ValueOf(templates).Elem()
 
 	// put the default values into the schema
-	for _, field := range reflect.VisibleFields(reflect.TypeOf(*templates)) {
+	for _, field := range reflect.VisibleFields(reflect.TypeFor[NameTemplates]()) {
 		kisVal := v.FieldByIndex(field.Index).Elem().String()
 
 		jsonField, _, _ := strings.Cut(field.Tag.Get("json"), ",")

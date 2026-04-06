@@ -33,7 +33,7 @@ func (s *Step) getExisting(ctx *config.Context) (bool, error) {
 			return false, nil
 		}
 
-		return false, fmt.Errorf("Unable to describe service: %s", failReason)
+		return false, fmt.Errorf("unable to describe service: %s", failReason)
 	}
 
 	if len(result.Services) == 0 {

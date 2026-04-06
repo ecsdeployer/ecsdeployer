@@ -2,7 +2,6 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -27,7 +26,7 @@ func (obj *VolumeEFSConfig) ApplyDefaults() {
 
 func (obj *VolumeEFSConfig) ToAws() *ecsTypes.EFSVolumeConfiguration {
 	out := &ecsTypes.EFSVolumeConfiguration{
-		FileSystemId:      aws.String(obj.FileSystemId),
+		FileSystemId:      new(obj.FileSystemId),
 		TransitEncryption: util.Ternary(obj.DisableEncryption, ecsTypes.EFSTransitEncryptionDisabled, ecsTypes.EFSTransitEncryptionEnabled),
 	}
 
@@ -48,7 +47,7 @@ func (obj *VolumeEFSConfig) ToAws() *ecsTypes.EFSVolumeConfiguration {
 	return out
 }
 
-func (obj *VolumeEFSConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *VolumeEFSConfig) UnmarshalYAML(unmarshal func(any) error) error {
 	type tVolumeEFSConfig VolumeEFSConfig
 	var defo = tVolumeEFSConfig{}
 	if err := unmarshal(&defo); err != nil {

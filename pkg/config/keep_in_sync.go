@@ -80,7 +80,7 @@ func NewKeepInSyncFromBool(val bool) KeepInSync {
 	return obj
 }
 
-func (a *KeepInSync) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *KeepInSync) UnmarshalYAML(unmarshal func(any) error) error {
 	var boolVal bool
 	if err := unmarshal(&boolVal); err != nil {
 

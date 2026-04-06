@@ -80,7 +80,7 @@ func generateSizes() []fgResource {
 
 	sizelist := []fgResource{}
 
-	// https://docs.aws.amazon.com/AmazonECS/latest/userguide/task_definition_parameters.html
+	// https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size
 	sizelist = append(
 		sizelist,
 		fgResource{Cpu: 256, Memory: 512},

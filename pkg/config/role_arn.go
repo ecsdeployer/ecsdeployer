@@ -11,7 +11,7 @@ type RoleArn struct {
 }
 
 func (obj *RoleArn) Arn(ctx *Context) (string, error) {
-	return obj.NameArn.superArn(ctx, func() (string, error) {
+	return obj.superArn(ctx, func() (string, error) {
 		// log.WithField("rolename", obj.name).Debug("resolving role arn")
 		clusterArn := arn.ARN{
 			Partition: "aws",
@@ -25,7 +25,7 @@ func (obj *RoleArn) Arn(ctx *Context) (string, error) {
 	})
 }
 
-// func (obj *RoleArn) UnmarshalYAML(unmarshal func(interface{}) error) error {
+// func (obj *RoleArn) UnmarshalYAML(unmarshal func(any) error) error {
 // 	res, err := nameArnYamlUnmarshaller(unmarshal)
 // 	if err != nil {
 // 		return err

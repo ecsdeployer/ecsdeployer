@@ -37,7 +37,7 @@ func TestTaskDefinitionSubstep(t *testing.T) {
 			_, err := Register(ctx, project.Services[0])
 			require.Error(t, err)
 			require.False(t, step.IsSkip(err))
-			require.ErrorContains(t, err, "Failed to provision log group")
+			require.ErrorContains(t, err, "failed to provision log group")
 		})
 
 		t.Run("log already exists", func(t *testing.T) {

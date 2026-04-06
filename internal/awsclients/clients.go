@@ -1,74 +1,62 @@
 package awsclients
 
-import (
-	logs "github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ecs"
-	elbv2 "github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2"
-	events "github.com/aws/aws-sdk-go-v2/service/eventbridge"
-	tagging "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi"
-	"github.com/aws/aws-sdk-go-v2/service/scheduler"
-	"github.com/aws/aws-sdk-go-v2/service/ssm"
-	"github.com/aws/aws-sdk-go-v2/service/sts"
-)
-
-func STSClient() *sts.Client {
+func STSClient() STSClienter {
 	initMutex.RLock()
 	defer initMutex.RUnlock()
 
 	return stsClient
 }
 
-func SSMClient() *ssm.Client {
+func SSMClient() SSMClienter {
 	initMutex.RLock()
 	defer initMutex.RUnlock()
 
 	return ssmClient
 }
 
-func ECSClient() *ecs.Client {
+func ECSClient() ECSClienter {
 	initMutex.RLock()
 	defer initMutex.RUnlock()
 
 	return ecsClient
 }
 
-func EC2Client() *ec2.Client {
+func EC2Client() EC2Clienter {
 	initMutex.RLock()
 	defer initMutex.RUnlock()
 
 	return ec2Client
 }
 
-func ELBv2Client() *elbv2.Client {
+func ELBv2Client() ELBv2Clienter {
 	initMutex.RLock()
 	defer initMutex.RUnlock()
 
 	return elbv2Client
 }
 
-func LogsClient() *logs.Client {
+func LogsClient() LogsClienter {
 	initMutex.RLock()
 	defer initMutex.RUnlock()
 
 	return logsClient
 }
 
-func EventsClient() *events.Client {
+func EventsClient() EventsClienter {
 	initMutex.RLock()
 	defer initMutex.RUnlock()
 
 	return eventsClient
 }
 
-func TaggingClient() *tagging.Client {
+func TaggingClient() TaggingClienter {
 	initMutex.RLock()
 	defer initMutex.RUnlock()
 
 	return taggingClient
 }
 
-func SchedulerClient() *scheduler.Client {
+func SchedulerClient() SchedulerClienter {
 	initMutex.RLock()
 	defer initMutex.RUnlock()
 

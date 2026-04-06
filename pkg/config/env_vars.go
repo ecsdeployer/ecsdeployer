@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -87,14 +87,14 @@ func (e EnvVar) GetValue(tplRef templater) (string, error) {
 			}
 			return val, nil
 		} else {
-			return "", errors.New("env var is a templated var, but no templater was provided")
+			return "", usererr.New("env var is a templated var, but no templater was provided")
 		}
 	}
 
-	return "", errors.New("Unknown env var type")
+	return "", usererr.New("Unknown env var type")
 }
 
-func (a *EnvVar) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *EnvVar) UnmarshalYAML(unmarshal func(any) error) error {
 	type tEnvVar EnvVar
 	var envvar tEnvVar
 	if err := unmarshal(&envvar); err != nil {
@@ -149,10 +149,10 @@ func (a *EnvVar) Validate() error {
 
 func (EnvVar) JSONSchema() *jsonschema.Schema {
 
-	valSsmProps := orderedmap.New()
+	valSsmProps := jsonschema.NewProperties()
 	valSsmProps.Set("ssm", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 	valSsmSchema := &jsonschema.Schema{
 		Type:                 "object",
@@ -162,10 +162,10 @@ func (EnvVar) JSONSchema() *jsonschema.Schema {
 		AdditionalProperties: jsonschema.FalseSchema,
 	}
 
-	valTplProps := orderedmap.New()
+	valTplProps := jsonschema.NewProperties()
 	valTplProps.Set("template", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 	valTplSchema := &jsonschema.Schema{
 		Type:                 "object",
@@ -175,7 +175,7 @@ func (EnvVar) JSONSchema() *jsonschema.Schema {
 		AdditionalProperties: jsonschema.FalseSchema,
 	}
 
-	valStrProps := orderedmap.New()
+	valStrProps := jsonschema.NewProperties()
 	valStrProps.Set("value", configschema.StringLikeWithBlank)
 	valStrSchema := &jsonschema.Schema{
 		Type:                 "object",
@@ -185,7 +185,7 @@ func (EnvVar) JSONSchema() *jsonschema.Schema {
 		AdditionalProperties: jsonschema.FalseSchema,
 	}
 
-	valUnsetProps := orderedmap.New()
+	valUnsetProps := jsonschema.NewProperties()
 	valUnsetProps.Set("unset", &jsonschema.Schema{
 		Type:  "boolean",
 		Const: true,

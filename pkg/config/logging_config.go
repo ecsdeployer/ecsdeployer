@@ -102,7 +102,7 @@ func (obj *LoggingConfig) ApplyDefaults() {
 	// }
 }
 
-func (obj *LoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *LoggingConfig) UnmarshalYAML(unmarshal func(any) error) error {
 	type tLoggingConfig LoggingConfig // prevent recursive overflow
 	var defo = tLoggingConfig{}
 	if err := unmarshal(&defo); err != nil {
@@ -131,7 +131,7 @@ func (obj *LoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error
 	return nil
 }
 
-func (obj *LoggingConfig) MarshalYAML() (interface{}, error) {
+func (obj *LoggingConfig) MarshalYAML() (any, error) {
 	if obj.IsDisabled() {
 		return false, nil
 	}

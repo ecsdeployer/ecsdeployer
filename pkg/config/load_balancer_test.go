@@ -3,7 +3,6 @@ package config_test
 import (
 	"testing"
 
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -11,7 +10,7 @@ import (
 func TestLoadBalancer_Validate(t *testing.T) {
 
 	validPort, _ := config.NewPortMappingFromString("8080")
-	invalidPort := &config.PortMapping{Port: util.Ptr(int32(90000))}
+	invalidPort := &config.PortMapping{Port: new(int32(90000))}
 
 	t.Run("valid", func(t *testing.T) {
 		tgArn := &config.TargetGroupArn{}

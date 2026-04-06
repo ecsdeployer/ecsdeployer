@@ -123,7 +123,7 @@ func (obj *NameArn) ParseFromString(value string) error {
 }
 
 // only parses a string
-func (obj *NameArn) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *NameArn) UnmarshalYAML(unmarshal func(any) error) error {
 	var str string
 	if err := unmarshal(&str); err != nil {
 		return err
@@ -159,6 +159,6 @@ func (NameArn) JSONSchema() *jsonschema.Schema {
 	return &jsonschema.Schema{
 		Type:        "string",
 		Description: "ARN or Name",
-		MinLength:   1,
+		MinLength:   new(uint64(1)),
 	}
 }

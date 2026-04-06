@@ -2,7 +2,6 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/invopop/jsonschema"
 )
 
@@ -42,12 +41,12 @@ func (obj *Sidecar) Validate() error {
 
 func (obj *Sidecar) ApplyDefaults() {
 	if obj.Essential == nil {
-		obj.Essential = aws.Bool(true)
+		obj.Essential = new(true)
 	}
 
 }
 
-func (obj *Sidecar) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Sidecar) UnmarshalYAML(unmarshal func(any) error) error {
 	type t Sidecar
 	var defo = t{}
 	if err := unmarshal(&defo); err != nil {

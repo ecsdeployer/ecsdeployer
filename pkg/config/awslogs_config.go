@@ -29,7 +29,7 @@ func (obj *AwsLogConfig) Validate() error {
 func (obj *AwsLogConfig) ApplyDefaults() {
 	if obj.Retention == nil {
 		// obj.Retention = aws.Int32(365)
-		obj.Retention = util.Ptr(util.Must(ParseLogRetention(defaultLogRetention)))
+		obj.Retention = new(util.Must(ParseLogRetention(defaultLogRetention)))
 	}
 
 	if obj.Options == nil {
@@ -37,7 +37,7 @@ func (obj *AwsLogConfig) ApplyDefaults() {
 	}
 }
 
-func (obj *AwsLogConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *AwsLogConfig) UnmarshalYAML(unmarshal func(any) error) error {
 	type tAwsLogConfig AwsLogConfig
 	var defo = tAwsLogConfig{}
 	if err := unmarshal(&defo); err != nil {

@@ -1,9 +1,9 @@
-package cmd
+package cmdutil
 
 import (
-	"errors"
 	"os"
 
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/webdestroya/go-log"
 )
@@ -15,7 +15,7 @@ var genericConfigPaths = [...]string{
 	"ecsdeployer.yaml",
 }
 
-func loadConfig(path string) (*config.Project, error) {
+func LoadConfig(path string) (*config.Project, error) {
 	if path == "-" {
 		log.Info("loading config from stdin")
 		return config.LoadReader(os.Stdin)
@@ -31,5 +31,5 @@ func loadConfig(path string) (*config.Project, error) {
 		}
 	}
 
-	return nil, errors.New("No configuration file was found")
+	return nil, usererr.New("No configuration file was found")
 }

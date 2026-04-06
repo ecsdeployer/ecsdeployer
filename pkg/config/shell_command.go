@@ -15,7 +15,7 @@ func (sc ShellCommand) String() string {
 }
 
 // UnmarshalYAML is a custom unmarshaler that wraps strings in arrays.
-func (a *ShellCommand) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *ShellCommand) UnmarshalYAML(unmarshal func(any) error) error {
 	var strArr []string
 	if err := unmarshal(&strArr); err != nil {
 		var str string

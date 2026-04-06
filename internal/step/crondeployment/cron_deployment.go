@@ -26,7 +26,6 @@ func (Step) Run(ctx *config.Context) error {
 	g := semerrgroup.NewSkipAware(semerrgroup.New(ctx.Concurrency(5)))
 
 	for _, job := range ctx.Project.CronJobs {
-		job := job
 		g.Go(func() error {
 			return cronjob.New(job).Run(ctx)
 		})

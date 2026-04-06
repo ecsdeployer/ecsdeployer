@@ -61,15 +61,15 @@ func TestNetwork_NetworkConfigurationResolver_Full(t *testing.T) {
 			},
 			Response: &awsmocker.MockedResponse{
 				DoNotWrap: true,
-				Body: map[string]interface{}{
+				Body: map[string]any{
 					"requestId": "43e9cb52-0e10-40fe-b457-988c8fbfea26",
-					"subnetSet": map[string]interface{}{
-						"item": []interface{}{
-							map[string]interface{}{
+					"subnetSet": map[string]any{
+						"item": []any{
+							map[string]any{
 								"subnetId": "subnet-633333333333",
 								"vpcId":    "vpc-123456789",
 							},
-							map[string]interface{}{
+							map[string]any{
 								"subnetId": "subnet-644444444444",
 								"vpcId":    "vpc-123456789",
 							},
@@ -93,15 +93,15 @@ func TestNetwork_NetworkConfigurationResolver_Full(t *testing.T) {
 			},
 			Response: &awsmocker.MockedResponse{
 				DoNotWrap: true,
-				Body: map[string]interface{}{
+				Body: map[string]any{
 					"requestId": "43e9cb52-0e10-40fe-b457-988c8fbfea26",
-					"securityGroupInfo": map[string]interface{}{
-						"item": []interface{}{
-							map[string]interface{}{
+					"securityGroupInfo": map[string]any{
+						"item": []any{
+							map[string]any{
 								"groupId":   "sg-633333333333",
 								"groupName": "fakesg1",
 							},
-							map[string]interface{}{
+							map[string]any{
 								"groupId":   "sg-644444444444",
 								"groupName": "fakesg2",
 							},
@@ -198,16 +198,16 @@ func TestNetworkCalculateSecurityGroups_WithVPC(t *testing.T) {
 			},
 			Response: &awsmocker.MockedResponse{
 				DoNotWrap: true,
-				Body: map[string]interface{}{
+				Body: map[string]any{
 					"requestId": "43e9cb52-0e10-40fe-b457-988c8fbfea26",
-					"securityGroupInfo": map[string]interface{}{
-						"item": []interface{}{
-							map[string]interface{}{
+					"securityGroupInfo": map[string]any{
+						"item": []any{
+							map[string]any{
 								"groupId":   "sg-33333333333",
 								"groupName": "fakesg1",
 								"vpcId":     vpcId,
 							},
-							map[string]interface{}{
+							map[string]any{
 								"groupId":   "sg-44444444444",
 								"groupName": "fakesg2",
 								"vpcId":     vpcId,
@@ -246,15 +246,15 @@ func TestNetworkCalculateSecurityGroups_WithExistingVPC(t *testing.T) {
 			},
 			Response: &awsmocker.MockedResponse{
 				DoNotWrap: true,
-				Body: map[string]interface{}{
+				Body: map[string]any{
 					"requestId": "43e9cb52-0e10-40fe-b457-988c8fbfea26",
-					"securityGroupInfo": map[string]interface{}{
-						"item": []interface{}{
-							map[string]interface{}{
+					"securityGroupInfo": map[string]any{
+						"item": []any{
+							map[string]any{
 								"groupId":   "sg-533333333333",
 								"groupName": "fakesg1",
 							},
-							map[string]interface{}{
+							map[string]any{
 								"groupId":   "sg-544444444444",
 								"groupName": "fakesg2",
 							},
@@ -265,7 +265,7 @@ func TestNetworkCalculateSecurityGroups_WithExistingVPC(t *testing.T) {
 		},
 	})
 
-	result, err := calculateSecurityGroups(ctx, *network, util.Ptr("vpc-11111111"))
+	result, err := calculateSecurityGroups(ctx, *network, new("vpc-11111111"))
 	require.NoError(t, err)
 
 	require.Contains(t, result, "sg-1234567890")
@@ -316,15 +316,15 @@ func TestNetworkCalculateSubnets_WithVPC(t *testing.T) {
 			},
 			Response: &awsmocker.MockedResponse{
 				DoNotWrap: true,
-				Body: map[string]interface{}{
+				Body: map[string]any{
 					"requestId": "43e9cb52-0e10-40fe-b457-988c8fbfea26",
-					"subnetSet": map[string]interface{}{
-						"item": []interface{}{
-							map[string]interface{}{
+					"subnetSet": map[string]any{
+						"item": []any{
+							map[string]any{
 								"subnetId": "subnet-33333333333",
 								"vpcId":    "vpc-123456789",
 							},
-							map[string]interface{}{
+							map[string]any{
 								"subnetId": "subnet-44444444444",
 								"vpcId":    "vpc-123456789",
 							},
@@ -350,9 +350,7 @@ func TestNetworkCalculateSubnets_WithVPC(t *testing.T) {
 }
 
 func networkFilterMocker(t *testing.T, filePath string, mocks []*awsmocker.MockedEndpoint) (*NetworkConfiguration, *Project, *Context) {
-	testutil.StartMocker(t, &awsmocker.MockerOptions{
-		Mocks: append([]*awsmocker.MockedEndpoint{}, mocks...),
-	})
+	testutil.StartMocker(t, awsmocker.WithMocks(mocks...))
 
 	network, err := yaml.ParseYAMLFile[NetworkConfiguration](filePath)
 	require.NoError(t, err)

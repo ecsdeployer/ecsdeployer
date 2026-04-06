@@ -21,7 +21,7 @@ type ContextCache struct {
 	// TODO: cron rules?
 	// TODO: cron targets?
 
-	Meta map[string]interface{}
+	Meta map[string]any
 
 	muTaskDefs sync.Mutex
 }

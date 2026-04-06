@@ -19,23 +19,18 @@ tidy:
 		exit 1; \
 	fi
 
-.PHONY: lint-install
-lint-install:
-	@echo "Installing golangci-lint"
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
+# .PHONY: lint-install
+# lint-install:
+# 	@echo "Installing golangci-lint"
+# 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
 
 .PHONY: lint
 lint:
-	@which golangci-lint >/dev/null 2>&1 || { \
-		echo "golangci-lint not found, please run: make lint-install"; \
-		exit 1; \
-	}
-	@golangci-lint version
 	@golangci-lint run && echo "Code passed lint check!"
 
 .PHONY: test-release
 test-release:
-	@goreleaser release --skip-publish --clean --snapshot
+	@goreleaser release --skip publish,sign --clean --snapshot --parallelism 4
 
 .PHONY: check
 check:
@@ -120,3 +115,8 @@ coverage:
 .PHONY: htmltest
 htmltest:
 	cd www && mkdocs build && htmltest -c htmltest.yml site
+
+.PHONY: binsize
+binsize:
+# go install github.com/Zxilly/go-size-analyzer/cmd/gsa@latest
+	@gsa --web dist/ecsdeployer_darwin_arm64_v8.0/ecsdeployer

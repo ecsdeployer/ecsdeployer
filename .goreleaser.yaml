@@ -1,6 +1,8 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
 
+version: 2
+
 project_name: ecsdeployer
 
 before:
@@ -12,20 +14,21 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
+    mod_timestamp: "{{ .CommitTimestamp }}"
     goos:
       - linux
       - darwin
       - windows
 
     goarch:
-      - "386"
+      # - "386"
       - amd64
-      - arm
+      # - arm
       - arm64
-    
-    goarm:
-      - "7"
-    
+
+    # goarm:
+    #   - "7"
+
     flags:
       - "-trimpath"
 
@@ -38,12 +41,11 @@ builds:
 
 archives:
   - id: homebrew
-    rlcp: true
     format_overrides:
       - goos: linux
-        format: tar.gz
+        formats: ['tar.gz']
       - goos: windows
-        format: zip
+        formats: ['zip']
     name_template: '{{ .ProjectName }}_{{- tolower .Os }}_{{- if eq .Arch "amd64" }}x86_64{{- else if eq .Arch "386" }}i386{{- else }}{{ .Arch }}{{ end }}{{- if .Arm }}v{{ .Arm }}{{ end }}'
     files:
       - README.md
@@ -55,14 +57,14 @@ checksum:
   name_template: 'checksums.txt'
 
 snapshot:
-  name_template: "{{ .Version }}"
+  version_template: "{{ .Version }}"
 
 release:
   footer: |
     **Full Changelog**: https://github.com/ecsdeployer/ecsdeployer/compare/{{ .PreviousTag }}...{{ .Tag }}
 
 changelog:
-  skip: true
+  disable: true
 
 announce:
   skip: true
@@ -71,54 +73,77 @@ universal_binaries:
   - name_template: "{{ .ProjectName }}"
     replace: false
 
-scoop:
-  bucket:
-    owner: ecsdeployer
-    name: scoop-bucket
-    token: "{{ .Env.HOMEBREW_SCOOP_GITHUB_TOKEN }}"
-  url_template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-  commit_author:
-    name: cloud87bot
-    email: 114977785+cloud87bot@users.noreply.github.com
-  homepage:  https://ecsdeployer.com
-  description: Easily deploy containerized applications to AWS ECS Fargate
-  license: MIT
+source:
+  enabled: true
 
-brews:
+sboms:
+  - artifacts: archive
+  - id: source # Two different sbom configurations need two different IDs
+    artifacts: source
+
+signs:
+  - cmd: cosign
+    certificate: "${artifact}.pem"
+    args:
+      - sign-blob
+      - "--output-certificate=${certificate}"
+      - "--output-signature=${signature}"
+      - "${artifact}"
+      - "--yes" # needed on cosign 2.0.0+
+    artifacts: checksum
+    output: true
+
+scoops:
+  - repository:
+      owner: ecsdeployer
+      name: scoop-bucket
+      token: "{{ .Env.HOMEBREW_SCOOP_GITHUB_TOKEN }}"
+    url_template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    commit_author:
+      name: cloud87bot
+      email: 114977785+cloud87bot@users.noreply.github.com
+    homepage:  https://ecsdeployer.com
+    description: Easily deploy containerized applications to AWS ECS Fargate
+    license: MIT
+
+homebrew_casks:
 
   - &hbgen
     ids:
       - homebrew
     name: ecsdeployer
-    tap:
+    repository:
       owner: ecsdeployer
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_SCOOP_GITHUB_TOKEN }}"
-    folder: Formula
-    url_template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    url:
+      template: "https://github.com/ecsdeployer/ecsdeployer/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     homepage: "https://ecsdeployer.com"
     description: "Easily deploy containerized applications to AWS ECS Fargate"
     skip_upload: auto
     commit_author:
       name: cloud87bot
       email: 114977785+cloud87bot@users.noreply.github.com
-    license: "MIT"
-    install: |-
-      bin.install "ecsdeployer"
-      bash_completion.install "completions/ecsdeployer.bash" => "ecsdeployer"
-      fish_completion.install "completions/ecsdeployer.fish" => "ecsdeployer.fish"
-      zsh_completion.install "completions/ecsdeployer.zsh" => "_ecsdeployer"
-      man1.install "manpages/ecsdeployer.1.gz"
-    test: |-
-      system "#{bin} --version" 
+    binaries:
+      - ecsdeployer
+    completions:
+      bash: completions/ecsdeployer.bash
+      fish: completions/ecsdeployer.fish
+      zsh: completions/ecsdeployer.zsh
+    manpages:
+      - manpages/ecsdeployer.1.gz
+    hooks:
+      post:
+        install: |
+          system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/ecsdeployer"]
 
-  - 
+  -
     << : *hbgen
     name: ecsdeployer@v{{ .Major }}
 
 nfpms:
   - id: "ecsdeployer"
-    builds: ['ecsdeployer']
+    ids: ['ecsdeployer']
     formats:
       - deb
       - rpm
@@ -154,6 +179,6 @@ nfpms:
         dst: /usr/share/doc/ecsdeployer/copyright
         file_info:
           mode: 0644
-  
+
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=jcroql

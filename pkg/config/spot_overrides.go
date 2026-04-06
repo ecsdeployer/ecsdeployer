@@ -3,11 +3,9 @@ package config
 import (
 	"encoding/json"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
 	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -66,7 +64,7 @@ func (obj *SpotOverrides) ExportCapacityStrategy() []ecsTypes.CapacityProviderSt
 	if obj.IsDisabled() {
 		return []ecsTypes.CapacityProviderStrategyItem{
 			{
-				CapacityProvider: aws.String(capProviderOnDemand),
+				CapacityProvider: new(capProviderOnDemand),
 				Weight:           1,
 				Base:             0,
 			},
@@ -76,7 +74,7 @@ func (obj *SpotOverrides) ExportCapacityStrategy() []ecsTypes.CapacityProviderSt
 	if !obj.WantsOnDemand() {
 		return []ecsTypes.CapacityProviderStrategyItem{
 			{
-				CapacityProvider: aws.String(capProviderSpot),
+				CapacityProvider: new(capProviderSpot),
 				Weight:           1,
 				Base:             0,
 			},
@@ -84,7 +82,7 @@ func (obj *SpotOverrides) ExportCapacityStrategy() []ecsTypes.CapacityProviderSt
 	}
 
 	onDemandCap := ecsTypes.CapacityProviderStrategyItem{
-		CapacityProvider: aws.String(capProviderOnDemand),
+		CapacityProvider: new(capProviderOnDemand),
 		Weight:           1,
 		Base:             0,
 	}
@@ -99,7 +97,7 @@ func (obj *SpotOverrides) ExportCapacityStrategy() []ecsTypes.CapacityProviderSt
 
 	return []ecsTypes.CapacityProviderStrategyItem{
 		{
-			CapacityProvider: aws.String(capProviderSpot),
+			CapacityProvider: new(capProviderSpot),
 			Weight:           100,
 			Base:             0,
 		},
@@ -124,7 +122,7 @@ func (obj *SpotOverrides) WantsOnDemand() bool {
 	return false
 }
 
-func (obj *SpotOverrides) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *SpotOverrides) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var val bool
 	if err := unmarshal(&val); err != nil {
@@ -166,7 +164,7 @@ func (obj *SpotOverrides) ApplyDefaults() {
 
 func (SpotOverrides) JSONSchema() *jsonschema.Schema {
 
-	properties := orderedmap.New()
+	properties := jsonschema.NewProperties()
 	properties.Set("enabled", &jsonschema.Schema{
 		Type:        "boolean",
 		Default:     false,
@@ -195,7 +193,7 @@ func (SpotOverrides) JSONSchema() *jsonschema.Schema {
 	}
 }
 
-func (obj *SpotOverrides) MarshalYAML() (interface{}, error) {
+func (obj *SpotOverrides) MarshalYAML() (any, error) {
 	if obj.IsDisabled() {
 		return false, nil
 	}

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 )
@@ -81,17 +80,17 @@ func TestNameTemplates_Validate(t *testing.T) {
 		valid bool
 	}{
 		{config.NameTemplates{}, true},
-		{config.NameTemplates{ContainerName: util.Ptr("")}, false},
-		{config.NameTemplates{ServiceName: util.Ptr("")}, false},
-		{config.NameTemplates{TaskFamily: util.Ptr("")}, false},
-		{config.NameTemplates{CronRule: util.Ptr("")}, false},
-		{config.NameTemplates{CronTarget: util.Ptr("")}, false},
-		{config.NameTemplates{LogGroup: util.Ptr("")}, false},
-		{config.NameTemplates{LogStreamPrefix: util.Ptr("")}, false},
-		{config.NameTemplates{MarkerTagKey: util.Ptr("")}, false},
-		{config.NameTemplates{MarkerTagValue: util.Ptr("")}, false},
-		{config.NameTemplates{ScheduleGroupName: util.Ptr("")}, false},
-		{config.NameTemplates{ScheduleName: util.Ptr("")}, false},
+		{config.NameTemplates{ContainerName: new("")}, false},
+		{config.NameTemplates{ServiceName: new("")}, false},
+		{config.NameTemplates{TaskFamily: new("")}, false},
+		{config.NameTemplates{CronRule: new("")}, false},
+		{config.NameTemplates{CronTarget: new("")}, false},
+		{config.NameTemplates{LogGroup: new("")}, false},
+		{config.NameTemplates{LogStreamPrefix: new("")}, false},
+		{config.NameTemplates{MarkerTagKey: new("")}, false},
+		{config.NameTemplates{MarkerTagValue: new("")}, false},
+		{config.NameTemplates{ScheduleGroupName: new("")}, false},
+		{config.NameTemplates{ScheduleName: new("")}, false},
 	}
 
 	for i, table := range tables {

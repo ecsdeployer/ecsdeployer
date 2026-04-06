@@ -67,7 +67,7 @@ func Wrap(ctx stdctx.Context, project *Project) *Context {
 	return &Context{
 		Context:        ctx,
 		Cache:          newContextCache(),
-		MaxConcurrency: 4,
+		MaxConcurrency: 2,
 		Project:        project,
 		Date:           time.Now(),
 		Env:            ToEnv(append(os.Environ(), project.Env...)),

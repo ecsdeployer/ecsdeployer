@@ -9,7 +9,7 @@ import (
 
 // This will merge multiple arrays of NameValuePairs and then return a unique array
 func NameValuePairMerger(pairs ...[]config.NameValuePair) []config.NameValuePair {
-	var tempMap map[string]string = make(map[string]string)
+	tempMap := make(map[string]string)
 
 	// remove duplicates
 	for _, pairGroup := range pairs {

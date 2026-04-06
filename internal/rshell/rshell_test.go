@@ -17,6 +17,6 @@ func TestDockerLabel_Basics(t *testing.T) {
 		SubnetIds:        []string{"subnet-11111"},
 		SecurityGroupIds: []string{"sg-11111"},
 	}
-	var _ string = label1.ToJSON()
+	var _ string = label1.ToJSON() //nolint:staticcheck
 
 }

@@ -1,9 +1,8 @@
 package cronschedule
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -90,7 +89,7 @@ func BuildCreate(ctx *config.Context, resource *config.CronJob, taskDefArn strin
 	// Load network configuration
 	network := util.Coalesce(resource.Network, project.TaskDefaults.Network, project.Network)
 	if network == nil {
-		return nil, errors.New("Unable to resolve network configuration!")
+		return nil, usererr.New("Unable to resolve network configuration!")
 	}
 
 	if err := network.Resolve(ctx, ecsParams.NetworkConfiguration); err != nil {

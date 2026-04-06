@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/invopop/jsonschema"
 )
@@ -34,7 +33,7 @@ func (obj *Volume) ApplyDefaults() {
 
 func (obj *Volume) ToAws() ecsTypes.Volume {
 	vol := ecsTypes.Volume{
-		Name: aws.String(obj.Name),
+		Name: new(obj.Name),
 	}
 
 	if obj.EFSConfig != nil {
@@ -44,7 +43,7 @@ func (obj *Volume) ToAws() ecsTypes.Volume {
 	return vol
 }
 
-func (obj *Volume) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Volume) UnmarshalYAML(unmarshal func(any) error) error {
 	type tVolume Volume
 	var defo = tVolume{}
 	if err := unmarshal(&defo); err != nil {

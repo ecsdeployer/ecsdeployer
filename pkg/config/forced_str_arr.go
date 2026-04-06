@@ -5,7 +5,7 @@ import "github.com/invopop/jsonschema"
 // allows a string or []string to parse, but will force it to []string
 type forcedStrArr []string
 
-func (a *forcedStrArr) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *forcedStrArr) UnmarshalYAML(unmarshal func(any) error) error {
 	var str string
 	if err := unmarshal(&str); err != nil {
 		var arr []string
@@ -27,7 +27,7 @@ var forcedStrArrSchema = &jsonschema.Schema{
 			Items: &jsonschema.Schema{
 				Type: "string",
 			},
-			MinItems: 1,
+			MinItems: new(uint64(1)),
 		},
 		{
 			Type: "string",

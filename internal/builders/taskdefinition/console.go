@@ -1,12 +1,10 @@
 package taskdefinition
 
 import (
-	"errors"
-
 	"ecsdeployer.com/ecsdeployer/internal/rshell"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -27,14 +25,14 @@ func (b *Builder) applyRemoteShell() error {
 	}
 
 	b.primaryContainer.LinuxParameters = &ecsTypes.LinuxParameters{
-		InitProcessEnabled: aws.Bool(true),
+		InitProcessEnabled: new(true),
 	}
 
 	b.primaryContainer.PortMappings = append(b.primaryContainer.PortMappings, console.PortMapping.ToAwsPortMapping())
 
 	network := util.Coalesce(console.Network, b.taskDefaults.Network, b.project.Network)
 	if network == nil {
-		return errors.New("No network configuration provided")
+		return usererr.New("No network configuration provided")
 	}
 	networkConfig := &ecsTypes.NetworkConfiguration{}
 	if err := network.Resolve(b.ctx, networkConfig); err != nil {

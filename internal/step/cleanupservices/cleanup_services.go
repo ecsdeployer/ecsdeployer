@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"slices"
+
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/step"
@@ -16,7 +18,6 @@ import (
 	tagging "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi"
 	taggingTypes "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types"
 	"github.com/webdestroya/go-log"
-	"golang.org/x/exp/slices"
 )
 
 type Step struct{}

@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/invopop/jsonschema"
 )
@@ -29,7 +28,7 @@ type FirelensConfig struct {
 	LogToAwsLogs *FirelensAwsLogGroup `yaml:"log_to_awslogs,omitempty" json:"log_to_awslogs,omitempty"`
 }
 
-func (obj *FirelensConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *FirelensConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var val bool
 	if err := unmarshal(&val); err != nil {
@@ -86,11 +85,11 @@ func (obj *FirelensConfig) Validate() error {
 
 func (obj *FirelensConfig) ApplyDefaults() {
 	if obj.Type == nil {
-		obj.Type = aws.String(string(ecsTypes.FirelensConfigurationTypeFluentbit))
+		obj.Type = new(string(ecsTypes.FirelensConfigurationTypeFluentbit))
 	}
 
 	if obj.InheritEnv == nil {
-		obj.InheritEnv = aws.Bool(false)
+		obj.InheritEnv = new(false)
 	}
 
 	if obj.LogToAwsLogs == nil {
@@ -102,7 +101,7 @@ func (obj *FirelensConfig) ApplyDefaults() {
 	}
 
 	if obj.Name == nil {
-		obj.Name = aws.String("log_router")
+		obj.Name = new("log_router")
 	}
 
 	if obj.EnvVars == nil {
@@ -120,14 +119,14 @@ func (obj *FirelensConfig) ApplyDefaults() {
 	if obj.Image == nil && !obj.IsDisabled() {
 		if *obj.Type == string(ecsTypes.FirelensConfigurationTypeFluentbit) {
 			obj.Image = &ImageUri{
-				uri: aws.String("public.ecr.aws/aws-observability/aws-for-fluent-bit:latest"),
+				uri: new("public.ecr.aws/aws-observability/aws-for-fluent-bit:latest"),
 			}
 		}
 	}
 
 	// if obj.Logging == nil {
 	// 	obj.Logging = &TaskLoggingConfig{
-	// 		Driver: aws.String(LoggingDisableFlag),
+	// 		Driver: new(LoggingDisableFlag),
 	// 	}
 	// }
 }
@@ -146,7 +145,7 @@ func (FirelensConfig) JSONSchemaExtend(base *jsonschema.Schema) {
 		if def.Type != nil {
 			prop.Default = def.Type
 		}
-		prop.Enum = []interface{}{
+		prop.Enum = []any{
 			ecsTypes.FirelensConfigurationTypeFluentbit,
 			ecsTypes.FirelensConfigurationTypeFluentd,
 		}

@@ -4,12 +4,11 @@ import (
 	"errors"
 	"strings"
 
+	"slices"
+
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
-	"golang.org/x/exp/slices"
 )
 
 type DependsOn struct {
@@ -23,7 +22,7 @@ func NewDependsOnFromString(str string) (*DependsOn, error) {
 
 	if len(parts) == 1 {
 		dep := &DependsOn{
-			Name:      aws.String(parts[0]),
+			Name:      new(parts[0]),
 			Condition: ecsTypes.ContainerConditionStart,
 		}
 
@@ -35,7 +34,7 @@ func NewDependsOnFromString(str string) (*DependsOn, error) {
 	}
 
 	res := &DependsOn{
-		Name:      aws.String(parts[0]),
+		Name:      new(parts[0]),
 		Condition: ecsTypes.ContainerCondition(parts[1]),
 	}
 
@@ -46,7 +45,7 @@ func NewDependsOnFromString(str string) (*DependsOn, error) {
 	return res, nil
 }
 
-func (a *DependsOn) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *DependsOn) UnmarshalYAML(unmarshal func(any) error) error {
 	type tDependsOn DependsOn
 	var obj tDependsOn
 	if err := unmarshal(&obj); err != nil {
@@ -105,10 +104,10 @@ func (DependsOn) JSONSchema() *jsonschema.Schema {
 		Description: "'container:CONDITION' format",
 	}
 
-	objProps := orderedmap.New()
+	objProps := jsonschema.NewProperties()
 	objProps.Set("name", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 		Pattern:   "^[a-zA-Z][-_a-zA-Z0-9]+$",
 	})
 

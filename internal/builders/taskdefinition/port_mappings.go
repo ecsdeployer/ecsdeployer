@@ -48,7 +48,7 @@ func assignPortMappings(cdef *ecsTypes.ContainerDefinition, mappings []config.Po
 }
 
 func containerHasPortMapping(cdef *ecsTypes.ContainerDefinition, mapping config.PortMapping) bool {
-	if cdef.PortMappings == nil || len(cdef.PortMappings) == 0 {
+	if len(cdef.PortMappings) == 0 {
 		return false
 	}
 

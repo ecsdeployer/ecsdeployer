@@ -92,7 +92,7 @@ func ParseMemorySpec(str string) (*MemorySpec, error) {
 	return nil, NewValidationError("Invalid memory specification format")
 }
 
-func (obj *MemorySpec) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *MemorySpec) UnmarshalYAML(unmarshal func(any) error) error {
 	var def string
 	if err := unmarshal(&def); err != nil {
 		return err
@@ -118,7 +118,7 @@ func (MemorySpec) JSONSchema() *jsonschema.Schema {
 			{
 				Type:        "string",
 				Description: "Absolute or multiple of CPU",
-				Examples: []interface{}{
+				Examples: []any{
 					"2048",
 					"2x",
 					"2 GB",
@@ -135,7 +135,7 @@ func (MemorySpec) JSONSchema() *jsonschema.Schema {
 	}
 }
 
-func (obj MemorySpec) MarshalYAML() (interface{}, error) {
+func (obj MemorySpec) MarshalYAML() (any, error) {
 
 	if obj.multiplier > 0 {
 		val := strconv.FormatFloat(obj.multiplier, 'f', -1, 64)

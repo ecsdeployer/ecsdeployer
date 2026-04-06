@@ -35,7 +35,7 @@ func Mock_Scheduler_GetScheduleGroup(groupName string) *awsmocker.MockedEndpoint
 			Path:    fmt.Sprintf("/schedule-groups/%s", groupName),
 		},
 		Response: &awsmocker.MockedResponse{
-			Body: jsonify(map[string]interface{}{
+			Body: jsonify(map[string]any{
 				"Arn":                  fmt.Sprintf("arn:aws:scheduler:%s:%s:schedule-group/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, groupName),
 				"CreationDate":         time.Now().UnixMilli(),
 				"LastModificationDate": time.Now().UnixMilli(),
@@ -54,7 +54,7 @@ func Mock_Scheduler_CreateScheduleGroup(groupName string) *awsmocker.MockedEndpo
 			Path:    fmt.Sprintf("/schedule-groups/%s", groupName),
 		},
 		Response: &awsmocker.MockedResponse{
-			Body: jsonify(map[string]interface{}{
+			Body: jsonify(map[string]any{
 				"ScheduleGroupArn": fmt.Sprintf("arn:aws:scheduler:%s:%s:schedule-group/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, groupName),
 			}),
 		},
@@ -90,7 +90,7 @@ func Mock_Scheduler_GetSchedule(groupName, scheduleName string) *awsmocker.Mocke
 			},
 		},
 		Response: &awsmocker.MockedResponse{
-			Body: jsonify(map[string]interface{}{
+			Body: jsonify(map[string]any{
 				"GroupName":            groupName,
 				"Name":                 scheduleName,
 				"State":                "ACTIVE",
@@ -98,10 +98,10 @@ func Mock_Scheduler_GetSchedule(groupName, scheduleName string) *awsmocker.Mocke
 				"CreationDate":         time.Now().UnixMilli(),
 				"LastModificationDate": time.Now().UnixMilli(),
 				"Arn":                  fmt.Sprintf("arn:aws:scheduler:%s:%s:schedule/%s/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, groupName, scheduleName),
-				"Target": map[string]interface{}{
+				"Target": map[string]any{
 					"Arn": fmt.Sprintf("arn:aws:ecs:%s:%s:cluster/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, groupName),
 				},
-				"FlexibleTimeWindow": map[string]interface{}{
+				"FlexibleTimeWindow": map[string]any{
 					"Mode": "OFF",
 				},
 			}),
@@ -115,12 +115,12 @@ func Mock_Scheduler_CreateSchedule(groupName, scheduleName string) *awsmocker.Mo
 			Service: "scheduler",
 			Method:  http.MethodPost,
 			Path:    fmt.Sprintf("/schedules/%s", scheduleName),
-			JMESPathMatches: map[string]interface{}{
+			JMESPathMatches: map[string]any{
 				"GroupName": groupName,
 			},
 		},
 		Response: &awsmocker.MockedResponse{
-			Body: jsonify(map[string]interface{}{
+			Body: jsonify(map[string]any{
 				"ScheduleArn": fmt.Sprintf("arn:aws:scheduler:%s:%s:schedule/%s/%s", awsmocker.DefaultRegion, awsmocker.DefaultAccountId, groupName, scheduleName),
 			}),
 		},
@@ -189,7 +189,7 @@ func Mock_Scheduler_ListSchedules(groupName string, schedules []MockListSchedule
 			},
 		},
 		Response: &awsmocker.MockedResponse{
-			Body: jsonify(map[string]interface{}{
+			Body: jsonify(map[string]any{
 				"Schedules": listOfScheds,
 			}),
 		},
@@ -197,8 +197,8 @@ func Mock_Scheduler_ListSchedules(groupName string, schedules []MockListSchedule
 }
 
 // because nothing on AWS is ever consistent.
-func schedulerGoofyErrorResponder(rr *awsmocker.ReceivedRequest, status int, errorType, message string) *http.Response {
-	body := jsonify(map[string]interface{}{
+func schedulerGoofyErrorResponder(_ *awsmocker.ReceivedRequest, status int, errorType, message string) *http.Response {
+	body := jsonify(map[string]any{
 		"Message": message,
 	})
 	resp := &http.Response{

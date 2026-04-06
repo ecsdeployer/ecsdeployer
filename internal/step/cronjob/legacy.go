@@ -6,6 +6,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	cronBuilder "ecsdeployer.com/ecsdeployer/internal/builders/cron"
 	"ecsdeployer.com/ecsdeployer/internal/substep/taskdefinition"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/webdestroya/go-log"
 )
@@ -80,7 +81,7 @@ func (s *legacy) putTarget(ctx *config.Context) error {
 				"message":  *failEntry.ErrorMessage,
 			}).Errorf("failure")
 		}
-		return fmt.Errorf("Failed to create Cron Targets")
+		return usererr.New("Failed to create Cron Targets")
 	}
 
 	return nil

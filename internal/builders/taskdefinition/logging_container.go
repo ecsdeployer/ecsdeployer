@@ -1,17 +1,15 @@
 package taskdefinition
 
 import (
-	"errors"
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
-	"ecsdeployer.com/ecsdeployer/internal/util"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
-var ErrFirelensSSMUsageError = errors.New("Cannot use SSM references in firelens options")
+var ErrFirelensSSMUsageError = usererr.New("Cannot use SSM references in firelens options")
 
 // just the logging container, if desired. (firelens)
 func (b *Builder) applyLoggingFirelensContainer() error {
@@ -59,15 +57,15 @@ func (b *Builder) applyLoggingFirelensContainer() error {
 
 	b.loggingContainer = &ecsTypes.ContainerDefinition{
 		Name:                  firelensConfig.Name,
-		Essential:             aws.Bool(true),
-		Image:                 aws.String(flImageUri),
+		Essential:             new(true),
+		Image:                 new(flImageUri),
 		FirelensConfiguration: flConfig,
 	}
 
 	if firelensConfig.Memory != nil {
 		memVal := firelensConfig.Memory.GetValueOnly()
 		if memVal > 0 {
-			b.loggingContainer.MemoryReservation = aws.Int32(memVal)
+			b.loggingContainer.MemoryReservation = new(memVal)
 		}
 	}
 
@@ -105,7 +103,7 @@ func (b *Builder) applyLoggingFirelensContainer() error {
 		}
 
 		awsLogConfig := &config.TaskLoggingConfig{
-			Driver:  util.Ptr(string(ecsTypes.LogDriverAwslogs)),
+			Driver:  new(string(ecsTypes.LogDriverAwslogs)),
 			Options: awsLogOpts,
 		}
 

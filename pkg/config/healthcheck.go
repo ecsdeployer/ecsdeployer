@@ -20,7 +20,7 @@ func (obj *HealthCheck) Validate() error {
 		return nil
 	}
 
-	if obj.Command == nil || len(obj.Command) == 0 {
+	if len(obj.Command) == 0 {
 		return NewValidationError("Healthcheck command cannot be empty")
 	}
 
@@ -38,7 +38,7 @@ func (obj *HealthCheck) Validate() error {
 func (obj *HealthCheck) ApplyDefaults() {
 }
 
-func (obj *HealthCheck) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *HealthCheck) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var boolVal bool
 	if err := unmarshal(&boolVal); err == nil {

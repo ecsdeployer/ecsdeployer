@@ -5,18 +5,19 @@ import (
 	"sync"
 	"time"
 
+	"slices"
+
 	"github.com/webdestroya/awsmocker"
-	"golang.org/x/exp/slices"
 )
 
 func Mock_SSM_GetParametersByPath(prefixWithTrailingSlash string, paramNames []string) *awsmocker.MockedEndpoint {
-	return Mock_SSM_GetParametersByPath_Advanced(func(m *Mock_ECS_GetParametersByPathOpts) {
+	return Mock_SSM_GetParametersByPath_Advanced(func(m *Mock_SSM_GetParametersByPathOpts) {
 		m.Path = prefixWithTrailingSlash
 		m.Names = paramNames
 	})
 }
 
-type Mock_ECS_GetParametersByPathOpts struct {
+type Mock_SSM_GetParametersByPathOpts struct {
 	MaxCount  int
 	Path      string
 	Names     []string
@@ -29,20 +30,20 @@ var (
 	ssmGenMu    sync.Mutex
 )
 
-func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParametersByPathOpts)) *awsmocker.MockedEndpoint {
+func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_SSM_GetParametersByPathOpts)) *awsmocker.MockedEndpoint {
 
-	options := Mock_ECS_GetParametersByPathOpts{}
+	options := Mock_SSM_GetParametersByPathOpts{}
 	for _, optFunc := range optFuncs {
 		optFunc(&options)
 	}
 
-	jmesMatches := map[string]interface{}{
+	jmesMatches := map[string]any{
 		"Path":           options.Path,
 		"Recursive":      true,
 		"WithDecryption": false,
 	}
 
-	// response := map[string]interface{}{
+	// response := map[string]any{
 	// 	"Parameters": results,
 	// }
 
@@ -75,7 +76,7 @@ func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParamet
 					}
 				}
 
-				results := make([]interface{}, 0, len(params))
+				results := make([]any, 0, len(params))
 
 				slices.Sort(params)
 
@@ -83,7 +84,7 @@ func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParamet
 
 					name := options.Path + paramName
 
-					entry := map[string]interface{}{
+					entry := map[string]any{
 						"Name":             name,
 						"Type":             "SecureString",
 						"Version":          1,
@@ -96,7 +97,7 @@ func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParamet
 					results = append(results, entry)
 				}
 
-				response := map[string]interface{}{
+				response := map[string]any{
 					"Parameters": results,
 				}
 
@@ -108,5 +109,55 @@ func Mock_SSM_GetParametersByPath_Advanced(optFuncs ...func(*Mock_ECS_GetParamet
 			},
 			// Body:        func(jsonify(response),
 		},
+	}
+}
+
+func Mock_SSM_DeleteParameter(paramName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service:       "ssm",
+			Action:        "DeleteParameter",
+			MaxMatchCount: 1,
+			Matcher: JmesRequestMatcher(map[string]any{
+				"Name": paramName,
+			}),
+		},
+		Response: &awsmocker.MockedResponse{
+			ContentType: awsmocker.ContentTypeJSON,
+			Body:        `{}`,
+		},
+	}
+}
+
+func Mock_SSM_DeleteParameter_NotFound(paramName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service:       "ssm",
+			Action:        "DeleteParameter",
+			MaxMatchCount: 1,
+			Matcher: JmesRequestMatcher(map[string]any{
+				"Name": paramName,
+			}),
+		},
+		// Response: &awsmocker.MockedResponse{
+		// 	StatusCode:  400,
+		// 	ContentType: awsmocker.ContentTypeJSON,
+		// 	Body:        `{"__type":"ParameterNotFound", "Code": "ParameterNotFound"}`,
+		// },
+		Response: awsmocker.MockResponse_Error(400, "ParameterNotFound", "Not found"),
+	}
+}
+
+func Mock_SSM_DeleteParameter_Forbidden(paramName string) *awsmocker.MockedEndpoint {
+	return &awsmocker.MockedEndpoint{
+		Request: &awsmocker.MockedRequest{
+			Service:       "ssm",
+			Action:        "DeleteParameter",
+			MaxMatchCount: 1,
+			Matcher: JmesRequestMatcher(map[string]any{
+				"Name": paramName,
+			}),
+		},
+		Response: awsmocker.MockResponse_Error(400, "AccessDeniedException", "No permission"),
 	}
 }

@@ -1,8 +1,7 @@
 package preflight
 
 import (
-	"fmt"
-
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
 
@@ -15,7 +14,7 @@ func (checkCluster) String() string {
 func (checkCluster) Check(ctx *config.Context) error {
 
 	if ctx.Project.Cluster == nil {
-		return fmt.Errorf("No cluster information was supplied!")
+		return usererr.New("No cluster information was supplied!")
 	}
 
 	if _, err := ctx.Project.Cluster.Name(ctx); err != nil {

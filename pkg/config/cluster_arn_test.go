@@ -42,4 +42,10 @@ func TestClusterArn(t *testing.T) {
 			require.Equal(t, table.arn, arnVal)
 		})
 	}
+
+	t.Run("badarn", func(t *testing.T) {
+		t.SkipNow()
+		_, err := yaml.ParseYAMLString[config.ClusterArn](`arn:aws:iam::1234567890:role/fakerole`)
+		require.Error(t, err)
+	})
 }

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
 )
 
@@ -13,7 +12,7 @@ type TaskLoggingConfig struct {
 	Options EnvVarMap `yaml:"options,omitempty" json:"options,omitempty"`
 }
 
-func (obj *TaskLoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *TaskLoggingConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var val bool
 	// allow `false` as a value
@@ -23,7 +22,7 @@ func (obj *TaskLoggingConfig) UnmarshalYAML(unmarshal func(interface{}) error) e
 		}
 
 		*obj = TaskLoggingConfig{
-			Driver: util.Ptr(LoggingDisableFlag),
+			Driver: new(LoggingDisableFlag),
 		}
 		obj.ApplyDefaults()
 		return nil

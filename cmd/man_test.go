@@ -3,14 +3,16 @@ package cmd
 import (
 	"testing"
 
+	"ecsdeployer.com/ecsdeployer/internal/commands/mancmd"
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"github.com/stretchr/testify/require"
 )
 
 func TestManCmd(t *testing.T) {
-	silenceLogging(t)
+	testutil.DisableLoggingForTest(t)
 
 	t.Run("misc", func(t *testing.T) {
-		cmd := newManCmd().cmd
+		cmd := mancmd.New()
 		require.True(t, cmd.Hidden)
 	})
 

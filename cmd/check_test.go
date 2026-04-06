@@ -9,7 +9,7 @@ import (
 )
 
 func TestCheckConfig(t *testing.T) {
-	silenceLogging(t)
+	testutil.DisableLoggingForTest(t)
 	helpers.IsTestingMode = true
 
 	t.Run("happy path", func(t *testing.T) {

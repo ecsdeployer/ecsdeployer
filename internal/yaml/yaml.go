@@ -10,7 +10,7 @@ import (
 )
 
 // UnmarshalStrict unmarshals a YAML document with strict behavior (only declared fields are tolerated).
-func UnmarshalStrict(in []byte, out interface{}) error {
+func UnmarshalStrict(in []byte, out any) error {
 	// decoder := yaml.NewDecoder(bytes.NewReader(in))
 	// decoder.KnownFields(true)
 
@@ -19,7 +19,7 @@ func UnmarshalStrict(in []byte, out interface{}) error {
 }
 
 // Unmarshal some struct as a YAML document, without strict behavior.
-func Unmarshal(in []byte, out interface{}) error {
+func Unmarshal(in []byte, out any) error {
 	// decoder := yaml.NewDecoder(bytes.NewReader(in))
 	// decoder.KnownFields(false)
 
@@ -27,7 +27,7 @@ func Unmarshal(in []byte, out interface{}) error {
 	return unmarshalReader(bytes.NewReader(in), false, out)
 }
 
-func unmarshalReader(in io.Reader, strict bool, out interface{}) error {
+func unmarshalReader(in io.Reader, strict bool, out any) error {
 	decoder := yaml.NewDecoder(in)
 	decoder.KnownFields(strict)
 
@@ -35,7 +35,7 @@ func unmarshalReader(in io.Reader, strict bool, out interface{}) error {
 }
 
 // Marshal some struct as a YAML document.
-func Marshal(in interface{}) ([]byte, error) {
+func Marshal(in any) ([]byte, error) {
 	b := new(bytes.Buffer)
 	encoder := yaml.NewEncoder(b)
 	encoder.SetIndent(2) // default is 4

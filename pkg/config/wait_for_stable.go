@@ -17,7 +17,7 @@ func (wfs *WaitForStable) IsDisabled() bool {
 	return wfs.Disabled
 }
 
-func (a *WaitForStable) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *WaitForStable) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var val bool
 	if err := unmarshal(&val); err != nil {

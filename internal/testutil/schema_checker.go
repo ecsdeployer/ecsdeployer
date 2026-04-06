@@ -40,7 +40,7 @@ func NewSchemaChecker(v any) *SchemaChecker {
 func (obj *SchemaChecker) CheckYAML(t *testing.T, val string) error {
 	t.Helper()
 
-	var tmp interface{}
+	var tmp any
 
 	if err := yaml.Unmarshal([]byte(val), &tmp); err != nil {
 		panic(err)

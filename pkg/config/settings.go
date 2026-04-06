@@ -2,8 +2,6 @@ package config
 
 import (
 	"time"
-
-	"ecsdeployer.com/ecsdeployer/internal/util"
 )
 
 type Settings struct {
@@ -24,10 +22,14 @@ type Settings struct {
 	// Block sharing task defs for cron/predeploy tasks
 	DisableSharedTaskDef bool `yaml:"disable_shared_taskdefs,omitempty" json:"disable_shared_taskdefs,omitempty" jsonschema:"-"`
 
+	// Maximum number of parallel deployment operations (e.g. service deploys, cron job registrations).
+	// Lower this if you experience AWS API throttling with many tasks.
+	Concurrency *int `yaml:"concurrency,omitempty" json:"concurrency,omitempty" jsonschema:"description=Maximum number of parallel deployment operations,minimum=1,maximum=10"`
+
 	SSMImport *SSMImport `yaml:"ssm_import,omitempty" json:"ssm_import,omitempty"`
 }
 
-func (a *Settings) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *Settings) UnmarshalYAML(unmarshal func(any) error) error {
 	type tSettings Settings
 	var obj tSettings
 	if err := unmarshal(&obj); err != nil {
@@ -51,17 +53,21 @@ func (obj *Settings) ApplyDefaults() {
 	// }
 
 	if obj.PreDeployTimeout == nil {
-		obj.PreDeployTimeout = util.Ptr(NewDurationFromTDuration(90 * time.Minute))
+		obj.PreDeployTimeout = new(NewDurationFromTDuration(90 * time.Minute))
 	}
 
 	if obj.KeepInSync == nil {
-		obj.KeepInSync = util.Ptr(NewKeepInSyncFromBool(defaultKeepInSync))
+		obj.KeepInSync = new(NewKeepInSyncFromBool(defaultKeepInSync))
 	}
 
 	if obj.WaitForStable == nil {
 		obj.WaitForStable = &WaitForStable{}
 	}
 	obj.WaitForStable.ApplyDefaults()
+
+	if obj.Concurrency == nil {
+		obj.Concurrency = new(2)
+	}
 
 	if obj.SSMImport == nil {
 		obj.SSMImport = &SSMImport{}
@@ -81,6 +87,10 @@ func (obj *Settings) Validate() error {
 
 	if err := obj.SSMImport.Validate(); err != nil {
 		return err
+	}
+
+	if obj.Concurrency != nil && (*obj.Concurrency < 1 || *obj.Concurrency > 10) {
+		return NewValidationError("concurrency must be between 1 and 10")
 	}
 
 	if obj.DisableMarkerTag && !obj.KeepInSync.AllDisabled() {

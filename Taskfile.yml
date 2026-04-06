@@ -1,0 +1,148 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+vars:
+  GOPKGS:
+    sh: go list ./cmd/... ./internal/... ./pkg/... | grep -v internal/testutil | tr '\n' ' '
+
+tasks:
+  precommit:
+    desc: Run all pre-commit checks (tidy, lint, test, docs:pre)
+    deps: [tidy, lint, test, docs:pre]
+
+  generate:
+    desc: Run code generation
+    cmds:
+      - rm -f ./internal/fargate/sizes_gen.go
+      - go generate ./...
+
+  tidy:
+    desc: Verify and tidy Go modules
+    cmds:
+      - go mod verify
+      - go mod tidy
+      - cmd: |
+          if ! git diff --quiet go.mod go.sum; then
+            echo "please run go mod tidy and check in changes, you might have to use the same version of Go as the CI"
+            exit 1
+          fi
+
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run && echo "Code passed lint check!"
+
+  test:release:
+    desc: Test the release build with goreleaser
+    cmds:
+      - goreleaser release --skip publish,sign --clean --snapshot --parallelism 4
+
+  check:
+    desc: Run config file checks
+    cmds:
+      - go run . check --debug -c cmd/testdata/valid.yml
+      - go run . check --debug -c cmd/testdata/smoke.yml
+      - go run . check --debug -c www/docs/static/examples/generic.yml
+      - go run . check --debug -c www/docs/static/examples/simple_web.yml
+
+  schema:
+    desc: Generate JSON schema
+    cmds:
+      - go run . schema -o ./www/docs/static/schema.json
+
+  smokedeploy-debug:
+    desc: Run a smoke deploy with debug logging
+    env:
+      AWS_PROFILE: ecsdeployer-example
+    cmds:
+      - go run . deploy --debug -c cmd/testdata/smoke.yml --tag test --app-version 1.2.3
+
+  smokedeploy:
+    desc: Run a smoke deploy
+    env:
+      AWS_PROFILE: ecsdeployer-example
+    cmds:
+      - go run . deploy -c cmd/testdata/smoke.yml --tag test --app-version 1.2.3
+
+  gen-man:
+    desc: Generate man pages
+    cmds:
+      - ./scripts/manpages.sh
+
+  showman:
+    desc: Generate and display man page
+    deps: [gen-man]
+    cmds:
+      - gunzip -c manpages/ecsdeployer.1.gz | nroff -man - | more -s
+
+  test:
+    desc: Run unit tests
+    cmds:
+      - ./scripts/run_with_test_env.sh go test -timeout 180s {{.GOPKGS}}
+
+  test:verbose:
+    desc: Run unit tests (verbose)
+    cmds:
+      - ./scripts/run_with_test_env.sh go test -v -timeout 180s {{.GOPKGS}}
+
+  test:smokedeploy:
+    desc: Run smoke deploy integration test
+    cmds:
+      - ./scripts/run_with_test_env.sh go test -timeout 180s -v ./cmd/ -run TestDeploySmoke -- --dump-cmd-output
+
+  test:testutil:
+    desc: Run testutil package tests
+    cmds:
+      - go test -timeout 180s ./internal/testutil
+
+  test:single:
+    desc: Run a single test by name (task test-single -- TestFooBar)
+    requires:
+      vars: [CLI_ARGS]
+    cmds:
+      - ./scripts/run_with_test_env.sh go test -v -timeout 180s {{.GOPKGS}} -run {{.CLI_ARGS}}
+
+  docs:serve:
+    desc: Serve documentation site locally
+    dir: www
+    cmds:
+      - mkdocs serve
+
+  docs:deploy:
+    desc: Build and deploy documentation
+    deps: [generate, docs:pre]
+    dir: www
+    cmds:
+      - mkdocs gh-deploy -c -b gh-pages -r newrepo --no-history
+
+  docs:pre:
+    desc: Run documentation pre-build scripts
+    cmds:
+      - ./scripts/cmd_docs.sh
+
+  outdated:
+    desc: List outdated direct dependencies
+    cmds:
+      - go list -u -m -f '{{`{{if not .Indirect}}{{if .Update}}{{.}}{{end}}{{end}}`}}' all
+
+  test:coverage:
+    aliases:
+      - coverage
+    desc: Generate test coverage report
+    cmds:
+      - mkdir -p coverage
+      - ./scripts/run_with_test_env.sh go test {{.GOPKGS}} -coverpkg=./... -coverprofile=coverage/c.out -covermode=count -short
+      - cmd: cat coverage/c.out | grep -v ecsdeployer/internal/testutil/ > coverage/c_notest.out
+      - go tool cover -html=coverage/c_notest.out -o coverage/index.html
+
+  htmltest:
+    desc: Build docs and run HTML link checker
+    dir: www
+    cmds:
+      - mkdocs build
+      - htmltest -c htmltest.yml site
+
+  binsize:
+    desc: Analyze binary size (requires gsa)
+    cmds:
+      - gsa --web dist/ecsdeployer_darwin_arm64_v8.0/ecsdeployer

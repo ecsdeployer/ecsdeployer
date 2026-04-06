@@ -16,7 +16,7 @@ func Mock_ELBv2_DescribeTargetGroups_Generic_Success() *awsmocker.MockedEndpoint
 			ContentType: awsmocker.ContentTypeXML,
 			Body: func(rr *awsmocker.ReceivedRequest) string {
 				tgName := rr.HttpRequest.FormValue("Names.member.1")
-				return TemplateApply(mock_tpl_DescribeTargetGroupsResponse, map[string]interface{}{
+				return TemplateApply(mock_tpl_DescribeTargetGroupsResponse, map[string]any{
 					"TargetGroupNames": []string{tgName},
 					"AccountId":        awsmocker.DefaultAccountId,
 				})
@@ -55,7 +55,7 @@ func MockResponse_ELBv2_DescribeTargetGroups_Single(tgName string) *awsmocker.Mo
 
 	return &awsmocker.MockedResponse{
 		ContentType: awsmocker.ContentTypeXML,
-		Body: TemplateApply(mock_tpl_DescribeTargetGroupsResponse, map[string]interface{}{
+		Body: TemplateApply(mock_tpl_DescribeTargetGroupsResponse, map[string]any{
 			"TargetGroupNames": []string{tgName},
 			"AccountId":        awsmocker.DefaultAccountId,
 		}),

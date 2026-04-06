@@ -3,7 +3,6 @@ package config
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/invopop/jsonschema"
 )
@@ -43,7 +42,7 @@ func (obj *Ulimit) ApplyDefaults() {
 	}
 
 	if obj.Hard != nil && obj.Soft == nil {
-		obj.Soft = aws.Int32(0)
+		obj.Soft = new(int32(0))
 	}
 }
 
@@ -60,7 +59,7 @@ type _ulimitShort struct {
 	Limit *int32 `yaml:"limit" json:"limit"`
 }
 
-func (obj *Ulimit) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Ulimit) UnmarshalYAML(unmarshal func(any) error) error {
 
 	var defshort = _ulimitShort{}
 	if err := unmarshal(&defshort); err == nil {

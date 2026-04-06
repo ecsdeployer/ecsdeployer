@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
 	"github.com/webdestroya/awsmocker"
@@ -27,7 +26,7 @@ func TestCheckAccount(t *testing.T) {
 
 		t.Run("set same account", func(t *testing.T) {
 			ctx := config.New(&config.Project{EcsDeployerOptions: &config.EcsDeployerOptions{
-				AllowedAccountId: util.Ptr(awsmocker.DefaultAccountId),
+				AllowedAccountId: new(awsmocker.DefaultAccountId),
 			}})
 			require.False(t, checkAccount{}.Skip(ctx))
 			require.NoError(t, checkAccount{}.Check(ctx))
@@ -35,7 +34,7 @@ func TestCheckAccount(t *testing.T) {
 
 		t.Run("set diff account", func(t *testing.T) {
 			ctx := config.New(&config.Project{EcsDeployerOptions: &config.EcsDeployerOptions{
-				AllowedAccountId: util.Ptr("111111111111"),
+				AllowedAccountId: new("111111111111"),
 			}})
 			require.False(t, checkAccount{}.Skip(ctx))
 			err := checkAccount{}.Check(ctx)

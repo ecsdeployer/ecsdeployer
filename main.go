@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"ecsdeployer.com/ecsdeployer/cmd"
-	"ecsdeployer.com/ecsdeployer/pkg/version"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
 )
@@ -17,9 +16,13 @@ func init() {
 }
 
 func main() {
-	cmd.Execute(
-		version.String(),
-		os.Exit,
-		os.Args[1:],
-	)
+
+	ecode, _ := cmd.ExecuteNew()
+	os.Exit(int(ecode))
+
+	// cmd.Execute(
+	// 	version.String(),
+	// 	os.Exit,
+	// 	os.Args[1:],
+	// )
 }

@@ -71,11 +71,11 @@ func ParseLogRetention[T int32 | int64 | int | string](value T) (LogRetention, e
 
 	switch v := any(value).(type) {
 	case int64:
-		intVal = int32(v)
+		intVal = int32(v) //nolint:gosec // this value will never exceed 32bits
 	case int32:
 		intVal = v
 	case int:
-		intVal = int32(v)
+		intVal = int32(v) //nolint:gosec // this value will never exceed 32bits
 	default:
 		return LogRetention{}, fmt.Errorf("%w: somehow got a nonstandard integer to the log retention parser", ErrInvalidLogRetention)
 	}
@@ -87,7 +87,7 @@ func ParseLogRetention[T int32 | int64 | int | string](value T) (LogRetention, e
 	return LogRetention{days: intVal}, nil
 }
 
-func (a *LogRetention) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *LogRetention) UnmarshalYAML(unmarshal func(any) error) error {
 	var str string
 	if err := unmarshal(&str); err != nil {
 		return err
@@ -103,7 +103,7 @@ func (a *LogRetention) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
-func (obj LogRetention) MarshalYAML() (interface{}, error) {
+func (obj LogRetention) MarshalYAML() (any, error) {
 	if obj.Forever() {
 		return "forever", nil
 	}
@@ -133,7 +133,7 @@ func (LogRetention) JSONSchema() *jsonschema.Schema {
 			},
 			{
 				Type:        "integer",
-				Minimum:     1,
+				Minimum:     json.Number(`1`),
 				Description: "The number of days to retain logs",
 			},
 		},

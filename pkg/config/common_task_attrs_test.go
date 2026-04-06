@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
@@ -29,7 +28,7 @@ func TestCommonTaskAttrs(t *testing.T) {
 	t.Run("CanOverride", func(t *testing.T) {
 		require.True(t, (&config.CommonTaskAttrs{}).CanOverride())
 		strVal := "x"
-		require.False(t, (&config.CommonTaskAttrs{Architecture: util.Ptr(config.ArchitectureARM64)}).CanOverride())
+		require.False(t, (&config.CommonTaskAttrs{Architecture: new(config.ArchitectureARM64)}).CanOverride())
 		require.False(t, (&config.CommonTaskAttrs{PlatformVersion: &strVal}).CanOverride())
 		require.False(t, (&config.CommonTaskAttrs{ProxyConfig: &config.ProxyConfig{}}).CanOverride())
 		require.False(t, (&config.CommonTaskAttrs{Network: &config.NetworkConfiguration{}}).CanOverride())
@@ -43,14 +42,14 @@ func TestCommonTaskAttrs(t *testing.T) {
 
 func TestCommonTaskAttrs_Smoke(t *testing.T) {
 	common := &config.CommonTaskAttrs{
-		Architecture: util.Ptr(config.ArchitectureARM64),
+		Architecture: new(config.ArchitectureARM64),
 		CommonContainerAttrs: config.CommonContainerAttrs{
 			Name: "test",
 		},
 		Network: &config.NetworkConfiguration{
 			Subnets: []config.NetworkFilter{
 				{
-					ID: util.Ptr("subnet-1111111"),
+					ID: new("subnet-1111111"),
 				},
 			},
 		},

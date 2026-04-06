@@ -2,19 +2,21 @@ package cmd
 
 import (
 	"bytes"
-	"io"
 	"os"
 	"testing"
 
+	"slices"
+
+	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
+	"github.com/spf13/cobra"
 	"github.com/webdestroya/go-log"
-	"golang.org/x/exp/slices"
 )
 
-const (
-	fakedTestVersionStr = "9999.1.2-dev+testing"
-)
+// const (
+// 	fakedTestVersionStr = "9999.1.2-dev+testing"
+// )
 
 // type exitMemento struct {
 // 	code int
@@ -46,17 +48,7 @@ func setupCmdOutput(t *testing.T) {
 
 	// silence output
 
-	silenceLogging(t)
-}
-
-// send logs to the trash
-func silenceLogging(t *testing.T) {
-	t.Helper()
-	orig := log.Log
-	t.Cleanup(func() {
-		log.Log = orig
-	})
-	log.Log = log.New(io.Discard)
+	testutil.DisableLoggingForTest(t)
 }
 
 // Returns stdout, stderr, [error], exitcode
@@ -87,12 +79,11 @@ func runCommand(t *testing.T, conf *rcConf, args ...string) *runCommandResult {
 		exitCode: 0,
 	}
 
-	rcmd := newRootCmd(fakedTestVersionStr, result.SetExitCode)
+	// rcmd := newRootCmd(fakedTestVersionStr, result.SetExitCode)
+	// rcmd := rootcmd.New()
 
 	var bufOut bytes.Buffer
 	var bufErr bytes.Buffer
-	rcmd.cmd.SetOutput(&bufOut)
-	rcmd.cmd.SetErr(&bufErr)
 
 	if !conf.noWrapLog {
 		origLog := log.Log
@@ -102,36 +93,20 @@ func runCommand(t *testing.T, conf *rcConf, args ...string) *runCommandResult {
 		log.Log = log.New(&bufErr)
 	}
 
-	rcmd.cmd.SetArgs(args)
-	result.err = rcmd.cmd.Execute()
+	ecode, err := ExecuteNew(func(c *cobra.Command) {
+		c.SetOut(&bufOut)
+		c.SetErr(&bufErr)
+		c.SetArgs(args)
+	})
+
+	result.exitCode = int(ecode)
+	result.err = err
+
+	// rcmd.cmd.SetArgs(args)
+	// result.err = rcmd.cmd.Execute()
 
 	result.stdout = bufOut.String()
 	result.stderr = bufErr.String()
 
 	return result
-}
-
-// used for populating stdin or any other stream with data from a file
-func fillStreamWithConfig(t *testing.T, dst io.WriteSeeker, srcFile string) error {
-	t.Helper()
-
-	src, err := os.Open(srcFile)
-	if err != nil {
-		return err
-	}
-
-	defer src.Close()
-
-	data, err := io.ReadAll(src)
-	if err != nil {
-		return err
-	}
-
-	if _, err := dst.Write(data); err != nil {
-		return err
-	}
-	if _, err := dst.Seek(0, 0); err != nil {
-		return err
-	}
-	return nil
 }

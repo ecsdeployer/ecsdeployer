@@ -4,12 +4,12 @@ import (
 	"io"
 	"os"
 
+	"maps"
+
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
 	"github.com/invopop/jsonschema"
 	"github.com/webdestroya/go-log"
-	"golang.org/x/exp/maps"
 )
 
 type Project struct {
@@ -36,7 +36,7 @@ type Project struct {
 	Settings         *Settings             `yaml:"settings,omitempty" json:"settings,omitempty"`
 
 	// This is used to allow YAML aliases. It is not serialized
-	Aliases map[string]interface{} `yaml:"aliases,omitempty" json:"-" jsonschema:"-"`
+	Aliases map[string]any `yaml:"aliases,omitempty" json:"-" jsonschema:"-"`
 
 	Env []string `yaml:"env,omitempty" json:"env,omitempty" jsonschema:"-"` // this is generic environment, not for the app
 }
@@ -80,7 +80,7 @@ func LoadFromBytes(data []byte) (*Project, error) {
 	return &config, nil
 }
 
-func (obj *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Project) UnmarshalYAML(unmarshal func(any) error) error {
 	type tProject Project
 	var tmpObj tProject
 	if err := unmarshal(&tmpObj); err != nil {
@@ -132,7 +132,7 @@ func (project *Project) ApplyDefaults() {
 	project.Logging.ApplyDefaults()
 
 	if project.Image == nil {
-		project.Image = util.Ptr(NewImageUri("{{ .Image }}"))
+		project.Image = new(NewImageUri("{{ .Image }}"))
 	}
 
 	if project.Settings == nil {
@@ -145,7 +145,7 @@ func (project *Project) ApplyDefaults() {
 	}
 	project.ConsoleTask.ApplyDefaults()
 
-	if project.Tags == nil || len(project.Tags) == 0 {
+	if len(project.Tags) == 0 {
 		project.Tags = make([]NameValuePair, 0)
 	}
 

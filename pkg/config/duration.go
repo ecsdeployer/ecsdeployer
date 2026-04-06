@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -30,7 +31,7 @@ func NewDurationFromUint(val uint32) (Duration, error) {
 	return NewDurationFromTDuration(time.Duration(val) * time.Second), nil
 }
 
-func (a *Duration) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *Duration) UnmarshalYAML(unmarshal func(any) error) error {
 	var intVal uint32
 	if err := unmarshal(&intVal); err == nil {
 		dur, err := NewDurationFromUint(intVal)
@@ -75,17 +76,14 @@ func (Duration) JSONSchema() *jsonschema.Schema {
 		OneOf: []*jsonschema.Schema{
 			{
 				Type:        "integer",
-				Minimum:     0,
+				Minimum:     json.Number(`0`),
 				Description: "Seconds",
-				Extras: map[string]interface{}{
-					"minimum": 0,
-				},
 			},
 			{
 				Type:        "string",
 				Description: "Duration specified in shorthand",
 				Pattern:     "^[+]?([0-9]*(\\.[0-9]*)?[a-z]+)+$",
-				Examples: []interface{}{
+				Examples: []any{
 					"5m",
 					"4m2s",
 					"2h",

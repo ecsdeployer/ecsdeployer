@@ -1,12 +1,11 @@
 package taskdefinition
 
 import (
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
-func (b *Builder) applyContainerLoggingFirelens(cdef *ecsTypes.ContainerDefinition, thing hasContainerAttrs) error {
+func (b *Builder) applyContainerLoggingFirelens(cdef *ecsTypes.ContainerDefinition, _ hasContainerAttrs) error {
 
 	logConfig := b.project.Logging.FirelensConfig
 	if logConfig.IsDisabled() {
@@ -14,7 +13,7 @@ func (b *Builder) applyContainerLoggingFirelens(cdef *ecsTypes.ContainerDefiniti
 	}
 
 	taskLogConfig := &config.TaskLoggingConfig{
-		Driver:  util.Ptr(string(ecsTypes.LogDriverAwsfirelens)),
+		Driver:  new(string(ecsTypes.LogDriverAwsfirelens)),
 		Options: logConfig.Options.Filter(),
 	}
 

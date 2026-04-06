@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -67,7 +66,7 @@ func (img *ImageUri) Resolve(ctx *Context) (string, error) {
 	return "", nil
 }
 
-func (a *ImageUri) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *ImageUri) UnmarshalYAML(unmarshal func(any) error) error {
 	type tImageUri ImageUri
 	var obj tImageUri
 	if err := unmarshal(&obj); err != nil {
@@ -150,7 +149,7 @@ func NewImageUri(value string) ImageUri {
 	return img
 }
 
-func (obj *ImageUri) MarshalYAML() (interface{}, error) {
+func (obj *ImageUri) MarshalYAML() (any, error) {
 	if obj.uri != nil {
 		return *obj.uri, nil
 	}
@@ -172,8 +171,8 @@ func (ImageUri) JSONSchema() *jsonschema.Schema {
 	strSchema := &jsonschema.Schema{
 		Type:      "string",
 		Title:     "The full URI to your image",
-		MinLength: 2,
-		Examples: []interface{}{
+		MinLength: new(uint64(2)),
+		Examples: []any{
 			"myorg/myapp:latest",
 			"myorg/myapp@sha256:deadbeefdeadbeefdeadbeefdeadbeef",
 			"myorg/myapp:{{ .ImageTag }}",
@@ -181,7 +180,7 @@ func (ImageUri) JSONSchema() *jsonschema.Schema {
 		// Pattern: "^.+(/[^:]+)?((:|@).+)?$",
 	}
 
-	props := orderedmap.New()
+	props := jsonschema.NewProperties()
 	props.Set("ecr", &jsonschema.Schema{
 		Type:  "string",
 		Title: "Just the ECR Repository name",

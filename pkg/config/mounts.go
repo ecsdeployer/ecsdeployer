@@ -2,7 +2,6 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
@@ -30,13 +29,13 @@ func (obj *Mount) ApplyDefaults() {
 
 func (obj *Mount) ToAws() ecsTypes.MountPoint {
 	return ecsTypes.MountPoint{
-		ContainerPath: aws.String(obj.ContainerPath),
-		SourceVolume:  aws.String(obj.SourceVolume),
-		ReadOnly:      aws.Bool(obj.ReadOnly),
+		ContainerPath: new(obj.ContainerPath),
+		SourceVolume:  new(obj.SourceVolume),
+		ReadOnly:      new(obj.ReadOnly),
 	}
 }
 
-func (obj *Mount) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (obj *Mount) UnmarshalYAML(unmarshal func(any) error) error {
 	type tMount Mount
 	var defo = tMount{}
 	if err := unmarshal(&defo); err != nil {

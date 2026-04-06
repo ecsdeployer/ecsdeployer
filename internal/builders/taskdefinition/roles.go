@@ -1,14 +1,12 @@
 package taskdefinition
 
-import "github.com/aws/aws-sdk-go-v2/aws"
-
 func (b *Builder) applyRoles() error {
 	if b.project.ExecutionRole != nil {
 		execRoleArn, err := b.project.ExecutionRole.Arn(b.ctx)
 		if err != nil {
 			return err
 		}
-		b.taskDef.ExecutionRoleArn = aws.String(execRoleArn)
+		b.taskDef.ExecutionRoleArn = new(execRoleArn)
 	}
 
 	if b.project.Role != nil {
@@ -16,7 +14,7 @@ func (b *Builder) applyRoles() error {
 		if err != nil {
 			return err
 		}
-		b.taskDef.TaskRoleArn = aws.String(taskRoleArn)
+		b.taskDef.TaskRoleArn = new(taskRoleArn)
 	}
 
 	return nil

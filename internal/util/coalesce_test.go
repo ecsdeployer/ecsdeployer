@@ -8,13 +8,13 @@ import (
 )
 
 func TestCoalesce(t *testing.T) {
-	runCoalesceTest(t, Ptr(1), nil, nil, Ptr(1))
+	runCoalesceTest(t, new(1), nil, nil, new(1))
 	runCoalesceTest[int](t, nil, nil, nil, nil)
-	runCoalesceTest(t, Ptr(1), nil, nil, Ptr(1), nil)
-	runCoalesceTest(t, Ptr(1), Ptr(1))
-	runCoalesceTest(t, Ptr(1), Ptr(1), nil, nil)
-	runCoalesceTest(t, Ptr(false), nil, nil, Ptr(false))
-	runCoalesceTest(t, Ptr(false), Ptr(false))
+	runCoalesceTest(t, new(1), nil, nil, new(1), nil)
+	runCoalesceTest(t, new(1), new(1))
+	runCoalesceTest(t, new(1), new(1), nil, nil)
+	runCoalesceTest(t, new(false), nil, nil, new(false))
+	runCoalesceTest(t, new(false), new(false))
 }
 
 func runCoalesceTest[T comparable](t *testing.T, expected *T, values ...*T) {
@@ -34,8 +34,8 @@ func TestCoalesceWithFunc(t *testing.T) {
 		expectedVal   int
 		values        []*int
 	}{
-		{true, 6, []*int{nil, nil, Ptr(1), nil, Ptr(4), Ptr(6), nil, Ptr(8)}},
-		{false, 0, []*int{nil, nil, Ptr(1), nil, Ptr(4), Ptr(3), nil, Ptr(5)}},
+		{true, 6, []*int{nil, nil, new(1), nil, new(4), new(6), nil, new(8)}},
+		{false, 0, []*int{nil, nil, new(1), nil, new(4), new(3), nil, new(5)}},
 		{false, 0, []*int{nil, nil, nil}},
 	}
 
@@ -61,7 +61,7 @@ func TestCoalesceWithFunc(t *testing.T) {
 func TestMustCoalesce(t *testing.T) {
 
 	t.Run("normal", func(t *testing.T) {
-		expected := Ptr(1)
+		expected := new(1)
 
 		require.Equal(t, expected, MustCoalesce(nil, nil, nil, expected))
 	})

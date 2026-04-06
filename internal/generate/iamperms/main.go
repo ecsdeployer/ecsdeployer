@@ -30,12 +30,12 @@ type principal struct {
 }
 
 type Statement struct {
-	Sid       string                            `json:"Sid,omitempty"`
-	Effect    string                            `json:"Effect,omitempty"`
-	Action    interface{}                       `json:"Action,omitempty"`
-	Resource  interface{}                       `json:"Resource,omitempty"`
-	Principal interface{}                       `json:"Principal,omitempty"`
-	Condition map[string]map[string]interface{} `json:"Condition,omitempty"`
+	Sid       string                    `json:"Sid,omitempty"`
+	Effect    string                    `json:"Effect,omitempty"`
+	Action    any                       `json:"Action,omitempty"`
+	Resource  any                       `json:"Resource,omitempty"`
+	Principal any                       `json:"Principal,omitempty"`
+	Condition map[string]map[string]any `json:"Condition,omitempty"`
 }
 
 type stmt struct {
@@ -86,11 +86,11 @@ func (s *stmt) toPretty() *Statement {
 	}
 
 	if len(condList) > 0 {
-		finalCondlist := make(map[string]map[string]interface{})
+		finalCondlist := make(map[string]map[string]any)
 		for _, c := range condList {
 			_, exists := finalCondlist[c.test]
 			if !exists {
-				finalCondlist[c.test] = make(map[string]interface{})
+				finalCondlist[c.test] = make(map[string]any)
 			}
 
 			if c.value != "" {

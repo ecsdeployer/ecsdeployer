@@ -1,4 +1,4 @@
-package cmd
+package deploycmd
 
 import (
 	"io"
@@ -8,64 +8,61 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/middleware/logging"
 	"ecsdeployer.com/ecsdeployer/internal/middleware/skip"
 	"ecsdeployer.com/ecsdeployer/internal/pipeline"
+	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/caarlos0/ctrlc"
 	"github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )
 
-type deployCmd struct {
-	cmd  *cobra.Command
-	opts deployOpts
-}
-
-type deployOpts struct {
-	commonOpts
+type deployRunner struct {
+	cmdutil.CommonOptions
 	quiet   bool
 	timeout time.Duration
 }
 
-func newDeployCmd() *deployCmd {
-	root := &deployCmd{}
+func New() *cobra.Command {
+	runner := &deployRunner{}
 	cmd := &cobra.Command{
 		Use:           "deploy",
 		Short:         "Deploys application",
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		Args:          cobra.NoArgs,
-		RunE: timedRunE("deploy", func(cmd *cobra.Command, args []string) error {
-			if root.opts.quiet {
-				log.Log = log.New(io.Discard)
-			}
-
-			ctx, err := deployProject(root.opts)
-			if err != nil {
-				return err
-			}
-			deprecateWarn(ctx)
-			return nil
-		}),
+		RunE:          cmdutil.TimedRunE("deploy", runner.RunE),
 	}
 
-	cmd.Flags().BoolVarP(&root.opts.quiet, "quiet", "q", false, "Quiet mode: no output")
-	cmd.Flags().DurationVar(&root.opts.timeout, "timeout", 2*time.Hour, "Timeout for the entire deploy process")
+	cmd.Flags().BoolVarP(&runner.quiet, "quiet", "q", false, "Quiet mode: no output")
+	cmd.Flags().DurationVar(&runner.timeout, "timeout", 2*time.Hour, "Timeout for the entire deploy process")
 
-	setCommonFlags(cmd, &root.opts.commonOpts)
+	cmdutil.SetCommonFlags(cmd, &runner.CommonOptions)
 	// cmd.Flags().BoolVar(&root.opts.noValidate, "no-validate", false, "Skips validating the config file against the schema")
 	// _ = cmd.Flags().SetAnnotation("config", cobra.BashCompFilenameExt, []string{"yaml", "yml"})
 
-	root.cmd = cmd
-	return root
+	return cmd
 }
 
-func deployProject(options deployOpts) (*config.Context, error) {
-	cfg, err := loadConfig(options.config)
+func (r *deployRunner) RunE(cmd *cobra.Command, args []string) error {
+	if r.quiet {
+		log.Log = log.New(io.Discard)
+	}
+
+	ctx, err := r.deployProject()
+	if err != nil {
+		return err
+	}
+	cmdutil.DeprecateWarn(ctx)
+	return nil
+}
+
+func (r *deployRunner) deployProject() (*config.Context, error) {
+	cfg, err := cmdutil.LoadConfig(r.ConfigFile)
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := config.NewWithTimeout(cfg, options.timeout)
+	ctx, cancel := config.NewWithTimeout(cfg, r.timeout)
 	defer cancel()
-	setupDeployContext(ctx, options)
+	cmdutil.SetCommonContext(ctx, r.CommonOptions)
 	return ctx, ctrlc.Default.Run(ctx, func() error {
 		for _, step := range pipeline.DeploymentPipeline {
 			if err := skip.Maybe(
@@ -80,8 +77,4 @@ func deployProject(options deployOpts) (*config.Context, error) {
 		}
 		return nil
 	})
-}
-
-func setupDeployContext(ctx *config.Context, options deployOpts) {
-	setupContextCommon(ctx, options.commonOpts)
 }

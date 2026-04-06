@@ -2,7 +2,6 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/util"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/invopop/jsonschema"
 )
@@ -28,7 +27,7 @@ func (obj *ConsoleTask) IsEnabled() bool {
 	return *obj.Enabled
 }
 
-func (con *ConsoleTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (con *ConsoleTask) UnmarshalYAML(unmarshal func(any) error) error {
 	var boolval bool
 	if err := unmarshal(&boolval); err != nil {
 		type tConsoleTask ConsoleTask
@@ -41,7 +40,7 @@ func (con *ConsoleTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	} else {
 		*con = ConsoleTask{
-			Enabled: aws.Bool(boolval),
+			Enabled: new(boolval),
 		}
 	}
 
@@ -57,7 +56,7 @@ func (con *ConsoleTask) UnmarshalYAML(unmarshal func(interface{}) error) error {
 func (con *ConsoleTask) ApplyDefaults() {
 
 	if con.Enabled == nil {
-		con.Enabled = aws.Bool(defaultConsoleEnabled)
+		con.Enabled = new(defaultConsoleEnabled)
 	}
 
 	if con.Name == "" {
@@ -66,7 +65,7 @@ func (con *ConsoleTask) ApplyDefaults() {
 
 	if con.PortMapping == nil {
 		con.PortMapping = &PortMapping{
-			Port:     aws.Int32(defaultConsolePort),
+			Port:     new(defaultConsolePort),
 			Protocol: ecsTypes.TransportProtocolTcp,
 		}
 	}

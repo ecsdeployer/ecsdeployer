@@ -4,11 +4,12 @@ import (
 	"errors"
 	"testing"
 
+	"slices"
+
 	"ecsdeployer.com/ecsdeployer/internal/step"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
 )
 
 type fakePreloader struct {

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/aws/retry"
 	awsHttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/config"
 	logs "github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs"
@@ -25,15 +26,15 @@ var (
 
 	awsConfig aws.Config
 
-	ecsClient       *ecs.Client
-	stsClient       *sts.Client
-	ssmClient       *ssm.Client
-	ec2Client       *ec2.Client
-	elbv2Client     *elbv2.Client
-	eventsClient    *events.Client
-	logsClient      *logs.Client
-	taggingClient   *tagging.Client
-	schedulerClient *scheduler.Client
+	ecsClient       ECSClienter
+	stsClient       STSClienter
+	ssmClient       SSMClienter
+	ec2Client       EC2Clienter
+	elbv2Client     ELBv2Clienter
+	eventsClient    EventsClienter
+	logsClient      LogsClienter
+	taggingClient   TaggingClienter
+	schedulerClient SchedulerClienter
 )
 
 func init() {
@@ -42,7 +43,15 @@ func init() {
 		t.ResponseHeaderTimeout = 30 * time.Second
 	})
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithHTTPClient(httpClient))
+	cfg, err := config.LoadDefaultConfig(
+		context.Background(),
+		// config.WithRetryMaxAttempts(10),
+		config.WithRetryer(func() aws.Retryer {
+			rtr := retry.AddWithMaxAttempts(retry.NewStandard(), 40)
+			return retry.AddWithMaxBackoffDelay(rtr, 8*time.Second)
+		}),
+		config.WithHTTPClient(httpClient),
+	)
 	if err != nil {
 		// panic(fmt.Sprintf("failed loading config, %v", err))
 		// couldnt load default? maybe they have a better one

@@ -2,7 +2,6 @@ package service
 
 import (
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 )
 
@@ -13,13 +12,14 @@ func BuildUpdate(ctx *config.Context, entity *config.Service) (*ecs.UpdateServic
 	}
 
 	updateServiceInput := &ecs.UpdateServiceInput{
+		AvailabilityZoneRebalancing:   createServiceInput.AvailabilityZoneRebalancing,
 		Service:                       createServiceInput.ServiceName,
 		CapacityProviderStrategy:      createServiceInput.CapacityProviderStrategy,
 		Cluster:                       createServiceInput.Cluster,
 		DeploymentConfiguration:       createServiceInput.DeploymentConfiguration,
 		DesiredCount:                  createServiceInput.DesiredCount,
-		EnableECSManagedTags:          aws.Bool(createServiceInput.EnableECSManagedTags),
-		EnableExecuteCommand:          aws.Bool(createServiceInput.EnableExecuteCommand),
+		EnableECSManagedTags:          new(createServiceInput.EnableECSManagedTags),
+		EnableExecuteCommand:          new(createServiceInput.EnableExecuteCommand),
 		ForceNewDeployment:            true,
 		HealthCheckGracePeriodSeconds: createServiceInput.HealthCheckGracePeriodSeconds,
 		LoadBalancers:                 createServiceInput.LoadBalancers,

@@ -2,7 +2,6 @@ package config
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
-	"github.com/iancoleman/orderedmap"
 	"github.com/invopop/jsonschema"
 )
 
@@ -18,7 +17,7 @@ func NewNameValuePair(k, v string) NameValuePair {
 	}
 }
 
-func (a *NameValuePair) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (a *NameValuePair) UnmarshalYAML(unmarshal func(any) error) error {
 	type tNameValuePair NameValuePair
 	var obj = tNameValuePair{}
 	if err := unmarshal(&obj); err != nil {
@@ -47,10 +46,10 @@ func (def NameValuePair) Validate() error {
 
 func (NameValuePair) JSONSchema() *jsonschema.Schema {
 
-	properties := orderedmap.New()
+	properties := jsonschema.NewProperties()
 	properties.Set("name", &jsonschema.Schema{
 		Type:      "string",
-		MinLength: 1,
+		MinLength: new(uint64(1)),
 	})
 
 	properties.Set("value", configschema.StringLike)

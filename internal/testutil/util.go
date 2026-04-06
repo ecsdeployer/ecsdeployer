@@ -7,20 +7,24 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"os"
 	"reflect"
 	"regexp"
 	"strings"
 	"testing"
 	"text/template"
 
+	"maps"
+
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/jmespath/go-jmespath"
 	"github.com/webdestroya/awsmocker"
 	"github.com/webdestroya/go-log"
-	"golang.org/x/exp/maps"
 )
 
+// send logs to the trash
 func DisableLoggingForTest(t *testing.T) {
+	t.Helper()
 	orig := log.Log
 	t.Cleanup(func() {
 		log.Log = orig
@@ -28,11 +32,14 @@ func DisableLoggingForTest(t *testing.T) {
 	log.Log = log.New(io.Discard)
 }
 
+// Disables logging globally, forever
+//
+// Deprecated: Use [DisableLoggingForTest] instead
 func DisableLogging() {
 	log.Log = log.New(io.Discard)
 }
 
-func TemplateApply(tpl string, fields interface{}) string {
+func TemplateApply(tpl string, fields any) string {
 	tplate, err := template.New("testutil").Parse(tpl)
 	if err != nil {
 		panic(err)
@@ -46,20 +53,20 @@ func TemplateApply(tpl string, fields interface{}) string {
 	return buffer.String()
 }
 
-func jsonify(obj interface{}) string {
+func jsonify(obj any) string {
 	return util.Must(util.Jsonify(obj))
 }
 
-func JmesPathSearch(obj interface{}, searchPath string) interface{} {
+func JmesPathSearch(obj any, searchPath string) any {
 	result, err := jmespath.Search(searchPath, obj)
 	if err != nil {
-		panic(fmt.Errorf("Failed to find '%s': %w", searchPath, err))
+		panic(fmt.Errorf("failed to find '%s': %w", searchPath, err))
 	}
 
 	return result
 }
 
-func JmesSearchOrNil(obj interface{}, searchPath string) interface{} {
+func JmesSearchOrNil(obj any, searchPath string) any {
 	result, err := jmespath.Search(searchPath, obj)
 	if err != nil {
 		return nil
@@ -68,9 +75,9 @@ func JmesSearchOrNil(obj interface{}, searchPath string) interface{} {
 	return result
 }
 
-func JmesRequestMatcher(jmesMap map[string]interface{}) func(*awsmocker.ReceivedRequest) bool {
+func JmesRequestMatcher(jmesMap map[string]any) func(*awsmocker.ReceivedRequest) bool {
 
-	cleanMap := make(map[string]interface{}, len(jmesMap))
+	cleanMap := make(map[string]any, len(jmesMap))
 	searchPaths := maps.Keys(jmesMap)
 	// searchPaths := make([]string, 0, len(jmesMap))
 	for k, v := range jmesMap {
@@ -86,8 +93,8 @@ func JmesRequestMatcher(jmesMap map[string]interface{}) func(*awsmocker.Received
 	}
 
 	return func(rr *awsmocker.ReceivedRequest) bool {
-		newMap := make(map[string]interface{}, len(cleanMap))
-		for _, k := range searchPaths {
+		newMap := make(map[string]any, len(cleanMap))
+		for k := range searchPaths {
 			newMap[k] = JmesSearchOrNil(rr.JsonPayload, k)
 			// fmt.Printf("COMPARING: %s (%v, %v) ? [%T, %T]\n", k, newMap[k], cleanMap[k], newMap[k], cleanMap[k])
 		}
@@ -173,4 +180,29 @@ func RandomHex(n int) string {
 		panic(err)
 	}
 	return hex.EncodeToString(bytes)
+}
+
+// used for populating stdin or any other stream with data from a file
+func FillStreamWithConfig(t *testing.T, dst io.WriteSeeker, srcFile string) error {
+	t.Helper()
+
+	src, err := os.Open(srcFile)
+	if err != nil {
+		return err
+	}
+
+	defer src.Close()
+
+	data, err := io.ReadAll(src)
+	if err != nil {
+		return err
+	}
+
+	if _, err := dst.Write(data); err != nil {
+		return err
+	}
+	if _, err := dst.Seek(0, 0); err != nil {
+		return err
+	}
+	return nil
 }

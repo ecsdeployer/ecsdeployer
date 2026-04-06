@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"ecsdeployer.com/ecsdeployer/internal/testutil/buildtestutils"
-	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 	"github.com/stretchr/testify/require"
@@ -20,9 +19,9 @@ func TestContainerTpl(t *testing.T) {
 		obj      any
 	}{
 		{"Foo", "Foo"},
-		{"Bar", util.Ptr("Bar")},
-		{"Baz", ecsTypes.ContainerDefinition{Name: util.Ptr("Baz")}},
-		{"Boo", &ecsTypes.ContainerDefinition{Name: util.Ptr("Boo")}},
+		{"Bar", new("Bar")},
+		{"Baz", ecsTypes.ContainerDefinition{Name: new("Baz")}},
+		{"Boo", &ecsTypes.ContainerDefinition{Name: new("Boo")}},
 		{"Yar", &config.CommonContainerAttrs{Name: "Yar"}},
 	}
 

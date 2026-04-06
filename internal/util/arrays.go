@@ -29,8 +29,8 @@ func ChunkArray[T any](input []T, chunkSize int) [][]T {
 
 // This is used to allow the AWS Enum string lists to be cast to an array of interfaces
 // used for JSONSchema
-func StrArrayToInterArray[T ~string](things []T) []interface{} {
-	arr := make([]interface{}, len(things))
+func StrArrayToInterArray[T ~string](things []T) []any {
+	arr := make([]any, len(things))
 	for i, val := range things {
 		arr[i] = string(val)
 	}

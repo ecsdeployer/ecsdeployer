@@ -1,8 +1,7 @@
 package preflight
 
 import (
-	"errors"
-
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"ecsdeployer.com/ecsdeployer/pkg/version"
 	hcVersion "github.com/hashicorp/go-version"
@@ -30,7 +29,7 @@ func (checkVersion) Check(ctx *config.Context) error {
 		return nil
 	}
 
-	return errors.New("Your configuration file prevents this version of ECSDeployer from being used.")
+	return usererr.New("Your configuration file prevents this version of ECSDeployer from being used.")
 }
 
 func isVersionAllowed(constraints *config.VersionConstraint, currentVersion *hcVersion.Version) bool {

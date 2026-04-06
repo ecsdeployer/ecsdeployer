@@ -37,7 +37,7 @@ func TestSchemaNamer(t *testing.T) {
 
 	tables := []struct {
 		expectedName string
-		intf         interface{}
+		intf         any
 	}{
 		// different name
 		{"TaskDefaults", config.FargateDefaults{}},
@@ -58,9 +58,8 @@ func TestSchemaNamer(t *testing.T) {
 	for _, table := range tables {
 		t.Run(table.expectedName, func(t *testing.T) {
 
-			prop, ok := schema.Properties.Get(table.expectedName)
+			property, ok := schema.Properties.Get(table.expectedName)
 			require.True(t, ok)
-			property := prop.(*jsonschema.Schema)
 			require.Equal(t, fmt.Sprintf("#/$defs/%s", table.expectedName), property.Ref)
 
 			expectedSchema := configschema.GenerateSchema(table.intf)
@@ -76,7 +75,7 @@ func TestSchemaNamer(t *testing.T) {
 
 func TestGenerateSchema(t *testing.T) {
 	tables := []struct {
-		entity interface{}
+		entity any
 	}{
 		{&config.Project{}},
 		{&config.Service{}},
@@ -100,7 +99,7 @@ func TestGenerateSchema(t *testing.T) {
 func jsonSchemaWithoutSpecials(schema *jsonschema.Schema) string {
 	initialJson, _ := util.Jsonify(schema)
 
-	temp := make(map[string]interface{})
+	temp := make(map[string]any)
 	if err := json.Unmarshal([]byte(initialJson), &temp); err != nil {
 		panic(err)
 	}

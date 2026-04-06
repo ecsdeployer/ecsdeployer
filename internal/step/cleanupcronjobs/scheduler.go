@@ -6,6 +6,8 @@ import (
 	"strings"
 	"sync"
 
+	"slices"
+
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/step"
@@ -14,7 +16,6 @@ import (
 	scheduler "github.com/aws/aws-sdk-go-v2/service/scheduler"
 	schedulerTypes "github.com/aws/aws-sdk-go-v2/service/scheduler/types"
 	"github.com/webdestroya/go-log"
-	"golang.org/x/exp/slices"
 )
 
 func runSchedulerCleanup(ctx *config.Context) error {
@@ -53,8 +54,7 @@ func runSchedulerCleanup(ctx *config.Context) error {
 	for paginator.HasMorePages() {
 		output, err := paginator.NextPage(ctx.Context)
 		if err != nil {
-			var notFoundErr *schedulerTypes.ResourceNotFoundException
-			if errors.As(err, &notFoundErr) {
+			if _, ok := errors.AsType[*schedulerTypes.ResourceNotFoundException](err); ok {
 				// not found isnt an error, so move along
 				return nil
 			}

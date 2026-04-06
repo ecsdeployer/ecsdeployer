@@ -51,8 +51,7 @@ func (s *Step) getSchedule(ctx *config.Context) (bool, error) {
 		Name:      &s.scheduleName,
 	})
 	if err != nil {
-		var rnfe *schedulerTypes.ResourceNotFoundException
-		if errors.As(err, &rnfe) {
+		if _, ok := errors.AsType[*schedulerTypes.ResourceNotFoundException](err); ok {
 			return false, nil
 		}
 		return false, err

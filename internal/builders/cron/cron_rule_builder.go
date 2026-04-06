@@ -4,7 +4,6 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	events "github.com/aws/aws-sdk-go-v2/service/eventbridge"
 	eventTypes "github.com/aws/aws-sdk-go-v2/service/eventbridge/types"
 )
@@ -23,8 +22,8 @@ func BuildCronRule(ctx *config.Context, resource *config.CronJob) (*events.PutRu
 	}
 
 	ruleDef := &events.PutRuleInput{
-		Name:               aws.String(ruleName),
-		ScheduleExpression: aws.String(resource.Schedule),
+		Name:               new(ruleName),
+		ScheduleExpression: new(resource.Schedule),
 		State:              eventTypes.RuleStateEnabled,
 	}
 
@@ -37,7 +36,7 @@ func BuildCronRule(ctx *config.Context, resource *config.CronJob) (*events.PutRu
 		if err2 != nil {
 			return nil, err2
 		}
-		ruleDef.Description = aws.String(ruleDesc)
+		ruleDef.Description = new(ruleDesc)
 	}
 
 	if resource.EventBusName != nil {

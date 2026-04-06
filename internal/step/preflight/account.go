@@ -1,8 +1,7 @@
 package preflight
 
 import (
-	"fmt"
-
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
@@ -26,7 +25,7 @@ func (checkAccount) Check(ctx *config.Context) error {
 	}
 
 	if ctx.AwsAccountId() != *accountId {
-		return fmt.Errorf("Account '%s' is not an allowed account. Only '%s' is allowed.", ctx.AwsAccountId(), *accountId)
+		return usererr.Newf("Account '%s' is not an allowed account. Only '%s' is allowed.", ctx.AwsAccountId(), *accountId)
 	}
 
 	return nil

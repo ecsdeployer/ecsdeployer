@@ -2,13 +2,14 @@ package tmpl
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
+	"maps"
 	"strconv"
 	"strings"
 	"text/template"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
 
@@ -19,7 +20,7 @@ type Template struct {
 }
 
 // Fields that will be available to the template engine.
-type Fields map[string]interface{}
+type Fields map[string]any
 
 const (
 	projectName  = "Project"
@@ -68,13 +69,11 @@ func New(ctx *config.Context) *Template {
 // WithExtraFields allows to add new more custom fields to the template.
 // It will override fields with the same name.
 func (t *Template) WithExtraFields(f Fields) *Template {
-	for k, v := range f {
-		t.fields[k] = v
-	}
+	maps.Copy(t.fields, f)
 	return t
 }
 
-func (t *Template) WithExtraField(k string, v interface{}) *Template {
+func (t *Template) WithExtraField(k string, v any) *Template {
 	t.fields[k] = v
 	return t
 }
@@ -117,7 +116,7 @@ func (t *Template) Apply(s string) (string, error) {
 	return out.String(), err
 }
 
-func tplFuncJoin(sep string, vals ...interface{}) string {
+func tplFuncJoin(sep string, vals ...any) string {
 	tmpArr := make([]string, len(vals))
 	for i, val := range vals {
 		switch v := val.(type) {
@@ -148,7 +147,7 @@ func tplFuncPrefix(value string, length int) (string, error) {
 
 	if length < 1 {
 		// bruh that would just be a blank string. why even bother with a function
-		return "", errors.New("Cannot get a prefix shorter than 1 character")
+		return "", usererr.New("Cannot get a prefix shorter than 1 character")
 	}
 
 	if len(value) <= length {
