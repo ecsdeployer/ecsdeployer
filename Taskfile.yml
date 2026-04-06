@@ -32,7 +32,7 @@ tasks:
     cmds:
       - golangci-lint run && echo "Code passed lint check!"
 
-  test-release:
+  test:release:
     desc: Test the release build with goreleaser
     cmds:
       - goreleaser release --skip publish,sign --clean --snapshot --parallelism 4
@@ -80,22 +80,22 @@ tasks:
     cmds:
       - ./scripts/run_with_test_env.sh go test -timeout 180s {{.GOPKGS}}
 
-  test-v:
+  test:verbose:
     desc: Run unit tests (verbose)
     cmds:
       - ./scripts/run_with_test_env.sh go test -v -timeout 180s {{.GOPKGS}}
 
-  test-smokedeploy:
+  test:smokedeploy:
     desc: Run smoke deploy integration test
     cmds:
       - ./scripts/run_with_test_env.sh go test -timeout 180s -v ./cmd/ -run TestDeploySmoke -- --dump-cmd-output
 
-  test-testutil:
+  test:testutil:
     desc: Run testutil package tests
     cmds:
       - go test -timeout 180s ./internal/testutil
 
-  test-single:
+  test:single:
     desc: Run a single test by name (task test-single -- TestFooBar)
     requires:
       vars: [CLI_ARGS]
@@ -125,7 +125,9 @@ tasks:
     cmds:
       - go list -u -m -f '{{`{{if not .Indirect}}{{if .Update}}{{.}}{{end}}{{end}}`}}' all
 
-  coverage:
+  test:coverage:
+    aliases:
+      - coverage
     desc: Generate test coverage report
     cmds:
       - mkdir -p coverage

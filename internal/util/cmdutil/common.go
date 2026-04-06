@@ -29,4 +29,8 @@ func SetCommonContext(ctx *config.Context, common CommonOptions) {
 	if ctx.Project.StageName != nil {
 		ctx.Stage = *ctx.Project.StageName
 	}
+
+	if ctx.Project.Settings != nil && ctx.Project.Settings.Concurrency != nil {
+		ctx.MaxConcurrency = *ctx.Project.Settings.Concurrency
+	}
 }

@@ -1,13 +1,13 @@
 # Testing
 
 ```shell
-make test
+task test
 ```
 
 ## Coverage
 
 ```shell
-make coverage
+task test:coverage
 ```
 
 

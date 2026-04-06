@@ -25,6 +25,11 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version-file: .go-version
+      
+      - name: Install Task
+        uses: go-task/setup-task@v1
+        with:
+          version: 3.x
 
       - name: Run CLI Unit Tests
         run: |
