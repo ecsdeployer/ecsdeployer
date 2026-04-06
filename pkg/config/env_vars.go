@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/invopop/jsonschema"
 )
@@ -86,11 +87,11 @@ func (e EnvVar) GetValue(tplRef templater) (string, error) {
 			}
 			return val, nil
 		} else {
-			return "", errors.New("env var is a templated var, but no templater was provided")
+			return "", usererr.New("env var is a templated var, but no templater was provided")
 		}
 	}
 
-	return "", errors.New("Unknown env var type")
+	return "", usererr.New("Unknown env var type")
 }
 
 func (a *EnvVar) UnmarshalYAML(unmarshal func(any) error) error {

@@ -1452,6 +1452,12 @@
         "skip_cron_env_vars": {
           "type": "boolean"
         },
+        "concurrency": {
+          "description": "Maximum number of parallel deployment operations",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
         "disable_marker_tag": {
           "type": "boolean"
         },

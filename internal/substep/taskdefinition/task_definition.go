@@ -37,7 +37,7 @@ func (s *Substep) Register(ctx *config.Context) (string, error) {
 
 	logGroupStep := loggroup.New(s.entity)
 	if err = skip.Maybe(logGroupStep, errhandler.Handle(logGroupStep.Run))(ctx); err != nil {
-		return "", fmt.Errorf("Failed to provision log group: %w", err)
+		return "", fmt.Errorf("failed to provision log group: %w", err)
 	}
 
 	result, err := awsclients.ECSClient().RegisterTaskDefinition(ctx.Context, registerTaskDefInput)

@@ -2,6 +2,7 @@ package secretscmd
 
 import (
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/spf13/cobra"
@@ -56,7 +57,7 @@ func (r *deleteCmdRunner) RunE(cmd *cobra.Command, args []string) error {
 		// 	return nil
 		// }
 
-		return cmdutil.NewUserError(err)
+		return usererr.Wrap(err)
 	}
 	log.WithField("param", paramName).Info("parameter deleted")
 

@@ -2,10 +2,10 @@ package secretscmd
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/tmpl"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
@@ -22,7 +22,7 @@ func loadProject(ctx context.Context, cfgFile string) (*config.Context, string, 
 	}
 
 	if !proj.Settings.SSMImport.IsEnabled() {
-		return nil, "", fmt.Errorf(`SSM import is not enabled for this project, nothing to list.`)
+		return nil, "", usererr.New(`SSM import is not enabled for this project, nothing to list.`)
 	}
 
 	ssmImport := *proj.Settings.SSMImport

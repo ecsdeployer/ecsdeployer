@@ -2,7 +2,6 @@ package tmpl
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"maps"
 	"strconv"
@@ -10,6 +9,7 @@ import (
 	"text/template"
 	"time"
 
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 )
 
@@ -147,7 +147,7 @@ func tplFuncPrefix(value string, length int) (string, error) {
 
 	if length < 1 {
 		// bruh that would just be a blank string. why even bother with a function
-		return "", errors.New("Cannot get a prefix shorter than 1 character")
+		return "", usererr.New("Cannot get a prefix shorter than 1 character")
 	}
 
 	if len(value) <= length {

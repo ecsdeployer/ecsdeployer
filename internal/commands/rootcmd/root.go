@@ -86,7 +86,7 @@ func (r *rootCmd) PersistentPreRunE(cmd *cobra.Command, args []string) error {
 }
 
 func rootFlagErrorFunc(cmd *cobra.Command, err error) error {
-	if err == pflag.ErrHelp {
+	if err == pflag.ErrHelp { //nolint:errorlint // this works
 		return err
 	}
 	return cmdutil.FlagErrorWrap(err)

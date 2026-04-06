@@ -34,4 +34,4 @@ jobs:
       - name: Run CLI Unit Tests
         run: |
           go clean -testcache
-          make test
+          task test

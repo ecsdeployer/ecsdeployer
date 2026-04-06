@@ -2,13 +2,13 @@ package checkcmd
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"os"
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/configschema"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"ecsdeployer.com/ecsdeployer/internal/yaml"
@@ -55,11 +55,11 @@ func (r *checkRunner) RunE(cmd *cobra.Command, _ []string) error {
 	}
 
 	if r.configFile == "" {
-		return errors.New("You need to specify a config file")
+		return usererr.New("You need to specify a config file")
 	}
 
 	if r.dump != "" && r.showJson {
-		return errors.New("Don't specify --show along with --dump. Just use --dump.")
+		return usererr.New("Don't specify --show along with --dump. Just use --dump.")
 	}
 
 	f, err := os.Open(r.configFile) // #nosec
@@ -79,13 +79,13 @@ func (r *checkRunner) RunE(cmd *cobra.Command, _ []string) error {
 
 	cfg, err := cmdutil.LoadConfig(r.configFile)
 	if err != nil {
-		return fmt.Errorf("invalid config: %w", err)
+		return usererr.New("invalid config: %w", err)
 	}
 
 	ctx := config.New(cfg)
 
 	if err := cfg.ValidateWithContext(ctx); err != nil {
-		return fmt.Errorf("invalid config: %w", err)
+		return usererr.New("invalid config: %w", err)
 	}
 
 	log.Info("config is valid!")
@@ -146,7 +146,7 @@ func validateConfigSchemaBytes(data []byte) error {
 		for _, err := range result.Errors() {
 			log.Error(err.String())
 		}
-		return errors.New("config does not adhere to schema")
+		return usererr.New("config does not adhere to schema")
 	}
 
 	return nil

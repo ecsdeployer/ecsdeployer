@@ -33,15 +33,15 @@ func (fe *FlagError) Unwrap() error {
 	return fe.err
 }
 
-// SilentError is an error that triggers exit code 1 without any error messaging
-var SilentError = errors.New("SilentError")
+// ErrSilentError is an error that triggers exit code 1 without any error messaging
+var ErrSilentError = errors.New("SilentError")
 
-// CancelError signals user-initiated cancellation
-var CancelError = errors.New("CancelError")
+// ErrCancelError signals user-initiated cancellation
+var ErrCancelError = errors.New("CancelError")
 
-// PendingError signals nothing failed but something is pending
-var PendingError = errors.New("PendingError")
+// ErrPendingError signals nothing failed but something is pending
+var ErrPendingError = errors.New("PendingError")
 
 func IsUserCancellation(err error) bool {
-	return errors.Is(err, CancelError) || errors.Is(err, context.Canceled)
+	return errors.Is(err, ErrCancelError) || errors.Is(err, context.Canceled)
 }

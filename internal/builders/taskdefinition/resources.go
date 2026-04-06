@@ -1,9 +1,8 @@
 package taskdefinition
 
 import (
-	"fmt"
-
 	"ecsdeployer.com/ecsdeployer/internal/fargate"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
@@ -18,7 +17,7 @@ func (b *Builder) applyTaskResources() error {
 	cpu := util.Coalesce(b.commonTask.Cpu, b.taskDefaults.Cpu)
 	memory := util.Coalesce(b.commonTask.Memory, b.taskDefaults.Memory)
 	if cpu == nil || memory == nil {
-		return fmt.Errorf("You need to specify the CPU/Memory on the task defaults")
+		return usererr.New("You need to specify the CPU/Memory on the task defaults")
 	}
 	memoryValue, err := memory.MegabytesFromCpu(cpu)
 	if err != nil {

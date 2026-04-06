@@ -1,9 +1,9 @@
 package cmdutil
 
 import (
-	"errors"
 	"os"
 
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/webdestroya/go-log"
 )
@@ -31,5 +31,5 @@ func LoadConfig(path string) (*config.Project, error) {
 		}
 	}
 
-	return nil, errors.New("No configuration file was found")
+	return nil, usererr.New("No configuration file was found")
 }

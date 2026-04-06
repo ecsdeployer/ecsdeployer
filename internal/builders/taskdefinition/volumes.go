@@ -1,8 +1,7 @@
 package taskdefinition
 
 import (
-	"fmt"
-
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
@@ -29,7 +28,7 @@ func (b *Builder) applyVolumes() error {
 
 		vol, ok := volumeList[volName]
 		if !ok {
-			return fmt.Errorf("Missing volume declaration for '%s'", volName)
+			return usererr.Newf("Missing volume declaration for '%s'", volName)
 		}
 
 		usedVolumes[volName] = vol

@@ -11,6 +11,7 @@ import (
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/step"
 	"ecsdeployer.com/ecsdeployer/internal/substep/taskdefinition"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -31,7 +32,7 @@ const (
 )
 
 var (
-	errTaskStillRunning = errors.New("Task is still running")
+	errTaskStillRunning = errors.New("task is still running")
 )
 
 func New(task *config.PreDeployTask) *Step {
@@ -139,14 +140,14 @@ func (s *Step) Run(ctx *config.Context) error {
 	err = stoppedWaiter.Wait(ctx.Context, params, maxWaitTime)
 	if err != nil {
 		log.Error("failed")
-		return fmt.Errorf("Failure waiting for task to stop: %w", err)
+		return fmt.Errorf("failure waiting for task to stop: %w", err)
 	}
 
 	// it's stopped, so get the latest status
 	results, err := ecsClient.DescribeTasks(ctx.Context, params)
 	if err != nil {
 		log.Error("failed")
-		return fmt.Errorf("Unable to describe task status: %w", err)
+		return fmt.Errorf("unable to describe task status: %w", err)
 	}
 
 	// check for failures
@@ -159,7 +160,7 @@ func (s *Step) Run(ctx *config.Context) error {
 		}
 
 		if !s.pdTask.IgnoreFailure {
-			return errors.New("Task failed to describe")
+			return errors.New("task failed to describe")
 		}
 	}
 
@@ -180,7 +181,7 @@ func (s *Step) Run(ctx *config.Context) error {
 
 	log.WithError(err).Error("failed!")
 
-	return fmt.Errorf("Task failed: %w", err)
+	return fmt.Errorf("task failed: %w", err)
 }
 
 func didTaskSucceed(result *ecsTypes.Task) error {
@@ -193,22 +194,22 @@ func didTaskSucceed(result *ecsTypes.Task) error {
 	stopCode := result.StopCode
 
 	if stopCode == ecsTypes.TaskStopCodeTaskFailedToStart {
-		return fmt.Errorf("Failed to Start: %s", aws.ToString(result.StoppedReason))
+		return usererr.Newf("Failed to Start: %s", aws.ToString(result.StoppedReason))
 	}
 
 	if stopCode == ecsTypes.TaskStopCodeUserInitiated {
-		return errors.New("User killed the task")
+		return usererr.New("User killed the task")
 	}
 
 	if stopCode != ecsTypes.TaskStopCodeEssentialContainerExited {
-		return fmt.Errorf("Some very weird stop code was given: %s", string(stopCode))
+		return usererr.Newf("Some very weird stop code was given: %s", string(stopCode))
 	}
 
 	for _, cont := range result.Containers {
 		if cont.ExitCode != nil {
 			exitCode := aws.ToInt32(cont.ExitCode)
 			if exitCode > 0 {
-				return fmt.Errorf("Container exited with code: %d", exitCode)
+				return usererr.Newf("Container exited with code: %d", exitCode)
 			}
 		}
 	}

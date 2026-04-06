@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"ecsdeployer.com/ecsdeployer/internal/commands/rootcmd"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"github.com/spf13/cobra"
 	"github.com/webdestroya/go-log"
@@ -44,7 +45,7 @@ func ExecuteNew(extras ...func(*cobra.Command)) (exitCode, error) {
 			return exitCode(exitErr.ExitCode()), err
 		}
 
-		if errors.Is(err, cmdutil.PendingError) {
+		if errors.Is(err, cmdutil.ErrPendingError) {
 			return exitPending, err
 		}
 
@@ -55,7 +56,7 @@ func ExecuteNew(extras ...func(*cobra.Command)) (exitCode, error) {
 
 		log.WithError(err).Error("command failed")
 
-		if _, ok := errors.AsType[*cmdutil.UserError](err); ok {
+		if _, ok := errors.AsType[*usererr.UserError](err); ok {
 			return exitError, err
 		}
 

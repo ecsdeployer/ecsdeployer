@@ -11,7 +11,7 @@ type ClusterArn struct {
 }
 
 func (obj *ClusterArn) Arn(ctx *Context) (string, error) {
-	return obj.NameArn.superArn(ctx, func() (string, error) {
+	return obj.superArn(ctx, func() (string, error) {
 		// log.WithField("clustername", obj.name).Debug("resolving cluster arn")
 		clusterArn := arn.ARN{
 			Partition: "aws",

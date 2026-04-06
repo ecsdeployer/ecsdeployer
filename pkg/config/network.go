@@ -1,10 +1,10 @@
 package config
 
 import (
-	"errors"
 	"sync"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	ec2Types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
@@ -99,7 +99,7 @@ func (nc *NetworkConfiguration) Resolve(ctx *Context, netConfRef any) error {
 	case nil:
 		// do nothing, they just want to validate that the config is valid
 	default:
-		return errors.New("unknown network configuration type??")
+		return usererr.New("unknown network configuration type??")
 	}
 
 	return nil
@@ -154,7 +154,7 @@ func networkConfigurationResolver(ctx *Context, network *NetworkConfiguration) (
 	}
 
 	if network == nil {
-		return nil, errors.New("you must provide network configuration information")
+		return nil, usererr.New("you must provide network configuration information")
 	}
 
 	result := &resolvedNetworkConfig{
@@ -176,7 +176,7 @@ func networkConfigurationResolver(ctx *Context, network *NetworkConfiguration) (
 		return len(val.Subnets) > 0
 	}, network, defaultNetwork, ctx.Project.Network)
 	if !ok {
-		return nil, errors.New("could not determine network subnets. No configuration provided")
+		return nil, usererr.New("could not determine network subnets. No configuration provided")
 	}
 
 	subnetIds, vpcId, err := calculateSubnets(ctx, *subnetNetwork)
@@ -189,7 +189,7 @@ func networkConfigurationResolver(ctx *Context, network *NetworkConfiguration) (
 		return len(val.SecurityGroups) > 0
 	}, network, defaultNetwork, ctx.Project.Network)
 	if !ok {
-		return nil, errors.New("could not determine network security groups. No configuration provided")
+		return nil, usererr.New("could not determine network security groups. No configuration provided")
 	}
 
 	securityGroupIds, err := calculateSecurityGroups(ctx, *securityGroupNetwork, vpcId)

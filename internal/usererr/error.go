@@ -1,4 +1,4 @@
-package cmdutil
+package usererr
 
 import "fmt"
 
@@ -21,10 +21,10 @@ func (e *UserError) Unwrap() error {
 }
 
 func Wrap(err error) error {
-	return NewUserError(err)
+	return New(err)
 }
 
-func NewUserError(args ...any) error {
+func New(args ...any) error {
 
 	err := &UserError{}
 
@@ -40,22 +40,14 @@ func NewUserError(args ...any) error {
 	case error:
 		err.error = v
 	default:
-		err.error = fmt.Errorf(`Developer error!: %T %v`, v, args)
+		err.error = fmt.Errorf(`bad dev!: %T %v`, v, args)
 	}
 
 	return err
 }
 
-func NewUserErrorf(msg string, args ...any) error {
+func Newf(msg string, args ...any) error {
 	return &UserError{
 		error: fmt.Errorf(msg, args...),
 	}
 }
-
-// func IsUserError(err error) (*UserError, bool) {
-// 	var ue *UserError
-// 	if errors.As(err, &ue) {
-// 		return ue, true
-// 	}
-// 	return nil, false
-// }

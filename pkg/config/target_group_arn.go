@@ -11,7 +11,7 @@ type TargetGroupArn struct {
 }
 
 func (obj *TargetGroupArn) Arn(ctx *Context) (string, error) {
-	return obj.NameArn.superArn(ctx, func() (string, error) {
+	return obj.superArn(ctx, func() (string, error) {
 
 		result, err := awsclients.ELBv2Client().DescribeTargetGroups(ctx, &elbv2.DescribeTargetGroupsInput{
 			Names: []string{obj.name},

@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"ecsdeployer.com/ecsdeployer/internal/awsclients"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/spf13/cobra"
@@ -37,7 +38,7 @@ func newGetCmd() *cobra.Command {
 
 func (r *getCmdRunner) PreRunE(cmd *cobra.Command, args []string) error {
 	if r.valueOnly && len(args) > 1 {
-		return cmdutil.NewUserErrorf(`The --bare flag can only be used with a single VARIABLE.`)
+		return usererr.New(`The --bare flag can only be used with a single VARIABLE.`)
 	}
 	return nil
 }
@@ -61,7 +62,7 @@ func (r *getCmdRunner) RunE(cmd *cobra.Command, args []string) error {
 		WithDecryption: new(true),
 	})
 	if err != nil {
-		return cmdutil.NewUserError(err)
+		return usererr.New(err)
 	}
 
 	for _, parameter := range resp.Parameters {

@@ -1,15 +1,15 @@
 package taskdefinition
 
 import (
-	"errors"
 	"strings"
 
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"ecsdeployer.com/ecsdeployer/pkg/config"
 	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
-var ErrFirelensSSMUsageError = errors.New("Cannot use SSM references in firelens options")
+var ErrFirelensSSMUsageError = usererr.New("Cannot use SSM references in firelens options")
 
 // just the logging container, if desired. (firelens)
 func (b *Builder) applyLoggingFirelensContainer() error {

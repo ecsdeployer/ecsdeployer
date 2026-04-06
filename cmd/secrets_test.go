@@ -5,7 +5,7 @@ import (
 
 	"ecsdeployer.com/ecsdeployer/internal/helpers"
 	"ecsdeployer.com/ecsdeployer/internal/testutil"
-	"ecsdeployer.com/ecsdeployer/internal/util/cmdutil"
+	"ecsdeployer.com/ecsdeployer/internal/usererr"
 	"github.com/stretchr/testify/require"
 	"github.com/webdestroya/awsmocker"
 )
@@ -30,7 +30,7 @@ func TestSecretsDelete(t *testing.T) {
 
 		result := runCommand(t, nil, "secrets", "delete", "-c", "../internal/builders/testdata/everything.yml", "DUMMY_VAR_TO_REMOVE")
 		require.Error(t, result.err)
-		require.ErrorAs(t, result.err, new(*cmdutil.UserError))
+		require.ErrorAs(t, result.err, new(*usererr.UserError))
 		require.Contains(t, result.stderr, "ParameterNotFound")
 	})
 
@@ -42,7 +42,7 @@ func TestSecretsDelete(t *testing.T) {
 
 		result := runCommand(t, nil, "secrets", "delete", "-c", "../internal/builders/testdata/everything.yml", "DUMMY_VAR_TO_REMOVE")
 		require.Error(t, result.err)
-		require.ErrorAs(t, result.err, new(*cmdutil.UserError))
+		require.ErrorAs(t, result.err, new(*usererr.UserError))
 		require.Contains(t, result.stderr, "AccessDenied")
 	})
 }
