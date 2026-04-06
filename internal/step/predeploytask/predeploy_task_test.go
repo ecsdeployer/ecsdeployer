@@ -68,7 +68,7 @@ func TestPreDeployTaskStep(t *testing.T) {
 
 		err := New(project.PreDeployTasks[0]).Run(ctx)
 		require.Error(t, err)
-		require.ErrorContains(t, err, "Task failed to describe")
+		require.ErrorContains(t, err, "task failed to describe")
 	})
 
 	t.Run("failure stop codes", func(t *testing.T) {
